@@ -1,0 +1,82 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <script src="d3.min.js"></script>
+  <style>
+    .red {
+      stroke: #990000;
+      fill: #AA7777;
+    }
+    
+    .blue {
+      stroke: #000099;
+      fill: #7777AA;
+    }
+    
+    .empty {
+      stroke: #888888;
+      fill: #AAAAAA;
+    }
+    
+    .swamp {
+      stroke: #009900;
+      fill: #77AA77;
+    }
+    
+    circle {
+      stroke-width: 3px;
+    }
+    
+    circle.red:hover,
+    circle.blue:hover,
+    circle.empty:hover {
+      opacity: 0.5;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Demo viewer</h1>
+  <svg width="500px" height="500px" id="field">
+  </svg>
+  <script>
+    var xhReq = new XMLHttpRequest();
+    xhReq.open("GET", "/field", false);
+    xhReq.send(null);
+    console.log(xhReq.responseText);
+
+    var state = JSON.parse(xhReq.responseText);
+    console.log(state);
+    renderField(state.field);
+
+    function renderField(field, conns) {
+      var container = d3.select('#field');
+      container.selectAll('*').remove();
+      field.forEach(function (o, x) {
+        o.forEach(function (f, y) {
+          switch (f) {
+          case '':
+            container.append('circle').attr('cx', pointToCoordinate(x)).attr('cy', pointToCoordinate(y)).attr('r', 9).classed('empty', true);
+            break;
+          case 'r':
+            container.append('circle').attr('cx', pointToCoordinate(x)).attr('cy', pointToCoordinate(y)).attr('r', 9).classed('red', true);
+            break;
+          case 'b':
+            container.append('circle').attr('cx', pointToCoordinate(x)).attr('cy', pointToCoordinate(y)).attr('r', 9).classed('blue', true);
+            break;
+          case 's':
+            container.append('circle').attr('cx', pointToCoordinate(x)).attr('cy', pointToCoordinate(y)).attr('r', 9).classed('swamp', true);
+            break;
+          }
+        });
+      });
+    }
+
+    function pointToCoordinate(p) {
+      return (p * 20 + 10) + 'px';
+    }
+  </script>
+</body>
+
+</html>
