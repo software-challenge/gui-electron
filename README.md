@@ -18,3 +18,6 @@ Rebuild of the graphical interface with electron/NodeJS.
 - `npm run-script run` Starts the application with the right electron shell version
 - `npm run-script package` Packages the application for Linux, Windows and OSX
 - `npm run-script clean` Removes packaged versions
+
+
+- `tar cvf darwin.tar --hard-dereference socha_graphical_client_darwin_x64` Tars the OSX version
