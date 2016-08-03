@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "run": "./node_modules/.bin/electron .",
     "package": "./node_modules/.bin/electron-packager . --all",
-    "compile-java": "javac Tictactoe.java && jar cvf Tictactoe.jar Tictactoe.class"
+    "compile-java": "javac Tictactoe.java && jar cvf Tictactoe.jar Tictactoe.class",
+    "clean": "rm -rf socha_graphical_client-linux-ia32 socha_graphical_client-linux-x64 socha_graphical_client-mas-x64 socha_graphical_client-win32-ia32 socha_graphical_client-win32-x64 socha_graphical_client-darwin-x64"
   },
   "repository": {
     "type": "git",
