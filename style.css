@@ -12,39 +12,52 @@ body{
   line-height: 1.6;
   height: 100vh;
   width: 100vh;
-  overflow: none;
+  overflow: hidden;
+  background-color: #e1e1e1;
 }
 
+/*Header*/
 body > header{
-  height: 20px;
-  line-height: 20px;
   background-color:#269;
   color: #fff;
   font-weight: bold;
+  font-size: 150%;
   width: 100%;
+  height: 40px;
   top: 0;
   left: 0;
-  /*padding-top: 0.5em;
-  padding-bottom: 0.5em;*/
+  padding-left: 0.5em;
   position: fixed;
   z-index: 10000;
 }
 
+body > header > a{
+  padding-right: 1.5em;
+}
+
+body > header > a:hover{
+  padding-right: 1.5em;
+  color: #e6e6ff;
+}
+
+/*Menus*/
 nav{
   position:fixed;
   border-right: 0.2rem solid #e1e1e1;
   width: 30vw;
   height: 100vh;
+  transition: left 0.3s, right 0.3s;
+  background-color: white;
+  z-index: 5000;
+  top: 40px;
 }
 
 nav.left{
-  left: 0;
-  top: 0;
+  left: 0vw;
 }
 
 nav.right{
-  right: 0;
-  top: 0;
+  right: -31vw;
 }
 
 nav header a{
@@ -57,6 +70,7 @@ nav a{
   width: auto;
   text-align: center;
   font-size: 150%;
+  user-select: none;
 }
 
 nav a:hover{
@@ -70,4 +84,117 @@ nav a:active{
 
 nav a:nth-child(n+2){
   border-top: 0.1rem solid #e1e1ff;
+}
+
+
+/*Content*/
+#content{
+  margin-top: 40px;
+  background-color: rgba(0,0,0,0);
+}
+
+/*Select*/
+.select{
+  font-size: 120%;
+  font-weight: bold;
+  margin-right: 1.5em;
+  border-bottom: 0.2em solid #e1e1e1;
+}
+
+.select:n-th-child(n+2){
+  margin-left: 1.5em;
+}
+
+.select:hover{
+  border-bottom: 0.2em solid #606caa;
+}
+
+.select[selected="true"]{
+  border-bottom: 0.2em solid #606caa;
+}
+
+/*
+.select[selected="true"]:hover{
+  border-bottom: 0.2em solid #e1e1e1;
+}*/
+
+/*New Game*/
+.dialog{
+  position: fixed;
+  background-color: white;
+  width: 60vw;
+  border-radius: 0.5em;
+  left: 20vw;
+  top: 10vh;
+  padding: 0.1em;
+  padding-left: 0.5em;
+  padding-bottom: 1.5em;
+  overflow: hidden;
+}
+
+.dialog h1{
+  text-decoration: underline;
+  text-decoration-color: #606caa;
+  margin-top: 0;
+  margin-bottom: 0;
+  text-align: center;
+  width: 100%;
+}
+
+.dialog h2{
+  margin-top: 0;
+  margin-bottom: 0.5em;
+}
+
+.dialog input[type=text]{
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 0.1em solid #d1d1d1;
+  font-family: monospace;
+}
+
+.dialog td:last-child{
+  width: 100%;
+}
+
+.dialog table{
+  width: auto;
+}
+
+.dialog p{
+  margin-top: 0.5em;
+  text-align: center;
+  width: 100%;
+}
+
+.dialog div{
+  transition: max-height 0.3s ease-in;
+  overflow: hidden;
+  padding-left: 3em;
+  margin-bottom: 0.3em;
+}
+
+.dialog div[displayed="true"]{
+  transition: none;
+}
+
+.dialog .description{
+  display: inline-block;
+  width: 8em;
+}
+
+
+
+.dialog #new-game-start{
+  font-size: 150%;
+  line-height: 90%;
+  font-weight: bold;
+  margin-right: 1.5em;
+  border-bottom: 0.2em solid #e1e1e1;
+  float: right;
+}
+
+.dialog #new-game-start:hover{
+  border-bottom: 0.2em solid #606caa;
 }
