@@ -3,51 +3,27 @@
   <head>
     <meta charset="UTF-8">
     <title>Softwarechallenge 2016/17</title>
-    <link rel="stylesheet" href="./node_modules/milligram/dist/milligram.min.css">
-    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <nav>
-      <button class="button-outline" id="btnLoad">Laden</button>
-      <button class="button-outline" id="btnSave">Speichern</button>
-      <button class="button-outline" id="btnNewGame">Neues Spiel</button>
-      <button class="button-outline" id="btnMassTest">Massentests</button>
+    <header>
+      TEST
+    </header>
+
+    <nav class="left" id="nav-left">
+      <header><a id="btnMenuLeft">&lt; Menü</a></header>
+      <a id="btnNewGame">Neues Spiel</a>
+      <a id="btnLoad">Replay Laden</a>
+      <a id="btnMassTest">Massentests</a>
     </nav>
 
-    <div id="divNewGame" class="invisible">
-        <div id="divNewGameDialog">
-          <h1>Neues Spiel erstellen</h1>
-          <h2>Spieler 1</h2>
-          <div class="select-human"></div><div class="select-robot"></div><div class="select-robot-jar"></div>
-          <h2>Spieler 2</h2>
-          <div class="select-human"></div><div class="select-robot"></div><div class="select-robot-jar"></div>
-          <h2>Optionen</h2>
-          <input type="checkbox" checked="checked">Zeitlimit aktiv</input>
-        </div>
+    <div id="content">
+
     </div>
 
-    <script type="text/ecmascript">
-      "use strict";
-      var di = document.getElementById;
-      document.getElementById("btnNewGame").addEventListener("click", function(){
-        console.log('blubb');
-        document.getElementById("divNewGame").classList.add("visible");
-        document.getElementById("divNewGame").classList.remove("invisible");
-      });
-    </script>
+    <nav class="right" id="nav-right">
 
-    <script type="text/ecmascript">
-    "use strict";
-    var fs = require("fs");
-    var java = require("java");
-    java.classpath.push("Tictactoe.jar");
+    </nav>
 
-    var Tictactoe = java.newInstanceSync("Tictactoe");
-    console.log(Tictactoe);
-    </script>
-    <h1>Hello World!</h1>
-    We are using node <script>document.write(process.versions.node)</script>,
-    Chrome <script>document.write(process.versions.chrome)</script>,
-    and Electron <script>document.write(process.versions.electron)</script>.
   </body>
 </html>
