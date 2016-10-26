@@ -9,14 +9,14 @@ export class Replay{
      * Initializes the Replay from a URL and calls the callback once done
      */
     constructor(url: string, callback?: (replay: Replay) => void){
-        this.replayName = /\/(\w+)\./.exec(url)[1]; //Extract replay name from url
-
+        this.replayName = /\/?(\w+)\./.exec(url)[1]; //Extract replay name from url
         Helpers.ajax(url,(replay: string) =>{//Get replay by ajax
             var parser = new DOMParser();//Parse to xml DOM tree
             var xml = parser.parseFromString(replay,"text/xml");
             var stateQuery = xml.getElementsByTagName("state");
+            this.states = [];
             for(var i = 0; i < stateQuery.length; i++){//Iterate through all state nodes
-                let g: GameState = new GameState();
+                var g: GameState = new GameState();
                 g.turn = parseInt(stateQuery[i].getAttribute("turn"));
                 g.startPlayer = stateQuery[i].getAttribute("startPlayer") == "RED" ? PLAYERCOLOR.RED : PLAYERCOLOR.BLUE;
                 g.currentPlayer = stateQuery[i].getAttribute("currentPlayer") == "RED" ? PLAYERCOLOR.RED : PLAYERCOLOR.BLUE;
@@ -26,7 +26,7 @@ export class Replay{
                 g.board = new Board(stateQuery[i].getElementsByTagName("board")[0]);
                 this.states.push(g);
             }
-            callback(this);
+            if(callback){callback(this);}
         });
     }
 }
@@ -82,7 +82,7 @@ class Field{
 }
 
 class Tile{
-    public fields: Field[][];
+    public fields: Field[][] = [];
     public visible: boolean;
     public index: number;
     public direction: number;
@@ -93,6 +93,9 @@ class Tile{
         let fields = tileNode.getElementsByTagName("field");
         for(var i = 0; i < fields.length; i++){
             let f: Field = new Field(fields[i]);
+            if(this.fields[f.x] === undefined){
+                this.fields[f.x] = [];
+            }
             this.fields[f.x][f.y] = f;
         }
     }
@@ -103,6 +106,7 @@ class Board{
     constructor(boardNode: Element){
         //Descend into tiles-node, iterate for every tile
         let tiles = boardNode.getElementsByTagName("tile");
+        this.tiles = [];
         for(var i = 0; i < tiles.length; i++){
             this.tiles.push(new Tile(tiles[i]));
         }
