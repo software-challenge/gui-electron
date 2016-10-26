@@ -12,7 +12,7 @@ let init = function(): void{
 
 
 
-class Viewer{
+export class Viewer{
     replay: Replay;
 
     constructor(node: Element){

@@ -1,8 +1,9 @@
 {
     "compilerOptions": {
-        "target": "es6",
+        "target": "es5",
         "module": "es6",
-        "sourceMap": true
+        "sourceMap": true,
+        "lib": ["es6"]
     },
     "compileOnSave": true
 }
