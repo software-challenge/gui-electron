@@ -1,4 +1,4 @@
-namespace Helpers{
+export namespace Helpers{
     export let ajax = function(url: string, callback: (result: string)=> void):void{
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function(){

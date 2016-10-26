@@ -1,16 +1,16 @@
-namespace Replay{
-
+import {Helpers} from "./Helpers";
 /**
  * Represents the parsed data from an xml replay
  */
-class Replay{
+export class Replay{
     public replayName: string;
     public states: GameState[];
     /**
      * Initializes the Replay from a URL and calls the callback once done
      */
-    constructor(url: string, callback: (replay: Replay) => void){
+    constructor(url: string, callback?: (replay: Replay) => void){
         this.replayName = /\/(\w+)\./.exec(url)[1]; //Extract replay name from url
+
         Helpers.ajax(url,(replay: string) =>{//Get replay by ajax
             var parser = new DOMParser();//Parse to xml DOM tree
             var xml = parser.parseFromString(replay,"text/xml");
@@ -23,8 +23,10 @@ class Replay{
                 g.freeTurn = stateQuery[i].getAttribute("freeTurn") == "true";
                 g.red = new Player(stateQuery[i].getElementsByTagName("red")[0]);
                 g.blue = new Player(stateQuery[i].getElementsByTagName("blue")[0]);
+                g.board = new Board(stateQuery[i].getElementsByTagName("board")[0]);
                 this.states.push(g);
             }
+            callback(this);
         });
     }
 }
@@ -60,17 +62,51 @@ class Field{
     public x: number;
     public y: number;
     public points: number;
+    constructor(fieldNode: Element){
+        switch(fieldNode.getAttribute("type")){
+            case "WATER": this.type = FIELDTYPE.WATER; break;
+            case "LOG": this.type = FIELDTYPE.LOG; break;
+            case "BLOCKED": this.type = FIELDTYPE.BLOCKED; break;
+            case "PASSENGER1": this.type = FIELDTYPE.PASSENGER1; break;
+            case "PASSENGER2": this.type = FIELDTYPE.PASSENGER2; break;
+            case "PASSENGER3": this.type = FIELDTYPE.PASSENGER3; break;
+            case "PASSENGER4": this.type = FIELDTYPE.PASSENGER4; break;
+            case "SANDBANK": this.type = FIELDTYPE.SANDBANK; break;
+            case "GOAL": this.type = FIELDTYPE.GOAL; break;
+            default: throw new RangeError("Fieldtype not parseable: " + fieldNode.getAttribute("type"));
+        }
+        this.x = parseInt(fieldNode.getAttribute("x"));
+        this.y = parseInt(fieldNode.getAttribute("y"));
+        this.points = parseInt(fieldNode.getAttribute("points"));
+    }
 }
 
 class Tile{
-    public Fields: Field[];
+    public fields: Field[][];
     public visible: boolean;
     public index: number;
     public direction: number;
+    constructor(tileNode: Element){
+        this.visible = tileNode.getAttribute("visible") == "true";
+        this.index = parseInt(tileNode.getAttribute("index"));
+        this.direction = parseInt(tileNode.getAttribute("direction"));
+        let fields = tileNode.getElementsByTagName("field");
+        for(var i = 0; i < fields.length; i++){
+            let f: Field = new Field(fields[i]);
+            this.fields[f.x][f.y] = f;
+        }
+    }
 }
 
 class Board{
-    public Tiles: Tile[];
+    public tiles: Tile[];
+    constructor(boardNode: Element){
+        //Descend into tiles-node, iterate for every tile
+        let tiles = boardNode.getElementsByTagName("tile");
+        for(var i = 0; i < tiles.length; i++){
+            this.tiles.push(new Tile(tiles[i]));
+        }
+    }
 }
 
 class Player{
@@ -97,7 +133,7 @@ class Player{
             case "DOWN_LEFT": this.direction = DIRECTION.DOWN_LEFT; break;
             case "DOWN_RIGHT": this.direction = DIRECTION.UP_RIGHT; break;
             case "RIGHT": this.direction = DIRECTION.RIGHT; break;
-            default: throw new RangeError("player direction was not parsable: " + this.direction);
+            default: throw new RangeError("player direction was not parsable: " + playerNode.getAttribute("direction"));
         }
         this.speed = parseInt(playerNode.getAttribute("speed"));
         this.coal = parseInt(playerNode.getAttribute("coal"));
@@ -113,8 +149,5 @@ class GameState{
     public startPlayer: PLAYERCOLOR;
     public currentPlayer: PLAYERCOLOR;
     public freeTurn: boolean;
-}
-
-
-
+    public board: Board;
 }
