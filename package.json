@@ -8,6 +8,7 @@
   },
   "scripts": {
     "test": "node_modules/mocha/bin/mocha --compilers ts:ts-node/register,tsx:ts-node/register",
+    "postinstall": "node_modules/typings/bin.js install",
     "clean-dependencies": "rm -r libs/*; rm -r tools/*",
     "get-dependencies": "cd libs; echo 'Downloading require.js'; wget http://requirejs.org/docs/release/2.3.2/minified/require.js; cd ../tools; mkdir chutzpah; cd chutzpah; echo 'Downloading chutzpah'; wget -O chutzpah.zip https://github.com/mmanela/chutzpah/releases/download/v4.2.4/Chutzpah.4.2.4.zip; unzip chutzpah.zip; rm chutzpah.zip;"
   },
@@ -23,14 +24,13 @@
   "homepage": "https://github.com/CAU-Kiel-Tech-Inf/socha_graphical_client#readme",
   "dependencies": {
     "babylonjs": "^2.4.1",
-    "requirejs": "^2.3.2",
-    "typings": "^2.0.0"
+    "requirejs": "^2.3.2"
   },
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^3.1.2",
     "ts-node": "^1.7.0",
-    "tsd": "^0.6.5",
-    "typescript": "^2.0.9"
+    "typescript": "^2.0.9",
+    "typings": "^2.0.0"
   }
 }
