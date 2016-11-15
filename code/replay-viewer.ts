@@ -9,3 +9,5 @@ export let init = function(): void{
         viewers.push(new Viewer(viewerNodes[i]));
     }
 }
+
+init();
