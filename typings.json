@@ -1,5 +1,10 @@
 {
   "dependencies": {
-    "chai": "registry:npm/chai#3.5.0+20160723033700"
+    "chai": "registry:npm/chai#3.5.0+20160723033700",
+    "requirejs": "registry:npm/requirejs#2.2.0+20160319062357"
+  },
+  "globalDependencies": {
+    "babylon": "registry:dt/babylon#6.7.0+20160423062108",
+    "mocha": "registry:dt/mocha#2.2.5+20161028141524"
   }
 }
