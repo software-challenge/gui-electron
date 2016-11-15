@@ -6,6 +6,7 @@
   "globalDependencies": {
     "babel-types": "registry:dt/babel-types#6.7.0+20160423062108",
     "babylon": "registry:dt/babylon#6.7.0+20160423062108",
+    "jsdom": "registry:dt/jsdom#2.0.0+20160906180921",
     "mocha": "registry:dt/mocha#2.2.5+20161028141524"
   }
 }

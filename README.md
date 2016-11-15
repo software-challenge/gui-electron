@@ -2,14 +2,9 @@
 
 ## Precursors
 
-Um das Projekt zu kompilieren wird [Typescript](http://www.typescriptlang.org)
-(`npm install -g typescript`) benötigt.
-
-Der Modulloader [require.js](http://www.requirejs.org/) ist bereits im Repo
-vorhanden.
-
 ### NPM
-Prinzipiell sind mittlerweile alle Module in der package.json vorhanden.
+
+`npm install` installiert die nötigen Module und Typdefinitionen.
 
 ## Kompilieren
 
@@ -20,6 +15,13 @@ Wahlweise in VSCode `Strg+Umschalt+B` oder in einem Terminal im Codeverzeichnis
 
 Mittels `python3 -m http.server` oder etwas vergleichbarem einen HTTP-Server im
 Verzeichnis starten und die Seite öffnen.
+
+## Testen
+
+Mit `npm test` kann das Projekt getestet werden.
+Dabei wird in tsconfig.json eine andere Moduldefinition eingesetzt und danach wieder zurückgesetzt.
+Um die Anwendung als Webanwendung ausführen zu können ,muss man das `module`-Attribut in tsconfig.json auf `amd` oder für die Tests auf `commonjs` setzen.
+Die Importfunktionen können mit dem node-Modul `jsdom` getestet werden.
 
 ## Aktuell implementiert
 
