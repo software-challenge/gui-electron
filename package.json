@@ -23,7 +23,8 @@
   "homepage": "https://github.com/CAU-Kiel-Tech-Inf/socha_graphical_client#readme",
   "dependencies": {
     "babylonjs": "^2.4.1",
-    "requirejs": "^2.3.2"
+    "requirejs": "^2.3.2",
+    "typings": "^2.0.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
