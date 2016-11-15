@@ -1,7 +1,8 @@
 {
     "compilerOptions": {
         "target": "es5",
-        "module": "amd",
+        "module": "commonjs",
+        "moduleResolution": "node",
         "sourceMap": true,
         "outDir": "bin"
     },

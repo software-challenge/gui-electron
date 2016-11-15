@@ -2,16 +2,16 @@
 //  <reference path="../typings/modules/chai/chai.d.ts" />
 import {Adder} from "../code/Adder";
 
+import chai = require('chai');
+
 var assert = chai.assert;
 
 describe('Adder', () =>{
-    var subject = Adder;
-    beforeEach(() =>{
-        subject = new Adder(3);
-    })
+    let subject:Adder;
 
     describe('#add', () =>{
+        subject = new Adder(3);
         var result = subject.add(4);
-        assert.equals(result, 7);
+        assert.equal(result,7);
     })
 })

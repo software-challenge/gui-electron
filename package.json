@@ -7,7 +7,7 @@
     "socha_graphical_client": "Helpers.js"
   },
   "scripts": {
-    "test": "node_modules/mocha/mocha ts:ts-node/register,tsx:ts-node/register",
+    "test": "node_modules/mocha/bin/mocha --compilers ts:ts-node/register,tsx:ts-node/register",
     "clean-dependencies": "rm -r libs/*; rm -r tools/*",
     "get-dependencies": "cd libs; echo 'Downloading require.js'; wget http://requirejs.org/docs/release/2.3.2/minified/require.js; cd ../tools; mkdir chutzpah; cd chutzpah; echo 'Downloading chutzpah'; wget -O chutzpah.zip https://github.com/mmanela/chutzpah/releases/download/v4.2.4/Chutzpah.4.2.4.zip; unzip chutzpah.zip; rm chutzpah.zip;"
   },
