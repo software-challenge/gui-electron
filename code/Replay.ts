@@ -1,4 +1,3 @@
-import {Helpers} from "./Helpers";
 /**
  * Represents the parsed data from an xml replay
  */
@@ -8,26 +7,22 @@ export class Replay{
     /**
      * Initializes the Replay from a URL and calls the callback once done
      */
-    constructor(url: string, callback?: (replay: Replay) => void){
-        this.replayName = /\/?(\w+)\./.exec(url)[1]; //Extract replay name from url
-        Helpers.ajax(url,(replay: string) =>{//Get replay by ajax
-            var parser = new DOMParser();//Parse to xml DOM tree
-            var xml = parser.parseFromString(replay,"text/xml");
-            var stateQuery = xml.getElementsByTagName("state");
-            this.states = [];
-            for(var i = 0; i < stateQuery.length; i++){//Iterate through all state nodes
-                var g: GameState = new GameState();
-                g.turn = parseInt(stateQuery[i].getAttribute("turn"));
-                g.startPlayer = stateQuery[i].getAttribute("startPlayer") == "RED" ? PLAYERCOLOR.RED : PLAYERCOLOR.BLUE;
-                g.currentPlayer = stateQuery[i].getAttribute("currentPlayer") == "RED" ? PLAYERCOLOR.RED : PLAYERCOLOR.BLUE;
-                g.freeTurn = stateQuery[i].getAttribute("freeTurn") == "true";
-                g.red = new Player(stateQuery[i].getElementsByTagName("red")[0]);
-                g.blue = new Player(stateQuery[i].getElementsByTagName("blue")[0]);
-                g.board = new Board(stateQuery[i].getElementsByTagName("board")[0]);
-                this.states.push(g);
-            }
-            if(callback){callback(this);}
-        });
+    constructor(name: string, xml: XMLDocument){
+        this.replayName = name;
+        var stateQuery = xml.getElementsByTagName("STATE");
+        console.log(stateQuery);
+        this.states = [];
+        for(var i = 0; i < stateQuery.length; i++){//Iterate through all state nodes
+            var g: GameState = new GameState();
+            g.turn = parseInt(stateQuery[i].getAttribute("turn"));
+            g.startPlayer = stateQuery[i].getAttribute("startPlayer") == "RED" ? PLAYERCOLOR.RED : PLAYERCOLOR.BLUE;
+            g.currentPlayer = stateQuery[i].getAttribute("currentPlayer") == "RED" ? PLAYERCOLOR.RED : PLAYERCOLOR.BLUE;
+            g.freeTurn = stateQuery[i].getAttribute("freeTurn") == "true";
+            g.red = new Player(stateQuery[i].getElementsByTagName("red")[0]);
+            g.blue = new Player(stateQuery[i].getElementsByTagName("blue")[0]);
+            g.board = new Board(stateQuery[i].getElementsByTagName("board")[0]);
+            this.states.push(g);
+        }
     }
 }
 

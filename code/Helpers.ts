@@ -9,4 +9,14 @@ export namespace Helpers{
         xhttp.open("GET",url);
         xhttp.send();
     }
+    export let getXmlDocument = async function(url: string):Promise<XMLDocument>{
+        return new Promise<XMLDocument>(resolve =>{
+            Helpers.ajax(url,(replay: string) =>{//Get replay by ajax
+            var parser = new DOMParser();//Parse to xml DOM tree
+            var xml = parser.parseFromString(replay,"text/xml");
+            resolve(xml);
+            });
+        });
+        
+    }
 }

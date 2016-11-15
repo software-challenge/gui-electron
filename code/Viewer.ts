@@ -1,11 +1,11 @@
 import {Replay} from "./Replay";
+import {Helpers} from "./Helpers";
 
 export class Viewer{
     replay: Replay;
 
-    constructor(node: Element){
-        let replayPath: string = node.getAttribute("replay");
-        this.replay = new Replay(replayPath);
+    constructor(replay: Replay){
+        this.replay = replay;
         console.log(this.replay);
     }
 }
