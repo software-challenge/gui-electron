@@ -8,6 +8,9 @@ Um das Projekt zu kompilieren wird [Typescript](http://www.typescriptlang.org)
 Der Modulloader [require.js](http://www.requirejs.org/) ist bereits im Repo
 vorhanden.
 
+### NPM
+Prinzipiell sind mittlerweile alle Module in der package.json vorhanden.
+
 ## Kompilieren
 
 Wahlweise in VSCode `Strg+Umschalt+B` oder in einem Terminal im Codeverzeichnis

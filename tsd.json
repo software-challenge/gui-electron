@@ -1,0 +1,21 @@
+{
+  "version": "v4",
+  "repo": "borisyankov/DefinitelyTyped",
+  "ref": "master",
+  "path": "typings",
+  "bundle": "typings/tsd.d.ts",
+  "installed": {
+    "mocha/mocha.d.ts": {
+      "commit": "f5ab2df94e1aabf0fc6d783ad01c4c4671760627"
+    },
+    "babylon/babylon.d.ts": {
+      "commit": "f5ab2df94e1aabf0fc6d783ad01c4c4671760627"
+    },
+    "babel-types/babel-types.d.ts": {
+      "commit": "f5ab2df94e1aabf0fc6d783ad01c4c4671760627"
+    },
+    "babylonjs/babylon.d.ts": {
+      "commit": "f5ab2df94e1aabf0fc6d783ad01c4c4671760627"
+    }
+  }
+}

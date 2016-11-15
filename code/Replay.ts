@@ -79,6 +79,7 @@ class Field{
         this.y = parseInt(fieldNode.getAttribute("y"));
         this.points = parseInt(fieldNode.getAttribute("points"));
     }
+
 }
 
 class Tile{
