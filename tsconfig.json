@@ -4,7 +4,8 @@
         "module": "amd",
         "moduleResolution": "node",
         "sourceMap": true,
-        "outDir": "bin"
+        "outDir": "bin",
+        "watch": true
     },
     "include": [
         "code/*",
