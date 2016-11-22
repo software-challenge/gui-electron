@@ -34,6 +34,8 @@ const enum FIELDTYPE{
     PASSENGER2,
     PASSENGER3,
     PASSENGER4,
+    PASSENGER5,
+    PASSENGER6,
     SANDBANK,
     GOAL
 }
@@ -66,6 +68,8 @@ class Field{
             case "PASSENGER2": this.type = FIELDTYPE.PASSENGER2; break;
             case "PASSENGER3": this.type = FIELDTYPE.PASSENGER3; break;
             case "PASSENGER4": this.type = FIELDTYPE.PASSENGER4; break;
+            case "PASSENGER5": this.type = FIELDTYPE.PASSENGER5; break;
+            case "PASSENGER6": this.type = FIELDTYPE.PASSENGER6; break;
             case "SANDBANK": this.type = FIELDTYPE.SANDBANK; break;
             case "GOAL": this.type = FIELDTYPE.GOAL; break;
             default: throw new RangeError("Fieldtype not parseable: " + fieldNode.getAttribute("type"));
