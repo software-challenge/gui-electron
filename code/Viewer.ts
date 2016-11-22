@@ -39,7 +39,7 @@ export class Viewer{
         groundmaterial.diffuseColor = new BABYLON.Color3(0.1,0.1,0.2);
         groundmaterial.specularColor = new BABYLON.Color3(1,1,1);
         ground.material = groundmaterial;
-        this.camera.beta  = 1;
+        this.camera.beta  = 0.72;
         this.engine.runRenderLoop(() =>{
             this.scene.render();
             this.camera.alpha += 0.003;
