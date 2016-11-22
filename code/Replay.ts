@@ -9,7 +9,7 @@ export class Replay{
      */
     constructor(name: string, xml: XMLDocument){
         this.replayName = name;
-        var stateQuery = xml.getElementsByTagName("STATE");
+        var stateQuery = xml.getElementsByTagName("state");
         console.log(stateQuery);
         this.states = [];
         for(var i = 0; i < stateQuery.length; i++){//Iterate through all state nodes
