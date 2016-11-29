@@ -30,38 +30,43 @@ export class Viewer{
         this.camera.attachControl(this.canvas, false);
         this.camera.setPosition(new BABYLON.Vector3(3,3,15));
         var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,1,0),this.scene);
-        var sphere = BABYLON.Mesh.CreateSphere('sphere1',6,2,this.scene);
+        /*var sphere = BABYLON.Mesh.CreateSphere('sphere1',6,2,this.scene);
         sphere.position.y = 1;
         var cyl = BABYLON.Mesh.CreateCylinder('cyl',1.5,1.5,1.5,6,1,this.scene, false,BABYLON.Mesh.DEFAULTSIDE);
-        cyl.position.x = 0.7;
+        cyl.position.x = 0.7;*/
         var ground = BABYLON.Mesh.CreateGround('ground1', 400,400,1,this.scene);
         var groundmaterial = new BABYLON.StandardMaterial('groundMaterial', this.scene);
         groundmaterial.diffuseColor = new BABYLON.Color3(0.1,0.1,0.2);
         groundmaterial.specularColor = new BABYLON.Color3(1,1,1);
         ground.material = groundmaterial;
         this.camera.beta  =  0;//0.72;
+        this.camera.zoomOnFactor = 0;
         this.engine.runRenderLoop(() =>{
             this.scene.render();
-            this.camera.alpha += 0.003;
-            this.debug.innerText = "α: " + this.camera.alpha.toString() + ", β: " + this.camera.beta.toString();
+            //this.camera.alpha += 0.003;
+            this.debug.innerText = "α: " + this.camera.alpha.toString() + ", β: " + this.camera.beta.toString() + ", (x,y,z): " + this.camera.position.x + "," + this.camera.position.y + "," + this.camera.position.z;
         });
         window.addEventListener('resize', () => {
             this.engine.resize();
         })
-        this.renderBoard(replay.states[10].board);
+        this.renderBoard(replay.states[12].board);
     }
 
     getCenterOfBoard(board: Board):[number,number]{
         let x: number, y: number;
+        x = 0; y = 0;
         let tiles: number;
+        let n: number = 0;
         for(let t of board.tiles){
             if(t.visible){
                 x += t.center_x;
                 y += t.center_y;
+                console.log(t.center_x);
+                n ++;
             }
         }
-        x /= board.tiles.length;
-        y /= board.tiles.length;
+        x = x/n;
+        y = y/n;
         return [x,y];
     }
 
@@ -78,7 +83,11 @@ export class Viewer{
             }
         }
         let [x,y] = this.getCenterOfBoard(board);
-        //this.camera.setPosition(new BABYLON.Vector3(x,y,15));
+        [x,y] = Grid.getCoordinates(x,y,3/2);
+        console.log([x,y]);
+        this.camera.setTarget(new BABYLON.Vector3(x,0,y));
+        this.camera.beta = 0;
+        this.camera.alpha = 4.5;
     }
 
 
@@ -146,8 +155,8 @@ class FieldTypeMaterialFactory{
                 //All passengers
                 default:
                     var m = new BABYLON.StandardMaterial(f.toString(),scene);
-                    m.diffuseColor = new BABYLON.Color3(0,1,1);
-                    m.specularColor = new BABYLON.Color3(0.5,1,1);
+                    m.diffuseColor = new BABYLON.Color3(0.1,0.7,0.1);
+                    m.specularColor = new BABYLON.Color3(0.2,1,0.2);
                     FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                 break;
                 
@@ -169,6 +178,7 @@ class VisibleField extends Field{
         this.mesh = BABYLON.Mesh.CreateCylinder(this.toString(),4,3,3,6,1,scene,false,BABYLON.Mesh.DEFAULTSIDE);
         [this.mesh.position.x, this.mesh.position.z] = Grid.getCoordinates(this.x, this.y, 3/2);
         //this.mesh.rotation.y = Math.PI / 2;
+        this.mesh.position.z += (Math.random() * 0.1); //Vary height a bit
         this.mesh.material = FieldTypeMaterialFactory.getMaterialForFieldType(this.type,scene);
     }
 
