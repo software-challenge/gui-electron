@@ -26,7 +26,7 @@ export class Replay{
     }
 }
 
-const enum FIELDTYPE{
+export const enum FIELDTYPE{
     WATER = 0,
     LOG,
     BLOCKED,
@@ -40,7 +40,7 @@ const enum FIELDTYPE{
     GOAL
 }
 
-const enum DIRECTION{
+export const enum DIRECTION{
     RIGHT,
     UP_RIGHT,
     UP_LEFT,
@@ -49,59 +49,77 @@ const enum DIRECTION{
     DOWN_RIGHT
 }
 
-const enum PLAYERCOLOR{
+export const enum PLAYERCOLOR{
     RED = 0,
     BLUE
 }
 
-class Field{
+export class Field{
     public type: FIELDTYPE;
     public x: number;
     public y: number;
     public points: number;
-    constructor(fieldNode: Element){
-        switch(fieldNode.getAttribute("type")){
-            case "WATER": this.type = FIELDTYPE.WATER; break;
-            case "LOG": this.type = FIELDTYPE.LOG; break;
-            case "BLOCKED": this.type = FIELDTYPE.BLOCKED; break;
-            case "PASSENGER1": this.type = FIELDTYPE.PASSENGER1; break;
-            case "PASSENGER2": this.type = FIELDTYPE.PASSENGER2; break;
-            case "PASSENGER3": this.type = FIELDTYPE.PASSENGER3; break;
-            case "PASSENGER4": this.type = FIELDTYPE.PASSENGER4; break;
-            case "PASSENGER5": this.type = FIELDTYPE.PASSENGER5; break;
-            case "PASSENGER6": this.type = FIELDTYPE.PASSENGER6; break;
-            case "SANDBANK": this.type = FIELDTYPE.SANDBANK; break;
-            case "GOAL": this.type = FIELDTYPE.GOAL; break;
+    constructor(type: FIELDTYPE, x: number, y: number, points: number){
+        this.type = type;
+        this.x = x;
+        this.y = y;
+        this.points = points;
+    }
+
+    public static fromFieldNode(fieldNode: Element):Field{
+        let f = new Field(FIELDTYPE.WATER,0,0,0);
+         switch(fieldNode.getAttribute("type")){
+            case "WATER": f.type = FIELDTYPE.WATER; break;
+            case "LOG": f.type = FIELDTYPE.LOG; break;
+            case "BLOCKED": f.type = FIELDTYPE.BLOCKED; break;
+            case "PASSENGER1": f.type = FIELDTYPE.PASSENGER1; break;
+            case "PASSENGER2": f.type = FIELDTYPE.PASSENGER2; break;
+            case "PASSENGER3": f.type = FIELDTYPE.PASSENGER3; break;
+            case "PASSENGER4": f.type = FIELDTYPE.PASSENGER4; break;
+            case "PASSENGER5": f.type = FIELDTYPE.PASSENGER5; break;
+            case "PASSENGER6": f.type = FIELDTYPE.PASSENGER6; break;
+            case "SANDBANK": f.type = FIELDTYPE.SANDBANK; break;
+            case "GOAL": f.type = FIELDTYPE.GOAL; break;
             default: throw new RangeError("Fieldtype not parseable: " + fieldNode.getAttribute("type"));
         }
-        this.x = parseInt(fieldNode.getAttribute("x"));
-        this.y = parseInt(fieldNode.getAttribute("y"));
-        this.points = parseInt(fieldNode.getAttribute("points"));
+        f.x = parseInt(fieldNode.getAttribute("x"));
+        f.y = parseInt(fieldNode.getAttribute("y"));
+        f.points = parseInt(fieldNode.getAttribute("points"));
+        return f;
+    }
+
+    public toString():string{
+        return this.x.toString() + ";" + this.y.toString + "(" + this.points.toString() + "," + this.type.toString() + ")";
     }
 
 }
 
-class Tile{
-    public fields: Field[][] = [];
+export class Tile{
+    public fields: Field[] = [];
     public visible: boolean;
     public index: number;
     public direction: number;
+    public center_x: number;
+    public center_y: number;
     constructor(tileNode: Element){
         this.visible = tileNode.getAttribute("visible") == "true";
         this.index = parseInt(tileNode.getAttribute("index"));
         this.direction = parseInt(tileNode.getAttribute("direction"));
         let fields = tileNode.getElementsByTagName("field");
+        this.center_x = 0; this.center_y = 0;
         for(var i = 0; i < fields.length; i++){
-            let f: Field = new Field(fields[i]);
-            if(this.fields[f.x] === undefined){
-                this.fields[f.x] = [];
-            }
-            this.fields[f.x][f.y] = f;
+            let f: Field = Field.fromFieldNode(fields[i]);
+            this.center_x += f.x;
+            this.center_y += f.y;
+            this.fields.push(f);
         }
+        this.center_x /= fields.length;
+        this.center_y /= fields.length;
     }
+
 }
 
-class Board{
+export class Board{
     public tiles: Tile[];
     constructor(boardNode: Element){
         //Descend into tiles-node, iterate for every tile
@@ -146,7 +164,7 @@ class Player{
     }
 }
 
-class GameState{
+export class GameState{
     public red: Player;
     public blue: Player;
     public turn: number;
