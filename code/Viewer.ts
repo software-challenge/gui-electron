@@ -8,6 +8,10 @@ export class Viewer{
     engine: BABYLON.Engine;
     scene:  BABYLON.Scene;
     camera: BABYLON.ArcRotateCamera;
+    controlsElement: HTMLDivElement;
+    controls: {'next': HTMLButtonElement, 'previous': HTMLButtonElement} = {'next': null, 'previous': null};
+
+    currentRound: number = 0;
 
     debug: HTMLDivElement;
 
@@ -21,8 +25,31 @@ export class Viewer{
         this.canvas.classList.add('viewerCanvas');
         this.debug = document.createElement('div');
         this.debug.classList.add('debug');
+
+        this.controlsElement = document.createElement('div');
+        this.controlsElement.classList.add("controls");
+        this.controls.next = document.createElement('button');
+        this.controls.next.innerText = "next";
+        this.controls.next.addEventListener('click',()=>{
+            if(this.currentRound < (this.replay.states.length -1)){
+                this.currentRound ++;
+            }
+            this.renderBoard(this.replay.states[this.currentRound].board);
+        });
+        this.controls.previous = document.createElement('button');
+        this.controls.previous.innerText = "previous";
+        this.controls.previous.addEventListener('click',()=>{
+            if(this.currentRound > 0 ){
+                this.currentRound --;
+            }
+            this.renderBoard(this.replay.states[this.currentRound].board);
+        });
+        this.controlsElement.appendChild(this.controls.previous);
+        this.controlsElement.appendChild(this.controls.next);
+
         element.appendChild(this.canvas);
         element.appendChild(this.debug);
+        element.appendChild(this.controlsElement);
         this.engine = new BABYLON.Engine(this.canvas, true);
         //Initialize scene
         this.scene = new BABYLON.Scene(this.engine);
@@ -44,12 +71,12 @@ export class Viewer{
         this.engine.runRenderLoop(() =>{
             this.scene.render();
             //this.camera.alpha += 0.003;
-            this.debug.innerText = "α: " + this.camera.alpha.toString() + ", β: " + this.camera.beta.toString() + ", (x,y,z): " + this.camera.position.x + "," + this.camera.position.y + "," + this.camera.position.z;
+            this.debug.innerText = "currentRound: " + this.currentRound + ", α: " + this.camera.alpha.toString() + ", β: " + this.camera.beta.toString() + ", (x,y,z): " + this.camera.position.x + "," + this.camera.position.y + "," + this.camera.position.z;
         });
         window.addEventListener('resize', () => {
             this.engine.resize();
         })
-        this.renderBoard(replay.states[12].board);
+        this.renderBoard(replay.states[this.currentRound].board);
     }
 
     getCenterOfBoard(board: Board):[number,number]{
@@ -85,7 +112,7 @@ export class Viewer{
         let [x,y] = this.getCenterOfBoard(board);
         [x,y] = Grid.getCoordinates(x,y,3/2);
         console.log([x,y]);
-        this.camera.setTarget(new BABYLON.Vector3(x,0,y));
+        this.camera.setTarget(new BABYLON.Vector3(x,75,y));
         this.camera.beta = 0;
         this.camera.alpha = 4.5;
     }

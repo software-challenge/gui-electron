@@ -19,3 +19,9 @@ replay-viewer>.debug{
     font-family: monospace;
     z-index: 100;
 }
+
+replay-viewer>.controls{
+    position: fixed;
+    left: 10;
+    top: 10;
+}
