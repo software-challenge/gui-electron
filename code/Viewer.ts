@@ -112,9 +112,10 @@ export class Viewer{
         let [x,y] = this.getCenterOfBoard(board);
         [x,y] = Grid.getCoordinates(x,y,3/2);
         console.log([x,y]);
-        this.camera.setTarget(new BABYLON.Vector3(x,75,y));
+        this.camera.setTarget(new BABYLON.Vector3(x,0,y));
         this.camera.beta = 0;
         this.camera.alpha = 4.5;
+        this.camera.radius = 75;
     }
 
 
