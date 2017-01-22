@@ -16,6 +16,7 @@ export class Viewer{
     debug: HTMLDivElement;
 
     fields: {[position: string]:VisibleField} = {};
+    fields_by_tile: {[tile: number]:VisibleField[]} = {};
 
     constructor(replay: Replay, element: Element, document: Document, window: Window){
         //Save replay for later
@@ -26,6 +27,7 @@ export class Viewer{
         this.debug = document.createElement('div');
         this.debug.classList.add('debug');
 
+        //Initialize controls
         this.controlsElement = document.createElement('div');
         this.controlsElement.classList.add("controls");
         this.controls.next = document.createElement('button');
@@ -57,10 +59,6 @@ export class Viewer{
         this.camera.attachControl(this.canvas, false);
         this.camera.setPosition(new BABYLON.Vector3(3,3,15));
         var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,1,0),this.scene);
-        /*var sphere = BABYLON.Mesh.CreateSphere('sphere1',6,2,this.scene);
-        sphere.position.y = 1;
-        var cyl = BABYLON.Mesh.CreateCylinder('cyl',1.5,1.5,1.5,6,1,this.scene, false,BABYLON.Mesh.DEFAULTSIDE);
-        cyl.position.x = 0.7;*/
         var ground = BABYLON.Mesh.CreateGround('ground1', 400,400,1,this.scene);
         var groundmaterial = new BABYLON.StandardMaterial('groundMaterial', this.scene);
         groundmaterial.diffuseColor = new BABYLON.Color3(0.1,0.1,0.2);
@@ -99,16 +97,28 @@ export class Viewer{
 
     renderBoard(board: Board){
         console.log("Rendering board with " + board.tiles.length.toString() + " tiles");
+        //Diff fields for visible tiles
         for(let t of board.tiles){
+            if(!this.fields_by_tile[t.index]){
+                this.fields_by_tile[t.index] = [];
+            }
             console.log("Tile " + t.index.toString() + " has " + t.fields.length.toString() + " fields");
             for(let f of t.fields){
                 if(this.fields[f.toString()] && !t.visible){
                     this.fields[f.toString()].sink();
                 }else if (t.visible){
                     this.fields[f.toString()] = new VisibleField(f,this.scene);
+                    this.fields_by_tile[t.index].push(this.fields[f.toString()]);
                 }
             }
         }
+        //Remove invisible tiles
+        for(var tile in this.fields_by_tile){
+            if(! board.tiles.some(t => t.index + "" == tile)){
+                this.fields_by_tile[tile].forEach(t => t.sink());
+            }
+        }
+        //Adjust camera
         let [x,y] = this.getCenterOfBoard(board);
         [x,y] = Grid.getCoordinates(x,y,3/2);
         console.log([x,y]);
@@ -134,8 +144,6 @@ class Grid {
         let px = x * (width * 3/2) + (3/4 * width * (1- (y % 2)));
         let height = Math.sqrt(3) * width / 2;
         let py = y * height / 2;
-        //let px = (x * ((width / 2) + (width * 3/4))) - (width / 2 * (y % 2));
-        //let py = y * height;
         return [px, py];
     }
 }
@@ -211,6 +219,7 @@ class VisibleField extends Field{
     }
 
     public sink(){
-        this.mesh.position.y = -10;
+        console.log("Sinking " + this.mesh.position);
+        this.mesh.position.y = -20;
     }
 }
