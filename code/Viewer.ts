@@ -15,8 +15,8 @@ export class Viewer{
 
     debug: HTMLDivElement;
 
-    fields: {[position: string]:VisibleField} = {};
-    fields_by_tile: {[tile: number]:VisibleField[]} = {};
+    fields: {[id: number]:VisibleField} = {};
+    fields_by_tile: {[tile: number]:number[]} = {};
 
     constructor(replay: Replay, element: Element, document: Document, window: Window){
         //Save replay for later
@@ -104,18 +104,27 @@ export class Viewer{
             }
             console.log("Tile " + t.index.toString() + " has " + t.fields.length.toString() + " fields");
             for(let f of t.fields){
-                if(this.fields[f.toString()] && !t.visible){
-                    this.fields[f.toString()].sink();
-                }else if (t.visible){
-                    this.fields[f.toString()] = new VisibleField(f,this.scene);
-                    this.fields_by_tile[t.index].push(this.fields[f.toString()]);
+                if(! this.fields[f.id]){ //The field is not in our list
+                    if(t.visible){
+                        console.log("Created field for #" + f.id);
+                        this.fields[f.id] = new VisibleField(f,this.scene); //Generate field
+                        this.fields_by_tile[t.index].push(f.id); //Store a reference
+                    }else{
+                        console.log("Didn't create field #" + f.id + " because not visible");
+                    }
+                }else{
+                    if(! t.visible){ //The field is visible, but shouldn't be
+                        this.fields[f.id].sink();
+                    }else{
+                        this.fields[f.id].raise();
+                    }
                 }
             }
         }
         //Remove invisible tiles
         for(var tile in this.fields_by_tile){
             if(! board.tiles.some(t => t.index + "" == tile)){
-                this.fields_by_tile[tile].forEach(t => t.sink());
+                this.fields_by_tile[tile].forEach(t => this.fields[t].sink());
             }
         }
         //Adjust camera
@@ -211,6 +220,7 @@ class VisibleField extends Field{
     public mesh: BABYLON.Mesh;
     constructor(field: Field, scene: BABYLON.Scene){
         super(field.type,field.x,field.y, field.points);
+        this.field = field;
         this.mesh = BABYLON.Mesh.CreateCylinder(this.toString(),4,3,3,6,1,scene,false,BABYLON.Mesh.DEFAULTSIDE);
         [this.mesh.position.x, this.mesh.position.z] = Grid.getCoordinates(this.x, this.y, 3/2);
         //this.mesh.rotation.y = Math.PI / 2;
@@ -219,7 +229,16 @@ class VisibleField extends Field{
     }
 
     public sink(){
-        console.log("Sinking " + this.mesh.position);
-        this.mesh.position.y = -20;
+        if(this.mesh.position.y != -20){
+            console.log("Sinking #" + this.field.id);
+            this.mesh.position.y = -20;
+        }
+    }
+
+    public raise(){
+        if(this.mesh.position.y != 0){
+            console.log("Raising #" + this.field.id);
+            this.mesh.position.y = 0;
+        }
     }
 }

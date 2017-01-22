@@ -19,4 +19,9 @@ export namespace Helpers{
         });
         
     }
+
+    var uid = 0;
+    export let getUID = function():number{
+        return uid++;
+    }
 }

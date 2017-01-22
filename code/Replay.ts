@@ -1,3 +1,4 @@
+import {Helpers} from "./Helpers";
 /**
  * Represents the parsed data from an xml replay
  */
@@ -58,12 +59,14 @@ export class Field{
     public type: FIELDTYPE;
     public x: number;
     public y: number;
+    public id: number;
     public points: number;
     constructor(type: FIELDTYPE, x: number, y: number, points: number){
         this.type = type;
         this.x = x;
         this.y = y;
         this.points = points;
+        this.id = (x * 10000) +  y;//TODO: find a better way to generate GUIDs
     }
 
     public static fromFieldNode(fieldNode: Element):Field{
@@ -84,6 +87,7 @@ export class Field{
         }
         f.x = parseInt(fieldNode.getAttribute("x"));
         f.y = parseInt(fieldNode.getAttribute("y"));
+        f.id = (f.x * 10000) + f.y;
         f.points = parseInt(fieldNode.getAttribute("points"));
         return f;
     }
