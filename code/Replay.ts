@@ -31,6 +31,7 @@ export const enum FIELDTYPE{
     WATER = 0,
     LOG,
     BLOCKED,
+    PASSENGER0,
     PASSENGER1,
     PASSENGER2,
     PASSENGER3,
@@ -75,6 +76,7 @@ export class Field{
             case "WATER": f.type = FIELDTYPE.WATER; break;
             case "LOG": f.type = FIELDTYPE.LOG; break;
             case "BLOCKED": f.type = FIELDTYPE.BLOCKED; break;
+            case "PASSENGER0": f.type = FIELDTYPE.PASSENGER0; break;
             case "PASSENGER1": f.type = FIELDTYPE.PASSENGER1; break;
             case "PASSENGER2": f.type = FIELDTYPE.PASSENGER2; break;
             case "PASSENGER3": f.type = FIELDTYPE.PASSENGER3; break;
@@ -125,13 +127,20 @@ export class Tile{
 
 export class Board{
     public tiles: Tile[];
+    public tileIndices: number[];
     constructor(boardNode: Element){
         //Descend into tiles-node, iterate for every tile
         let tiles = boardNode.getElementsByTagName("tile");
         this.tiles = [];
+        this.tileIndices = [];
         for(var i = 0; i < tiles.length; i++){
             this.tiles.push(new Tile(tiles[i]));
+            this.tileIndices.push(this.tiles[this.tiles.length - 1].index);
         }
+    }
+
+    public getTileByIndex(index: number){
+        return this.tiles.find(t => t.index == index);
     }
 }
 

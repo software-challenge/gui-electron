@@ -11,12 +11,9 @@ export class Viewer{
     controlsElement: HTMLDivElement;
     controls: {'next': HTMLButtonElement, 'previous': HTMLButtonElement} = {'next': null, 'previous': null};
 
-    currentRound: number = 0;
+    currentMove: number = 0;
 
     debug: HTMLDivElement;
-
-    fields: {[id: number]:VisibleField} = {};
-    fields_by_tile: {[tile: number]:number[]} = {};
 
     constructor(replay: Replay, element: Element, document: Document, window: Window){
         //Save replay for later
@@ -33,18 +30,18 @@ export class Viewer{
         this.controls.next = document.createElement('button');
         this.controls.next.innerText = "next";
         this.controls.next.addEventListener('click',()=>{
-            if(this.currentRound < (this.replay.states.length -1)){
-                this.currentRound ++;
+            if(this.currentMove < (this.replay.states.length -1)){
+                this.currentMove ++;
             }
-            this.renderBoard(this.replay.states[this.currentRound].board);
+            this.render(this.replay.states[this.currentMove]);
         });
         this.controls.previous = document.createElement('button');
         this.controls.previous.innerText = "previous";
         this.controls.previous.addEventListener('click',()=>{
-            if(this.currentRound > 0 ){
-                this.currentRound --;
+            if(this.currentMove > 0 ){
+                this.currentMove --;
             }
-            this.renderBoard(this.replay.states[this.currentRound].board);
+            this.render(this.replay.states[this.currentMove]);
         });
         this.controlsElement.appendChild(this.controls.previous);
         this.controlsElement.appendChild(this.controls.next);
@@ -61,20 +58,36 @@ export class Viewer{
         var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,1,0),this.scene);
         var ground = BABYLON.Mesh.CreateGround('ground1', 400,400,1,this.scene);
         var groundmaterial = new BABYLON.StandardMaterial('groundMaterial', this.scene);
+
+        var player1material = new BABYLON.StandardMaterial('player1material',this.scene);
+        player1material.diffuseColor = new BABYLON.Color3(1,0,0);
+        var player2material = new BABYLON.StandardMaterial('player2material',this.scene);
+        player2material.diffuseColor = new BABYLON.Color3(0,0,1);
+        var player1 = BABYLON.Mesh.CreateSphere("player1",15,2,this.scene,true,BABYLON.Mesh.DEFAULTSIDE);
+        player1.material = player1material;
+        player1.position.y = 3;
+        var player2 = BABYLON.Mesh.CreateSphere("player2",15,2,this.scene,true,BABYLON.Mesh.DEFAULTSIDE);
+        player2.material = player2material;
+        player2.position.y = 3;
+
         groundmaterial.diffuseColor = new BABYLON.Color3(0.1,0.1,0.2);
         groundmaterial.specularColor = new BABYLON.Color3(1,1,1);
         ground.material = groundmaterial;
+        FieldTypeMaterialFactory.init(this.scene);
         this.camera.beta  =  0;//0.72;
         this.camera.zoomOnFactor = 0;
         this.engine.runRenderLoop(() =>{
             this.scene.render();
             //this.camera.alpha += 0.003;
-            this.debug.innerText = "currentRound: " + this.currentRound + ", α: " + this.camera.alpha.toString() + ", β: " + this.camera.beta.toString() + ", (x,y,z): " + this.camera.position.x + "," + this.camera.position.y + "," + this.camera.position.z;
+            //this.debug.innerText = "currentRound: " + this.currentMove + ", α: " + this.camera.alpha.toString() + ", β: " + this.camera.beta.toString() + ", (x,y,z): " + this.camera.position.x + "," + this.camera.position.y + "," + this.camera.position.z;
+            if(this.scene.meshUnderPointer){
+                this.debug.innerText = this.scene.meshUnderPointer.name;
+            }
         });
         window.addEventListener('resize', () => {
             this.engine.resize();
         })
-        this.renderBoard(replay.states[this.currentRound].board);
+        this.render(replay.states[this.currentMove]);
     }
 
     getCenterOfBoard(board: Board):[number,number]{
@@ -86,7 +99,6 @@ export class Viewer{
             if(t.visible){
                 x += t.center_x;
                 y += t.center_y;
-                console.log(t.center_x);
                 n ++;
             }
         }
@@ -95,49 +107,58 @@ export class Viewer{
         return [x,y];
     }
 
-    renderBoard(board: Board){
-        console.log("Rendering board with " + board.tiles.length.toString() + " tiles");
-        //Diff fields for visible tiles
-        for(let t of board.tiles){
-            if(!this.fields_by_tile[t.index]){
-                this.fields_by_tile[t.index] = [];
-            }
-            console.log("Tile " + t.index.toString() + " has " + t.fields.length.toString() + " fields");
+    private lastBoard: Board;
+
+    render(state: GameState){
+        //Iterate over new tiles
+        for(let t of state.board.tiles){
             for(let f of t.fields){
-                if(! this.fields[f.id]){ //The field is not in our list
-                    if(t.visible){
-                        console.log("Created field for #" + f.id);
-                        this.fields[f.id] = new VisibleField(f,this.scene); //Generate field
-                        this.fields_by_tile[t.index].push(f.id); //Store a reference
-                    }else{
-                        console.log("Didn't create field #" + f.id + " because not visible");
-                    }
-                }else{
-                    if(! t.visible){ //The field is visible, but shouldn't be
-                        this.fields[f.id].sink();
-                    }else{
-                        this.fields[f.id].raise();
+                if(! this.scene.getMeshByName(f.id.toString())){ //Create new meshes 
+                    //console.log("(" + f.x + "," + f.y + ") = " +  f.type);
+                    var mesh = BABYLON.Mesh.CreateCylinder(f.id.toString(),4,3,3,6,1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                    [mesh.position.x, mesh.position.z] = Grid.getCoordinates(f.x, f.y, 3/2);
+                    mesh.position.z += (Math.random() * 0.1); //Vary height a bit
+                    mesh.material = FieldTypeMaterialFactory.getMaterialForFieldType(f.type);
+                }
+                this.scene.getMeshByName(f.id.toString()).position.y = 0; //Raise all current meshes to the surface
+            }
+        }
+
+        if(this.lastBoard != null){
+            for(let lt of this.lastBoard.tileIndices){//Iterate over tiles of the last board
+                if(state.board.tileIndices.indexOf(lt) == -1){//If they're not part of the current board
+                    for(let f of this.lastBoard.getTileByIndex(lt).fields){
+                        this.scene.getMeshByName(f.id.toString()).position.y = -20;
                     }
                 }
             }
         }
-        //Remove invisible tiles
-        for(var tile in this.fields_by_tile){
-            if(! board.tiles.some(t => t.index + "" == tile)){
-                this.fields_by_tile[tile].forEach(t => this.fields[t].sink());
-            }
-        }
+
+        this.lastBoard = state.board;
+
+        //Render players
+        console.log("Red: " + state.red.x + "," + state.red.y);
+        var [px,py] = Grid.getCoordinates(state.red.x,state.red.y,3/2);
+        var player1 = this.scene.getMeshByName('player1');
+        player1.position.x = px;
+        player1.position.z = py;
+
+        console.log("Blue: " + state.blue.x + "," + state.blue.y);
+        [px,py] = Grid.getCoordinates(state.blue.x,state.blue.y,3/2);
+        var player2 = this.scene.getMeshByName('player2');
+        player2.position.x = px;
+        player2.position.z = py;
+        
+
         //Adjust camera
-        let [x,y] = this.getCenterOfBoard(board);
-        [x,y] = Grid.getCoordinates(x,y,3/2);
+        let [x,y] = this.getCenterOfBoard(state.board);
+        //[x,y] = Grid.getCoordinates(x,y,3/2);
         console.log([x,y]);
         this.camera.setTarget(new BABYLON.Vector3(x,0,y));
         this.camera.beta = 0;
         this.camera.alpha = 4.5;
         this.camera.radius = 75;
     }
-
-
 }
 
 class Grid {
@@ -149,11 +170,22 @@ class Grid {
         The horizontal distance between adjacent hexes is horiz = width. */
         let spacer = 0.2;
         size += spacer;
+
+        let height = size * 2;
+        let vert = height * 3/4;
+        let width = Math.sqrt(3)/2 * height;
+        let horiz = width;
+        let px = (x * horiz) + (width / 2 * (1 - Math.abs(y % 2)));
+        console.log("x,y,y%2: " + x + "," + y + "," + Math.abs(y%2));
+        let py = y * vert;
+        /*
         let width = size * 2;
+
+
         let px = x * (width * 3/2) + (3/4 * width * (1- (y % 2)));
         let height = Math.sqrt(3) * width / 2;
-        let py = y * height / 2;
-        return [px, py];
+        let py = y * height / 2;*/
+        return [py, px];
     }
 }
 
@@ -161,84 +193,73 @@ class Grid {
     This is very preliminary, it's probably better to create Textured Materials while loading the replay
 */
 class FieldTypeMaterialFactory{
+    private static scene: BABYLON.Scene;
     private static fieldMap: {[type: string]: BABYLON.Material} = {};
-    public static getMaterialForFieldType(f: FIELDTYPE, scene: BABYLON.Scene):BABYLON.Material{
+
+    public static init(scene: BABYLON.Scene){
+        this.scene = scene;
+    }
+
+    public static getMaterialForFieldType(f: FIELDTYPE):BABYLON.Material{
         if(FieldTypeMaterialFactory.fieldMap[f.toString()]){
             return FieldTypeMaterialFactory.fieldMap[f.toString()];
         }else{
             switch(f){
                 case FIELDTYPE.WATER:
-                     var m = new BABYLON.StandardMaterial(f.toString(),scene);
-                     m.diffuseColor = new BABYLON.Color3(0.1,0.1,0.5);
-                     m.specularColor = new BABYLON.Color3(0.2,0.2,1);
+                     var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
+                     console.log("New fieldtype: water");
+                     //m.diffuseColor = new BABYLON.Color3(0.1,0.1,0.5);
+                     //m.specularColor = new BABYLON.Color3(0.2,0.2,1);
+                     m.diffuseTexture = new BABYLON.Texture("textures/water.jpg", this.scene);
                      FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                 break;
                 case FIELDTYPE.LOG:
-                     var m = new BABYLON.StandardMaterial(f.toString(),scene);
-                     m.diffuseColor = new BABYLON.Color3(0.6,0.1,0.5);
-                     m.specularColor = new BABYLON.Color3(1,0.5,0.1);
+                     var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
+                     console.log("New fieldtype: log");
+                     //m.diffuseColor = new BABYLON.Color3(0.6,0.1,0.5);
+                     //m.specularColor = new BABYLON.Color3(1,0.5,0.1);
+                     m.diffuseTexture = new BABYLON.Texture("textures/wood.jpg", this.scene);
                      FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                 break;
                 case FIELDTYPE.BLOCKED:
-                     var m = new BABYLON.StandardMaterial(f.toString(),scene);
-                     m.diffuseColor = new BABYLON.Color3(1,0.5,0.1);
-                     m.specularColor = new BABYLON.Color3(1,0.5,0.4);
+                     var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
+                     console.log("New fieldtype: blocked");
+                     m.diffuseColor = new BABYLON.Color3(1,0,0);
+                     //m.specularColor = new BABYLON.Color3(1,0.5,0.4);
                      FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                 break;
                  case FIELDTYPE.SANDBANK:
-                     var m = new BABYLON.StandardMaterial(f.toString(),scene);
-                     m.diffuseColor = new BABYLON.Color3(229/255,224/255,197/255);
-                     m.specularColor = new BABYLON.Color3(1,1,1);
+                     var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
+                     console.log("New fieldtype: sandbank");
+                     //m.diffuseColor = new BABYLON.Color3(229/255,224/255,197/255);
+                     //m.specularColor = new BABYLON.Color3(1,1,1);
+                      m.diffuseTexture = new BABYLON.Texture("textures/sand.jpg", this.scene);
                      FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                 break;
                 case FIELDTYPE.GOAL:
-                    var m = new BABYLON.StandardMaterial(f.toString(),scene);
+                    var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
+                    console.log("New fieldtype: goal");
                     m.diffuseColor = new BABYLON.Color3(0,1,0);
                     m.specularColor = new BABYLON.Color3(0.5,1,0.5);
                     FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                 break;
-                //All passengers
-                default:
-                    var m = new BABYLON.StandardMaterial(f.toString(),scene);
-                    m.diffuseColor = new BABYLON.Color3(0.1,0.7,0.1);
-                    m.specularColor = new BABYLON.Color3(0.2,1,0.2);
+                case FIELDTYPE.PASSENGER0:
+                case FIELDTYPE.PASSENGER1:
+                case FIELDTYPE.PASSENGER2:
+                case FIELDTYPE.PASSENGER3:
+                case FIELDTYPE.PASSENGER4:
+                case FIELDTYPE.PASSENGER5:
+                case FIELDTYPE.PASSENGER6:
+                    var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
+                    console.log("New fieldtype: passenger");
+                    m.diffuseColor = new BABYLON.Color3(0,1,0);
+                    //m.specularColor = new BABYLON.Color3(0.2,1,0.2);
                     FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                 break;
                 
 
             }
             return FieldTypeMaterialFactory.fieldMap[f.toString()];
-        }
-    }
-}
-
-class VisibleField extends Field{
-    /*
-    Okay, so I could derive this class from Field, but I haven't figured out how to do factory methods
-    */
-    public field: Field;
-    public mesh: BABYLON.Mesh;
-    constructor(field: Field, scene: BABYLON.Scene){
-        super(field.type,field.x,field.y, field.points);
-        this.field = field;
-        this.mesh = BABYLON.Mesh.CreateCylinder(this.toString(),4,3,3,6,1,scene,false,BABYLON.Mesh.DEFAULTSIDE);
-        [this.mesh.position.x, this.mesh.position.z] = Grid.getCoordinates(this.x, this.y, 3/2);
-        //this.mesh.rotation.y = Math.PI / 2;
-        this.mesh.position.z += (Math.random() * 0.1); //Vary height a bit
-        this.mesh.material = FieldTypeMaterialFactory.getMaterialForFieldType(this.type,scene);
-    }
-
-    public sink(){
-        if(this.mesh.position.y != -20){
-            console.log("Sinking #" + this.field.id);
-            this.mesh.position.y = -20;
-        }
-    }
-
-    public raise(){
-        if(this.mesh.position.y != 0){
-            console.log("Raising #" + this.field.id);
-            this.mesh.position.y = 0;
         }
     }
 }

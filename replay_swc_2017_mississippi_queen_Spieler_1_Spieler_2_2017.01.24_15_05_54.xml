@@ -1,0 +1,3219 @@
+<object-stream>
+  <state turn="0" startPlayer="RED" currentPlayer="RED" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="1" x="-1" y="1" direction="RIGHT" speed="1" coal="6" tile="0" passenger="0"/>
+    <blue displayName="Spieler 2" color="BLUE" points="1" x="-1" y="-1" direction="RIGHT" speed="1" coal="6" tile="0" passenger="0"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="0" direction="0">
+          <fields>
+            <field type="WATER" x="-2" y="2" points="0"/>
+            <field type="WATER" x="-2" y="-2" points="0"/>
+            <field type="WATER" x="-1" y="2" points="1"/>
+            <field type="WATER" x="-1" y="1" points="1"/>
+            <field type="WATER" x="-1" y="0" points="1"/>
+            <field type="WATER" x="-1" y="-1" points="1"/>
+            <field type="WATER" x="-1" y="-2" points="1"/>
+            <field type="WATER" x="0" y="2" points="2"/>
+            <field type="WATER" x="0" y="1" points="2"/>
+            <field type="WATER" x="0" y="0" points="2"/>
+            <field type="WATER" x="0" y="-1" points="2"/>
+            <field type="WATER" x="0" y="-2" points="2"/>
+            <field type="WATER" x="1" y="1" points="3"/>
+            <field type="WATER" x="1" y="0" points="3"/>
+            <field type="WATER" x="1" y="-1" points="3"/>
+            <field type="WATER" x="1" y="-2" points="3"/>
+            <field type="WATER" x="1" y="2" points="3"/>
+            <field type="WATER" x="2" y="1" points="4"/>
+            <field type="WATER" x="2" y="0" points="4"/>
+            <field type="WATER" x="2" y="-1" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="1" direction="0">
+          <fields>
+            <field type="WATER" x="2" y="2" points="0"/>
+            <field type="BLOCKED" x="2" y="-2" points="0"/>
+            <field type="WATER" x="3" y="2" points="1"/>
+            <field type="BLOCKED" x="3" y="1" points="1"/>
+            <field type="BLOCKED" x="3" y="0" points="1"/>
+            <field type="WATER" x="3" y="-1" points="1"/>
+            <field type="WATER" x="3" y="-2" points="1"/>
+            <field type="WATER" x="4" y="2" points="2"/>
+            <field type="WATER" x="4" y="1" points="2"/>
+            <field type="LOG" x="4" y="0" points="2"/>
+            <field type="WATER" x="4" y="-1" points="2"/>
+            <field type="WATER" x="4" y="-2" points="2"/>
+            <field type="WATER" x="5" y="1" points="3"/>
+            <field type="PASSENGER0" x="5" y="0" points="3"/>
+            <field type="SANDBANK" x="5" y="-1" points="3"/>
+            <field type="WATER" x="5" y="-2" points="3"/>
+            <field type="WATER" x="5" y="2" points="3"/>
+            <field type="WATER" x="6" y="1" points="4"/>
+            <field type="WATER" x="6" y="0" points="4"/>
+            <field type="WATER" x="6" y="-1" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+  </state>
+  <state turn="1" startPlayer="RED" currentPlayer="BLUE" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="3" x="1" y="1" direction="RIGHT" speed="2" coal="6" tile="0" passenger="0"/>
+    <blue displayName="Spieler 2" color="BLUE" points="1" x="-1" y="-1" direction="RIGHT" speed="1" coal="6" tile="0" passenger="0"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="0" direction="0">
+          <fields>
+            <field type="WATER" x="-2" y="2" points="0"/>
+            <field type="WATER" x="-2" y="-2" points="0"/>
+            <field type="WATER" x="-1" y="2" points="1"/>
+            <field type="WATER" x="-1" y="1" points="1"/>
+            <field type="WATER" x="-1" y="0" points="1"/>
+            <field type="WATER" x="-1" y="-1" points="1"/>
+            <field type="WATER" x="-1" y="-2" points="1"/>
+            <field type="WATER" x="0" y="2" points="2"/>
+            <field type="WATER" x="0" y="1" points="2"/>
+            <field type="WATER" x="0" y="0" points="2"/>
+            <field type="WATER" x="0" y="-1" points="2"/>
+            <field type="WATER" x="0" y="-2" points="2"/>
+            <field type="WATER" x="1" y="1" points="3"/>
+            <field type="WATER" x="1" y="0" points="3"/>
+            <field type="WATER" x="1" y="-1" points="3"/>
+            <field type="WATER" x="1" y="-2" points="3"/>
+            <field type="WATER" x="1" y="2" points="3"/>
+            <field type="WATER" x="2" y="1" points="4"/>
+            <field type="WATER" x="2" y="0" points="4"/>
+            <field type="WATER" x="2" y="-1" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="1" direction="0">
+          <fields>
+            <field type="WATER" x="2" y="2" points="0"/>
+            <field type="BLOCKED" x="2" y="-2" points="0"/>
+            <field type="WATER" x="3" y="2" points="1"/>
+            <field type="BLOCKED" x="3" y="1" points="1"/>
+            <field type="BLOCKED" x="3" y="0" points="1"/>
+            <field type="WATER" x="3" y="-1" points="1"/>
+            <field type="WATER" x="3" y="-2" points="1"/>
+            <field type="WATER" x="4" y="2" points="2"/>
+            <field type="WATER" x="4" y="1" points="2"/>
+            <field type="LOG" x="4" y="0" points="2"/>
+            <field type="WATER" x="4" y="-1" points="2"/>
+            <field type="WATER" x="4" y="-2" points="2"/>
+            <field type="WATER" x="5" y="1" points="3"/>
+            <field type="PASSENGER0" x="5" y="0" points="3"/>
+            <field type="SANDBANK" x="5" y="-1" points="3"/>
+            <field type="WATER" x="5" y="-2" points="3"/>
+            <field type="WATER" x="5" y="2" points="3"/>
+            <field type="WATER" x="6" y="1" points="4"/>
+            <field type="WATER" x="6" y="0" points="4"/>
+            <field type="WATER" x="6" y="-1" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <acceleration order="0" acc="1"/>
+      <advance order="1" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="2" startPlayer="RED" currentPlayer="RED" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="3" x="1" y="1" direction="RIGHT" speed="2" coal="6" tile="0" passenger="0"/>
+    <blue displayName="Spieler 2" color="BLUE" points="3" x="1" y="-1" direction="RIGHT" speed="2" coal="6" tile="0" passenger="0"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="0" direction="0">
+          <fields>
+            <field type="WATER" x="-2" y="2" points="0"/>
+            <field type="WATER" x="-2" y="-2" points="0"/>
+            <field type="WATER" x="-1" y="2" points="1"/>
+            <field type="WATER" x="-1" y="1" points="1"/>
+            <field type="WATER" x="-1" y="0" points="1"/>
+            <field type="WATER" x="-1" y="-1" points="1"/>
+            <field type="WATER" x="-1" y="-2" points="1"/>
+            <field type="WATER" x="0" y="2" points="2"/>
+            <field type="WATER" x="0" y="1" points="2"/>
+            <field type="WATER" x="0" y="0" points="2"/>
+            <field type="WATER" x="0" y="-1" points="2"/>
+            <field type="WATER" x="0" y="-2" points="2"/>
+            <field type="WATER" x="1" y="1" points="3"/>
+            <field type="WATER" x="1" y="0" points="3"/>
+            <field type="WATER" x="1" y="-1" points="3"/>
+            <field type="WATER" x="1" y="-2" points="3"/>
+            <field type="WATER" x="1" y="2" points="3"/>
+            <field type="WATER" x="2" y="1" points="4"/>
+            <field type="WATER" x="2" y="0" points="4"/>
+            <field type="WATER" x="2" y="-1" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="1" direction="0">
+          <fields>
+            <field type="WATER" x="2" y="2" points="0"/>
+            <field type="BLOCKED" x="2" y="-2" points="0"/>
+            <field type="WATER" x="3" y="2" points="1"/>
+            <field type="BLOCKED" x="3" y="1" points="1"/>
+            <field type="BLOCKED" x="3" y="0" points="1"/>
+            <field type="WATER" x="3" y="-1" points="1"/>
+            <field type="WATER" x="3" y="-2" points="1"/>
+            <field type="WATER" x="4" y="2" points="2"/>
+            <field type="WATER" x="4" y="1" points="2"/>
+            <field type="LOG" x="4" y="0" points="2"/>
+            <field type="WATER" x="4" y="-1" points="2"/>
+            <field type="WATER" x="4" y="-2" points="2"/>
+            <field type="WATER" x="5" y="1" points="3"/>
+            <field type="PASSENGER0" x="5" y="0" points="3"/>
+            <field type="SANDBANK" x="5" y="-1" points="3"/>
+            <field type="WATER" x="5" y="-2" points="3"/>
+            <field type="WATER" x="5" y="2" points="3"/>
+            <field type="WATER" x="6" y="1" points="4"/>
+            <field type="WATER" x="6" y="0" points="4"/>
+            <field type="WATER" x="6" y="-1" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <acceleration order="0" acc="1"/>
+      <advance order="1" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="3" startPlayer="RED" currentPlayer="BLUE" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="4" x="2" y="1" direction="RIGHT" speed="1" coal="6" tile="0" passenger="0"/>
+    <blue displayName="Spieler 2" color="BLUE" points="3" x="1" y="-1" direction="RIGHT" speed="2" coal="6" tile="0" passenger="0"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="0" direction="0">
+          <fields>
+            <field type="WATER" x="-2" y="2" points="0"/>
+            <field type="WATER" x="-2" y="-2" points="0"/>
+            <field type="WATER" x="-1" y="2" points="1"/>
+            <field type="WATER" x="-1" y="1" points="1"/>
+            <field type="WATER" x="-1" y="0" points="1"/>
+            <field type="WATER" x="-1" y="-1" points="1"/>
+            <field type="WATER" x="-1" y="-2" points="1"/>
+            <field type="WATER" x="0" y="2" points="2"/>
+            <field type="WATER" x="0" y="1" points="2"/>
+            <field type="WATER" x="0" y="0" points="2"/>
+            <field type="WATER" x="0" y="-1" points="2"/>
+            <field type="WATER" x="0" y="-2" points="2"/>
+            <field type="WATER" x="1" y="1" points="3"/>
+            <field type="WATER" x="1" y="0" points="3"/>
+            <field type="WATER" x="1" y="-1" points="3"/>
+            <field type="WATER" x="1" y="-2" points="3"/>
+            <field type="WATER" x="1" y="2" points="3"/>
+            <field type="WATER" x="2" y="1" points="4"/>
+            <field type="WATER" x="2" y="0" points="4"/>
+            <field type="WATER" x="2" y="-1" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="1" direction="0">
+          <fields>
+            <field type="WATER" x="2" y="2" points="0"/>
+            <field type="BLOCKED" x="2" y="-2" points="0"/>
+            <field type="WATER" x="3" y="2" points="1"/>
+            <field type="BLOCKED" x="3" y="1" points="1"/>
+            <field type="BLOCKED" x="3" y="0" points="1"/>
+            <field type="WATER" x="3" y="-1" points="1"/>
+            <field type="WATER" x="3" y="-2" points="1"/>
+            <field type="WATER" x="4" y="2" points="2"/>
+            <field type="WATER" x="4" y="1" points="2"/>
+            <field type="LOG" x="4" y="0" points="2"/>
+            <field type="WATER" x="4" y="-1" points="2"/>
+            <field type="WATER" x="4" y="-2" points="2"/>
+            <field type="WATER" x="5" y="1" points="3"/>
+            <field type="PASSENGER0" x="5" y="0" points="3"/>
+            <field type="SANDBANK" x="5" y="-1" points="3"/>
+            <field type="WATER" x="5" y="-2" points="3"/>
+            <field type="WATER" x="5" y="2" points="3"/>
+            <field type="WATER" x="6" y="1" points="4"/>
+            <field type="WATER" x="6" y="0" points="4"/>
+            <field type="WATER" x="6" y="-1" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <acceleration order="0" acc="-1"/>
+      <advance order="1" distance="1"/>
+    </lastMove>
+  </state>
+  <state turn="4" startPlayer="RED" currentPlayer="RED" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="4" x="2" y="1" direction="RIGHT" speed="1" coal="6" tile="0" passenger="0"/>
+    <blue displayName="Spieler 2" color="BLUE" points="6" x="3" y="-1" direction="RIGHT" speed="2" coal="6" tile="1" passenger="0"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="0" direction="0">
+          <fields>
+            <field type="WATER" x="-2" y="2" points="0"/>
+            <field type="WATER" x="-2" y="-2" points="0"/>
+            <field type="WATER" x="-1" y="2" points="1"/>
+            <field type="WATER" x="-1" y="1" points="1"/>
+            <field type="WATER" x="-1" y="0" points="1"/>
+            <field type="WATER" x="-1" y="-1" points="1"/>
+            <field type="WATER" x="-1" y="-2" points="1"/>
+            <field type="WATER" x="0" y="2" points="2"/>
+            <field type="WATER" x="0" y="1" points="2"/>
+            <field type="WATER" x="0" y="0" points="2"/>
+            <field type="WATER" x="0" y="-1" points="2"/>
+            <field type="WATER" x="0" y="-2" points="2"/>
+            <field type="WATER" x="1" y="1" points="3"/>
+            <field type="WATER" x="1" y="0" points="3"/>
+            <field type="WATER" x="1" y="-1" points="3"/>
+            <field type="WATER" x="1" y="-2" points="3"/>
+            <field type="WATER" x="1" y="2" points="3"/>
+            <field type="WATER" x="2" y="1" points="4"/>
+            <field type="WATER" x="2" y="0" points="4"/>
+            <field type="WATER" x="2" y="-1" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="1" direction="0">
+          <fields>
+            <field type="WATER" x="2" y="2" points="0"/>
+            <field type="BLOCKED" x="2" y="-2" points="0"/>
+            <field type="WATER" x="3" y="2" points="1"/>
+            <field type="BLOCKED" x="3" y="1" points="1"/>
+            <field type="BLOCKED" x="3" y="0" points="1"/>
+            <field type="WATER" x="3" y="-1" points="1"/>
+            <field type="WATER" x="3" y="-2" points="1"/>
+            <field type="WATER" x="4" y="2" points="2"/>
+            <field type="WATER" x="4" y="1" points="2"/>
+            <field type="LOG" x="4" y="0" points="2"/>
+            <field type="WATER" x="4" y="-1" points="2"/>
+            <field type="WATER" x="4" y="-2" points="2"/>
+            <field type="WATER" x="5" y="1" points="3"/>
+            <field type="PASSENGER0" x="5" y="0" points="3"/>
+            <field type="SANDBANK" x="5" y="-1" points="3"/>
+            <field type="WATER" x="5" y="-2" points="3"/>
+            <field type="WATER" x="5" y="2" points="3"/>
+            <field type="WATER" x="6" y="1" points="4"/>
+            <field type="WATER" x="6" y="0" points="4"/>
+            <field type="WATER" x="6" y="-1" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="2" direction="5">
+          <fields>
+            <field type="BLOCKED" x="4" y="3" points="0"/>
+            <field type="WATER" x="7" y="1" points="0"/>
+            <field type="LOG" x="4" y="4" points="1"/>
+            <field type="WATER" x="5" y="3" points="1"/>
+            <field type="SANDBANK" x="6" y="3" points="1"/>
+            <field type="WATER" x="6" y="2" points="1"/>
+            <field type="WATER" x="7" y="2" points="1"/>
+            <field type="BLOCKED" x="5" y="5" points="2"/>
+            <field type="WATER" x="5" y="4" points="2"/>
+            <field type="WATER" x="6" y="4" points="2"/>
+            <field type="WATER" x="7" y="3" points="2"/>
+            <field type="WATER" x="8" y="3" points="2"/>
+            <field type="WATER" x="6" y="5" points="3"/>
+            <field type="PASSENGER0" x="7" y="5" points="3"/>
+            <field type="WATER" x="7" y="4" points="3"/>
+            <field type="WATER" x="8" y="4" points="3"/>
+            <field type="WATER" x="5" y="6" points="3"/>
+            <field type="WATER" x="6" y="6" points="4"/>
+            <field type="WATER" x="7" y="6" points="4"/>
+            <field type="WATER" x="8" y="5" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <advance order="0" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="5" startPlayer="RED" currentPlayer="BLUE" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="5" x="2" y="2" direction="DOWN_RIGHT" speed="1" coal="6" tile="1" passenger="0"/>
+    <blue displayName="Spieler 2" color="BLUE" points="6" x="3" y="-1" direction="RIGHT" speed="2" coal="6" tile="1" passenger="0"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="1" direction="0">
+          <fields>
+            <field type="WATER" x="2" y="2" points="0"/>
+            <field type="BLOCKED" x="2" y="-2" points="0"/>
+            <field type="WATER" x="3" y="2" points="1"/>
+            <field type="BLOCKED" x="3" y="1" points="1"/>
+            <field type="BLOCKED" x="3" y="0" points="1"/>
+            <field type="WATER" x="3" y="-1" points="1"/>
+            <field type="WATER" x="3" y="-2" points="1"/>
+            <field type="WATER" x="4" y="2" points="2"/>
+            <field type="WATER" x="4" y="1" points="2"/>
+            <field type="LOG" x="4" y="0" points="2"/>
+            <field type="WATER" x="4" y="-1" points="2"/>
+            <field type="WATER" x="4" y="-2" points="2"/>
+            <field type="WATER" x="5" y="1" points="3"/>
+            <field type="PASSENGER0" x="5" y="0" points="3"/>
+            <field type="SANDBANK" x="5" y="-1" points="3"/>
+            <field type="WATER" x="5" y="-2" points="3"/>
+            <field type="WATER" x="5" y="2" points="3"/>
+            <field type="WATER" x="6" y="1" points="4"/>
+            <field type="WATER" x="6" y="0" points="4"/>
+            <field type="WATER" x="6" y="-1" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="2" direction="5">
+          <fields>
+            <field type="BLOCKED" x="4" y="3" points="0"/>
+            <field type="WATER" x="7" y="1" points="0"/>
+            <field type="LOG" x="4" y="4" points="1"/>
+            <field type="WATER" x="5" y="3" points="1"/>
+            <field type="SANDBANK" x="6" y="3" points="1"/>
+            <field type="WATER" x="6" y="2" points="1"/>
+            <field type="WATER" x="7" y="2" points="1"/>
+            <field type="BLOCKED" x="5" y="5" points="2"/>
+            <field type="WATER" x="5" y="4" points="2"/>
+            <field type="WATER" x="6" y="4" points="2"/>
+            <field type="WATER" x="7" y="3" points="2"/>
+            <field type="WATER" x="8" y="3" points="2"/>
+            <field type="WATER" x="6" y="5" points="3"/>
+            <field type="PASSENGER0" x="7" y="5" points="3"/>
+            <field type="WATER" x="7" y="4" points="3"/>
+            <field type="WATER" x="8" y="4" points="3"/>
+            <field type="WATER" x="5" y="6" points="3"/>
+            <field type="WATER" x="6" y="6" points="4"/>
+            <field type="WATER" x="7" y="6" points="4"/>
+            <field type="WATER" x="8" y="5" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <turn order="0" direction="-1"/>
+      <advance order="1" distance="1"/>
+    </lastMove>
+  </state>
+  <state turn="6" startPlayer="RED" currentPlayer="RED" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="5" x="2" y="2" direction="DOWN_RIGHT" speed="1" coal="6" tile="1" passenger="0"/>
+    <blue displayName="Spieler 2" color="BLUE" points="8" x="5" y="-1" direction="RIGHT" speed="1" coal="6" tile="1" passenger="0"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="1" direction="0">
+          <fields>
+            <field type="WATER" x="2" y="2" points="0"/>
+            <field type="BLOCKED" x="2" y="-2" points="0"/>
+            <field type="WATER" x="3" y="2" points="1"/>
+            <field type="BLOCKED" x="3" y="1" points="1"/>
+            <field type="BLOCKED" x="3" y="0" points="1"/>
+            <field type="WATER" x="3" y="-1" points="1"/>
+            <field type="WATER" x="3" y="-2" points="1"/>
+            <field type="WATER" x="4" y="2" points="2"/>
+            <field type="WATER" x="4" y="1" points="2"/>
+            <field type="LOG" x="4" y="0" points="2"/>
+            <field type="WATER" x="4" y="-1" points="2"/>
+            <field type="WATER" x="4" y="-2" points="2"/>
+            <field type="WATER" x="5" y="1" points="3"/>
+            <field type="PASSENGER0" x="5" y="0" points="3"/>
+            <field type="SANDBANK" x="5" y="-1" points="3"/>
+            <field type="WATER" x="5" y="-2" points="3"/>
+            <field type="WATER" x="5" y="2" points="3"/>
+            <field type="WATER" x="6" y="1" points="4"/>
+            <field type="WATER" x="6" y="0" points="4"/>
+            <field type="WATER" x="6" y="-1" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="2" direction="5">
+          <fields>
+            <field type="BLOCKED" x="4" y="3" points="0"/>
+            <field type="WATER" x="7" y="1" points="0"/>
+            <field type="LOG" x="4" y="4" points="1"/>
+            <field type="WATER" x="5" y="3" points="1"/>
+            <field type="SANDBANK" x="6" y="3" points="1"/>
+            <field type="WATER" x="6" y="2" points="1"/>
+            <field type="WATER" x="7" y="2" points="1"/>
+            <field type="BLOCKED" x="5" y="5" points="2"/>
+            <field type="WATER" x="5" y="4" points="2"/>
+            <field type="WATER" x="6" y="4" points="2"/>
+            <field type="WATER" x="7" y="3" points="2"/>
+            <field type="WATER" x="8" y="3" points="2"/>
+            <field type="WATER" x="6" y="5" points="3"/>
+            <field type="PASSENGER0" x="7" y="5" points="3"/>
+            <field type="WATER" x="7" y="4" points="3"/>
+            <field type="WATER" x="8" y="4" points="3"/>
+            <field type="WATER" x="5" y="6" points="3"/>
+            <field type="WATER" x="6" y="6" points="4"/>
+            <field type="WATER" x="7" y="6" points="4"/>
+            <field type="WATER" x="8" y="5" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <advance order="0" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="7" startPlayer="RED" currentPlayer="BLUE" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="7" x="4" y="2" direction="RIGHT" speed="2" coal="6" tile="1" passenger="0"/>
+    <blue displayName="Spieler 2" color="BLUE" points="8" x="5" y="-1" direction="RIGHT" speed="1" coal="6" tile="1" passenger="0"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="1" direction="0">
+          <fields>
+            <field type="WATER" x="2" y="2" points="0"/>
+            <field type="BLOCKED" x="2" y="-2" points="0"/>
+            <field type="WATER" x="3" y="2" points="1"/>
+            <field type="BLOCKED" x="3" y="1" points="1"/>
+            <field type="BLOCKED" x="3" y="0" points="1"/>
+            <field type="WATER" x="3" y="-1" points="1"/>
+            <field type="WATER" x="3" y="-2" points="1"/>
+            <field type="WATER" x="4" y="2" points="2"/>
+            <field type="WATER" x="4" y="1" points="2"/>
+            <field type="LOG" x="4" y="0" points="2"/>
+            <field type="WATER" x="4" y="-1" points="2"/>
+            <field type="WATER" x="4" y="-2" points="2"/>
+            <field type="WATER" x="5" y="1" points="3"/>
+            <field type="PASSENGER0" x="5" y="0" points="3"/>
+            <field type="SANDBANK" x="5" y="-1" points="3"/>
+            <field type="WATER" x="5" y="-2" points="3"/>
+            <field type="WATER" x="5" y="2" points="3"/>
+            <field type="WATER" x="6" y="1" points="4"/>
+            <field type="WATER" x="6" y="0" points="4"/>
+            <field type="WATER" x="6" y="-1" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="2" direction="5">
+          <fields>
+            <field type="BLOCKED" x="4" y="3" points="0"/>
+            <field type="WATER" x="7" y="1" points="0"/>
+            <field type="LOG" x="4" y="4" points="1"/>
+            <field type="WATER" x="5" y="3" points="1"/>
+            <field type="SANDBANK" x="6" y="3" points="1"/>
+            <field type="WATER" x="6" y="2" points="1"/>
+            <field type="WATER" x="7" y="2" points="1"/>
+            <field type="BLOCKED" x="5" y="5" points="2"/>
+            <field type="WATER" x="5" y="4" points="2"/>
+            <field type="WATER" x="6" y="4" points="2"/>
+            <field type="WATER" x="7" y="3" points="2"/>
+            <field type="WATER" x="8" y="3" points="2"/>
+            <field type="WATER" x="6" y="5" points="3"/>
+            <field type="PASSENGER0" x="7" y="5" points="3"/>
+            <field type="WATER" x="7" y="4" points="3"/>
+            <field type="WATER" x="8" y="4" points="3"/>
+            <field type="WATER" x="5" y="6" points="3"/>
+            <field type="WATER" x="6" y="6" points="4"/>
+            <field type="WATER" x="7" y="6" points="4"/>
+            <field type="WATER" x="8" y="5" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <acceleration order="0" acc="1"/>
+      <turn order="1" direction="1"/>
+      <advance order="2" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="8" startPlayer="RED" currentPlayer="RED" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="7" x="4" y="2" direction="RIGHT" speed="2" coal="6" tile="1" passenger="0"/>
+    <blue displayName="Spieler 2" color="BLUE" points="9" x="6" y="-1" direction="RIGHT" speed="1" coal="6" tile="1" passenger="0"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="1" direction="0">
+          <fields>
+            <field type="WATER" x="2" y="2" points="0"/>
+            <field type="BLOCKED" x="2" y="-2" points="0"/>
+            <field type="WATER" x="3" y="2" points="1"/>
+            <field type="BLOCKED" x="3" y="1" points="1"/>
+            <field type="BLOCKED" x="3" y="0" points="1"/>
+            <field type="WATER" x="3" y="-1" points="1"/>
+            <field type="WATER" x="3" y="-2" points="1"/>
+            <field type="WATER" x="4" y="2" points="2"/>
+            <field type="WATER" x="4" y="1" points="2"/>
+            <field type="LOG" x="4" y="0" points="2"/>
+            <field type="WATER" x="4" y="-1" points="2"/>
+            <field type="WATER" x="4" y="-2" points="2"/>
+            <field type="WATER" x="5" y="1" points="3"/>
+            <field type="PASSENGER0" x="5" y="0" points="3"/>
+            <field type="SANDBANK" x="5" y="-1" points="3"/>
+            <field type="WATER" x="5" y="-2" points="3"/>
+            <field type="WATER" x="5" y="2" points="3"/>
+            <field type="WATER" x="6" y="1" points="4"/>
+            <field type="WATER" x="6" y="0" points="4"/>
+            <field type="WATER" x="6" y="-1" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="2" direction="5">
+          <fields>
+            <field type="BLOCKED" x="4" y="3" points="0"/>
+            <field type="WATER" x="7" y="1" points="0"/>
+            <field type="LOG" x="4" y="4" points="1"/>
+            <field type="WATER" x="5" y="3" points="1"/>
+            <field type="SANDBANK" x="6" y="3" points="1"/>
+            <field type="WATER" x="6" y="2" points="1"/>
+            <field type="WATER" x="7" y="2" points="1"/>
+            <field type="BLOCKED" x="5" y="5" points="2"/>
+            <field type="WATER" x="5" y="4" points="2"/>
+            <field type="WATER" x="6" y="4" points="2"/>
+            <field type="WATER" x="7" y="3" points="2"/>
+            <field type="WATER" x="8" y="3" points="2"/>
+            <field type="WATER" x="6" y="5" points="3"/>
+            <field type="PASSENGER0" x="7" y="5" points="3"/>
+            <field type="WATER" x="7" y="4" points="3"/>
+            <field type="WATER" x="8" y="4" points="3"/>
+            <field type="WATER" x="5" y="6" points="3"/>
+            <field type="WATER" x="6" y="6" points="4"/>
+            <field type="WATER" x="7" y="6" points="4"/>
+            <field type="WATER" x="8" y="5" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <advance order="0" distance="1"/>
+    </lastMove>
+  </state>
+  <state turn="9" startPlayer="RED" currentPlayer="BLUE" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="12" x="5" y="4" direction="DOWN_RIGHT" speed="2" coal="6" tile="2" passenger="0"/>
+    <blue displayName="Spieler 2" color="BLUE" points="9" x="6" y="-1" direction="RIGHT" speed="1" coal="6" tile="1" passenger="0"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="1" direction="0">
+          <fields>
+            <field type="WATER" x="2" y="2" points="0"/>
+            <field type="BLOCKED" x="2" y="-2" points="0"/>
+            <field type="WATER" x="3" y="2" points="1"/>
+            <field type="BLOCKED" x="3" y="1" points="1"/>
+            <field type="BLOCKED" x="3" y="0" points="1"/>
+            <field type="WATER" x="3" y="-1" points="1"/>
+            <field type="WATER" x="3" y="-2" points="1"/>
+            <field type="WATER" x="4" y="2" points="2"/>
+            <field type="WATER" x="4" y="1" points="2"/>
+            <field type="LOG" x="4" y="0" points="2"/>
+            <field type="WATER" x="4" y="-1" points="2"/>
+            <field type="WATER" x="4" y="-2" points="2"/>
+            <field type="WATER" x="5" y="1" points="3"/>
+            <field type="PASSENGER0" x="5" y="0" points="3"/>
+            <field type="SANDBANK" x="5" y="-1" points="3"/>
+            <field type="WATER" x="5" y="-2" points="3"/>
+            <field type="WATER" x="5" y="2" points="3"/>
+            <field type="WATER" x="6" y="1" points="4"/>
+            <field type="WATER" x="6" y="0" points="4"/>
+            <field type="WATER" x="6" y="-1" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="2" direction="5">
+          <fields>
+            <field type="BLOCKED" x="4" y="3" points="0"/>
+            <field type="WATER" x="7" y="1" points="0"/>
+            <field type="LOG" x="4" y="4" points="1"/>
+            <field type="WATER" x="5" y="3" points="1"/>
+            <field type="SANDBANK" x="6" y="3" points="1"/>
+            <field type="WATER" x="6" y="2" points="1"/>
+            <field type="WATER" x="7" y="2" points="1"/>
+            <field type="BLOCKED" x="5" y="5" points="2"/>
+            <field type="WATER" x="5" y="4" points="2"/>
+            <field type="WATER" x="6" y="4" points="2"/>
+            <field type="WATER" x="7" y="3" points="2"/>
+            <field type="WATER" x="8" y="3" points="2"/>
+            <field type="WATER" x="6" y="5" points="3"/>
+            <field type="PASSENGER0" x="7" y="5" points="3"/>
+            <field type="WATER" x="7" y="4" points="3"/>
+            <field type="WATER" x="8" y="4" points="3"/>
+            <field type="WATER" x="5" y="6" points="3"/>
+            <field type="WATER" x="6" y="6" points="4"/>
+            <field type="WATER" x="7" y="6" points="4"/>
+            <field type="WATER" x="8" y="5" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="3" direction="5">
+          <fields>
+            <field type="WATER" x="6" y="7" points="0"/>
+            <field type="WATER" x="9" y="5" points="0"/>
+            <field type="WATER" x="6" y="8" points="1"/>
+            <field type="WATER" x="7" y="7" points="1"/>
+            <field type="WATER" x="8" y="7" points="1"/>
+            <field type="WATER" x="8" y="6" points="1"/>
+            <field type="BLOCKED" x="9" y="6" points="1"/>
+            <field type="WATER" x="7" y="9" points="2"/>
+            <field type="BLOCKED" x="7" y="8" points="2"/>
+            <field type="WATER" x="8" y="8" points="2"/>
+            <field type="LOG" x="9" y="7" points="2"/>
+            <field type="WATER" x="10" y="7" points="2"/>
+            <field type="BLOCKED" x="8" y="9" points="3"/>
+            <field type="PASSENGER1" x="9" y="9" points="3"/>
+            <field type="WATER" x="9" y="8" points="3"/>
+            <field type="WATER" x="10" y="8" points="3"/>
+            <field type="WATER" x="7" y="10" points="3"/>
+            <field type="WATER" x="8" y="10" points="4"/>
+            <field type="WATER" x="9" y="10" points="4"/>
+            <field type="WATER" x="10" y="9" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <turn order="0" direction="-1"/>
+      <advance order="1" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="10" startPlayer="RED" currentPlayer="RED" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="12" x="5" y="4" direction="DOWN_RIGHT" speed="2" coal="6" tile="2" passenger="0"/>
+    <blue displayName="Spieler 2" color="BLUE" points="14" x="6" y="0" direction="DOWN_RIGHT" speed="1" coal="6" tile="1" passenger="1"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="1" direction="0">
+          <fields>
+            <field type="WATER" x="2" y="2" points="0"/>
+            <field type="BLOCKED" x="2" y="-2" points="0"/>
+            <field type="WATER" x="3" y="2" points="1"/>
+            <field type="BLOCKED" x="3" y="1" points="1"/>
+            <field type="BLOCKED" x="3" y="0" points="1"/>
+            <field type="WATER" x="3" y="-1" points="1"/>
+            <field type="WATER" x="3" y="-2" points="1"/>
+            <field type="WATER" x="4" y="2" points="2"/>
+            <field type="WATER" x="4" y="1" points="2"/>
+            <field type="LOG" x="4" y="0" points="2"/>
+            <field type="WATER" x="4" y="-1" points="2"/>
+            <field type="WATER" x="4" y="-2" points="2"/>
+            <field type="WATER" x="5" y="1" points="3"/>
+            <field type="BLOCKED" x="5" y="0" points="3"/>
+            <field type="SANDBANK" x="5" y="-1" points="3"/>
+            <field type="WATER" x="5" y="-2" points="3"/>
+            <field type="WATER" x="5" y="2" points="3"/>
+            <field type="WATER" x="6" y="1" points="4"/>
+            <field type="WATER" x="6" y="0" points="4"/>
+            <field type="WATER" x="6" y="-1" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="2" direction="5">
+          <fields>
+            <field type="BLOCKED" x="4" y="3" points="0"/>
+            <field type="WATER" x="7" y="1" points="0"/>
+            <field type="LOG" x="4" y="4" points="1"/>
+            <field type="WATER" x="5" y="3" points="1"/>
+            <field type="SANDBANK" x="6" y="3" points="1"/>
+            <field type="WATER" x="6" y="2" points="1"/>
+            <field type="WATER" x="7" y="2" points="1"/>
+            <field type="BLOCKED" x="5" y="5" points="2"/>
+            <field type="WATER" x="5" y="4" points="2"/>
+            <field type="WATER" x="6" y="4" points="2"/>
+            <field type="WATER" x="7" y="3" points="2"/>
+            <field type="WATER" x="8" y="3" points="2"/>
+            <field type="WATER" x="6" y="5" points="3"/>
+            <field type="PASSENGER0" x="7" y="5" points="3"/>
+            <field type="WATER" x="7" y="4" points="3"/>
+            <field type="WATER" x="8" y="4" points="3"/>
+            <field type="WATER" x="5" y="6" points="3"/>
+            <field type="WATER" x="6" y="6" points="4"/>
+            <field type="WATER" x="7" y="6" points="4"/>
+            <field type="WATER" x="8" y="5" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="3" direction="5">
+          <fields>
+            <field type="WATER" x="6" y="7" points="0"/>
+            <field type="WATER" x="9" y="5" points="0"/>
+            <field type="WATER" x="6" y="8" points="1"/>
+            <field type="WATER" x="7" y="7" points="1"/>
+            <field type="WATER" x="8" y="7" points="1"/>
+            <field type="WATER" x="8" y="6" points="1"/>
+            <field type="BLOCKED" x="9" y="6" points="1"/>
+            <field type="WATER" x="7" y="9" points="2"/>
+            <field type="BLOCKED" x="7" y="8" points="2"/>
+            <field type="WATER" x="8" y="8" points="2"/>
+            <field type="LOG" x="9" y="7" points="2"/>
+            <field type="WATER" x="10" y="7" points="2"/>
+            <field type="BLOCKED" x="8" y="9" points="3"/>
+            <field type="PASSENGER1" x="9" y="9" points="3"/>
+            <field type="WATER" x="9" y="8" points="3"/>
+            <field type="WATER" x="10" y="8" points="3"/>
+            <field type="WATER" x="7" y="10" points="3"/>
+            <field type="WATER" x="8" y="10" points="4"/>
+            <field type="WATER" x="9" y="10" points="4"/>
+            <field type="WATER" x="10" y="9" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <turn order="0" direction="-1"/>
+      <advance order="1" distance="1"/>
+    </lastMove>
+  </state>
+  <state turn="11" startPlayer="RED" currentPlayer="BLUE" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="14" x="6" y="6" direction="DOWN_RIGHT" speed="2" coal="6" tile="2" passenger="0"/>
+    <blue displayName="Spieler 2" color="BLUE" points="14" x="6" y="0" direction="DOWN_RIGHT" speed="1" coal="6" tile="1" passenger="1"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="1" direction="0">
+          <fields>
+            <field type="WATER" x="2" y="2" points="0"/>
+            <field type="BLOCKED" x="2" y="-2" points="0"/>
+            <field type="WATER" x="3" y="2" points="1"/>
+            <field type="BLOCKED" x="3" y="1" points="1"/>
+            <field type="BLOCKED" x="3" y="0" points="1"/>
+            <field type="WATER" x="3" y="-1" points="1"/>
+            <field type="WATER" x="3" y="-2" points="1"/>
+            <field type="WATER" x="4" y="2" points="2"/>
+            <field type="WATER" x="4" y="1" points="2"/>
+            <field type="LOG" x="4" y="0" points="2"/>
+            <field type="WATER" x="4" y="-1" points="2"/>
+            <field type="WATER" x="4" y="-2" points="2"/>
+            <field type="WATER" x="5" y="1" points="3"/>
+            <field type="BLOCKED" x="5" y="0" points="3"/>
+            <field type="SANDBANK" x="5" y="-1" points="3"/>
+            <field type="WATER" x="5" y="-2" points="3"/>
+            <field type="WATER" x="5" y="2" points="3"/>
+            <field type="WATER" x="6" y="1" points="4"/>
+            <field type="WATER" x="6" y="0" points="4"/>
+            <field type="WATER" x="6" y="-1" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="2" direction="5">
+          <fields>
+            <field type="BLOCKED" x="4" y="3" points="0"/>
+            <field type="WATER" x="7" y="1" points="0"/>
+            <field type="LOG" x="4" y="4" points="1"/>
+            <field type="WATER" x="5" y="3" points="1"/>
+            <field type="SANDBANK" x="6" y="3" points="1"/>
+            <field type="WATER" x="6" y="2" points="1"/>
+            <field type="WATER" x="7" y="2" points="1"/>
+            <field type="BLOCKED" x="5" y="5" points="2"/>
+            <field type="WATER" x="5" y="4" points="2"/>
+            <field type="WATER" x="6" y="4" points="2"/>
+            <field type="WATER" x="7" y="3" points="2"/>
+            <field type="WATER" x="8" y="3" points="2"/>
+            <field type="WATER" x="6" y="5" points="3"/>
+            <field type="PASSENGER0" x="7" y="5" points="3"/>
+            <field type="WATER" x="7" y="4" points="3"/>
+            <field type="WATER" x="8" y="4" points="3"/>
+            <field type="WATER" x="5" y="6" points="3"/>
+            <field type="WATER" x="6" y="6" points="4"/>
+            <field type="WATER" x="7" y="6" points="4"/>
+            <field type="WATER" x="8" y="5" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="3" direction="5">
+          <fields>
+            <field type="WATER" x="6" y="7" points="0"/>
+            <field type="WATER" x="9" y="5" points="0"/>
+            <field type="WATER" x="6" y="8" points="1"/>
+            <field type="WATER" x="7" y="7" points="1"/>
+            <field type="WATER" x="8" y="7" points="1"/>
+            <field type="WATER" x="8" y="6" points="1"/>
+            <field type="BLOCKED" x="9" y="6" points="1"/>
+            <field type="WATER" x="7" y="9" points="2"/>
+            <field type="BLOCKED" x="7" y="8" points="2"/>
+            <field type="WATER" x="8" y="8" points="2"/>
+            <field type="LOG" x="9" y="7" points="2"/>
+            <field type="WATER" x="10" y="7" points="2"/>
+            <field type="BLOCKED" x="8" y="9" points="3"/>
+            <field type="PASSENGER1" x="9" y="9" points="3"/>
+            <field type="WATER" x="9" y="8" points="3"/>
+            <field type="WATER" x="10" y="8" points="3"/>
+            <field type="WATER" x="7" y="10" points="3"/>
+            <field type="WATER" x="8" y="10" points="4"/>
+            <field type="WATER" x="9" y="10" points="4"/>
+            <field type="WATER" x="10" y="9" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <advance order="0" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="12" startPlayer="RED" currentPlayer="RED" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="14" x="6" y="6" direction="DOWN_RIGHT" speed="2" coal="6" tile="2" passenger="0"/>
+    <blue displayName="Spieler 2" color="BLUE" points="16" x="7" y="2" direction="DOWN_RIGHT" speed="2" coal="6" tile="2" passenger="1"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="2" direction="5">
+          <fields>
+            <field type="BLOCKED" x="4" y="3" points="0"/>
+            <field type="WATER" x="7" y="1" points="0"/>
+            <field type="LOG" x="4" y="4" points="1"/>
+            <field type="WATER" x="5" y="3" points="1"/>
+            <field type="SANDBANK" x="6" y="3" points="1"/>
+            <field type="WATER" x="6" y="2" points="1"/>
+            <field type="WATER" x="7" y="2" points="1"/>
+            <field type="BLOCKED" x="5" y="5" points="2"/>
+            <field type="WATER" x="5" y="4" points="2"/>
+            <field type="WATER" x="6" y="4" points="2"/>
+            <field type="WATER" x="7" y="3" points="2"/>
+            <field type="WATER" x="8" y="3" points="2"/>
+            <field type="WATER" x="6" y="5" points="3"/>
+            <field type="PASSENGER0" x="7" y="5" points="3"/>
+            <field type="WATER" x="7" y="4" points="3"/>
+            <field type="WATER" x="8" y="4" points="3"/>
+            <field type="WATER" x="5" y="6" points="3"/>
+            <field type="WATER" x="6" y="6" points="4"/>
+            <field type="WATER" x="7" y="6" points="4"/>
+            <field type="WATER" x="8" y="5" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="3" direction="5">
+          <fields>
+            <field type="WATER" x="6" y="7" points="0"/>
+            <field type="WATER" x="9" y="5" points="0"/>
+            <field type="WATER" x="6" y="8" points="1"/>
+            <field type="WATER" x="7" y="7" points="1"/>
+            <field type="WATER" x="8" y="7" points="1"/>
+            <field type="WATER" x="8" y="6" points="1"/>
+            <field type="BLOCKED" x="9" y="6" points="1"/>
+            <field type="WATER" x="7" y="9" points="2"/>
+            <field type="BLOCKED" x="7" y="8" points="2"/>
+            <field type="WATER" x="8" y="8" points="2"/>
+            <field type="LOG" x="9" y="7" points="2"/>
+            <field type="WATER" x="10" y="7" points="2"/>
+            <field type="BLOCKED" x="8" y="9" points="3"/>
+            <field type="PASSENGER1" x="9" y="9" points="3"/>
+            <field type="WATER" x="9" y="8" points="3"/>
+            <field type="WATER" x="10" y="8" points="3"/>
+            <field type="WATER" x="7" y="10" points="3"/>
+            <field type="WATER" x="8" y="10" points="4"/>
+            <field type="WATER" x="9" y="10" points="4"/>
+            <field type="WATER" x="10" y="9" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <acceleration order="0" acc="1"/>
+      <advance order="1" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="13" startPlayer="RED" currentPlayer="BLUE" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="16" x="8" y="6" direction="RIGHT" speed="2" coal="6" tile="3" passenger="0"/>
+    <blue displayName="Spieler 2" color="BLUE" points="16" x="7" y="2" direction="DOWN_RIGHT" speed="2" coal="6" tile="2" passenger="1"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="2" direction="5">
+          <fields>
+            <field type="BLOCKED" x="4" y="3" points="0"/>
+            <field type="WATER" x="7" y="1" points="0"/>
+            <field type="LOG" x="4" y="4" points="1"/>
+            <field type="WATER" x="5" y="3" points="1"/>
+            <field type="SANDBANK" x="6" y="3" points="1"/>
+            <field type="WATER" x="6" y="2" points="1"/>
+            <field type="WATER" x="7" y="2" points="1"/>
+            <field type="BLOCKED" x="5" y="5" points="2"/>
+            <field type="WATER" x="5" y="4" points="2"/>
+            <field type="WATER" x="6" y="4" points="2"/>
+            <field type="WATER" x="7" y="3" points="2"/>
+            <field type="WATER" x="8" y="3" points="2"/>
+            <field type="WATER" x="6" y="5" points="3"/>
+            <field type="PASSENGER0" x="7" y="5" points="3"/>
+            <field type="WATER" x="7" y="4" points="3"/>
+            <field type="WATER" x="8" y="4" points="3"/>
+            <field type="WATER" x="5" y="6" points="3"/>
+            <field type="WATER" x="6" y="6" points="4"/>
+            <field type="WATER" x="7" y="6" points="4"/>
+            <field type="WATER" x="8" y="5" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="3" direction="5">
+          <fields>
+            <field type="WATER" x="6" y="7" points="0"/>
+            <field type="WATER" x="9" y="5" points="0"/>
+            <field type="WATER" x="6" y="8" points="1"/>
+            <field type="WATER" x="7" y="7" points="1"/>
+            <field type="WATER" x="8" y="7" points="1"/>
+            <field type="WATER" x="8" y="6" points="1"/>
+            <field type="BLOCKED" x="9" y="6" points="1"/>
+            <field type="WATER" x="7" y="9" points="2"/>
+            <field type="BLOCKED" x="7" y="8" points="2"/>
+            <field type="WATER" x="8" y="8" points="2"/>
+            <field type="LOG" x="9" y="7" points="2"/>
+            <field type="WATER" x="10" y="7" points="2"/>
+            <field type="BLOCKED" x="8" y="9" points="3"/>
+            <field type="PASSENGER1" x="9" y="9" points="3"/>
+            <field type="WATER" x="9" y="8" points="3"/>
+            <field type="WATER" x="10" y="8" points="3"/>
+            <field type="WATER" x="7" y="10" points="3"/>
+            <field type="WATER" x="8" y="10" points="4"/>
+            <field type="WATER" x="9" y="10" points="4"/>
+            <field type="WATER" x="10" y="9" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="4" direction="0">
+          <fields>
+            <field type="WATER" x="10" y="10" points="0"/>
+            <field type="BLOCKED" x="10" y="6" points="0"/>
+            <field type="WATER" x="11" y="10" points="1"/>
+            <field type="SANDBANK" x="11" y="9" points="1"/>
+            <field type="SANDBANK" x="11" y="8" points="1"/>
+            <field type="WATER" x="11" y="7" points="1"/>
+            <field type="WATER" x="11" y="6" points="1"/>
+            <field type="WATER" x="12" y="10" points="2"/>
+            <field type="WATER" x="12" y="9" points="2"/>
+            <field type="WATER" x="12" y="8" points="2"/>
+            <field type="BLOCKED" x="12" y="7" points="2"/>
+            <field type="WATER" x="12" y="6" points="2"/>
+            <field type="WATER" x="13" y="9" points="3"/>
+            <field type="WATER" x="13" y="8" points="3"/>
+            <field type="PASSENGER5" x="13" y="7" points="3"/>
+            <field type="WATER" x="13" y="6" points="3"/>
+            <field type="WATER" x="13" y="10" points="3"/>
+            <field type="WATER" x="14" y="9" points="4"/>
+            <field type="WATER" x="14" y="8" points="4"/>
+            <field type="WATER" x="14" y="7" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <turn order="0" direction="1"/>
+      <advance order="1" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="14" startPlayer="RED" currentPlayer="RED" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="16" x="8" y="6" direction="RIGHT" speed="2" coal="6" tile="3" passenger="0"/>
+    <blue displayName="Spieler 2" color="BLUE" points="18" x="8" y="4" direction="DOWN_RIGHT" speed="2" coal="6" tile="2" passenger="1"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="2" direction="5">
+          <fields>
+            <field type="BLOCKED" x="4" y="3" points="0"/>
+            <field type="WATER" x="7" y="1" points="0"/>
+            <field type="LOG" x="4" y="4" points="1"/>
+            <field type="WATER" x="5" y="3" points="1"/>
+            <field type="SANDBANK" x="6" y="3" points="1"/>
+            <field type="WATER" x="6" y="2" points="1"/>
+            <field type="WATER" x="7" y="2" points="1"/>
+            <field type="BLOCKED" x="5" y="5" points="2"/>
+            <field type="WATER" x="5" y="4" points="2"/>
+            <field type="WATER" x="6" y="4" points="2"/>
+            <field type="WATER" x="7" y="3" points="2"/>
+            <field type="WATER" x="8" y="3" points="2"/>
+            <field type="WATER" x="6" y="5" points="3"/>
+            <field type="PASSENGER0" x="7" y="5" points="3"/>
+            <field type="WATER" x="7" y="4" points="3"/>
+            <field type="WATER" x="8" y="4" points="3"/>
+            <field type="WATER" x="5" y="6" points="3"/>
+            <field type="WATER" x="6" y="6" points="4"/>
+            <field type="WATER" x="7" y="6" points="4"/>
+            <field type="WATER" x="8" y="5" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="3" direction="5">
+          <fields>
+            <field type="WATER" x="6" y="7" points="0"/>
+            <field type="WATER" x="9" y="5" points="0"/>
+            <field type="WATER" x="6" y="8" points="1"/>
+            <field type="WATER" x="7" y="7" points="1"/>
+            <field type="WATER" x="8" y="7" points="1"/>
+            <field type="WATER" x="8" y="6" points="1"/>
+            <field type="BLOCKED" x="9" y="6" points="1"/>
+            <field type="WATER" x="7" y="9" points="2"/>
+            <field type="BLOCKED" x="7" y="8" points="2"/>
+            <field type="WATER" x="8" y="8" points="2"/>
+            <field type="LOG" x="9" y="7" points="2"/>
+            <field type="WATER" x="10" y="7" points="2"/>
+            <field type="BLOCKED" x="8" y="9" points="3"/>
+            <field type="PASSENGER1" x="9" y="9" points="3"/>
+            <field type="WATER" x="9" y="8" points="3"/>
+            <field type="WATER" x="10" y="8" points="3"/>
+            <field type="WATER" x="7" y="10" points="3"/>
+            <field type="WATER" x="8" y="10" points="4"/>
+            <field type="WATER" x="9" y="10" points="4"/>
+            <field type="WATER" x="10" y="9" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="4" direction="0">
+          <fields>
+            <field type="WATER" x="10" y="10" points="0"/>
+            <field type="BLOCKED" x="10" y="6" points="0"/>
+            <field type="WATER" x="11" y="10" points="1"/>
+            <field type="SANDBANK" x="11" y="9" points="1"/>
+            <field type="SANDBANK" x="11" y="8" points="1"/>
+            <field type="WATER" x="11" y="7" points="1"/>
+            <field type="WATER" x="11" y="6" points="1"/>
+            <field type="WATER" x="12" y="10" points="2"/>
+            <field type="WATER" x="12" y="9" points="2"/>
+            <field type="WATER" x="12" y="8" points="2"/>
+            <field type="BLOCKED" x="12" y="7" points="2"/>
+            <field type="WATER" x="12" y="6" points="2"/>
+            <field type="WATER" x="13" y="9" points="3"/>
+            <field type="WATER" x="13" y="8" points="3"/>
+            <field type="PASSENGER5" x="13" y="7" points="3"/>
+            <field type="WATER" x="13" y="6" points="3"/>
+            <field type="WATER" x="13" y="10" points="3"/>
+            <field type="WATER" x="14" y="9" points="4"/>
+            <field type="WATER" x="14" y="8" points="4"/>
+            <field type="WATER" x="14" y="7" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <advance order="0" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="15" startPlayer="RED" currentPlayer="BLUE" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="19" x="8" y="5" direction="UP_LEFT" speed="1" coal="5" tile="2" passenger="1"/>
+    <blue displayName="Spieler 2" color="BLUE" points="18" x="8" y="4" direction="DOWN_RIGHT" speed="2" coal="6" tile="2" passenger="1"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="2" direction="5">
+          <fields>
+            <field type="BLOCKED" x="4" y="3" points="0"/>
+            <field type="WATER" x="7" y="1" points="0"/>
+            <field type="LOG" x="4" y="4" points="1"/>
+            <field type="WATER" x="5" y="3" points="1"/>
+            <field type="SANDBANK" x="6" y="3" points="1"/>
+            <field type="WATER" x="6" y="2" points="1"/>
+            <field type="WATER" x="7" y="2" points="1"/>
+            <field type="BLOCKED" x="5" y="5" points="2"/>
+            <field type="WATER" x="5" y="4" points="2"/>
+            <field type="WATER" x="6" y="4" points="2"/>
+            <field type="WATER" x="7" y="3" points="2"/>
+            <field type="WATER" x="8" y="3" points="2"/>
+            <field type="WATER" x="6" y="5" points="3"/>
+            <field type="BLOCKED" x="7" y="5" points="3"/>
+            <field type="WATER" x="7" y="4" points="3"/>
+            <field type="WATER" x="8" y="4" points="3"/>
+            <field type="WATER" x="5" y="6" points="3"/>
+            <field type="WATER" x="6" y="6" points="4"/>
+            <field type="WATER" x="7" y="6" points="4"/>
+            <field type="WATER" x="8" y="5" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="3" direction="5">
+          <fields>
+            <field type="WATER" x="6" y="7" points="0"/>
+            <field type="WATER" x="9" y="5" points="0"/>
+            <field type="WATER" x="6" y="8" points="1"/>
+            <field type="WATER" x="7" y="7" points="1"/>
+            <field type="WATER" x="8" y="7" points="1"/>
+            <field type="WATER" x="8" y="6" points="1"/>
+            <field type="BLOCKED" x="9" y="6" points="1"/>
+            <field type="WATER" x="7" y="9" points="2"/>
+            <field type="BLOCKED" x="7" y="8" points="2"/>
+            <field type="WATER" x="8" y="8" points="2"/>
+            <field type="LOG" x="9" y="7" points="2"/>
+            <field type="WATER" x="10" y="7" points="2"/>
+            <field type="BLOCKED" x="8" y="9" points="3"/>
+            <field type="PASSENGER1" x="9" y="9" points="3"/>
+            <field type="WATER" x="9" y="8" points="3"/>
+            <field type="WATER" x="10" y="8" points="3"/>
+            <field type="WATER" x="7" y="10" points="3"/>
+            <field type="WATER" x="8" y="10" points="4"/>
+            <field type="WATER" x="9" y="10" points="4"/>
+            <field type="WATER" x="10" y="9" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="4" direction="0">
+          <fields>
+            <field type="WATER" x="10" y="10" points="0"/>
+            <field type="BLOCKED" x="10" y="6" points="0"/>
+            <field type="WATER" x="11" y="10" points="1"/>
+            <field type="SANDBANK" x="11" y="9" points="1"/>
+            <field type="SANDBANK" x="11" y="8" points="1"/>
+            <field type="WATER" x="11" y="7" points="1"/>
+            <field type="WATER" x="11" y="6" points="1"/>
+            <field type="WATER" x="12" y="10" points="2"/>
+            <field type="WATER" x="12" y="9" points="2"/>
+            <field type="WATER" x="12" y="8" points="2"/>
+            <field type="BLOCKED" x="12" y="7" points="2"/>
+            <field type="WATER" x="12" y="6" points="2"/>
+            <field type="WATER" x="13" y="9" points="3"/>
+            <field type="WATER" x="13" y="8" points="3"/>
+            <field type="PASSENGER5" x="13" y="7" points="3"/>
+            <field type="WATER" x="13" y="6" points="3"/>
+            <field type="WATER" x="13" y="10" points="3"/>
+            <field type="WATER" x="14" y="9" points="4"/>
+            <field type="WATER" x="14" y="8" points="4"/>
+            <field type="WATER" x="14" y="7" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <acceleration order="0" acc="-1"/>
+      <turn order="1" direction="2"/>
+      <advance order="2" distance="1"/>
+    </lastMove>
+  </state>
+  <state turn="16" startPlayer="RED" currentPlayer="BLUE" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="19" x="8" y="5" direction="UP_LEFT" speed="1" coal="5" tile="2" passenger="1"/>
+    <blue displayName="Spieler 2" color="BLUE" points="20" x="9" y="5" direction="DOWN_RIGHT" speed="1" coal="6" tile="3" passenger="1"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="2" direction="5">
+          <fields>
+            <field type="BLOCKED" x="4" y="3" points="0"/>
+            <field type="WATER" x="7" y="1" points="0"/>
+            <field type="LOG" x="4" y="4" points="1"/>
+            <field type="WATER" x="5" y="3" points="1"/>
+            <field type="SANDBANK" x="6" y="3" points="1"/>
+            <field type="WATER" x="6" y="2" points="1"/>
+            <field type="WATER" x="7" y="2" points="1"/>
+            <field type="BLOCKED" x="5" y="5" points="2"/>
+            <field type="WATER" x="5" y="4" points="2"/>
+            <field type="WATER" x="6" y="4" points="2"/>
+            <field type="WATER" x="7" y="3" points="2"/>
+            <field type="WATER" x="8" y="3" points="2"/>
+            <field type="WATER" x="6" y="5" points="3"/>
+            <field type="BLOCKED" x="7" y="5" points="3"/>
+            <field type="WATER" x="7" y="4" points="3"/>
+            <field type="WATER" x="8" y="4" points="3"/>
+            <field type="WATER" x="5" y="6" points="3"/>
+            <field type="WATER" x="6" y="6" points="4"/>
+            <field type="WATER" x="7" y="6" points="4"/>
+            <field type="WATER" x="8" y="5" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="3" direction="5">
+          <fields>
+            <field type="WATER" x="6" y="7" points="0"/>
+            <field type="WATER" x="9" y="5" points="0"/>
+            <field type="WATER" x="6" y="8" points="1"/>
+            <field type="WATER" x="7" y="7" points="1"/>
+            <field type="WATER" x="8" y="7" points="1"/>
+            <field type="WATER" x="8" y="6" points="1"/>
+            <field type="BLOCKED" x="9" y="6" points="1"/>
+            <field type="WATER" x="7" y="9" points="2"/>
+            <field type="BLOCKED" x="7" y="8" points="2"/>
+            <field type="WATER" x="8" y="8" points="2"/>
+            <field type="LOG" x="9" y="7" points="2"/>
+            <field type="WATER" x="10" y="7" points="2"/>
+            <field type="BLOCKED" x="8" y="9" points="3"/>
+            <field type="PASSENGER1" x="9" y="9" points="3"/>
+            <field type="WATER" x="9" y="8" points="3"/>
+            <field type="WATER" x="10" y="8" points="3"/>
+            <field type="WATER" x="7" y="10" points="3"/>
+            <field type="WATER" x="8" y="10" points="4"/>
+            <field type="WATER" x="9" y="10" points="4"/>
+            <field type="WATER" x="10" y="9" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="4" direction="0">
+          <fields>
+            <field type="WATER" x="10" y="10" points="0"/>
+            <field type="BLOCKED" x="10" y="6" points="0"/>
+            <field type="WATER" x="11" y="10" points="1"/>
+            <field type="SANDBANK" x="11" y="9" points="1"/>
+            <field type="SANDBANK" x="11" y="8" points="1"/>
+            <field type="WATER" x="11" y="7" points="1"/>
+            <field type="WATER" x="11" y="6" points="1"/>
+            <field type="WATER" x="12" y="10" points="2"/>
+            <field type="WATER" x="12" y="9" points="2"/>
+            <field type="WATER" x="12" y="8" points="2"/>
+            <field type="BLOCKED" x="12" y="7" points="2"/>
+            <field type="WATER" x="12" y="6" points="2"/>
+            <field type="WATER" x="13" y="9" points="3"/>
+            <field type="WATER" x="13" y="8" points="3"/>
+            <field type="PASSENGER5" x="13" y="7" points="3"/>
+            <field type="WATER" x="13" y="6" points="3"/>
+            <field type="WATER" x="13" y="10" points="3"/>
+            <field type="WATER" x="14" y="9" points="4"/>
+            <field type="WATER" x="14" y="8" points="4"/>
+            <field type="WATER" x="14" y="7" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <acceleration order="0" acc="-1"/>
+      <advance order="1" distance="1"/>
+    </lastMove>
+  </state>
+  <state turn="17" startPlayer="RED" currentPlayer="RED" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="19" x="8" y="5" direction="UP_LEFT" speed="1" coal="5" tile="2" passenger="1"/>
+    <blue displayName="Spieler 2" color="BLUE" points="21" x="8" y="6" direction="DOWN_LEFT" speed="1" coal="6" tile="3" passenger="1"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="2" direction="5">
+          <fields>
+            <field type="BLOCKED" x="4" y="3" points="0"/>
+            <field type="WATER" x="7" y="1" points="0"/>
+            <field type="LOG" x="4" y="4" points="1"/>
+            <field type="WATER" x="5" y="3" points="1"/>
+            <field type="SANDBANK" x="6" y="3" points="1"/>
+            <field type="WATER" x="6" y="2" points="1"/>
+            <field type="WATER" x="7" y="2" points="1"/>
+            <field type="BLOCKED" x="5" y="5" points="2"/>
+            <field type="WATER" x="5" y="4" points="2"/>
+            <field type="WATER" x="6" y="4" points="2"/>
+            <field type="WATER" x="7" y="3" points="2"/>
+            <field type="WATER" x="8" y="3" points="2"/>
+            <field type="WATER" x="6" y="5" points="3"/>
+            <field type="BLOCKED" x="7" y="5" points="3"/>
+            <field type="WATER" x="7" y="4" points="3"/>
+            <field type="WATER" x="8" y="4" points="3"/>
+            <field type="WATER" x="5" y="6" points="3"/>
+            <field type="WATER" x="6" y="6" points="4"/>
+            <field type="WATER" x="7" y="6" points="4"/>
+            <field type="WATER" x="8" y="5" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="3" direction="5">
+          <fields>
+            <field type="WATER" x="6" y="7" points="0"/>
+            <field type="WATER" x="9" y="5" points="0"/>
+            <field type="WATER" x="6" y="8" points="1"/>
+            <field type="WATER" x="7" y="7" points="1"/>
+            <field type="WATER" x="8" y="7" points="1"/>
+            <field type="WATER" x="8" y="6" points="1"/>
+            <field type="BLOCKED" x="9" y="6" points="1"/>
+            <field type="WATER" x="7" y="9" points="2"/>
+            <field type="BLOCKED" x="7" y="8" points="2"/>
+            <field type="WATER" x="8" y="8" points="2"/>
+            <field type="LOG" x="9" y="7" points="2"/>
+            <field type="WATER" x="10" y="7" points="2"/>
+            <field type="BLOCKED" x="8" y="9" points="3"/>
+            <field type="PASSENGER1" x="9" y="9" points="3"/>
+            <field type="WATER" x="9" y="8" points="3"/>
+            <field type="WATER" x="10" y="8" points="3"/>
+            <field type="WATER" x="7" y="10" points="3"/>
+            <field type="WATER" x="8" y="10" points="4"/>
+            <field type="WATER" x="9" y="10" points="4"/>
+            <field type="WATER" x="10" y="9" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="4" direction="0">
+          <fields>
+            <field type="WATER" x="10" y="10" points="0"/>
+            <field type="BLOCKED" x="10" y="6" points="0"/>
+            <field type="WATER" x="11" y="10" points="1"/>
+            <field type="SANDBANK" x="11" y="9" points="1"/>
+            <field type="SANDBANK" x="11" y="8" points="1"/>
+            <field type="WATER" x="11" y="7" points="1"/>
+            <field type="WATER" x="11" y="6" points="1"/>
+            <field type="WATER" x="12" y="10" points="2"/>
+            <field type="WATER" x="12" y="9" points="2"/>
+            <field type="WATER" x="12" y="8" points="2"/>
+            <field type="BLOCKED" x="12" y="7" points="2"/>
+            <field type="WATER" x="12" y="6" points="2"/>
+            <field type="WATER" x="13" y="9" points="3"/>
+            <field type="WATER" x="13" y="8" points="3"/>
+            <field type="PASSENGER5" x="13" y="7" points="3"/>
+            <field type="WATER" x="13" y="6" points="3"/>
+            <field type="WATER" x="13" y="10" points="3"/>
+            <field type="WATER" x="14" y="9" points="4"/>
+            <field type="WATER" x="14" y="8" points="4"/>
+            <field type="WATER" x="14" y="7" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <turn order="0" direction="-1"/>
+      <advance order="1" distance="1"/>
+    </lastMove>
+  </state>
+  <state turn="18" startPlayer="RED" currentPlayer="BLUE" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="21" x="7" y="7" direction="DOWN_LEFT" speed="2" coal="4" tile="3" passenger="1"/>
+    <blue displayName="Spieler 2" color="BLUE" points="21" x="8" y="6" direction="DOWN_LEFT" speed="1" coal="6" tile="3" passenger="1"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="3" direction="5">
+          <fields>
+            <field type="WATER" x="6" y="7" points="0"/>
+            <field type="WATER" x="9" y="5" points="0"/>
+            <field type="WATER" x="6" y="8" points="1"/>
+            <field type="WATER" x="7" y="7" points="1"/>
+            <field type="WATER" x="8" y="7" points="1"/>
+            <field type="WATER" x="8" y="6" points="1"/>
+            <field type="BLOCKED" x="9" y="6" points="1"/>
+            <field type="WATER" x="7" y="9" points="2"/>
+            <field type="BLOCKED" x="7" y="8" points="2"/>
+            <field type="WATER" x="8" y="8" points="2"/>
+            <field type="LOG" x="9" y="7" points="2"/>
+            <field type="WATER" x="10" y="7" points="2"/>
+            <field type="BLOCKED" x="8" y="9" points="3"/>
+            <field type="PASSENGER1" x="9" y="9" points="3"/>
+            <field type="WATER" x="9" y="8" points="3"/>
+            <field type="WATER" x="10" y="8" points="3"/>
+            <field type="WATER" x="7" y="10" points="3"/>
+            <field type="WATER" x="8" y="10" points="4"/>
+            <field type="WATER" x="9" y="10" points="4"/>
+            <field type="WATER" x="10" y="9" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="4" direction="0">
+          <fields>
+            <field type="WATER" x="10" y="10" points="0"/>
+            <field type="BLOCKED" x="10" y="6" points="0"/>
+            <field type="WATER" x="11" y="10" points="1"/>
+            <field type="SANDBANK" x="11" y="9" points="1"/>
+            <field type="SANDBANK" x="11" y="8" points="1"/>
+            <field type="WATER" x="11" y="7" points="1"/>
+            <field type="WATER" x="11" y="6" points="1"/>
+            <field type="WATER" x="12" y="10" points="2"/>
+            <field type="WATER" x="12" y="9" points="2"/>
+            <field type="WATER" x="12" y="8" points="2"/>
+            <field type="BLOCKED" x="12" y="7" points="2"/>
+            <field type="WATER" x="12" y="6" points="2"/>
+            <field type="WATER" x="13" y="9" points="3"/>
+            <field type="WATER" x="13" y="8" points="3"/>
+            <field type="PASSENGER5" x="13" y="7" points="3"/>
+            <field type="WATER" x="13" y="6" points="3"/>
+            <field type="WATER" x="13" y="10" points="3"/>
+            <field type="WATER" x="14" y="9" points="4"/>
+            <field type="WATER" x="14" y="8" points="4"/>
+            <field type="WATER" x="14" y="7" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <acceleration order="0" acc="1"/>
+      <turn order="1" direction="2"/>
+      <advance order="2" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="19" startPlayer="RED" currentPlayer="RED" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="21" x="7" y="7" direction="DOWN_LEFT" speed="2" coal="4" tile="3" passenger="1"/>
+    <blue displayName="Spieler 2" color="BLUE" points="22" x="9" y="7" direction="DOWN_RIGHT" speed="1" coal="6" tile="3" passenger="1"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="3" direction="5">
+          <fields>
+            <field type="WATER" x="6" y="7" points="0"/>
+            <field type="WATER" x="9" y="5" points="0"/>
+            <field type="WATER" x="6" y="8" points="1"/>
+            <field type="WATER" x="7" y="7" points="1"/>
+            <field type="WATER" x="8" y="7" points="1"/>
+            <field type="WATER" x="8" y="6" points="1"/>
+            <field type="BLOCKED" x="9" y="6" points="1"/>
+            <field type="WATER" x="7" y="9" points="2"/>
+            <field type="BLOCKED" x="7" y="8" points="2"/>
+            <field type="WATER" x="8" y="8" points="2"/>
+            <field type="LOG" x="9" y="7" points="2"/>
+            <field type="WATER" x="10" y="7" points="2"/>
+            <field type="BLOCKED" x="8" y="9" points="3"/>
+            <field type="PASSENGER1" x="9" y="9" points="3"/>
+            <field type="WATER" x="9" y="8" points="3"/>
+            <field type="WATER" x="10" y="8" points="3"/>
+            <field type="WATER" x="7" y="10" points="3"/>
+            <field type="WATER" x="8" y="10" points="4"/>
+            <field type="WATER" x="9" y="10" points="4"/>
+            <field type="WATER" x="10" y="9" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="4" direction="0">
+          <fields>
+            <field type="WATER" x="10" y="10" points="0"/>
+            <field type="BLOCKED" x="10" y="6" points="0"/>
+            <field type="WATER" x="11" y="10" points="1"/>
+            <field type="SANDBANK" x="11" y="9" points="1"/>
+            <field type="SANDBANK" x="11" y="8" points="1"/>
+            <field type="WATER" x="11" y="7" points="1"/>
+            <field type="WATER" x="11" y="6" points="1"/>
+            <field type="WATER" x="12" y="10" points="2"/>
+            <field type="WATER" x="12" y="9" points="2"/>
+            <field type="WATER" x="12" y="8" points="2"/>
+            <field type="BLOCKED" x="12" y="7" points="2"/>
+            <field type="WATER" x="12" y="6" points="2"/>
+            <field type="WATER" x="13" y="9" points="3"/>
+            <field type="WATER" x="13" y="8" points="3"/>
+            <field type="PASSENGER5" x="13" y="7" points="3"/>
+            <field type="WATER" x="13" y="6" points="3"/>
+            <field type="WATER" x="13" y="10" points="3"/>
+            <field type="WATER" x="14" y="9" points="4"/>
+            <field type="WATER" x="14" y="8" points="4"/>
+            <field type="WATER" x="14" y="7" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <acceleration order="0" acc="1"/>
+      <turn order="1" direction="1"/>
+      <advance order="2" distance="1"/>
+    </lastMove>
+  </state>
+  <state turn="20" startPlayer="RED" currentPlayer="BLUE" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="21" x="8" y="7" direction="RIGHT" speed="1" coal="3" tile="3" passenger="1"/>
+    <blue displayName="Spieler 2" color="BLUE" points="22" x="9" y="7" direction="DOWN_RIGHT" speed="1" coal="6" tile="3" passenger="1"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="3" direction="5">
+          <fields>
+            <field type="WATER" x="6" y="7" points="0"/>
+            <field type="WATER" x="9" y="5" points="0"/>
+            <field type="WATER" x="6" y="8" points="1"/>
+            <field type="WATER" x="7" y="7" points="1"/>
+            <field type="WATER" x="8" y="7" points="1"/>
+            <field type="WATER" x="8" y="6" points="1"/>
+            <field type="BLOCKED" x="9" y="6" points="1"/>
+            <field type="WATER" x="7" y="9" points="2"/>
+            <field type="BLOCKED" x="7" y="8" points="2"/>
+            <field type="WATER" x="8" y="8" points="2"/>
+            <field type="LOG" x="9" y="7" points="2"/>
+            <field type="WATER" x="10" y="7" points="2"/>
+            <field type="BLOCKED" x="8" y="9" points="3"/>
+            <field type="PASSENGER1" x="9" y="9" points="3"/>
+            <field type="WATER" x="9" y="8" points="3"/>
+            <field type="WATER" x="10" y="8" points="3"/>
+            <field type="WATER" x="7" y="10" points="3"/>
+            <field type="WATER" x="8" y="10" points="4"/>
+            <field type="WATER" x="9" y="10" points="4"/>
+            <field type="WATER" x="10" y="9" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="4" direction="0">
+          <fields>
+            <field type="WATER" x="10" y="10" points="0"/>
+            <field type="BLOCKED" x="10" y="6" points="0"/>
+            <field type="WATER" x="11" y="10" points="1"/>
+            <field type="SANDBANK" x="11" y="9" points="1"/>
+            <field type="SANDBANK" x="11" y="8" points="1"/>
+            <field type="WATER" x="11" y="7" points="1"/>
+            <field type="WATER" x="11" y="6" points="1"/>
+            <field type="WATER" x="12" y="10" points="2"/>
+            <field type="WATER" x="12" y="9" points="2"/>
+            <field type="WATER" x="12" y="8" points="2"/>
+            <field type="BLOCKED" x="12" y="7" points="2"/>
+            <field type="WATER" x="12" y="6" points="2"/>
+            <field type="WATER" x="13" y="9" points="3"/>
+            <field type="WATER" x="13" y="8" points="3"/>
+            <field type="PASSENGER5" x="13" y="7" points="3"/>
+            <field type="WATER" x="13" y="6" points="3"/>
+            <field type="WATER" x="13" y="10" points="3"/>
+            <field type="WATER" x="14" y="9" points="4"/>
+            <field type="WATER" x="14" y="8" points="4"/>
+            <field type="WATER" x="14" y="7" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <acceleration order="0" acc="-1"/>
+      <turn order="1" direction="2"/>
+      <advance order="2" distance="1"/>
+    </lastMove>
+  </state>
+  <state turn="21" startPlayer="RED" currentPlayer="RED" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="21" x="8" y="7" direction="RIGHT" speed="1" coal="3" tile="3" passenger="1"/>
+    <blue displayName="Spieler 2" color="BLUE" points="28" x="9" y="8" direction="DOWN_RIGHT" speed="1" coal="6" tile="3" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="3" direction="5">
+          <fields>
+            <field type="WATER" x="6" y="7" points="0"/>
+            <field type="WATER" x="9" y="5" points="0"/>
+            <field type="WATER" x="6" y="8" points="1"/>
+            <field type="WATER" x="7" y="7" points="1"/>
+            <field type="WATER" x="8" y="7" points="1"/>
+            <field type="WATER" x="8" y="6" points="1"/>
+            <field type="BLOCKED" x="9" y="6" points="1"/>
+            <field type="WATER" x="7" y="9" points="2"/>
+            <field type="BLOCKED" x="7" y="8" points="2"/>
+            <field type="WATER" x="8" y="8" points="2"/>
+            <field type="LOG" x="9" y="7" points="2"/>
+            <field type="WATER" x="10" y="7" points="2"/>
+            <field type="BLOCKED" x="8" y="9" points="3"/>
+            <field type="BLOCKED" x="9" y="9" points="3"/>
+            <field type="WATER" x="9" y="8" points="3"/>
+            <field type="WATER" x="10" y="8" points="3"/>
+            <field type="WATER" x="7" y="10" points="3"/>
+            <field type="WATER" x="8" y="10" points="4"/>
+            <field type="WATER" x="9" y="10" points="4"/>
+            <field type="WATER" x="10" y="9" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="4" direction="0">
+          <fields>
+            <field type="WATER" x="10" y="10" points="0"/>
+            <field type="BLOCKED" x="10" y="6" points="0"/>
+            <field type="WATER" x="11" y="10" points="1"/>
+            <field type="SANDBANK" x="11" y="9" points="1"/>
+            <field type="SANDBANK" x="11" y="8" points="1"/>
+            <field type="WATER" x="11" y="7" points="1"/>
+            <field type="WATER" x="11" y="6" points="1"/>
+            <field type="WATER" x="12" y="10" points="2"/>
+            <field type="WATER" x="12" y="9" points="2"/>
+            <field type="WATER" x="12" y="8" points="2"/>
+            <field type="BLOCKED" x="12" y="7" points="2"/>
+            <field type="WATER" x="12" y="6" points="2"/>
+            <field type="WATER" x="13" y="9" points="3"/>
+            <field type="WATER" x="13" y="8" points="3"/>
+            <field type="PASSENGER5" x="13" y="7" points="3"/>
+            <field type="WATER" x="13" y="6" points="3"/>
+            <field type="WATER" x="13" y="10" points="3"/>
+            <field type="WATER" x="14" y="9" points="4"/>
+            <field type="WATER" x="14" y="8" points="4"/>
+            <field type="WATER" x="14" y="7" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <advance order="0" distance="1"/>
+    </lastMove>
+  </state>
+  <state turn="22" startPlayer="RED" currentPlayer="BLUE" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="22" x="9" y="7" direction="RIGHT" speed="1" coal="3" tile="3" passenger="1"/>
+    <blue displayName="Spieler 2" color="BLUE" points="28" x="9" y="8" direction="DOWN_RIGHT" speed="1" coal="6" tile="3" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="3" direction="5">
+          <fields>
+            <field type="WATER" x="6" y="7" points="0"/>
+            <field type="WATER" x="9" y="5" points="0"/>
+            <field type="WATER" x="6" y="8" points="1"/>
+            <field type="WATER" x="7" y="7" points="1"/>
+            <field type="WATER" x="8" y="7" points="1"/>
+            <field type="WATER" x="8" y="6" points="1"/>
+            <field type="BLOCKED" x="9" y="6" points="1"/>
+            <field type="WATER" x="7" y="9" points="2"/>
+            <field type="BLOCKED" x="7" y="8" points="2"/>
+            <field type="WATER" x="8" y="8" points="2"/>
+            <field type="LOG" x="9" y="7" points="2"/>
+            <field type="WATER" x="10" y="7" points="2"/>
+            <field type="BLOCKED" x="8" y="9" points="3"/>
+            <field type="BLOCKED" x="9" y="9" points="3"/>
+            <field type="WATER" x="9" y="8" points="3"/>
+            <field type="WATER" x="10" y="8" points="3"/>
+            <field type="WATER" x="7" y="10" points="3"/>
+            <field type="WATER" x="8" y="10" points="4"/>
+            <field type="WATER" x="9" y="10" points="4"/>
+            <field type="WATER" x="10" y="9" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="4" direction="0">
+          <fields>
+            <field type="WATER" x="10" y="10" points="0"/>
+            <field type="BLOCKED" x="10" y="6" points="0"/>
+            <field type="WATER" x="11" y="10" points="1"/>
+            <field type="SANDBANK" x="11" y="9" points="1"/>
+            <field type="SANDBANK" x="11" y="8" points="1"/>
+            <field type="WATER" x="11" y="7" points="1"/>
+            <field type="WATER" x="11" y="6" points="1"/>
+            <field type="WATER" x="12" y="10" points="2"/>
+            <field type="WATER" x="12" y="9" points="2"/>
+            <field type="WATER" x="12" y="8" points="2"/>
+            <field type="BLOCKED" x="12" y="7" points="2"/>
+            <field type="WATER" x="12" y="6" points="2"/>
+            <field type="WATER" x="13" y="9" points="3"/>
+            <field type="WATER" x="13" y="8" points="3"/>
+            <field type="PASSENGER5" x="13" y="7" points="3"/>
+            <field type="WATER" x="13" y="6" points="3"/>
+            <field type="WATER" x="13" y="10" points="3"/>
+            <field type="WATER" x="14" y="9" points="4"/>
+            <field type="WATER" x="14" y="8" points="4"/>
+            <field type="WATER" x="14" y="7" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <acceleration order="0" acc="1"/>
+      <advance order="1" distance="1"/>
+    </lastMove>
+  </state>
+  <state turn="23" startPlayer="RED" currentPlayer="RED" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="22" x="9" y="7" direction="RIGHT" speed="1" coal="3" tile="3" passenger="1"/>
+    <blue displayName="Spieler 2" color="BLUE" points="31" x="11" y="8" direction="RIGHT" speed="1" coal="6" tile="4" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="3" direction="5">
+          <fields>
+            <field type="WATER" x="6" y="7" points="0"/>
+            <field type="WATER" x="9" y="5" points="0"/>
+            <field type="WATER" x="6" y="8" points="1"/>
+            <field type="WATER" x="7" y="7" points="1"/>
+            <field type="WATER" x="8" y="7" points="1"/>
+            <field type="WATER" x="8" y="6" points="1"/>
+            <field type="BLOCKED" x="9" y="6" points="1"/>
+            <field type="WATER" x="7" y="9" points="2"/>
+            <field type="BLOCKED" x="7" y="8" points="2"/>
+            <field type="WATER" x="8" y="8" points="2"/>
+            <field type="LOG" x="9" y="7" points="2"/>
+            <field type="WATER" x="10" y="7" points="2"/>
+            <field type="BLOCKED" x="8" y="9" points="3"/>
+            <field type="BLOCKED" x="9" y="9" points="3"/>
+            <field type="WATER" x="9" y="8" points="3"/>
+            <field type="WATER" x="10" y="8" points="3"/>
+            <field type="WATER" x="7" y="10" points="3"/>
+            <field type="WATER" x="8" y="10" points="4"/>
+            <field type="WATER" x="9" y="10" points="4"/>
+            <field type="WATER" x="10" y="9" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="4" direction="0">
+          <fields>
+            <field type="WATER" x="10" y="10" points="0"/>
+            <field type="BLOCKED" x="10" y="6" points="0"/>
+            <field type="WATER" x="11" y="10" points="1"/>
+            <field type="SANDBANK" x="11" y="9" points="1"/>
+            <field type="SANDBANK" x="11" y="8" points="1"/>
+            <field type="WATER" x="11" y="7" points="1"/>
+            <field type="WATER" x="11" y="6" points="1"/>
+            <field type="WATER" x="12" y="10" points="2"/>
+            <field type="WATER" x="12" y="9" points="2"/>
+            <field type="WATER" x="12" y="8" points="2"/>
+            <field type="BLOCKED" x="12" y="7" points="2"/>
+            <field type="WATER" x="12" y="6" points="2"/>
+            <field type="WATER" x="13" y="9" points="3"/>
+            <field type="WATER" x="13" y="8" points="3"/>
+            <field type="PASSENGER5" x="13" y="7" points="3"/>
+            <field type="WATER" x="13" y="6" points="3"/>
+            <field type="WATER" x="13" y="10" points="3"/>
+            <field type="WATER" x="14" y="9" points="4"/>
+            <field type="WATER" x="14" y="8" points="4"/>
+            <field type="WATER" x="14" y="7" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="5" direction="5">
+          <fields>
+            <field type="WATER" x="12" y="11" points="0"/>
+            <field type="WATER" x="15" y="9" points="0"/>
+            <field type="BLOCKED" x="12" y="12" points="1"/>
+            <field type="BLOCKED" x="13" y="11" points="1"/>
+            <field type="WATER" x="14" y="11" points="1"/>
+            <field type="WATER" x="14" y="10" points="1"/>
+            <field type="WATER" x="15" y="10" points="1"/>
+            <field type="WATER" x="13" y="13" points="2"/>
+            <field type="WATER" x="13" y="12" points="2"/>
+            <field type="BLOCKED" x="14" y="12" points="2"/>
+            <field type="LOG" x="15" y="11" points="2"/>
+            <field type="PASSENGER4" x="16" y="11" points="2"/>
+            <field type="LOG" x="14" y="13" points="3"/>
+            <field type="WATER" x="15" y="13" points="3"/>
+            <field type="WATER" x="15" y="12" points="3"/>
+            <field type="WATER" x="16" y="12" points="3"/>
+            <field type="WATER" x="13" y="14" points="3"/>
+            <field type="WATER" x="14" y="14" points="4"/>
+            <field type="WATER" x="15" y="14" points="4"/>
+            <field type="WATER" x="16" y="13" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <acceleration order="0" acc="1"/>
+      <turn order="1" direction="1"/>
+      <advance order="2" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="24" startPlayer="RED" currentPlayer="BLUE" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="26" x="11" y="7" direction="RIGHT" speed="2" coal="3" tile="4" passenger="1"/>
+    <blue displayName="Spieler 2" color="BLUE" points="31" x="11" y="8" direction="RIGHT" speed="1" coal="6" tile="4" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="4" direction="0">
+          <fields>
+            <field type="WATER" x="10" y="10" points="0"/>
+            <field type="BLOCKED" x="10" y="6" points="0"/>
+            <field type="WATER" x="11" y="10" points="1"/>
+            <field type="SANDBANK" x="11" y="9" points="1"/>
+            <field type="SANDBANK" x="11" y="8" points="1"/>
+            <field type="WATER" x="11" y="7" points="1"/>
+            <field type="WATER" x="11" y="6" points="1"/>
+            <field type="WATER" x="12" y="10" points="2"/>
+            <field type="WATER" x="12" y="9" points="2"/>
+            <field type="WATER" x="12" y="8" points="2"/>
+            <field type="BLOCKED" x="12" y="7" points="2"/>
+            <field type="WATER" x="12" y="6" points="2"/>
+            <field type="WATER" x="13" y="9" points="3"/>
+            <field type="WATER" x="13" y="8" points="3"/>
+            <field type="PASSENGER5" x="13" y="7" points="3"/>
+            <field type="WATER" x="13" y="6" points="3"/>
+            <field type="WATER" x="13" y="10" points="3"/>
+            <field type="WATER" x="14" y="9" points="4"/>
+            <field type="WATER" x="14" y="8" points="4"/>
+            <field type="WATER" x="14" y="7" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="5" direction="5">
+          <fields>
+            <field type="WATER" x="12" y="11" points="0"/>
+            <field type="WATER" x="15" y="9" points="0"/>
+            <field type="BLOCKED" x="12" y="12" points="1"/>
+            <field type="BLOCKED" x="13" y="11" points="1"/>
+            <field type="WATER" x="14" y="11" points="1"/>
+            <field type="WATER" x="14" y="10" points="1"/>
+            <field type="WATER" x="15" y="10" points="1"/>
+            <field type="WATER" x="13" y="13" points="2"/>
+            <field type="WATER" x="13" y="12" points="2"/>
+            <field type="BLOCKED" x="14" y="12" points="2"/>
+            <field type="LOG" x="15" y="11" points="2"/>
+            <field type="PASSENGER4" x="16" y="11" points="2"/>
+            <field type="LOG" x="14" y="13" points="3"/>
+            <field type="WATER" x="15" y="13" points="3"/>
+            <field type="WATER" x="15" y="12" points="3"/>
+            <field type="WATER" x="16" y="12" points="3"/>
+            <field type="WATER" x="13" y="14" points="3"/>
+            <field type="WATER" x="14" y="14" points="4"/>
+            <field type="WATER" x="15" y="14" points="4"/>
+            <field type="WATER" x="16" y="13" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <acceleration order="0" acc="1"/>
+      <advance order="1" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="25" startPlayer="RED" currentPlayer="RED" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="26" x="11" y="7" direction="RIGHT" speed="2" coal="3" tile="4" passenger="1"/>
+    <blue displayName="Spieler 2" color="BLUE" points="32" x="12" y="8" direction="RIGHT" speed="1" coal="6" tile="4" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="4" direction="0">
+          <fields>
+            <field type="WATER" x="10" y="10" points="0"/>
+            <field type="BLOCKED" x="10" y="6" points="0"/>
+            <field type="WATER" x="11" y="10" points="1"/>
+            <field type="SANDBANK" x="11" y="9" points="1"/>
+            <field type="SANDBANK" x="11" y="8" points="1"/>
+            <field type="WATER" x="11" y="7" points="1"/>
+            <field type="WATER" x="11" y="6" points="1"/>
+            <field type="WATER" x="12" y="10" points="2"/>
+            <field type="WATER" x="12" y="9" points="2"/>
+            <field type="WATER" x="12" y="8" points="2"/>
+            <field type="BLOCKED" x="12" y="7" points="2"/>
+            <field type="WATER" x="12" y="6" points="2"/>
+            <field type="WATER" x="13" y="9" points="3"/>
+            <field type="WATER" x="13" y="8" points="3"/>
+            <field type="PASSENGER5" x="13" y="7" points="3"/>
+            <field type="WATER" x="13" y="6" points="3"/>
+            <field type="WATER" x="13" y="10" points="3"/>
+            <field type="WATER" x="14" y="9" points="4"/>
+            <field type="WATER" x="14" y="8" points="4"/>
+            <field type="WATER" x="14" y="7" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="5" direction="5">
+          <fields>
+            <field type="WATER" x="12" y="11" points="0"/>
+            <field type="WATER" x="15" y="9" points="0"/>
+            <field type="BLOCKED" x="12" y="12" points="1"/>
+            <field type="BLOCKED" x="13" y="11" points="1"/>
+            <field type="WATER" x="14" y="11" points="1"/>
+            <field type="WATER" x="14" y="10" points="1"/>
+            <field type="WATER" x="15" y="10" points="1"/>
+            <field type="WATER" x="13" y="13" points="2"/>
+            <field type="WATER" x="13" y="12" points="2"/>
+            <field type="BLOCKED" x="14" y="12" points="2"/>
+            <field type="LOG" x="15" y="11" points="2"/>
+            <field type="PASSENGER4" x="16" y="11" points="2"/>
+            <field type="LOG" x="14" y="13" points="3"/>
+            <field type="WATER" x="15" y="13" points="3"/>
+            <field type="WATER" x="15" y="12" points="3"/>
+            <field type="WATER" x="16" y="12" points="3"/>
+            <field type="WATER" x="13" y="14" points="3"/>
+            <field type="WATER" x="14" y="14" points="4"/>
+            <field type="WATER" x="15" y="14" points="4"/>
+            <field type="WATER" x="16" y="13" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <advance order="0" distance="1"/>
+    </lastMove>
+  </state>
+  <state turn="26" startPlayer="RED" currentPlayer="BLUE" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="26" x="11" y="6" direction="UP_RIGHT" speed="1" coal="3" tile="4" passenger="1"/>
+    <blue displayName="Spieler 2" color="BLUE" points="32" x="12" y="8" direction="RIGHT" speed="1" coal="6" tile="4" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="4" direction="0">
+          <fields>
+            <field type="WATER" x="10" y="10" points="0"/>
+            <field type="BLOCKED" x="10" y="6" points="0"/>
+            <field type="WATER" x="11" y="10" points="1"/>
+            <field type="SANDBANK" x="11" y="9" points="1"/>
+            <field type="SANDBANK" x="11" y="8" points="1"/>
+            <field type="WATER" x="11" y="7" points="1"/>
+            <field type="WATER" x="11" y="6" points="1"/>
+            <field type="WATER" x="12" y="10" points="2"/>
+            <field type="WATER" x="12" y="9" points="2"/>
+            <field type="WATER" x="12" y="8" points="2"/>
+            <field type="BLOCKED" x="12" y="7" points="2"/>
+            <field type="WATER" x="12" y="6" points="2"/>
+            <field type="WATER" x="13" y="9" points="3"/>
+            <field type="WATER" x="13" y="8" points="3"/>
+            <field type="PASSENGER5" x="13" y="7" points="3"/>
+            <field type="WATER" x="13" y="6" points="3"/>
+            <field type="WATER" x="13" y="10" points="3"/>
+            <field type="WATER" x="14" y="9" points="4"/>
+            <field type="WATER" x="14" y="8" points="4"/>
+            <field type="WATER" x="14" y="7" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="5" direction="5">
+          <fields>
+            <field type="WATER" x="12" y="11" points="0"/>
+            <field type="WATER" x="15" y="9" points="0"/>
+            <field type="BLOCKED" x="12" y="12" points="1"/>
+            <field type="BLOCKED" x="13" y="11" points="1"/>
+            <field type="WATER" x="14" y="11" points="1"/>
+            <field type="WATER" x="14" y="10" points="1"/>
+            <field type="WATER" x="15" y="10" points="1"/>
+            <field type="WATER" x="13" y="13" points="2"/>
+            <field type="WATER" x="13" y="12" points="2"/>
+            <field type="BLOCKED" x="14" y="12" points="2"/>
+            <field type="LOG" x="15" y="11" points="2"/>
+            <field type="PASSENGER4" x="16" y="11" points="2"/>
+            <field type="LOG" x="14" y="13" points="3"/>
+            <field type="WATER" x="15" y="13" points="3"/>
+            <field type="WATER" x="15" y="12" points="3"/>
+            <field type="WATER" x="16" y="12" points="3"/>
+            <field type="WATER" x="13" y="14" points="3"/>
+            <field type="WATER" x="14" y="14" points="4"/>
+            <field type="WATER" x="15" y="14" points="4"/>
+            <field type="WATER" x="16" y="13" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <acceleration order="0" acc="-1"/>
+      <turn order="1" direction="1"/>
+      <advance order="2" distance="1"/>
+    </lastMove>
+  </state>
+  <state turn="27" startPlayer="RED" currentPlayer="RED" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="26" x="11" y="6" direction="UP_RIGHT" speed="1" coal="3" tile="4" passenger="1"/>
+    <blue displayName="Spieler 2" color="BLUE" points="34" x="14" y="8" direction="RIGHT" speed="2" coal="6" tile="4" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="4" direction="0">
+          <fields>
+            <field type="WATER" x="10" y="10" points="0"/>
+            <field type="BLOCKED" x="10" y="6" points="0"/>
+            <field type="WATER" x="11" y="10" points="1"/>
+            <field type="SANDBANK" x="11" y="9" points="1"/>
+            <field type="SANDBANK" x="11" y="8" points="1"/>
+            <field type="WATER" x="11" y="7" points="1"/>
+            <field type="WATER" x="11" y="6" points="1"/>
+            <field type="WATER" x="12" y="10" points="2"/>
+            <field type="WATER" x="12" y="9" points="2"/>
+            <field type="WATER" x="12" y="8" points="2"/>
+            <field type="BLOCKED" x="12" y="7" points="2"/>
+            <field type="WATER" x="12" y="6" points="2"/>
+            <field type="WATER" x="13" y="9" points="3"/>
+            <field type="WATER" x="13" y="8" points="3"/>
+            <field type="PASSENGER5" x="13" y="7" points="3"/>
+            <field type="WATER" x="13" y="6" points="3"/>
+            <field type="WATER" x="13" y="10" points="3"/>
+            <field type="WATER" x="14" y="9" points="4"/>
+            <field type="WATER" x="14" y="8" points="4"/>
+            <field type="WATER" x="14" y="7" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="5" direction="5">
+          <fields>
+            <field type="WATER" x="12" y="11" points="0"/>
+            <field type="WATER" x="15" y="9" points="0"/>
+            <field type="BLOCKED" x="12" y="12" points="1"/>
+            <field type="BLOCKED" x="13" y="11" points="1"/>
+            <field type="WATER" x="14" y="11" points="1"/>
+            <field type="WATER" x="14" y="10" points="1"/>
+            <field type="WATER" x="15" y="10" points="1"/>
+            <field type="WATER" x="13" y="13" points="2"/>
+            <field type="WATER" x="13" y="12" points="2"/>
+            <field type="BLOCKED" x="14" y="12" points="2"/>
+            <field type="LOG" x="15" y="11" points="2"/>
+            <field type="PASSENGER4" x="16" y="11" points="2"/>
+            <field type="LOG" x="14" y="13" points="3"/>
+            <field type="WATER" x="15" y="13" points="3"/>
+            <field type="WATER" x="15" y="12" points="3"/>
+            <field type="WATER" x="16" y="12" points="3"/>
+            <field type="WATER" x="13" y="14" points="3"/>
+            <field type="WATER" x="14" y="14" points="4"/>
+            <field type="WATER" x="15" y="14" points="4"/>
+            <field type="WATER" x="16" y="13" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <acceleration order="0" acc="1"/>
+      <advance order="1" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="28" startPlayer="RED" currentPlayer="BLUE" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="28" x="13" y="6" direction="RIGHT" speed="2" coal="3" tile="4" passenger="1"/>
+    <blue displayName="Spieler 2" color="BLUE" points="34" x="14" y="8" direction="RIGHT" speed="2" coal="6" tile="4" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="4" direction="0">
+          <fields>
+            <field type="WATER" x="10" y="10" points="0"/>
+            <field type="BLOCKED" x="10" y="6" points="0"/>
+            <field type="WATER" x="11" y="10" points="1"/>
+            <field type="SANDBANK" x="11" y="9" points="1"/>
+            <field type="SANDBANK" x="11" y="8" points="1"/>
+            <field type="WATER" x="11" y="7" points="1"/>
+            <field type="WATER" x="11" y="6" points="1"/>
+            <field type="WATER" x="12" y="10" points="2"/>
+            <field type="WATER" x="12" y="9" points="2"/>
+            <field type="WATER" x="12" y="8" points="2"/>
+            <field type="BLOCKED" x="12" y="7" points="2"/>
+            <field type="WATER" x="12" y="6" points="2"/>
+            <field type="WATER" x="13" y="9" points="3"/>
+            <field type="WATER" x="13" y="8" points="3"/>
+            <field type="PASSENGER5" x="13" y="7" points="3"/>
+            <field type="WATER" x="13" y="6" points="3"/>
+            <field type="WATER" x="13" y="10" points="3"/>
+            <field type="WATER" x="14" y="9" points="4"/>
+            <field type="WATER" x="14" y="8" points="4"/>
+            <field type="WATER" x="14" y="7" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="5" direction="5">
+          <fields>
+            <field type="WATER" x="12" y="11" points="0"/>
+            <field type="WATER" x="15" y="9" points="0"/>
+            <field type="BLOCKED" x="12" y="12" points="1"/>
+            <field type="BLOCKED" x="13" y="11" points="1"/>
+            <field type="WATER" x="14" y="11" points="1"/>
+            <field type="WATER" x="14" y="10" points="1"/>
+            <field type="WATER" x="15" y="10" points="1"/>
+            <field type="WATER" x="13" y="13" points="2"/>
+            <field type="WATER" x="13" y="12" points="2"/>
+            <field type="BLOCKED" x="14" y="12" points="2"/>
+            <field type="LOG" x="15" y="11" points="2"/>
+            <field type="PASSENGER4" x="16" y="11" points="2"/>
+            <field type="LOG" x="14" y="13" points="3"/>
+            <field type="WATER" x="15" y="13" points="3"/>
+            <field type="WATER" x="15" y="12" points="3"/>
+            <field type="WATER" x="16" y="12" points="3"/>
+            <field type="WATER" x="13" y="14" points="3"/>
+            <field type="WATER" x="14" y="14" points="4"/>
+            <field type="WATER" x="15" y="14" points="4"/>
+            <field type="WATER" x="16" y="13" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <acceleration order="0" acc="1"/>
+      <turn order="1" direction="-1"/>
+      <advance order="2" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="29" startPlayer="RED" currentPlayer="RED" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="28" x="13" y="6" direction="RIGHT" speed="2" coal="3" tile="4" passenger="1"/>
+    <blue displayName="Spieler 2" color="BLUE" points="36" x="15" y="10" direction="DOWN_RIGHT" speed="2" coal="6" tile="5" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="4" direction="0">
+          <fields>
+            <field type="WATER" x="10" y="10" points="0"/>
+            <field type="BLOCKED" x="10" y="6" points="0"/>
+            <field type="WATER" x="11" y="10" points="1"/>
+            <field type="SANDBANK" x="11" y="9" points="1"/>
+            <field type="SANDBANK" x="11" y="8" points="1"/>
+            <field type="WATER" x="11" y="7" points="1"/>
+            <field type="WATER" x="11" y="6" points="1"/>
+            <field type="WATER" x="12" y="10" points="2"/>
+            <field type="WATER" x="12" y="9" points="2"/>
+            <field type="WATER" x="12" y="8" points="2"/>
+            <field type="BLOCKED" x="12" y="7" points="2"/>
+            <field type="WATER" x="12" y="6" points="2"/>
+            <field type="WATER" x="13" y="9" points="3"/>
+            <field type="WATER" x="13" y="8" points="3"/>
+            <field type="PASSENGER5" x="13" y="7" points="3"/>
+            <field type="WATER" x="13" y="6" points="3"/>
+            <field type="WATER" x="13" y="10" points="3"/>
+            <field type="WATER" x="14" y="9" points="4"/>
+            <field type="WATER" x="14" y="8" points="4"/>
+            <field type="WATER" x="14" y="7" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="5" direction="5">
+          <fields>
+            <field type="WATER" x="12" y="11" points="0"/>
+            <field type="WATER" x="15" y="9" points="0"/>
+            <field type="BLOCKED" x="12" y="12" points="1"/>
+            <field type="BLOCKED" x="13" y="11" points="1"/>
+            <field type="WATER" x="14" y="11" points="1"/>
+            <field type="WATER" x="14" y="10" points="1"/>
+            <field type="WATER" x="15" y="10" points="1"/>
+            <field type="WATER" x="13" y="13" points="2"/>
+            <field type="WATER" x="13" y="12" points="2"/>
+            <field type="BLOCKED" x="14" y="12" points="2"/>
+            <field type="LOG" x="15" y="11" points="2"/>
+            <field type="PASSENGER4" x="16" y="11" points="2"/>
+            <field type="LOG" x="14" y="13" points="3"/>
+            <field type="WATER" x="15" y="13" points="3"/>
+            <field type="WATER" x="15" y="12" points="3"/>
+            <field type="WATER" x="16" y="12" points="3"/>
+            <field type="WATER" x="13" y="14" points="3"/>
+            <field type="WATER" x="14" y="14" points="4"/>
+            <field type="WATER" x="15" y="14" points="4"/>
+            <field type="WATER" x="16" y="13" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="6" direction="5">
+          <fields>
+            <field type="WATER" x="14" y="15" points="0"/>
+            <field type="SANDBANK" x="17" y="13" points="0"/>
+            <field type="WATER" x="14" y="16" points="1"/>
+            <field type="WATER" x="15" y="15" points="1"/>
+            <field type="WATER" x="16" y="15" points="1"/>
+            <field type="BLOCKED" x="16" y="14" points="1"/>
+            <field type="WATER" x="17" y="14" points="1"/>
+            <field type="SANDBANK" x="15" y="17" points="2"/>
+            <field type="WATER" x="15" y="16" points="2"/>
+            <field type="WATER" x="16" y="16" points="2"/>
+            <field type="WATER" x="17" y="15" points="2"/>
+            <field type="BLOCKED" x="18" y="15" points="2"/>
+            <field type="WATER" x="16" y="17" points="3"/>
+            <field type="WATER" x="17" y="17" points="3"/>
+            <field type="BLOCKED" x="17" y="16" points="3"/>
+            <field type="WATER" x="18" y="16" points="3"/>
+            <field type="WATER" x="15" y="18" points="3"/>
+            <field type="WATER" x="16" y="18" points="4"/>
+            <field type="WATER" x="17" y="18" points="4"/>
+            <field type="WATER" x="18" y="17" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <turn order="0" direction="-1"/>
+      <advance order="1" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="30" startPlayer="RED" currentPlayer="BLUE" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="29" x="14" y="8" direction="DOWN_RIGHT" speed="2" coal="3" tile="4" passenger="1"/>
+    <blue displayName="Spieler 2" color="BLUE" points="36" x="15" y="10" direction="DOWN_RIGHT" speed="2" coal="6" tile="5" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="4" direction="0">
+          <fields>
+            <field type="WATER" x="10" y="10" points="0"/>
+            <field type="BLOCKED" x="10" y="6" points="0"/>
+            <field type="WATER" x="11" y="10" points="1"/>
+            <field type="SANDBANK" x="11" y="9" points="1"/>
+            <field type="SANDBANK" x="11" y="8" points="1"/>
+            <field type="WATER" x="11" y="7" points="1"/>
+            <field type="WATER" x="11" y="6" points="1"/>
+            <field type="WATER" x="12" y="10" points="2"/>
+            <field type="WATER" x="12" y="9" points="2"/>
+            <field type="WATER" x="12" y="8" points="2"/>
+            <field type="BLOCKED" x="12" y="7" points="2"/>
+            <field type="WATER" x="12" y="6" points="2"/>
+            <field type="WATER" x="13" y="9" points="3"/>
+            <field type="WATER" x="13" y="8" points="3"/>
+            <field type="PASSENGER5" x="13" y="7" points="3"/>
+            <field type="WATER" x="13" y="6" points="3"/>
+            <field type="WATER" x="13" y="10" points="3"/>
+            <field type="WATER" x="14" y="9" points="4"/>
+            <field type="WATER" x="14" y="8" points="4"/>
+            <field type="WATER" x="14" y="7" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="5" direction="5">
+          <fields>
+            <field type="WATER" x="12" y="11" points="0"/>
+            <field type="WATER" x="15" y="9" points="0"/>
+            <field type="BLOCKED" x="12" y="12" points="1"/>
+            <field type="BLOCKED" x="13" y="11" points="1"/>
+            <field type="WATER" x="14" y="11" points="1"/>
+            <field type="WATER" x="14" y="10" points="1"/>
+            <field type="WATER" x="15" y="10" points="1"/>
+            <field type="WATER" x="13" y="13" points="2"/>
+            <field type="WATER" x="13" y="12" points="2"/>
+            <field type="BLOCKED" x="14" y="12" points="2"/>
+            <field type="LOG" x="15" y="11" points="2"/>
+            <field type="PASSENGER4" x="16" y="11" points="2"/>
+            <field type="LOG" x="14" y="13" points="3"/>
+            <field type="WATER" x="15" y="13" points="3"/>
+            <field type="WATER" x="15" y="12" points="3"/>
+            <field type="WATER" x="16" y="12" points="3"/>
+            <field type="WATER" x="13" y="14" points="3"/>
+            <field type="WATER" x="14" y="14" points="4"/>
+            <field type="WATER" x="15" y="14" points="4"/>
+            <field type="WATER" x="16" y="13" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="6" direction="5">
+          <fields>
+            <field type="WATER" x="14" y="15" points="0"/>
+            <field type="SANDBANK" x="17" y="13" points="0"/>
+            <field type="WATER" x="14" y="16" points="1"/>
+            <field type="WATER" x="15" y="15" points="1"/>
+            <field type="WATER" x="16" y="15" points="1"/>
+            <field type="BLOCKED" x="16" y="14" points="1"/>
+            <field type="WATER" x="17" y="14" points="1"/>
+            <field type="SANDBANK" x="15" y="17" points="2"/>
+            <field type="WATER" x="15" y="16" points="2"/>
+            <field type="WATER" x="16" y="16" points="2"/>
+            <field type="WATER" x="17" y="15" points="2"/>
+            <field type="BLOCKED" x="18" y="15" points="2"/>
+            <field type="WATER" x="16" y="17" points="3"/>
+            <field type="WATER" x="17" y="17" points="3"/>
+            <field type="BLOCKED" x="17" y="16" points="3"/>
+            <field type="WATER" x="18" y="16" points="3"/>
+            <field type="WATER" x="15" y="18" points="3"/>
+            <field type="WATER" x="16" y="18" points="4"/>
+            <field type="WATER" x="17" y="18" points="4"/>
+            <field type="WATER" x="18" y="17" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <turn order="0" direction="-1"/>
+      <advance order="1" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="31" startPlayer="RED" currentPlayer="RED" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="29" x="14" y="8" direction="DOWN_RIGHT" speed="2" coal="3" tile="4" passenger="1"/>
+    <blue displayName="Spieler 2" color="BLUE" points="37" x="15" y="11" direction="DOWN_LEFT" speed="1" coal="6" tile="5" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="4" direction="0">
+          <fields>
+            <field type="WATER" x="10" y="10" points="0"/>
+            <field type="BLOCKED" x="10" y="6" points="0"/>
+            <field type="WATER" x="11" y="10" points="1"/>
+            <field type="SANDBANK" x="11" y="9" points="1"/>
+            <field type="SANDBANK" x="11" y="8" points="1"/>
+            <field type="WATER" x="11" y="7" points="1"/>
+            <field type="WATER" x="11" y="6" points="1"/>
+            <field type="WATER" x="12" y="10" points="2"/>
+            <field type="WATER" x="12" y="9" points="2"/>
+            <field type="WATER" x="12" y="8" points="2"/>
+            <field type="BLOCKED" x="12" y="7" points="2"/>
+            <field type="WATER" x="12" y="6" points="2"/>
+            <field type="WATER" x="13" y="9" points="3"/>
+            <field type="WATER" x="13" y="8" points="3"/>
+            <field type="PASSENGER5" x="13" y="7" points="3"/>
+            <field type="WATER" x="13" y="6" points="3"/>
+            <field type="WATER" x="13" y="10" points="3"/>
+            <field type="WATER" x="14" y="9" points="4"/>
+            <field type="WATER" x="14" y="8" points="4"/>
+            <field type="WATER" x="14" y="7" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="5" direction="5">
+          <fields>
+            <field type="WATER" x="12" y="11" points="0"/>
+            <field type="WATER" x="15" y="9" points="0"/>
+            <field type="BLOCKED" x="12" y="12" points="1"/>
+            <field type="BLOCKED" x="13" y="11" points="1"/>
+            <field type="WATER" x="14" y="11" points="1"/>
+            <field type="WATER" x="14" y="10" points="1"/>
+            <field type="WATER" x="15" y="10" points="1"/>
+            <field type="WATER" x="13" y="13" points="2"/>
+            <field type="WATER" x="13" y="12" points="2"/>
+            <field type="BLOCKED" x="14" y="12" points="2"/>
+            <field type="LOG" x="15" y="11" points="2"/>
+            <field type="PASSENGER4" x="16" y="11" points="2"/>
+            <field type="LOG" x="14" y="13" points="3"/>
+            <field type="WATER" x="15" y="13" points="3"/>
+            <field type="WATER" x="15" y="12" points="3"/>
+            <field type="WATER" x="16" y="12" points="3"/>
+            <field type="WATER" x="13" y="14" points="3"/>
+            <field type="WATER" x="14" y="14" points="4"/>
+            <field type="WATER" x="15" y="14" points="4"/>
+            <field type="WATER" x="16" y="13" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="6" direction="5">
+          <fields>
+            <field type="WATER" x="14" y="15" points="0"/>
+            <field type="SANDBANK" x="17" y="13" points="0"/>
+            <field type="WATER" x="14" y="16" points="1"/>
+            <field type="WATER" x="15" y="15" points="1"/>
+            <field type="WATER" x="16" y="15" points="1"/>
+            <field type="BLOCKED" x="16" y="14" points="1"/>
+            <field type="WATER" x="17" y="14" points="1"/>
+            <field type="SANDBANK" x="15" y="17" points="2"/>
+            <field type="WATER" x="15" y="16" points="2"/>
+            <field type="WATER" x="16" y="16" points="2"/>
+            <field type="WATER" x="17" y="15" points="2"/>
+            <field type="BLOCKED" x="18" y="15" points="2"/>
+            <field type="WATER" x="16" y="17" points="3"/>
+            <field type="WATER" x="17" y="17" points="3"/>
+            <field type="BLOCKED" x="17" y="16" points="3"/>
+            <field type="WATER" x="18" y="16" points="3"/>
+            <field type="WATER" x="15" y="18" points="3"/>
+            <field type="WATER" x="16" y="18" points="4"/>
+            <field type="WATER" x="17" y="18" points="4"/>
+            <field type="WATER" x="18" y="17" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <turn order="0" direction="-1"/>
+      <advance order="1" distance="1"/>
+    </lastMove>
+  </state>
+  <state turn="32" startPlayer="RED" currentPlayer="BLUE" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="33" x="13" y="8" direction="LEFT" speed="1" coal="2" tile="4" passenger="2"/>
+    <blue displayName="Spieler 2" color="BLUE" points="37" x="15" y="11" direction="DOWN_LEFT" speed="1" coal="6" tile="5" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="4" direction="0">
+          <fields>
+            <field type="WATER" x="10" y="10" points="0"/>
+            <field type="BLOCKED" x="10" y="6" points="0"/>
+            <field type="WATER" x="11" y="10" points="1"/>
+            <field type="SANDBANK" x="11" y="9" points="1"/>
+            <field type="SANDBANK" x="11" y="8" points="1"/>
+            <field type="WATER" x="11" y="7" points="1"/>
+            <field type="WATER" x="11" y="6" points="1"/>
+            <field type="WATER" x="12" y="10" points="2"/>
+            <field type="WATER" x="12" y="9" points="2"/>
+            <field type="WATER" x="12" y="8" points="2"/>
+            <field type="BLOCKED" x="12" y="7" points="2"/>
+            <field type="WATER" x="12" y="6" points="2"/>
+            <field type="WATER" x="13" y="9" points="3"/>
+            <field type="WATER" x="13" y="8" points="3"/>
+            <field type="BLOCKED" x="13" y="7" points="3"/>
+            <field type="WATER" x="13" y="6" points="3"/>
+            <field type="WATER" x="13" y="10" points="3"/>
+            <field type="WATER" x="14" y="9" points="4"/>
+            <field type="WATER" x="14" y="8" points="4"/>
+            <field type="WATER" x="14" y="7" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="5" direction="5">
+          <fields>
+            <field type="WATER" x="12" y="11" points="0"/>
+            <field type="WATER" x="15" y="9" points="0"/>
+            <field type="BLOCKED" x="12" y="12" points="1"/>
+            <field type="BLOCKED" x="13" y="11" points="1"/>
+            <field type="WATER" x="14" y="11" points="1"/>
+            <field type="WATER" x="14" y="10" points="1"/>
+            <field type="WATER" x="15" y="10" points="1"/>
+            <field type="WATER" x="13" y="13" points="2"/>
+            <field type="WATER" x="13" y="12" points="2"/>
+            <field type="BLOCKED" x="14" y="12" points="2"/>
+            <field type="LOG" x="15" y="11" points="2"/>
+            <field type="PASSENGER4" x="16" y="11" points="2"/>
+            <field type="LOG" x="14" y="13" points="3"/>
+            <field type="WATER" x="15" y="13" points="3"/>
+            <field type="WATER" x="15" y="12" points="3"/>
+            <field type="WATER" x="16" y="12" points="3"/>
+            <field type="WATER" x="13" y="14" points="3"/>
+            <field type="WATER" x="14" y="14" points="4"/>
+            <field type="WATER" x="15" y="14" points="4"/>
+            <field type="WATER" x="16" y="13" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="6" direction="5">
+          <fields>
+            <field type="WATER" x="14" y="15" points="0"/>
+            <field type="SANDBANK" x="17" y="13" points="0"/>
+            <field type="WATER" x="14" y="16" points="1"/>
+            <field type="WATER" x="15" y="15" points="1"/>
+            <field type="WATER" x="16" y="15" points="1"/>
+            <field type="BLOCKED" x="16" y="14" points="1"/>
+            <field type="WATER" x="17" y="14" points="1"/>
+            <field type="SANDBANK" x="15" y="17" points="2"/>
+            <field type="WATER" x="15" y="16" points="2"/>
+            <field type="WATER" x="16" y="16" points="2"/>
+            <field type="WATER" x="17" y="15" points="2"/>
+            <field type="BLOCKED" x="18" y="15" points="2"/>
+            <field type="WATER" x="16" y="17" points="3"/>
+            <field type="WATER" x="17" y="17" points="3"/>
+            <field type="BLOCKED" x="17" y="16" points="3"/>
+            <field type="WATER" x="18" y="16" points="3"/>
+            <field type="WATER" x="15" y="18" points="3"/>
+            <field type="WATER" x="16" y="18" points="4"/>
+            <field type="WATER" x="17" y="18" points="4"/>
+            <field type="WATER" x="18" y="17" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <acceleration order="0" acc="-1"/>
+      <turn order="1" direction="-2"/>
+      <advance order="2" distance="1"/>
+    </lastMove>
+  </state>
+  <state turn="33" startPlayer="RED" currentPlayer="RED" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="33" x="13" y="8" direction="LEFT" speed="1" coal="2" tile="4" passenger="2"/>
+    <blue displayName="Spieler 2" color="BLUE" points="39" x="16" y="13" direction="DOWN_RIGHT" speed="2" coal="6" tile="5" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="4" direction="0">
+          <fields>
+            <field type="WATER" x="10" y="10" points="0"/>
+            <field type="BLOCKED" x="10" y="6" points="0"/>
+            <field type="WATER" x="11" y="10" points="1"/>
+            <field type="SANDBANK" x="11" y="9" points="1"/>
+            <field type="SANDBANK" x="11" y="8" points="1"/>
+            <field type="WATER" x="11" y="7" points="1"/>
+            <field type="WATER" x="11" y="6" points="1"/>
+            <field type="WATER" x="12" y="10" points="2"/>
+            <field type="WATER" x="12" y="9" points="2"/>
+            <field type="WATER" x="12" y="8" points="2"/>
+            <field type="BLOCKED" x="12" y="7" points="2"/>
+            <field type="WATER" x="12" y="6" points="2"/>
+            <field type="WATER" x="13" y="9" points="3"/>
+            <field type="WATER" x="13" y="8" points="3"/>
+            <field type="BLOCKED" x="13" y="7" points="3"/>
+            <field type="WATER" x="13" y="6" points="3"/>
+            <field type="WATER" x="13" y="10" points="3"/>
+            <field type="WATER" x="14" y="9" points="4"/>
+            <field type="WATER" x="14" y="8" points="4"/>
+            <field type="WATER" x="14" y="7" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="5" direction="5">
+          <fields>
+            <field type="WATER" x="12" y="11" points="0"/>
+            <field type="WATER" x="15" y="9" points="0"/>
+            <field type="BLOCKED" x="12" y="12" points="1"/>
+            <field type="BLOCKED" x="13" y="11" points="1"/>
+            <field type="WATER" x="14" y="11" points="1"/>
+            <field type="WATER" x="14" y="10" points="1"/>
+            <field type="WATER" x="15" y="10" points="1"/>
+            <field type="WATER" x="13" y="13" points="2"/>
+            <field type="WATER" x="13" y="12" points="2"/>
+            <field type="BLOCKED" x="14" y="12" points="2"/>
+            <field type="LOG" x="15" y="11" points="2"/>
+            <field type="PASSENGER4" x="16" y="11" points="2"/>
+            <field type="LOG" x="14" y="13" points="3"/>
+            <field type="WATER" x="15" y="13" points="3"/>
+            <field type="WATER" x="15" y="12" points="3"/>
+            <field type="WATER" x="16" y="12" points="3"/>
+            <field type="WATER" x="13" y="14" points="3"/>
+            <field type="WATER" x="14" y="14" points="4"/>
+            <field type="WATER" x="15" y="14" points="4"/>
+            <field type="WATER" x="16" y="13" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="6" direction="5">
+          <fields>
+            <field type="WATER" x="14" y="15" points="0"/>
+            <field type="SANDBANK" x="17" y="13" points="0"/>
+            <field type="WATER" x="14" y="16" points="1"/>
+            <field type="WATER" x="15" y="15" points="1"/>
+            <field type="WATER" x="16" y="15" points="1"/>
+            <field type="BLOCKED" x="16" y="14" points="1"/>
+            <field type="WATER" x="17" y="14" points="1"/>
+            <field type="SANDBANK" x="15" y="17" points="2"/>
+            <field type="WATER" x="15" y="16" points="2"/>
+            <field type="WATER" x="16" y="16" points="2"/>
+            <field type="WATER" x="17" y="15" points="2"/>
+            <field type="BLOCKED" x="18" y="15" points="2"/>
+            <field type="WATER" x="16" y="17" points="3"/>
+            <field type="WATER" x="17" y="17" points="3"/>
+            <field type="BLOCKED" x="17" y="16" points="3"/>
+            <field type="WATER" x="18" y="16" points="3"/>
+            <field type="WATER" x="15" y="18" points="3"/>
+            <field type="WATER" x="16" y="18" points="4"/>
+            <field type="WATER" x="17" y="18" points="4"/>
+            <field type="WATER" x="18" y="17" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <acceleration order="0" acc="1"/>
+      <turn order="1" direction="1"/>
+      <advance order="2" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="34" startPlayer="RED" currentPlayer="BLUE" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="36" x="14" y="10" direction="DOWN_RIGHT" speed="2" coal="1" tile="5" passenger="2"/>
+    <blue displayName="Spieler 2" color="BLUE" points="39" x="16" y="13" direction="DOWN_RIGHT" speed="2" coal="6" tile="5" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="5" direction="5">
+          <fields>
+            <field type="WATER" x="12" y="11" points="0"/>
+            <field type="WATER" x="15" y="9" points="0"/>
+            <field type="BLOCKED" x="12" y="12" points="1"/>
+            <field type="BLOCKED" x="13" y="11" points="1"/>
+            <field type="WATER" x="14" y="11" points="1"/>
+            <field type="WATER" x="14" y="10" points="1"/>
+            <field type="WATER" x="15" y="10" points="1"/>
+            <field type="WATER" x="13" y="13" points="2"/>
+            <field type="WATER" x="13" y="12" points="2"/>
+            <field type="BLOCKED" x="14" y="12" points="2"/>
+            <field type="LOG" x="15" y="11" points="2"/>
+            <field type="PASSENGER4" x="16" y="11" points="2"/>
+            <field type="LOG" x="14" y="13" points="3"/>
+            <field type="WATER" x="15" y="13" points="3"/>
+            <field type="WATER" x="15" y="12" points="3"/>
+            <field type="WATER" x="16" y="12" points="3"/>
+            <field type="WATER" x="13" y="14" points="3"/>
+            <field type="WATER" x="14" y="14" points="4"/>
+            <field type="WATER" x="15" y="14" points="4"/>
+            <field type="WATER" x="16" y="13" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="6" direction="5">
+          <fields>
+            <field type="WATER" x="14" y="15" points="0"/>
+            <field type="SANDBANK" x="17" y="13" points="0"/>
+            <field type="WATER" x="14" y="16" points="1"/>
+            <field type="WATER" x="15" y="15" points="1"/>
+            <field type="WATER" x="16" y="15" points="1"/>
+            <field type="BLOCKED" x="16" y="14" points="1"/>
+            <field type="WATER" x="17" y="14" points="1"/>
+            <field type="SANDBANK" x="15" y="17" points="2"/>
+            <field type="WATER" x="15" y="16" points="2"/>
+            <field type="WATER" x="16" y="16" points="2"/>
+            <field type="WATER" x="17" y="15" points="2"/>
+            <field type="BLOCKED" x="18" y="15" points="2"/>
+            <field type="WATER" x="16" y="17" points="3"/>
+            <field type="WATER" x="17" y="17" points="3"/>
+            <field type="BLOCKED" x="17" y="16" points="3"/>
+            <field type="WATER" x="18" y="16" points="3"/>
+            <field type="WATER" x="15" y="18" points="3"/>
+            <field type="WATER" x="16" y="18" points="4"/>
+            <field type="WATER" x="17" y="18" points="4"/>
+            <field type="WATER" x="18" y="17" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <acceleration order="0" acc="1"/>
+      <turn order="1" direction="2"/>
+      <advance order="2" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="35" startPlayer="RED" currentPlayer="RED" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="36" x="14" y="10" direction="DOWN_RIGHT" speed="2" coal="1" tile="5" passenger="2"/>
+    <blue displayName="Spieler 2" color="BLUE" points="41" x="15" y="15" direction="DOWN_LEFT" speed="2" coal="6" tile="6" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="5" direction="5">
+          <fields>
+            <field type="WATER" x="12" y="11" points="0"/>
+            <field type="WATER" x="15" y="9" points="0"/>
+            <field type="BLOCKED" x="12" y="12" points="1"/>
+            <field type="BLOCKED" x="13" y="11" points="1"/>
+            <field type="WATER" x="14" y="11" points="1"/>
+            <field type="WATER" x="14" y="10" points="1"/>
+            <field type="WATER" x="15" y="10" points="1"/>
+            <field type="WATER" x="13" y="13" points="2"/>
+            <field type="WATER" x="13" y="12" points="2"/>
+            <field type="BLOCKED" x="14" y="12" points="2"/>
+            <field type="LOG" x="15" y="11" points="2"/>
+            <field type="PASSENGER4" x="16" y="11" points="2"/>
+            <field type="LOG" x="14" y="13" points="3"/>
+            <field type="WATER" x="15" y="13" points="3"/>
+            <field type="WATER" x="15" y="12" points="3"/>
+            <field type="WATER" x="16" y="12" points="3"/>
+            <field type="WATER" x="13" y="14" points="3"/>
+            <field type="WATER" x="14" y="14" points="4"/>
+            <field type="WATER" x="15" y="14" points="4"/>
+            <field type="WATER" x="16" y="13" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="6" direction="5">
+          <fields>
+            <field type="WATER" x="14" y="15" points="0"/>
+            <field type="SANDBANK" x="17" y="13" points="0"/>
+            <field type="WATER" x="14" y="16" points="1"/>
+            <field type="WATER" x="15" y="15" points="1"/>
+            <field type="WATER" x="16" y="15" points="1"/>
+            <field type="BLOCKED" x="16" y="14" points="1"/>
+            <field type="WATER" x="17" y="14" points="1"/>
+            <field type="SANDBANK" x="15" y="17" points="2"/>
+            <field type="WATER" x="15" y="16" points="2"/>
+            <field type="WATER" x="16" y="16" points="2"/>
+            <field type="WATER" x="17" y="15" points="2"/>
+            <field type="BLOCKED" x="18" y="15" points="2"/>
+            <field type="WATER" x="16" y="17" points="3"/>
+            <field type="WATER" x="17" y="17" points="3"/>
+            <field type="BLOCKED" x="17" y="16" points="3"/>
+            <field type="WATER" x="18" y="16" points="3"/>
+            <field type="WATER" x="15" y="18" points="3"/>
+            <field type="WATER" x="16" y="18" points="4"/>
+            <field type="WATER" x="17" y="18" points="4"/>
+            <field type="WATER" x="18" y="17" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="7" direction="5">
+          <fields>
+            <field type="WATER" x="16" y="19" points="0"/>
+            <field type="WATER" x="19" y="17" points="0"/>
+            <field type="WATER" x="16" y="20" points="1"/>
+            <field type="WATER" x="17" y="19" points="1"/>
+            <field type="WATER" x="18" y="19" points="1"/>
+            <field type="WATER" x="18" y="18" points="1"/>
+            <field type="BLOCKED" x="19" y="18" points="1"/>
+            <field type="WATER" x="17" y="21" points="2"/>
+            <field type="BLOCKED" x="17" y="20" points="2"/>
+            <field type="WATER" x="18" y="20" points="2"/>
+            <field type="WATER" x="19" y="19" points="2"/>
+            <field type="WATER" x="20" y="19" points="2"/>
+            <field type="WATER" x="18" y="21" points="3"/>
+            <field type="LOG" x="19" y="21" points="3"/>
+            <field type="WATER" x="19" y="20" points="3"/>
+            <field type="WATER" x="20" y="20" points="3"/>
+            <field type="WATER" x="17" y="22" points="3"/>
+            <field type="GOAL" x="18" y="22" points="4"/>
+            <field type="GOAL" x="19" y="22" points="4"/>
+            <field type="GOAL" x="20" y="21" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <turn order="0" direction="-1"/>
+      <advance order="1" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="36" startPlayer="RED" currentPlayer="BLUE" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="37" x="13" y="12" direction="DOWN_LEFT" speed="2" coal="1" tile="5" passenger="2"/>
+    <blue displayName="Spieler 2" color="BLUE" points="41" x="15" y="15" direction="DOWN_LEFT" speed="2" coal="6" tile="6" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="5" direction="5">
+          <fields>
+            <field type="WATER" x="12" y="11" points="0"/>
+            <field type="WATER" x="15" y="9" points="0"/>
+            <field type="BLOCKED" x="12" y="12" points="1"/>
+            <field type="BLOCKED" x="13" y="11" points="1"/>
+            <field type="WATER" x="14" y="11" points="1"/>
+            <field type="WATER" x="14" y="10" points="1"/>
+            <field type="WATER" x="15" y="10" points="1"/>
+            <field type="WATER" x="13" y="13" points="2"/>
+            <field type="WATER" x="13" y="12" points="2"/>
+            <field type="BLOCKED" x="14" y="12" points="2"/>
+            <field type="LOG" x="15" y="11" points="2"/>
+            <field type="PASSENGER4" x="16" y="11" points="2"/>
+            <field type="LOG" x="14" y="13" points="3"/>
+            <field type="WATER" x="15" y="13" points="3"/>
+            <field type="WATER" x="15" y="12" points="3"/>
+            <field type="WATER" x="16" y="12" points="3"/>
+            <field type="WATER" x="13" y="14" points="3"/>
+            <field type="WATER" x="14" y="14" points="4"/>
+            <field type="WATER" x="15" y="14" points="4"/>
+            <field type="WATER" x="16" y="13" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="6" direction="5">
+          <fields>
+            <field type="WATER" x="14" y="15" points="0"/>
+            <field type="SANDBANK" x="17" y="13" points="0"/>
+            <field type="WATER" x="14" y="16" points="1"/>
+            <field type="WATER" x="15" y="15" points="1"/>
+            <field type="WATER" x="16" y="15" points="1"/>
+            <field type="BLOCKED" x="16" y="14" points="1"/>
+            <field type="WATER" x="17" y="14" points="1"/>
+            <field type="SANDBANK" x="15" y="17" points="2"/>
+            <field type="WATER" x="15" y="16" points="2"/>
+            <field type="WATER" x="16" y="16" points="2"/>
+            <field type="WATER" x="17" y="15" points="2"/>
+            <field type="BLOCKED" x="18" y="15" points="2"/>
+            <field type="WATER" x="16" y="17" points="3"/>
+            <field type="WATER" x="17" y="17" points="3"/>
+            <field type="BLOCKED" x="17" y="16" points="3"/>
+            <field type="WATER" x="18" y="16" points="3"/>
+            <field type="WATER" x="15" y="18" points="3"/>
+            <field type="WATER" x="16" y="18" points="4"/>
+            <field type="WATER" x="17" y="18" points="4"/>
+            <field type="WATER" x="18" y="17" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="7" direction="5">
+          <fields>
+            <field type="WATER" x="16" y="19" points="0"/>
+            <field type="WATER" x="19" y="17" points="0"/>
+            <field type="WATER" x="16" y="20" points="1"/>
+            <field type="WATER" x="17" y="19" points="1"/>
+            <field type="WATER" x="18" y="19" points="1"/>
+            <field type="WATER" x="18" y="18" points="1"/>
+            <field type="BLOCKED" x="19" y="18" points="1"/>
+            <field type="WATER" x="17" y="21" points="2"/>
+            <field type="BLOCKED" x="17" y="20" points="2"/>
+            <field type="WATER" x="18" y="20" points="2"/>
+            <field type="WATER" x="19" y="19" points="2"/>
+            <field type="WATER" x="20" y="19" points="2"/>
+            <field type="WATER" x="18" y="21" points="3"/>
+            <field type="LOG" x="19" y="21" points="3"/>
+            <field type="WATER" x="19" y="20" points="3"/>
+            <field type="WATER" x="20" y="20" points="3"/>
+            <field type="WATER" x="17" y="22" points="3"/>
+            <field type="GOAL" x="18" y="22" points="4"/>
+            <field type="GOAL" x="19" y="22" points="4"/>
+            <field type="GOAL" x="20" y="21" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <turn order="0" direction="-1"/>
+      <advance order="1" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="37" startPlayer="RED" currentPlayer="RED" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="37" x="13" y="12" direction="DOWN_LEFT" speed="2" coal="1" tile="5" passenger="2"/>
+    <blue displayName="Spieler 2" color="BLUE" points="43" x="16" y="17" direction="DOWN_RIGHT" speed="2" coal="6" tile="6" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="5" direction="5">
+          <fields>
+            <field type="WATER" x="12" y="11" points="0"/>
+            <field type="WATER" x="15" y="9" points="0"/>
+            <field type="BLOCKED" x="12" y="12" points="1"/>
+            <field type="BLOCKED" x="13" y="11" points="1"/>
+            <field type="WATER" x="14" y="11" points="1"/>
+            <field type="WATER" x="14" y="10" points="1"/>
+            <field type="WATER" x="15" y="10" points="1"/>
+            <field type="WATER" x="13" y="13" points="2"/>
+            <field type="WATER" x="13" y="12" points="2"/>
+            <field type="BLOCKED" x="14" y="12" points="2"/>
+            <field type="LOG" x="15" y="11" points="2"/>
+            <field type="PASSENGER4" x="16" y="11" points="2"/>
+            <field type="LOG" x="14" y="13" points="3"/>
+            <field type="WATER" x="15" y="13" points="3"/>
+            <field type="WATER" x="15" y="12" points="3"/>
+            <field type="WATER" x="16" y="12" points="3"/>
+            <field type="WATER" x="13" y="14" points="3"/>
+            <field type="WATER" x="14" y="14" points="4"/>
+            <field type="WATER" x="15" y="14" points="4"/>
+            <field type="WATER" x="16" y="13" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="6" direction="5">
+          <fields>
+            <field type="WATER" x="14" y="15" points="0"/>
+            <field type="SANDBANK" x="17" y="13" points="0"/>
+            <field type="WATER" x="14" y="16" points="1"/>
+            <field type="WATER" x="15" y="15" points="1"/>
+            <field type="WATER" x="16" y="15" points="1"/>
+            <field type="BLOCKED" x="16" y="14" points="1"/>
+            <field type="WATER" x="17" y="14" points="1"/>
+            <field type="SANDBANK" x="15" y="17" points="2"/>
+            <field type="WATER" x="15" y="16" points="2"/>
+            <field type="WATER" x="16" y="16" points="2"/>
+            <field type="WATER" x="17" y="15" points="2"/>
+            <field type="BLOCKED" x="18" y="15" points="2"/>
+            <field type="WATER" x="16" y="17" points="3"/>
+            <field type="WATER" x="17" y="17" points="3"/>
+            <field type="BLOCKED" x="17" y="16" points="3"/>
+            <field type="WATER" x="18" y="16" points="3"/>
+            <field type="WATER" x="15" y="18" points="3"/>
+            <field type="WATER" x="16" y="18" points="4"/>
+            <field type="WATER" x="17" y="18" points="4"/>
+            <field type="WATER" x="18" y="17" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="7" direction="5">
+          <fields>
+            <field type="WATER" x="16" y="19" points="0"/>
+            <field type="WATER" x="19" y="17" points="0"/>
+            <field type="WATER" x="16" y="20" points="1"/>
+            <field type="WATER" x="17" y="19" points="1"/>
+            <field type="WATER" x="18" y="19" points="1"/>
+            <field type="WATER" x="18" y="18" points="1"/>
+            <field type="BLOCKED" x="19" y="18" points="1"/>
+            <field type="WATER" x="17" y="21" points="2"/>
+            <field type="BLOCKED" x="17" y="20" points="2"/>
+            <field type="WATER" x="18" y="20" points="2"/>
+            <field type="WATER" x="19" y="19" points="2"/>
+            <field type="WATER" x="20" y="19" points="2"/>
+            <field type="WATER" x="18" y="21" points="3"/>
+            <field type="LOG" x="19" y="21" points="3"/>
+            <field type="WATER" x="19" y="20" points="3"/>
+            <field type="WATER" x="20" y="20" points="3"/>
+            <field type="WATER" x="17" y="22" points="3"/>
+            <field type="GOAL" x="18" y="22" points="4"/>
+            <field type="GOAL" x="19" y="22" points="4"/>
+            <field type="GOAL" x="20" y="21" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <turn order="0" direction="1"/>
+      <advance order="1" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="38" startPlayer="RED" currentPlayer="BLUE" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="38" x="14" y="13" direction="DOWN_RIGHT" speed="1" coal="1" tile="5" passenger="2"/>
+    <blue displayName="Spieler 2" color="BLUE" points="43" x="16" y="17" direction="DOWN_RIGHT" speed="2" coal="6" tile="6" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="5" direction="5">
+          <fields>
+            <field type="WATER" x="12" y="11" points="0"/>
+            <field type="WATER" x="15" y="9" points="0"/>
+            <field type="BLOCKED" x="12" y="12" points="1"/>
+            <field type="BLOCKED" x="13" y="11" points="1"/>
+            <field type="WATER" x="14" y="11" points="1"/>
+            <field type="WATER" x="14" y="10" points="1"/>
+            <field type="WATER" x="15" y="10" points="1"/>
+            <field type="WATER" x="13" y="13" points="2"/>
+            <field type="WATER" x="13" y="12" points="2"/>
+            <field type="BLOCKED" x="14" y="12" points="2"/>
+            <field type="LOG" x="15" y="11" points="2"/>
+            <field type="PASSENGER4" x="16" y="11" points="2"/>
+            <field type="LOG" x="14" y="13" points="3"/>
+            <field type="WATER" x="15" y="13" points="3"/>
+            <field type="WATER" x="15" y="12" points="3"/>
+            <field type="WATER" x="16" y="12" points="3"/>
+            <field type="WATER" x="13" y="14" points="3"/>
+            <field type="WATER" x="14" y="14" points="4"/>
+            <field type="WATER" x="15" y="14" points="4"/>
+            <field type="WATER" x="16" y="13" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="6" direction="5">
+          <fields>
+            <field type="WATER" x="14" y="15" points="0"/>
+            <field type="SANDBANK" x="17" y="13" points="0"/>
+            <field type="WATER" x="14" y="16" points="1"/>
+            <field type="WATER" x="15" y="15" points="1"/>
+            <field type="WATER" x="16" y="15" points="1"/>
+            <field type="BLOCKED" x="16" y="14" points="1"/>
+            <field type="WATER" x="17" y="14" points="1"/>
+            <field type="SANDBANK" x="15" y="17" points="2"/>
+            <field type="WATER" x="15" y="16" points="2"/>
+            <field type="WATER" x="16" y="16" points="2"/>
+            <field type="WATER" x="17" y="15" points="2"/>
+            <field type="BLOCKED" x="18" y="15" points="2"/>
+            <field type="WATER" x="16" y="17" points="3"/>
+            <field type="WATER" x="17" y="17" points="3"/>
+            <field type="BLOCKED" x="17" y="16" points="3"/>
+            <field type="WATER" x="18" y="16" points="3"/>
+            <field type="WATER" x="15" y="18" points="3"/>
+            <field type="WATER" x="16" y="18" points="4"/>
+            <field type="WATER" x="17" y="18" points="4"/>
+            <field type="WATER" x="18" y="17" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="7" direction="5">
+          <fields>
+            <field type="WATER" x="16" y="19" points="0"/>
+            <field type="WATER" x="19" y="17" points="0"/>
+            <field type="WATER" x="16" y="20" points="1"/>
+            <field type="WATER" x="17" y="19" points="1"/>
+            <field type="WATER" x="18" y="19" points="1"/>
+            <field type="WATER" x="18" y="18" points="1"/>
+            <field type="BLOCKED" x="19" y="18" points="1"/>
+            <field type="WATER" x="17" y="21" points="2"/>
+            <field type="BLOCKED" x="17" y="20" points="2"/>
+            <field type="WATER" x="18" y="20" points="2"/>
+            <field type="WATER" x="19" y="19" points="2"/>
+            <field type="WATER" x="20" y="19" points="2"/>
+            <field type="WATER" x="18" y="21" points="3"/>
+            <field type="LOG" x="19" y="21" points="3"/>
+            <field type="WATER" x="19" y="20" points="3"/>
+            <field type="WATER" x="20" y="20" points="3"/>
+            <field type="WATER" x="17" y="22" points="3"/>
+            <field type="GOAL" x="18" y="22" points="4"/>
+            <field type="GOAL" x="19" y="22" points="4"/>
+            <field type="GOAL" x="20" y="21" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <turn order="0" direction="1"/>
+      <advance order="1" distance="1"/>
+    </lastMove>
+  </state>
+  <state turn="39" startPlayer="RED" currentPlayer="RED" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="38" x="14" y="13" direction="DOWN_RIGHT" speed="1" coal="1" tile="5" passenger="2"/>
+    <blue displayName="Spieler 2" color="BLUE" points="46" x="17" y="19" direction="DOWN_RIGHT" speed="2" coal="6" tile="7" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="5" direction="5">
+          <fields>
+            <field type="WATER" x="12" y="11" points="0"/>
+            <field type="WATER" x="15" y="9" points="0"/>
+            <field type="BLOCKED" x="12" y="12" points="1"/>
+            <field type="BLOCKED" x="13" y="11" points="1"/>
+            <field type="WATER" x="14" y="11" points="1"/>
+            <field type="WATER" x="14" y="10" points="1"/>
+            <field type="WATER" x="15" y="10" points="1"/>
+            <field type="WATER" x="13" y="13" points="2"/>
+            <field type="WATER" x="13" y="12" points="2"/>
+            <field type="BLOCKED" x="14" y="12" points="2"/>
+            <field type="LOG" x="15" y="11" points="2"/>
+            <field type="PASSENGER4" x="16" y="11" points="2"/>
+            <field type="LOG" x="14" y="13" points="3"/>
+            <field type="WATER" x="15" y="13" points="3"/>
+            <field type="WATER" x="15" y="12" points="3"/>
+            <field type="WATER" x="16" y="12" points="3"/>
+            <field type="WATER" x="13" y="14" points="3"/>
+            <field type="WATER" x="14" y="14" points="4"/>
+            <field type="WATER" x="15" y="14" points="4"/>
+            <field type="WATER" x="16" y="13" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="6" direction="5">
+          <fields>
+            <field type="WATER" x="14" y="15" points="0"/>
+            <field type="SANDBANK" x="17" y="13" points="0"/>
+            <field type="WATER" x="14" y="16" points="1"/>
+            <field type="WATER" x="15" y="15" points="1"/>
+            <field type="WATER" x="16" y="15" points="1"/>
+            <field type="BLOCKED" x="16" y="14" points="1"/>
+            <field type="WATER" x="17" y="14" points="1"/>
+            <field type="SANDBANK" x="15" y="17" points="2"/>
+            <field type="WATER" x="15" y="16" points="2"/>
+            <field type="WATER" x="16" y="16" points="2"/>
+            <field type="WATER" x="17" y="15" points="2"/>
+            <field type="BLOCKED" x="18" y="15" points="2"/>
+            <field type="WATER" x="16" y="17" points="3"/>
+            <field type="WATER" x="17" y="17" points="3"/>
+            <field type="BLOCKED" x="17" y="16" points="3"/>
+            <field type="WATER" x="18" y="16" points="3"/>
+            <field type="WATER" x="15" y="18" points="3"/>
+            <field type="WATER" x="16" y="18" points="4"/>
+            <field type="WATER" x="17" y="18" points="4"/>
+            <field type="WATER" x="18" y="17" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="7" direction="5">
+          <fields>
+            <field type="WATER" x="16" y="19" points="0"/>
+            <field type="WATER" x="19" y="17" points="0"/>
+            <field type="WATER" x="16" y="20" points="1"/>
+            <field type="WATER" x="17" y="19" points="1"/>
+            <field type="WATER" x="18" y="19" points="1"/>
+            <field type="WATER" x="18" y="18" points="1"/>
+            <field type="BLOCKED" x="19" y="18" points="1"/>
+            <field type="WATER" x="17" y="21" points="2"/>
+            <field type="BLOCKED" x="17" y="20" points="2"/>
+            <field type="WATER" x="18" y="20" points="2"/>
+            <field type="WATER" x="19" y="19" points="2"/>
+            <field type="WATER" x="20" y="19" points="2"/>
+            <field type="WATER" x="18" y="21" points="3"/>
+            <field type="LOG" x="19" y="21" points="3"/>
+            <field type="WATER" x="19" y="20" points="3"/>
+            <field type="WATER" x="20" y="20" points="3"/>
+            <field type="WATER" x="17" y="22" points="3"/>
+            <field type="GOAL" x="18" y="22" points="4"/>
+            <field type="GOAL" x="19" y="22" points="4"/>
+            <field type="GOAL" x="20" y="21" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <advance order="0" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="40" startPlayer="RED" currentPlayer="BLUE" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="41" x="15" y="15" direction="DOWN_RIGHT" speed="2" coal="1" tile="6" passenger="2"/>
+    <blue displayName="Spieler 2" color="BLUE" points="46" x="17" y="19" direction="DOWN_RIGHT" speed="2" coal="6" tile="7" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="6" direction="5">
+          <fields>
+            <field type="WATER" x="14" y="15" points="0"/>
+            <field type="SANDBANK" x="17" y="13" points="0"/>
+            <field type="WATER" x="14" y="16" points="1"/>
+            <field type="WATER" x="15" y="15" points="1"/>
+            <field type="WATER" x="16" y="15" points="1"/>
+            <field type="BLOCKED" x="16" y="14" points="1"/>
+            <field type="WATER" x="17" y="14" points="1"/>
+            <field type="SANDBANK" x="15" y="17" points="2"/>
+            <field type="WATER" x="15" y="16" points="2"/>
+            <field type="WATER" x="16" y="16" points="2"/>
+            <field type="WATER" x="17" y="15" points="2"/>
+            <field type="BLOCKED" x="18" y="15" points="2"/>
+            <field type="WATER" x="16" y="17" points="3"/>
+            <field type="WATER" x="17" y="17" points="3"/>
+            <field type="BLOCKED" x="17" y="16" points="3"/>
+            <field type="WATER" x="18" y="16" points="3"/>
+            <field type="WATER" x="15" y="18" points="3"/>
+            <field type="WATER" x="16" y="18" points="4"/>
+            <field type="WATER" x="17" y="18" points="4"/>
+            <field type="WATER" x="18" y="17" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="7" direction="5">
+          <fields>
+            <field type="WATER" x="16" y="19" points="0"/>
+            <field type="WATER" x="19" y="17" points="0"/>
+            <field type="WATER" x="16" y="20" points="1"/>
+            <field type="WATER" x="17" y="19" points="1"/>
+            <field type="WATER" x="18" y="19" points="1"/>
+            <field type="WATER" x="18" y="18" points="1"/>
+            <field type="BLOCKED" x="19" y="18" points="1"/>
+            <field type="WATER" x="17" y="21" points="2"/>
+            <field type="BLOCKED" x="17" y="20" points="2"/>
+            <field type="WATER" x="18" y="20" points="2"/>
+            <field type="WATER" x="19" y="19" points="2"/>
+            <field type="WATER" x="20" y="19" points="2"/>
+            <field type="WATER" x="18" y="21" points="3"/>
+            <field type="LOG" x="19" y="21" points="3"/>
+            <field type="WATER" x="19" y="20" points="3"/>
+            <field type="WATER" x="20" y="20" points="3"/>
+            <field type="WATER" x="17" y="22" points="3"/>
+            <field type="GOAL" x="18" y="22" points="4"/>
+            <field type="GOAL" x="19" y="22" points="4"/>
+            <field type="GOAL" x="20" y="21" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <acceleration order="0" acc="1"/>
+      <advance order="1" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="41" startPlayer="RED" currentPlayer="RED" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="41" x="15" y="15" direction="DOWN_RIGHT" speed="2" coal="1" tile="6" passenger="2"/>
+    <blue displayName="Spieler 2" color="BLUE" points="47" x="19" y="19" direction="RIGHT" speed="2" coal="6" tile="7" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="6" direction="5">
+          <fields>
+            <field type="WATER" x="14" y="15" points="0"/>
+            <field type="SANDBANK" x="17" y="13" points="0"/>
+            <field type="WATER" x="14" y="16" points="1"/>
+            <field type="WATER" x="15" y="15" points="1"/>
+            <field type="WATER" x="16" y="15" points="1"/>
+            <field type="BLOCKED" x="16" y="14" points="1"/>
+            <field type="WATER" x="17" y="14" points="1"/>
+            <field type="SANDBANK" x="15" y="17" points="2"/>
+            <field type="WATER" x="15" y="16" points="2"/>
+            <field type="WATER" x="16" y="16" points="2"/>
+            <field type="WATER" x="17" y="15" points="2"/>
+            <field type="BLOCKED" x="18" y="15" points="2"/>
+            <field type="WATER" x="16" y="17" points="3"/>
+            <field type="WATER" x="17" y="17" points="3"/>
+            <field type="BLOCKED" x="17" y="16" points="3"/>
+            <field type="WATER" x="18" y="16" points="3"/>
+            <field type="WATER" x="15" y="18" points="3"/>
+            <field type="WATER" x="16" y="18" points="4"/>
+            <field type="WATER" x="17" y="18" points="4"/>
+            <field type="WATER" x="18" y="17" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="7" direction="5">
+          <fields>
+            <field type="WATER" x="16" y="19" points="0"/>
+            <field type="WATER" x="19" y="17" points="0"/>
+            <field type="WATER" x="16" y="20" points="1"/>
+            <field type="WATER" x="17" y="19" points="1"/>
+            <field type="WATER" x="18" y="19" points="1"/>
+            <field type="WATER" x="18" y="18" points="1"/>
+            <field type="BLOCKED" x="19" y="18" points="1"/>
+            <field type="WATER" x="17" y="21" points="2"/>
+            <field type="BLOCKED" x="17" y="20" points="2"/>
+            <field type="WATER" x="18" y="20" points="2"/>
+            <field type="WATER" x="19" y="19" points="2"/>
+            <field type="WATER" x="20" y="19" points="2"/>
+            <field type="WATER" x="18" y="21" points="3"/>
+            <field type="LOG" x="19" y="21" points="3"/>
+            <field type="WATER" x="19" y="20" points="3"/>
+            <field type="WATER" x="20" y="20" points="3"/>
+            <field type="WATER" x="17" y="22" points="3"/>
+            <field type="GOAL" x="18" y="22" points="4"/>
+            <field type="GOAL" x="19" y="22" points="4"/>
+            <field type="GOAL" x="20" y="21" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <turn order="0" direction="1"/>
+      <advance order="1" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="42" startPlayer="RED" currentPlayer="BLUE" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="43" x="16" y="17" direction="DOWN_RIGHT" speed="2" coal="1" tile="6" passenger="2"/>
+    <blue displayName="Spieler 2" color="BLUE" points="47" x="19" y="19" direction="RIGHT" speed="2" coal="6" tile="7" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="6" direction="5">
+          <fields>
+            <field type="WATER" x="14" y="15" points="0"/>
+            <field type="SANDBANK" x="17" y="13" points="0"/>
+            <field type="WATER" x="14" y="16" points="1"/>
+            <field type="WATER" x="15" y="15" points="1"/>
+            <field type="WATER" x="16" y="15" points="1"/>
+            <field type="BLOCKED" x="16" y="14" points="1"/>
+            <field type="WATER" x="17" y="14" points="1"/>
+            <field type="SANDBANK" x="15" y="17" points="2"/>
+            <field type="WATER" x="15" y="16" points="2"/>
+            <field type="WATER" x="16" y="16" points="2"/>
+            <field type="WATER" x="17" y="15" points="2"/>
+            <field type="BLOCKED" x="18" y="15" points="2"/>
+            <field type="WATER" x="16" y="17" points="3"/>
+            <field type="WATER" x="17" y="17" points="3"/>
+            <field type="BLOCKED" x="17" y="16" points="3"/>
+            <field type="WATER" x="18" y="16" points="3"/>
+            <field type="WATER" x="15" y="18" points="3"/>
+            <field type="WATER" x="16" y="18" points="4"/>
+            <field type="WATER" x="17" y="18" points="4"/>
+            <field type="WATER" x="18" y="17" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="7" direction="5">
+          <fields>
+            <field type="WATER" x="16" y="19" points="0"/>
+            <field type="WATER" x="19" y="17" points="0"/>
+            <field type="WATER" x="16" y="20" points="1"/>
+            <field type="WATER" x="17" y="19" points="1"/>
+            <field type="WATER" x="18" y="19" points="1"/>
+            <field type="WATER" x="18" y="18" points="1"/>
+            <field type="BLOCKED" x="19" y="18" points="1"/>
+            <field type="WATER" x="17" y="21" points="2"/>
+            <field type="BLOCKED" x="17" y="20" points="2"/>
+            <field type="WATER" x="18" y="20" points="2"/>
+            <field type="WATER" x="19" y="19" points="2"/>
+            <field type="WATER" x="20" y="19" points="2"/>
+            <field type="WATER" x="18" y="21" points="3"/>
+            <field type="LOG" x="19" y="21" points="3"/>
+            <field type="WATER" x="19" y="20" points="3"/>
+            <field type="WATER" x="20" y="20" points="3"/>
+            <field type="WATER" x="17" y="22" points="3"/>
+            <field type="GOAL" x="18" y="22" points="4"/>
+            <field type="GOAL" x="19" y="22" points="4"/>
+            <field type="GOAL" x="20" y="21" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <advance order="0" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="43" startPlayer="RED" currentPlayer="RED" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="43" x="16" y="17" direction="DOWN_RIGHT" speed="2" coal="1" tile="6" passenger="2"/>
+    <blue displayName="Spieler 2" color="BLUE" points="49" x="20" y="21" direction="DOWN_RIGHT" speed="2" coal="6" tile="7" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="6" direction="5">
+          <fields>
+            <field type="WATER" x="14" y="15" points="0"/>
+            <field type="SANDBANK" x="17" y="13" points="0"/>
+            <field type="WATER" x="14" y="16" points="1"/>
+            <field type="WATER" x="15" y="15" points="1"/>
+            <field type="WATER" x="16" y="15" points="1"/>
+            <field type="BLOCKED" x="16" y="14" points="1"/>
+            <field type="WATER" x="17" y="14" points="1"/>
+            <field type="SANDBANK" x="15" y="17" points="2"/>
+            <field type="WATER" x="15" y="16" points="2"/>
+            <field type="WATER" x="16" y="16" points="2"/>
+            <field type="WATER" x="17" y="15" points="2"/>
+            <field type="BLOCKED" x="18" y="15" points="2"/>
+            <field type="WATER" x="16" y="17" points="3"/>
+            <field type="WATER" x="17" y="17" points="3"/>
+            <field type="BLOCKED" x="17" y="16" points="3"/>
+            <field type="WATER" x="18" y="16" points="3"/>
+            <field type="WATER" x="15" y="18" points="3"/>
+            <field type="WATER" x="16" y="18" points="4"/>
+            <field type="WATER" x="17" y="18" points="4"/>
+            <field type="WATER" x="18" y="17" points="4"/>
+          </fields>
+        </tile>
+        <tile visible="true" index="7" direction="5">
+          <fields>
+            <field type="WATER" x="16" y="19" points="0"/>
+            <field type="WATER" x="19" y="17" points="0"/>
+            <field type="WATER" x="16" y="20" points="1"/>
+            <field type="WATER" x="17" y="19" points="1"/>
+            <field type="WATER" x="18" y="19" points="1"/>
+            <field type="WATER" x="18" y="18" points="1"/>
+            <field type="BLOCKED" x="19" y="18" points="1"/>
+            <field type="WATER" x="17" y="21" points="2"/>
+            <field type="BLOCKED" x="17" y="20" points="2"/>
+            <field type="WATER" x="18" y="20" points="2"/>
+            <field type="WATER" x="19" y="19" points="2"/>
+            <field type="WATER" x="20" y="19" points="2"/>
+            <field type="WATER" x="18" y="21" points="3"/>
+            <field type="LOG" x="19" y="21" points="3"/>
+            <field type="WATER" x="19" y="20" points="3"/>
+            <field type="WATER" x="20" y="20" points="3"/>
+            <field type="WATER" x="17" y="22" points="3"/>
+            <field type="GOAL" x="18" y="22" points="4"/>
+            <field type="GOAL" x="19" y="22" points="4"/>
+            <field type="GOAL" x="20" y="21" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <turn order="0" direction="-1"/>
+      <advance order="1" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="44" startPlayer="RED" currentPlayer="BLUE" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="46" x="17" y="19" direction="DOWN_RIGHT" speed="2" coal="1" tile="7" passenger="2"/>
+    <blue displayName="Spieler 2" color="BLUE" points="49" x="20" y="21" direction="DOWN_RIGHT" speed="2" coal="6" tile="7" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="7" direction="5">
+          <fields>
+            <field type="WATER" x="16" y="19" points="0"/>
+            <field type="WATER" x="19" y="17" points="0"/>
+            <field type="WATER" x="16" y="20" points="1"/>
+            <field type="WATER" x="17" y="19" points="1"/>
+            <field type="WATER" x="18" y="19" points="1"/>
+            <field type="WATER" x="18" y="18" points="1"/>
+            <field type="BLOCKED" x="19" y="18" points="1"/>
+            <field type="WATER" x="17" y="21" points="2"/>
+            <field type="BLOCKED" x="17" y="20" points="2"/>
+            <field type="WATER" x="18" y="20" points="2"/>
+            <field type="WATER" x="19" y="19" points="2"/>
+            <field type="WATER" x="20" y="19" points="2"/>
+            <field type="WATER" x="18" y="21" points="3"/>
+            <field type="LOG" x="19" y="21" points="3"/>
+            <field type="WATER" x="19" y="20" points="3"/>
+            <field type="WATER" x="20" y="20" points="3"/>
+            <field type="WATER" x="17" y="22" points="3"/>
+            <field type="GOAL" x="18" y="22" points="4"/>
+            <field type="GOAL" x="19" y="22" points="4"/>
+            <field type="GOAL" x="20" y="21" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <advance order="0" distance="2"/>
+    </lastMove>
+  </state>
+  <state turn="45" startPlayer="RED" currentPlayer="RED" freeTurn="false">
+    <red displayName="Spieler 1" color="RED" points="46" x="17" y="19" direction="DOWN_RIGHT" speed="2" coal="1" tile="7" passenger="2"/>
+    <blue displayName="Spieler 2" color="BLUE" points="49" x="19" y="22" direction="DOWN_LEFT" speed="1" coal="6" tile="7" passenger="2"/>
+    <board>
+      <tiles>
+        <tile visible="true" index="7" direction="5">
+          <fields>
+            <field type="WATER" x="16" y="19" points="0"/>
+            <field type="WATER" x="19" y="17" points="0"/>
+            <field type="WATER" x="16" y="20" points="1"/>
+            <field type="WATER" x="17" y="19" points="1"/>
+            <field type="WATER" x="18" y="19" points="1"/>
+            <field type="WATER" x="18" y="18" points="1"/>
+            <field type="BLOCKED" x="19" y="18" points="1"/>
+            <field type="WATER" x="17" y="21" points="2"/>
+            <field type="BLOCKED" x="17" y="20" points="2"/>
+            <field type="WATER" x="18" y="20" points="2"/>
+            <field type="WATER" x="19" y="19" points="2"/>
+            <field type="WATER" x="20" y="19" points="2"/>
+            <field type="WATER" x="18" y="21" points="3"/>
+            <field type="LOG" x="19" y="21" points="3"/>
+            <field type="WATER" x="19" y="20" points="3"/>
+            <field type="WATER" x="20" y="20" points="3"/>
+            <field type="WATER" x="17" y="22" points="3"/>
+            <field type="GOAL" x="18" y="22" points="4"/>
+            <field type="GOAL" x="19" y="22" points="4"/>
+            <field type="GOAL" x="20" y="21" points="4"/>
+          </fields>
+        </tile>
+      </tiles>
+    </board>
+    <lastMove>
+      <acceleration order="0" acc="-1"/>
+      <turn order="1" direction="-1"/>
+      <advance order="2" distance="1"/>
+    </lastMove>
+  </state>
+  <result>
+    <definition>
+      <fragment name="Siegpunkte">
+        <aggregation>SUM</aggregation>
+        <relevantForRanking>false</relevantForRanking>
+      </fragment>
+      <fragment name="Punkte">
+        <aggregation>SUM</aggregation>
+        <relevantForRanking>true</relevantForRanking>
+      </fragment>
+      <fragment name="Passagiere">
+        <aggregation>SUM</aggregation>
+        <relevantForRanking>true</relevantForRanking>
+      </fragment>
+    </definition>
+    <score cause="REGULAR" reason="Das Spiel ist beendet.&#xa;Ein Spieler ist im Ziel">
+      <part>0</part>
+      <part>46</part>
+      <part>2</part>
+    </score>
+    <score cause="REGULAR" reason="Das Spiel ist beendet.&#xa;Ein Spieler ist im Ziel">
+      <part>2</part>
+      <part>49</part>
+      <part>2</part>
+    </score>
+    <winner class="player" displayName="Spieler 2" color="BLUE" points="49" x="19" y="22" direction="DOWN_LEFT" speed="1" coal="6" tile="7" passenger="2"/>
+  </result>
+</object-stream>
