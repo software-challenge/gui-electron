@@ -128,7 +128,8 @@ export class Viewer{
             for(let lt of this.lastBoard.tileIndices){//Iterate over tiles of the last board
                 if(state.board.tileIndices.indexOf(lt) == -1){//If they're not part of the current board
                     for(let f of this.lastBoard.getTileByIndex(lt).fields){
-                        this.scene.getMeshByName(f.id.toString()).position.y = -20;
+                        var tile  =this.scene.getMeshByName(f.id.toString());
+                        BABYLON.Animation.CreateAndStartAnimation("sinktile"+lt,tile,"position.y",30,90,tile.position.y,-2.5,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
                     }
                 }
             }
@@ -140,15 +141,21 @@ export class Viewer{
         console.log("Red: " + state.red.x + "," + state.red.y);
         var [px,py] = Grid.getCoordinates(state.red.x,state.red.y,3/2);
         var player1 = this.scene.getMeshByName('player1');
-        player1.position.x = px;
-        player1.position.z = py;
+
+        BABYLON.Animation.CreateAndStartAnimation("player1movex",player1,"position.x",30,30,player1.position.x,px,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+        BABYLON.Animation.CreateAndStartAnimation("player1movez",player1,"position.z",30,30,player1.position.z,py,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+        
+
+        //player1.position.x = px;
+        //player1.position.z = py;
 
         console.log("Blue: " + state.blue.x + "," + state.blue.y);
         [px,py] = Grid.getCoordinates(state.blue.x,state.blue.y,3/2);
         var player2 = this.scene.getMeshByName('player2');
-        player2.position.x = px;
-        player2.position.z = py;
-        
+        //player2.position.x = px;
+        //player2.position.z = py;
+        BABYLON.Animation.CreateAndStartAnimation("player2movex",player2,"position.x",30,30,player2.position.x,px,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+        BABYLON.Animation.CreateAndStartAnimation("player2movez",player2,"position.z",30,30,player2.position.z,py,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
 
         //Adjust camera
         let [x,y] = this.getCenterOfBoard(state.board);
