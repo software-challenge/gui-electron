@@ -1,5 +1,5 @@
 ///  <reference path="../node_modules/babylonjs/babylon.d.ts" />
-import {Replay, FIELDTYPE, Tile, GameState, Field, Board} from "./Replay";
+import {Replay, FIELDTYPE, Tile, GameState, Field, Board, DIRECTION} from "./Replay";
 import {Helpers} from "./Helpers";
 
 export class Viewer{
@@ -55,7 +55,7 @@ export class Viewer{
         this.camera = new BABYLON.ArcRotateCamera('camera1',Math.PI, Math.PI, 10,new BABYLON.Vector3(0,0,0),this.scene);
         this.camera.attachControl(this.canvas, false);
         this.camera.setPosition(new BABYLON.Vector3(3,3,15));
-        var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,1,0),this.scene);
+        var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,100,0),this.scene);
         var ground = BABYLON.Mesh.CreateGround('ground1', 400,400,1,this.scene);
         var groundmaterial = new BABYLON.StandardMaterial('groundMaterial', this.scene);
 
@@ -63,30 +63,54 @@ export class Viewer{
         player1material.diffuseColor = new BABYLON.Color3(1,0,0);
         var player2material = new BABYLON.StandardMaterial('player2material',this.scene);
         player2material.diffuseColor = new BABYLON.Color3(0,0,1);
-        var player1 = BABYLON.Mesh.CreateSphere("player1",15,2,this.scene,true,BABYLON.Mesh.DEFAULTSIDE);
+
+        var shape = [
+            new BABYLON.Vector3(1,0.5,0),
+            new BABYLON.Vector3(0,1,0),
+            new BABYLON.Vector3(-1,0.5,0),
+            new BABYLON.Vector3(-1,-1,0),
+            new BABYLON.Vector3(1,-1,0),
+            new BABYLON.Vector3(1,0.5,0)
+        ];
+
+        var path = [
+            BABYLON.Vector3.Zero(),
+            new BABYLON.Vector3(1,0,0)
+        ];
+
+        var player1 = BABYLON.Mesh.ExtrudeShape("player1",shape,path,1,0,BABYLON.Mesh.CAP_ALL,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+        player1.rotation.y = Math.PI / 2;
+        player1.rotation.z = Math.PI / 2;
+
+        //var player1 = BABYLON.Mesh.CreateSphere("player1",15,2,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
         player1.material = player1material;
-        player1.position.y = 3;
-        var player2 = BABYLON.Mesh.CreateSphere("player2",15,2,this.scene,true,BABYLON.Mesh.DEFAULTSIDE);
+        player1.position.y = 2;
+        //var player2 = BABYLON.Mesh.CreateSphere("player2",15,2,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+        var player2 = BABYLON.Mesh.ExtrudeShape("player2",shape,path,1,0,BABYLON.Mesh.CAP_ALL,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
         player2.material = player2material;
-        player2.position.y = 3;
+        player2.position.y = 2;
+        player2.rotation.y = Math.PI / 2;
+        player2.rotation.z = Math.PI / 2;
 
         groundmaterial.diffuseColor = new BABYLON.Color3(0.1,0.1,0.2);
         groundmaterial.specularColor = new BABYLON.Color3(1,1,1);
         ground.material = groundmaterial;
         FieldTypeMaterialFactory.init(this.scene);
-        this.camera.beta  =  0;//0.72;
-        this.camera.zoomOnFactor = 0;
+        this.camera.alpha = 6.3;
+        this.camera.beta  =  0.7;//0.72;
+        //this.camera.zoomOnFactor = 0;
         this.engine.runRenderLoop(() =>{
             this.scene.render();
             //this.camera.alpha += 0.003;
-            //this.debug.innerText = "currentRound: " + this.currentMove + ", α: " + this.camera.alpha.toString() + ", β: " + this.camera.beta.toString() + ", (x,y,z): " + this.camera.position.x + "," + this.camera.position.y + "," + this.camera.position.z;
+            this.debug.innerText = "currentRound: " + this.currentMove + ", α: " + this.camera.alpha.toString() + ", β: " + this.camera.beta.toString() + ", (x,y,z): " + this.camera.position.x + "," + this.camera.position.y + "," + this.camera.position.z;
             if(this.scene.meshUnderPointer){
                 this.debug.innerText = this.scene.meshUnderPointer.name;
             }
         });
         window.addEventListener('resize', () => {
             this.engine.resize();
-        })
+        });
+
         this.render(replay.states[this.currentMove]);
     }
 
@@ -124,12 +148,14 @@ export class Viewer{
             }
         }
 
+        var i = 0;
+
         if(this.lastBoard != null){
             for(let lt of this.lastBoard.tileIndices){//Iterate over tiles of the last board
                 if(state.board.tileIndices.indexOf(lt) == -1){//If they're not part of the current board
                     for(let f of this.lastBoard.getTileByIndex(lt).fields){
                         var tile  =this.scene.getMeshByName(f.id.toString());
-                        BABYLON.Animation.CreateAndStartAnimation("sinktile"+lt,tile,"position.y",30,90,tile.position.y,-2.5,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                        BABYLON.Animation.CreateAndStartAnimation("sinktile"+lt,tile,"position.y",30,60,tile.position.y,-3.5,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
                     }
                 }
             }
@@ -144,8 +170,8 @@ export class Viewer{
 
         BABYLON.Animation.CreateAndStartAnimation("player1movex",player1,"position.x",30,30,player1.position.x,px,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
         BABYLON.Animation.CreateAndStartAnimation("player1movez",player1,"position.z",30,30,player1.position.z,py,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-        
-
+        BABYLON.Animation.CreateAndStartAnimation("player1rotatez",player1,"rotation.y",30,30,player1.rotation.y,Grid.getRotation(state.red.direction),BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+        console.log("red: " + Grid.rotationToString(state.red.direction));
         //player1.position.x = px;
         //player1.position.z = py;
 
@@ -156,15 +182,19 @@ export class Viewer{
         //player2.position.z = py;
         BABYLON.Animation.CreateAndStartAnimation("player2movex",player2,"position.x",30,30,player2.position.x,px,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
         BABYLON.Animation.CreateAndStartAnimation("player2movez",player2,"position.z",30,30,player2.position.z,py,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+        BABYLON.Animation.CreateAndStartAnimation("player2rotatez",player2,"rotation.y",30,30,player2.rotation.y,Grid.getRotation(state.blue.direction),BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+        console.log("blue: " + Grid.rotationToString(state.blue.direction));
 
         //Adjust camera
         let [x,y] = this.getCenterOfBoard(state.board);
         //[x,y] = Grid.getCoordinates(x,y,3/2);
         console.log([x,y]);
         this.camera.setTarget(new BABYLON.Vector3(x,0,y));
-        this.camera.beta = 0;
-        this.camera.alpha = 4.5;
+        this.camera.beta = 0.7;
+        this.camera.alpha = 0;
         this.camera.radius = 75;
+
+        console.log("coal: " + state.red.coal);
     }
 }
 
@@ -183,7 +213,6 @@ class Grid {
         let width = Math.sqrt(3)/2 * height;
         let horiz = width;
         let px = (x * horiz) + (width / 2 * (1 - Math.abs(y % 2)));
-        console.log("x,y,y%2: " + x + "," + y + "," + Math.abs(y%2));
         let py = y * vert;
         /*
         let width = size * 2;
@@ -193,6 +222,40 @@ class Grid {
         let height = Math.sqrt(3) * width / 2;
         let py = y * height / 2;*/
         return [py, px];
+    }
+
+    public static getRotation(rot: DIRECTION){
+        switch(rot){
+            case DIRECTION.RIGHT:
+                return Math.PI / 2;
+            case DIRECTION.LEFT:
+                return -Math.PI / 2;
+            case DIRECTION.UP_RIGHT:
+                return Math.PI * 1/6;
+            case DIRECTION.UP_LEFT:
+                return -Math.PI * 1/6 ;
+            case DIRECTION.DOWN_RIGHT:
+                return Math.PI * 5/6;
+            case DIRECTION.DOWN_LEFT:
+                return Math.PI * 7/6;
+        }
+    }
+
+    public static rotationToString(rot: DIRECTION){
+        switch(rot){
+            case DIRECTION.RIGHT:
+                return"DIRECTION.RIGHT";
+            case DIRECTION.LEFT:
+                return "DIRECTION.LEFT";
+            case DIRECTION.UP_RIGHT:
+                return "DIRECTION.UP_RIGHT" ;
+            case DIRECTION.UP_LEFT:
+                return "DIRECTION.UP_LEFT" ;
+            case DIRECTION.DOWN_RIGHT:
+                return "DIRECTION.DOWN_RIGHT";
+            case DIRECTION.DOWN_LEFT:
+                return "DIRECTION.DOWN_LEFT";
+        }
     }
 }
 
