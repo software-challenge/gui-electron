@@ -71,6 +71,8 @@ export class Viewer{
         skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
         skybox.renderingGroupId = 0;
 
+        //Meshes: http://graphics.cs.williams.edu/data/meshes.xml#2
+
         var player1material = new BABYLON.StandardMaterial('player1material',this.scene);
         player1material.diffuseColor = new BABYLON.Color3(1,0,0);
         var player2material = new BABYLON.StandardMaterial('player2material',this.scene);
