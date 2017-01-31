@@ -59,6 +59,18 @@ export class Viewer{
         var ground = BABYLON.Mesh.CreateGround('ground1', 400,400,1,this.scene);
         var groundmaterial = new BABYLON.StandardMaterial('groundMaterial', this.scene);
 
+        var skybox = BABYLON.Mesh.CreateBox("skyBox", 1000.0, this.scene);
+        var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", this.scene);
+        skyboxMaterial.backFaceCulling = false;
+        skyboxMaterial.disableLighting = true;
+        skybox.material = skyboxMaterial;
+        skybox.infiniteDistance = true;
+        skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+        skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+        skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/skybox/skybox", this.scene);
+        skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+        skybox.renderingGroupId = 0;
+
         var player1material = new BABYLON.StandardMaterial('player1material',this.scene);
         player1material.diffuseColor = new BABYLON.Color3(1,0,0);
         var player2material = new BABYLON.StandardMaterial('player2material',this.scene);
@@ -190,6 +202,7 @@ export class Viewer{
         let [x,y] = this.getCenterOfBoard(state.board);
         [x,y] = Grid.getCoordinates(x,y,3/2);
         console.log([x,y]);
+
         this.camera.setTarget(new BABYLON.Vector3(x,0,y));
         //this.camera.beta = 0.7;
         //this.camera.alpha = 0;
