@@ -96,8 +96,9 @@ export class Viewer{
         groundmaterial.specularColor = new BABYLON.Color3(1,1,1);
         ground.material = groundmaterial;
         FieldTypeMaterialFactory.init(this.scene);
-        this.camera.alpha = 6.3;
-        this.camera.beta  =  0.7;//0.72;
+        this.camera.beta = 0.7;
+        this.camera.alpha = 0;
+        this.camera.radius = 75;
         //this.camera.zoomOnFactor = 0;
         this.engine.runRenderLoop(() =>{
             this.scene.render();
@@ -187,12 +188,12 @@ export class Viewer{
 
         //Adjust camera
         let [x,y] = this.getCenterOfBoard(state.board);
-        //[x,y] = Grid.getCoordinates(x,y,3/2);
+        [x,y] = Grid.getCoordinates(x,y,3/2);
         console.log([x,y]);
         this.camera.setTarget(new BABYLON.Vector3(x,0,y));
-        this.camera.beta = 0.7;
-        this.camera.alpha = 0;
-        this.camera.radius = 75;
+        //this.camera.beta = 0.7;
+        //this.camera.alpha = 0;
+        //this.camera.radius = 75;
 
         console.log("coal: " + state.red.coal);
     }
@@ -230,13 +231,13 @@ class Grid {
                 return Math.PI / 2;
             case DIRECTION.LEFT:
                 return -Math.PI / 2;
-            case DIRECTION.UP_RIGHT:
-                return Math.PI * 1/6;
-            case DIRECTION.UP_LEFT:
-                return -Math.PI * 1/6 ;
             case DIRECTION.DOWN_RIGHT:
-                return Math.PI * 5/6;
+                return -Math.PI * 1/6;
             case DIRECTION.DOWN_LEFT:
+                return Math.PI * 1/6;
+            case DIRECTION.UP_RIGHT:
+                return Math.PI * 5/6;
+            case DIRECTION.UP_LEFT:
                 return Math.PI * 7/6;
         }
     }
@@ -244,7 +245,7 @@ class Grid {
     public static rotationToString(rot: DIRECTION){
         switch(rot){
             case DIRECTION.RIGHT:
-                return"DIRECTION.RIGHT";
+                return "DIRECTION.RIGHT";
             case DIRECTION.LEFT:
                 return "DIRECTION.LEFT";
             case DIRECTION.UP_RIGHT:
