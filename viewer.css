@@ -4,6 +4,7 @@ replay-viewer{
     padding: 0;
     display:block;
     position:relative;
+    margin: auto auto;
 }
 
 replay-viewer>canvas{
