@@ -9,7 +9,7 @@ export class Viewer{
     scene:  BABYLON.Scene;
     camera: BABYLON.ArcRotateCamera;
     controlsElement: HTMLDivElement;
-    controls: {'next': HTMLButtonElement, 'previous': HTMLButtonElement} = {'next': null, 'previous': null};
+    controls: {'next': HTMLButtonElement, 'previous': HTMLButtonElement, 'play': HTMLButtonElement, 'first': HTMLButtonElement, 'last': HTMLButtonElement} = {'next': null, 'previous': null, 'play': null,'first':null,'last':null};
 
     currentMove: number = 0;
 
@@ -28,7 +28,7 @@ export class Viewer{
         this.controlsElement = document.createElement('div');
         this.controlsElement.classList.add("controls");
         this.controls.next = document.createElement('button');
-        this.controls.next.innerText = "next";
+        this.controls.next.innerText = "⏩";
         this.controls.next.addEventListener('click',()=>{
             if(this.currentMove < (this.replay.states.length -1)){
                 this.currentMove ++;
@@ -36,15 +36,38 @@ export class Viewer{
             this.render(this.replay.states[this.currentMove]);
         });
         this.controls.previous = document.createElement('button');
-        this.controls.previous.innerText = "previous";
+        this.controls.previous.innerText = "⏪";
         this.controls.previous.addEventListener('click',()=>{
             if(this.currentMove > 0 ){
                 this.currentMove --;
             }
             this.render(this.replay.states[this.currentMove]);
         });
+        this.controls.play = document.createElement('button');
+        this.controls.play.innerText = "►";
+        this.controls.play.addEventListener('click',()=>{
+            if(this.currentMove > 0 ){
+                this.currentMove --;
+            }
+            this.render(this.replay.states[this.currentMove]);
+        });
+        this.controls.first = document.createElement('button');
+        this.controls.first.innerText = "⏮";
+        this.controls.first.addEventListener('click',()=>{
+            this.currentMove = 0;
+            this.render(this.replay.states[this.currentMove]);
+        });
+        this.controls.last = document.createElement('button');
+        this.controls.last.innerText = "⏭";
+        this.controls.last.addEventListener('click',()=>{
+            this.currentMove = this.replay.states.length - 1;
+            this.render(this.replay.states[this.currentMove]);
+        });
+        this.controlsElement.appendChild(this.controls.first);
         this.controlsElement.appendChild(this.controls.previous);
+        this.controlsElement.appendChild(this.controls.play);
         this.controlsElement.appendChild(this.controls.next);
+        this.controlsElement.appendChild(this.controls.last);
 
         element.appendChild(this.canvas);
         element.appendChild(this.debug);

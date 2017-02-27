@@ -23,7 +23,19 @@ replay-viewer>.debug{
 }
 
 replay-viewer>.controls{
-    position: fixed;
-    left: 10;
-    top: 10;
+    position: absolute;
+    right: 10;
+    bottom: 10;
+    font-size: 3em;
+}
+
+replay-viewer>.red{
+    position: absolute;
+    
+}
+
+replay-viewer>.controls>button{
+    border: 1px solid black;
+    background-color: white;
+    margin: 2px;
 }
