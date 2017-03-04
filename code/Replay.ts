@@ -12,7 +12,6 @@ export class Replay{
         var now = performance.now();
         this.replayName = name;
         var stateQuery = xml.getElementsByTagName("state");
-        console.log(stateQuery);
         this.states = [];
         for(var i = 0; i < stateQuery.length; i++){//Iterate through all state nodes
             var g: GameState = new GameState();
@@ -42,6 +41,8 @@ export class Replay{
             }
             this.states.push(g);
         }
+        this.states[0].animated = false;
+        console.log(this);
         console.log("parsing took " + (performance.now()-now) + "ms");
     }
 }
@@ -223,7 +224,6 @@ export class Board{
                     target.x++;
                 break;
                 case DIRECTION.DOWN_RIGHT:
-                    target.x++;
                     target.y++;
                 break;
                 case DIRECTION.DOWN_LEFT:
@@ -238,7 +238,6 @@ export class Board{
                     target.y--;
                 break;
                 case DIRECTION.UP_RIGHT:
-                    target.x++;
                     target.y--;
                 break;
             }
@@ -280,7 +279,7 @@ export const enum MOVETYPE{
     PUSH
 }
 
-class Move{
+export class Move{
     public type: MOVETYPE;
     public order: number;
     public attribute: number;
@@ -322,6 +321,7 @@ export class GameState{
     public freeTurn: boolean;
     public board: Board;
     public moves: Move[] = [];
+    public animated: boolean = true;
     public addAnimationHints(previousState:GameState){//Calculates hints for the animation subsystem based on other information of this turn
         //1. Store old attributes, so we can add them as hints
         var player_attributes: {red: {x: number, y: number, direction: number, speed: number}, blue: {x: number, y: number, direction: number, speed: number}} = {
@@ -347,10 +347,7 @@ export class GameState{
                 case MOVETYPE.ACCELERATION:
                     move.animationHints['startSpeed'] = player_attributes[activePlayer].speed;
                     player_attributes[activePlayer].speed += move.attribute;//Keep up with the speed
-                    move.animationHints['x'] = player_attributes[activePlayer].x;
-                    move.animationHints['y'] = player_attributes[activePlayer].y;
                     move.animationHints['targetSpeed'] = player_attributes[activePlayer].speed;
-                    move.animationHints['direction'] = player_attributes[activePlayer].direction;
                 break;
                 case MOVETYPE.TURN:
                     move.animationHints['startDirection'] = player_attributes[activePlayer].direction;
@@ -358,34 +355,25 @@ export class GameState{
                     move.animationHints['animated'] = 1;
                     move.animationHints['targetDirection'] = player_attributes[activePlayer].direction;
                     move.animationHints['rotationDirection'] = move.attribute > 0 ? 1 : 0;//If this is positive, we rotate clockwise, otherwise anticlockwise
-                    move.animationHints['x'] = player_attributes[activePlayer].x;
-                    move.animationHints['y'] = player_attributes[activePlayer].y;
-                    move.animationHints['speed'] = player_attributes[activePlayer].speed;
                 break;
                 case MOVETYPE.PUSH: 
                     move.animationHints['animated'] = 1;
-                    move.animationHints['x'] = player_attributes[activePlayer].x;
-                    move.animationHints['y'] = player_attributes[activePlayer].y;
-                    
+                    move.animationHints['startOtherX'] = player_attributes[otherPlayer].x;
+                    move.animationHints['startOtherY'] = player_attributes[otherPlayer].y;
                     var otherPlayerTargetPosition = Board.calculateNewPosition({x: player_attributes[otherPlayer].x,y:player_attributes[otherPlayer].y}, Board.NumberToDirection(move.attribute),1);
                     player_attributes[otherPlayer].x = otherPlayerTargetPosition.x;
                     player_attributes[otherPlayer].y = otherPlayerTargetPosition.y;
-                    move.animationHints['otherX'] = otherPlayerTargetPosition.x;
-                    move.animationHints['otherY'] = otherPlayerTargetPosition.y;
-
-                    move.animationHints['targetSpeed'] = player_attributes[activePlayer].speed;
-                    move.animationHints['direction'] = player_attributes[activePlayer].direction;
+                    move.animationHints['targetOtherX'] = otherPlayerTargetPosition.x;
+                    move.animationHints['targetOtherY'] = otherPlayerTargetPosition.y;
                 break;
                 case MOVETYPE.STEP:
+                    move.animationHints['rotation'] = player_attributes[activePlayer].direction;
                     move.animationHints['animated'] = 1;
                     move.animationHints['startX'] = player_attributes[activePlayer].x;
                     move.animationHints['startY'] = player_attributes[activePlayer].y;
-
                     var activePlayerTargetPosition = Board.calculateNewPosition({x: player_attributes[activePlayer].x,y:player_attributes[activePlayer].y},Board.NumberToDirection(player_attributes[activePlayer].direction),move.attribute);
                     move.animationHints['targetX'] = activePlayerTargetPosition.x;
                     move.animationHints['targetY'] = activePlayerTargetPosition.y;
-                    move.animationHints['speed'] = player_attributes[activePlayer].speed;
-                    move.animationHints['direction'] = player_attributes[activePlayer].direction;
                 break;
             }
         }

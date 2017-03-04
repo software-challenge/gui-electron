@@ -1,8 +1,10 @@
 ///  <reference path="../node_modules/babylonjs/babylon.d.ts" />
-import {Replay, FIELDTYPE, Tile, GameState, Field, Board, DIRECTION} from "./Replay";
+import {Replay, FIELDTYPE, Tile, GameState, Field, Board, DIRECTION, MOVETYPE, Move, PLAYERCOLOR} from "./Replay";
 import {Helpers} from "./Helpers";
 
 export class Viewer{
+    static ANIMATION_FRAMES: number = 30;
+    static GRID_SIZE: number = 3/2;
     replay: Replay;
     canvas: HTMLCanvasElement;
     engine: BABYLON.Engine;
@@ -154,6 +156,13 @@ export class Viewer{
             this.engine.resize();
         });
 
+        window.addEventListener("click",  () => {
+            var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+            if(pickResult.hit){
+                console.log(pickResult.pickedMesh.id);
+            }
+        });
+
         console.log("initializing viewer took " + (performance.now() - now) + "ms");
         this.render(replay.states[this.currentMove]);
     }
@@ -177,18 +186,21 @@ export class Viewer{
 
     private lastBoard: Board;
 
+
     render(state: GameState){
+        var getTileName = (t:Field) => "Tile(" + t.x + "," + t.y + ")";
+
         //Iterate over new tiles
         for(let t of state.board.tiles){
             for(let f of t.fields){
-                if(! this.scene.getMeshByName(f.id.toString())){ //Create new meshes 
+                if(! this.scene.getMeshByName(getTileName(f))){ //Create new meshes 
                     //console.log("(" + f.x + "," + f.y + ") = " +  f.type);
-                    var mesh = BABYLON.Mesh.CreateCylinder(f.id.toString(),1,3,3,6,1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                    var mesh = BABYLON.Mesh.CreateCylinder(getTileName(f),1,3,3,6,1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
                     [mesh.position.x, mesh.position.z] = Grid.getCoordinates(f.x, f.y, 3/2);
                     mesh.position.z += (Math.random() * 0.1); //Vary height a bit
                     mesh.material = FieldTypeMaterialFactory.getMaterialForFieldType(f.type);
                 }
-                this.scene.getMeshByName(f.id.toString()).position.y = 0; //Raise all current meshes to the surface
+                this.scene.getMeshByName(getTileName(f)).position.y = 0; //Raise all current meshes to the surface
             }
         }
 
@@ -198,7 +210,7 @@ export class Viewer{
             for(let lt of this.lastBoard.tileIndices){//Iterate over tiles of the last board
                 if(state.board.tileIndices.indexOf(lt) == -1){//If they're not part of the current board
                     for(let f of this.lastBoard.getTileByIndex(lt).fields){
-                        var tile  =this.scene.getMeshByName(f.id.toString());
+                        var tile  =this.scene.getMeshByName(getTileName(f));
                         BABYLON.Animation.CreateAndStartAnimation("sinktile"+lt,tile,"position.y",30,60,tile.position.y,-3.5,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
                     }
                 }
@@ -208,6 +220,7 @@ export class Viewer{
         this.lastBoard = state.board;
 
         //Render players
+        /*
         console.log("Red: " + state.red.x + "," + state.red.y);
         var [px,py] = Grid.getCoordinates(state.red.x,state.red.y,3/2);
         var player1 = this.scene.getMeshByName('player1');
@@ -228,6 +241,117 @@ export class Viewer{
         BABYLON.Animation.CreateAndStartAnimation("player2movez",player2,"position.z",30,30,player2.position.z,py,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
         BABYLON.Animation.CreateAndStartAnimation("player2rotatez",player2,"rotation.y",30,30,player2.rotation.y,Grid.getRotation(state.blue.direction),BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
         console.log("blue: " + Grid.rotationToString(state.blue.direction));
+        */
+
+        //Do not animate if zero-turn
+        if(!state.animated){
+            console.log("Red: " + state.red.x + "," + state.red.y);
+            var [px,py] = Grid.getCoordinates(state.red.x,state.red.y,3/2);
+            var player1 = this.scene.getMeshByName('player1');
+            player1.position.x = px;
+            player1.position.z = py;
+            player1.rotation.y = Grid.getRotation(state.red.direction);
+
+            console.log("Blue: " + state.blue.x + "," + state.blue.y);
+            [px,py] = Grid.getCoordinates(state.blue.x,state.blue.y,3/2);
+            var player2 = this.scene.getMeshByName('player2');
+            player2.position.x = px;
+            player2.position.z = py;
+            player2.rotation.y = Grid.getRotation(state.blue.direction);
+        }else{
+        //Create new animations
+        
+        var frame = 0;
+        //Remember, the following is actually relative to the turn before this one, so the players are switched 🙈
+        if(state.currentPlayer == PLAYERCOLOR.BLUE){
+            console.log("Active player should be blue");
+        }
+        var activePlayer = state.currentPlayer == PLAYERCOLOR.BLUE ? this.scene.getMeshByName('player1') : this.scene.getMeshByName('player2');
+        var otherPlayer = state.currentPlayer == PLAYERCOLOR.BLUE ? this.scene.getMeshByName('player2') : this.scene.getMeshByName('player1');
+        activePlayer.animations = [];
+        otherPlayer.animations = [];
+        for(var i = 0; i < state.moves.length; i++){
+            let move = state.moves[i];
+            switch(move.type){
+                case MOVETYPE.STEP:
+                    var anim = new BABYLON.Animation("activePlayerX","position.x",30,BABYLON.Animation.ANIMATIONTYPE_FLOAT,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                    var anim2 = new BABYLON.Animation("activePlayerZ","position.z",30,BABYLON.Animation.ANIMATIONTYPE_FLOAT,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                    var keys = [];
+                    var keys2 = [];
+                    var coords = Grid.getCoordinates(move.animationHints['startX'],move.animationHints['startY'],Viewer.GRID_SIZE);
+                    keys.push({
+                        'frame': frame,
+                        'value': coords[0]
+                    });
+                    keys2.push({
+                        'frame': frame,
+                        'value': coords[1]
+                    });
+                    frame += Viewer.ANIMATION_FRAMES;
+                    coords = Grid.getCoordinates(move.animationHints['targetX'],move.animationHints['targetY'],Viewer.GRID_SIZE);
+                    keys.push({
+                        'frame': frame,
+                        'value': coords[0]
+                    });
+                    keys2.push({
+                        'frame': frame,
+                        'value': coords[1]
+                    });
+                    anim.setKeys(keys);
+                    anim2.setKeys(keys2);
+                    activePlayer.animations.push(anim);
+                    activePlayer.animations.push(anim2);
+                break;
+                case MOVETYPE.TURN:
+                    var anim = new BABYLON.Animation("activePlayerRotation","rotation.y",30,BABYLON.Animation.ANIMATIONTYPE_FLOAT,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                    var keys = [];
+                    keys.push({
+                        'frame': frame,
+                        'value': Grid.getRotation(move.animationHints['startDirection'])
+                    });
+                    frame += Viewer.ANIMATION_FRAMES;
+                    keys.push({
+                        'frame': frame,
+                        'value': Grid.getRotation(move.animationHints['targetDirection'])
+                    });
+                    anim.setKeys(keys);
+                    activePlayer.animations.push(anim);
+                break;
+                case MOVETYPE.PUSH:
+                    var anim = new BABYLON.Animation("otherPlayerX","position.x",30,BABYLON.Animation.ANIMATIONTYPE_FLOAT,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                    var anim2 = new BABYLON.Animation("otherPlayerZ","position.z",30,BABYLON.Animation.ANIMATIONTYPE_FLOAT,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                    var keys = [];
+                    var keys2 = [];
+                    var coords = Grid.getCoordinates(move.animationHints['startOtherX'],move.animationHints['startOtherY'],Viewer.GRID_SIZE);
+                    keys.push({
+                        'frame': frame,
+                        'value': coords[0]
+                    });
+                    keys2.push({
+                        'frame': frame,
+                        'value': coords[1]
+                    });
+                    frame += Viewer.ANIMATION_FRAMES;
+                    coords = Grid.getCoordinates(move.animationHints['targetOtherX'],move.animationHints['targetOtherY'],Viewer.GRID_SIZE);
+                    keys.push({
+                        'frame': frame,
+                        'value': coords[0]
+                    });
+                    keys2.push({
+                        'frame': frame,
+                        'value': coords[1]
+                    });
+                    anim.setKeys(keys);
+                    anim2.setKeys(keys2);
+                    otherPlayer.animations.push(anim);
+                    otherPlayer.animations.push(anim2);
+                break;
+            }
+        }
+        this.scene.beginAnimation(activePlayer,0,frame,false);
+        this.scene.beginAnimation(otherPlayer,0,frame,false);
+
+        }
 
         //Adjust camera
         let [x,y] = this.getCenterOfBoard(state.board);
