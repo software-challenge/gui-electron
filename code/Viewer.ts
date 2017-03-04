@@ -16,6 +16,7 @@ export class Viewer{
     debug: HTMLDivElement;
 
     constructor(replay: Replay, element: Element, document: Document, window: Window){
+        var now = performance.now();
         //Save replay for later
         this.replay = replay;
         //Initialize engine
@@ -153,6 +154,7 @@ export class Viewer{
             this.engine.resize();
         });
 
+        console.log("initializing viewer took " + (performance.now() - now) + "ms");
         this.render(replay.states[this.currentMove]);
     }
 
