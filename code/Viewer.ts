@@ -11,7 +11,7 @@ export class Viewer{
     scene:  BABYLON.Scene;
     camera: BABYLON.ArcRotateCamera;
     controlsElement: HTMLDivElement;
-    controls: {'next': HTMLButtonElement, 'previous': HTMLButtonElement, 'play': HTMLButtonElement, 'first': HTMLButtonElement, 'last': HTMLButtonElement} = {'next': null, 'previous': null, 'play': null,'first':null,'last':null};
+    controls: {'next': HTMLButtonElement, 'previous': HTMLButtonElement, 'play': HTMLButtonElement, 'first': HTMLButtonElement, 'last': HTMLButtonElement, 'playing':boolean} = {'next': null, 'previous': null, 'play': null,'first':null,'last':null, 'playing':false};
 
     currentMove: number = 0;
 
@@ -36,7 +36,7 @@ export class Viewer{
             if(this.currentMove < (this.replay.states.length -1)){
                 this.currentMove ++;
             }
-            this.render(this.replay.states[this.currentMove]);
+            this.render(this.replay.states[this.currentMove], false);
         });
         this.controls.previous = document.createElement('button');
         this.controls.previous.innerText = "⏪";
@@ -44,27 +44,27 @@ export class Viewer{
             if(this.currentMove > 0 ){
                 this.currentMove --;
             }
-            this.render(this.replay.states[this.currentMove]);
+            this.render(this.replay.states[this.currentMove], false);
         });
         this.controls.play = document.createElement('button');
         this.controls.play.innerText = "►";
         this.controls.play.addEventListener('click',()=>{
-            if(this.currentMove > 0 ){
-                this.currentMove --;
+            if(this.currentMove < (this.replay.states.length -1)){
+                this.currentMove ++;
             }
-            this.render(this.replay.states[this.currentMove]);
+            this.render(this.replay.states[this.currentMove], true);
         });
         this.controls.first = document.createElement('button');
         this.controls.first.innerText = "⏮";
         this.controls.first.addEventListener('click',()=>{
             this.currentMove = 0;
-            this.render(this.replay.states[this.currentMove]);
+            this.render(this.replay.states[this.currentMove], false);
         });
         this.controls.last = document.createElement('button');
         this.controls.last.innerText = "⏭";
         this.controls.last.addEventListener('click',()=>{
             this.currentMove = this.replay.states.length - 1;
-            this.render(this.replay.states[this.currentMove]);
+            this.render(this.replay.states[this.currentMove], false);
         });
         this.controlsElement.appendChild(this.controls.first);
         this.controlsElement.appendChild(this.controls.previous);
@@ -88,6 +88,7 @@ export class Viewer{
         var groundmaterial = new BABYLON.StandardMaterial('groundMaterial', this.scene);
         groundmaterial.diffuseColor = new BABYLON.Color3(116/255,184/255,254/255);
         ground.material = groundmaterial;
+        /*
         var skybox = BABYLON.Mesh.CreateBox("skyBox", 1000.0, this.scene);
         var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", this.scene);
         skyboxMaterial.backFaceCulling = false;
@@ -100,7 +101,7 @@ export class Viewer{
         skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
         skybox.position.y = 450;
         skybox.renderingGroupId = 0;
-
+        */
         //Meshes: http://graphics.cs.williams.edu/data/meshes.xml#2
 
         var player1material = new BABYLON.StandardMaterial('player1material',this.scene);
@@ -164,7 +165,7 @@ export class Viewer{
         });
 
         console.log("initializing viewer took " + (performance.now() - now) + "ms");
-        this.render(replay.states[this.currentMove]);
+        this.render(replay.states[this.currentMove], false);
     }
 
     getCenterOfBoard(board: Board):[number,number]{
@@ -187,7 +188,7 @@ export class Viewer{
     private lastBoard: Board;
 
 
-    render(state: GameState){
+    render(state: GameState, animated: boolean){
         var getTileName = (t:Field) => "Tile(" + t.x + "," + t.y + ")";
 
         //Iterate over new tiles
@@ -211,7 +212,7 @@ export class Viewer{
                 if(state.board.tileIndices.indexOf(lt) == -1){//If they're not part of the current board
                     for(let f of this.lastBoard.getTileByIndex(lt).fields){
                         var tile  =this.scene.getMeshByName(getTileName(f));
-                        BABYLON.Animation.CreateAndStartAnimation("sinktile"+lt,tile,"position.y",30,60,tile.position.y,-3.5,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                        //BABYLON.Animation.CreateAndStartAnimation("sinktile"+lt,tile,"position.y",30,60,tile.position.y,-3.5,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
                     }
                 }
             }
@@ -244,13 +245,14 @@ export class Viewer{
         */
 
         //Do not animate if zero-turn
-        if(!state.animated){
+        if(!state.animated || (!animated)){
             console.log("Red: " + state.red.x + "," + state.red.y);
             var [px,py] = Grid.getCoordinates(state.red.x,state.red.y,3/2);
             var player1 = this.scene.getMeshByName('player1');
             player1.position.x = px;
             player1.position.z = py;
             player1.rotation.y = Grid.getRotation(state.red.direction);
+            console.log("Red direction:" + Board.DirectionToString(state.red.direction));
 
             console.log("Blue: " + state.blue.x + "," + state.blue.y);
             [px,py] = Grid.getCoordinates(state.blue.x,state.blue.y,3/2);
@@ -258,6 +260,7 @@ export class Viewer{
             player2.position.x = px;
             player2.position.z = py;
             player2.rotation.y = Grid.getRotation(state.blue.direction);
+            console.log("Blue direction:" + Board.DirectionToString(state.blue.direction));
         }else{
         //Create new animations
         
@@ -266,12 +269,17 @@ export class Viewer{
         if(state.currentPlayer == PLAYERCOLOR.BLUE){
             console.log("Active player should be blue");
         }
-        var activePlayer = state.currentPlayer == PLAYERCOLOR.BLUE ? this.scene.getMeshByName('player1') : this.scene.getMeshByName('player2');
-        var otherPlayer = state.currentPlayer == PLAYERCOLOR.BLUE ? this.scene.getMeshByName('player2') : this.scene.getMeshByName('player1');
-        activePlayer.animations = [];
-        otherPlayer.animations = [];
+
         for(var i = 0; i < state.moves.length; i++){
             let move = state.moves[i];
+            var activePlayer = move.activePlayer == PLAYERCOLOR.RED ? this.scene.getMeshByName('player1') : this.scene.getMeshByName('player2');
+            var otherPlayer = move.activePlayer == PLAYERCOLOR.RED ? this.scene.getMeshByName('player2') : this.scene.getMeshByName('player1');
+            if(i == 0){
+                console.log("[animation] SELECT activePlayer = " + activePlayer.id + " @" + frame);
+                console.log("[animation] SELECT otherPlayer = " + otherPlayer.id + " @" + frame);
+                activePlayer.animations = [];
+                otherPlayer.animations = [];
+            }
             switch(move.type){
                 case MOVETYPE.STEP:
                     var anim = new BABYLON.Animation("activePlayerX","position.x",30,BABYLON.Animation.ANIMATIONTYPE_FLOAT,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
@@ -301,6 +309,7 @@ export class Viewer{
                     anim2.setKeys(keys2);
                     activePlayer.animations.push(anim);
                     activePlayer.animations.push(anim2);
+                    console.log("[animation] STEP activePlayer from " + move.animationHints['startX'] + "," + move.animationHints['startY'] + " to " + move.animationHints['targetX'] + "," + move.animationHints['targetY']+ " @" + frame);
                 break;
                 case MOVETYPE.TURN:
                     var anim = new BABYLON.Animation("activePlayerRotation","rotation.y",30,BABYLON.Animation.ANIMATIONTYPE_FLOAT,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
@@ -316,7 +325,8 @@ export class Viewer{
                     });
                     anim.setKeys(keys);
                     activePlayer.animations.push(anim);
-                break;
+                    console.log("[animation] TURN activePlayer from " + Board.DirectionToString(move.animationHints['startDirection']) + " to " + Board.DirectionToString(move.animationHints['targetDirection'])+ " @" + frame);
+                break; 
                 case MOVETYPE.PUSH:
                     var anim = new BABYLON.Animation("otherPlayerX","position.x",30,BABYLON.Animation.ANIMATIONTYPE_FLOAT,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
                     var anim2 = new BABYLON.Animation("otherPlayerZ","position.z",30,BABYLON.Animation.ANIMATIONTYPE_FLOAT,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
@@ -345,6 +355,7 @@ export class Viewer{
                     anim2.setKeys(keys2);
                     otherPlayer.animations.push(anim);
                     otherPlayer.animations.push(anim2);
+                    console.log("[animation] PUSH otherPlayer to " + move.animationHints['targetOtherX'] + "," + move.animationHints['targetOtherY']+ " @" + frame);
                 break;
             }
         }
@@ -400,13 +411,13 @@ class Grid {
             case DIRECTION.LEFT:
                 return -Math.PI / 2;
             case DIRECTION.DOWN_RIGHT:
-                return -Math.PI * 1/6;
-            case DIRECTION.DOWN_LEFT:
-                return Math.PI * 1/6;
-            case DIRECTION.UP_RIGHT:
                 return Math.PI * 5/6;
-            case DIRECTION.UP_LEFT:
+            case DIRECTION.DOWN_LEFT:
                 return Math.PI * 7/6;
+            case DIRECTION.UP_RIGHT:
+                return Math.PI * 1/6;
+            case DIRECTION.UP_LEFT:
+                return -Math.PI * 1/6;
         }
     }
 

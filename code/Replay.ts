@@ -26,7 +26,6 @@ export class Replay{
             if(moves){
                 var tempmoves = [];
                 //Parse moves
-                console.log(moves.children.length);
                 for(var j = 0; j < moves.children.length; j++){
                     let move = new Move(moves.children[j]);
                     tempmoves[move.order] = move;
@@ -64,11 +63,11 @@ export const enum FIELDTYPE{
 
 export const enum DIRECTION{
     RIGHT = 0,
-    UP_RIGHT,
-    UP_LEFT,
-    LEFT,
-    DOWN_LEFT,
-    DOWN_RIGHT
+    UP_RIGHT = 1,
+    UP_LEFT = 2,
+    LEFT = 3,
+    DOWN_LEFT = 4,
+    DOWN_RIGHT = 5
 }
 
 export const enum PLAYERCOLOR{
@@ -178,22 +177,44 @@ export class Board{
     public static NumberToDirection(d: number){
         switch(d){
             case 0: return DIRECTION.RIGHT;
-            case 1: return DIRECTION.DOWN_RIGHT;
-            case 2: return DIRECTION.DOWN_LEFT;
+            case 1: return DIRECTION.UP_RIGHT;
+            case 2: return DIRECTION.UP_LEFT;
             case 3: return DIRECTION.LEFT;
-            case 4: return DIRECTION.UP_LEFT;
-            case 5: return DIRECTION.UP_RIGHT;
+            case 4: return DIRECTION.DOWN_LEFT;
+            case 5: return DIRECTION.DOWN_RIGHT;
         }
     }
 
     public static DirectionToNumber(d: DIRECTION){
         switch(d){
             case DIRECTION.RIGHT: return 0;
-            case DIRECTION.DOWN_RIGHT: return 1;
-            case DIRECTION.DOWN_LEFT: return 2;
+            case DIRECTION.UP_RIGHT: return 1;
+            case DIRECTION.UP_LEFT: return 2;
             case DIRECTION.LEFT: return 3;
-            case DIRECTION.UP_LEFT: return 4;
-            case DIRECTION.UP_RIGHT: return 5;
+            case DIRECTION.DOWN_LEFT: return 4;
+            case DIRECTION.DOWN_RIGHT: return 5;
+        }
+    }
+
+    public static DirectionToString(d: DIRECTION){
+        switch(d){
+            case DIRECTION.RIGHT: return "RIGHT";
+            case DIRECTION.UP_RIGHT: return "UP_RIGHT";
+            case DIRECTION.UP_LEFT: return "UP_LEFT";
+            case DIRECTION.LEFT: return "LEFT";
+            case DIRECTION.DOWN_LEFT: return "DOWN_LEFT";
+            case DIRECTION.DOWN_RIGHT: return "DOWN_RIGHT";
+        }
+    }
+
+    public static InvertDirection(d: DIRECTION){
+        switch(d){
+            case DIRECTION.LEFT: return DIRECTION.RIGHT;
+            case DIRECTION.DOWN_LEFT: return DIRECTION.UP_RIGHT;
+            case DIRECTION.DOWN_RIGHT: return DIRECTION.UP_LEFT;
+            case DIRECTION.RIGHT: return DIRECTION.LEFT;
+            case DIRECTION.UP_RIGHT: return DIRECTION.DOWN_LEFT;
+            case DIRECTION.UP_LEFT: return DIRECTION.DOWN_RIGHT;
         }
     }
 
@@ -218,27 +239,43 @@ export class Board{
 
     public static calculateNewPosition(start: {x: number, y: number}, direction: DIRECTION, steps: number): {x: number, y:number}{
         var target = {x: start.x,y:start.y};
+        var even = x => (x % 2) == 0;
+        var odd = x => (x % 2) != 0;
+        if(steps < 0){//Basically going backwards is turning 180° and going the same direction forwards
+            steps = Math.abs(steps);
+            direction = this.InvertDirection(direction);
+        }
         while(steps > 0){
             switch(direction){
                 case DIRECTION.RIGHT:
                     target.x++;
                 break;
-                case DIRECTION.DOWN_RIGHT:
-                    target.y++;
+                case DIRECTION.UP_LEFT:
+                    if(odd(target.y)){
+                        target.x--;
+                    }
+                    target.y--;
                 break;
-                case DIRECTION.DOWN_LEFT:
-                    target.x--;
-                    target.y++;
+                case DIRECTION.UP_RIGHT:
+                    if(even(target.y)){
+                        target.x++;
+                    }
+                    target.y--;
                 break;
                 case DIRECTION.LEFT:
                     target.x--;
                 break;
-                case DIRECTION.UP_LEFT:
-                    target.x--;
-                    target.y--;
+                case DIRECTION.DOWN_RIGHT:
+                    if(even(target.y)){
+                        target.x++;
+                    }
+                    target.y++;
                 break;
-                case DIRECTION.UP_RIGHT:
-                    target.y--;
+                case DIRECTION.DOWN_LEFT:
+                    if(odd(target.y)){
+                        target.x --;
+                    }
+                    target.y++;
                 break;
             }
             steps --;
@@ -284,6 +321,7 @@ export class Move{
     public order: number;
     public attribute: number;
     public rawType: string;
+    public activePlayer: PLAYERCOLOR;
     public animationHints: {[name: string]: number} = {};
 
     constructor(moveNode: Element){
@@ -341,8 +379,10 @@ export class GameState{
         //2. Iterate through moves and track values
         var activePlayer = (previousState.currentPlayer == PLAYERCOLOR.RED)? 'red' : 'blue';
         var otherPlayer = (previousState.currentPlayer == PLAYERCOLOR.RED)? 'blue' : 'red';
+
         for(var i = 0; i < this.moves.length; i++){
             let move = this.moves[i];
+            move.activePlayer = previousState.currentPlayer;
             switch(move.type){
                 case MOVETYPE.ACCELERATION:
                     move.animationHints['startSpeed'] = player_attributes[activePlayer].speed;
@@ -377,6 +417,5 @@ export class GameState{
                 break;
             }
         }
-    console.log(this.moves);
     }
 }
