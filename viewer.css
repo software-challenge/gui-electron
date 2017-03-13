@@ -12,7 +12,7 @@ replay-viewer>canvas{
     height: 100%;
 }
 
-replay-viewer>.debug{
+replay-viewer>.replay-debug{
     position: fixed;
     right: 10;
     top: 10;
@@ -22,20 +22,57 @@ replay-viewer>.debug{
     z-index: 100;
 }
 
-replay-viewer>.controls{
+replay-viewer>.replay-controls{
     position: absolute;
     right: 10;
     bottom: 10;
     font-size: 3em;
 }
 
-replay-viewer>.red{
-    position: absolute;
-    
-}
-
-replay-viewer>.controls>button{
+replay-viewer>.replay-controls>button{
     border: 1px solid black;
     background-color: white;
     margin: 2px;
+}
+
+replay-viewer>.replay-displayContainer{
+    position: absolute;
+    text-align: center;
+    top: 0;
+    width: 100%;
+    margin: auto 0;
+    font-family: sans-serif;
+    font-weight: bold;
+    color: white;
+    vertical-align: center;
+}
+
+replay-viewer .replay-display{
+    background-color: rgba(0,0,0,0.5);
+    border-bottom-left-radius: 0.5em;
+    border-bottom-right-radius: 0.5em;
+    display: inline-block;
+}
+
+replay-viewer .replay-redPoints{
+    width: 1.5em;
+    font-size: 2em;
+    color: red;
+    display: inline-block;
+    padding-right: 0.2em;
+    text-align: center;
+}
+
+replay-viewer .replay-round{
+    font-size: 2.5em;
+    display: inline-block;
+}
+
+replay-viewer .replay-bluePoints{
+    width: 1.5em;
+    font-size: 2em;
+    color: blue;
+    display: inline-block;
+    padding-left: 0.2em;
+    text-align: center;
 }

@@ -16,6 +16,8 @@ export class Viewer{
     currentMove: number = 0;
 
     debug: HTMLDivElement;
+    displayElement: HTMLDivElement;
+    display: {'redPoints': HTMLDivElement, 'round': HTMLDivElement, 'bluePoints': HTMLDivElement} = {'redPoints': null,'round':null,'bluePoints':null};
 
     constructor(replay: Replay, element: Element, document: Document, window: Window){
         var now = performance.now();
@@ -25,11 +27,11 @@ export class Viewer{
         this.canvas = document.createElement('canvas');
         this.canvas.classList.add('viewerCanvas');
         this.debug = document.createElement('div');
-        this.debug.classList.add('debug');
+        this.debug.classList.add('replay-debug');
 
         //Initialize controls
         this.controlsElement = document.createElement('div');
-        this.controlsElement.classList.add("controls");
+        this.controlsElement.classList.add("replay-controls");
         this.controls.next = document.createElement('button');
         this.controls.next.innerText = "⏩";
         this.controls.next.addEventListener('click',()=>{
@@ -72,9 +74,26 @@ export class Viewer{
         this.controlsElement.appendChild(this.controls.next);
         this.controlsElement.appendChild(this.controls.last);
 
+        this.displayElement = document.createElement('div');
+        this.displayElement.classList.add('replay-display');
+        this.display.redPoints = document.createElement('div');
+        this.display.redPoints.classList.add('replay-redPoints');
+        this.display.round = document.createElement('div');
+        this.display.round.classList.add('replay-round');
+        this.display.bluePoints = document.createElement('div');
+        this.display.bluePoints.classList.add('replay-bluePoints');
+        this.displayElement.appendChild(this.display.redPoints);
+        this.displayElement.appendChild(this.display.round);
+        this.displayElement.appendChild(this.display.bluePoints);
+
         element.appendChild(this.canvas);
         element.appendChild(this.debug);
         element.appendChild(this.controlsElement);
+        var displayContainer = document.createElement('div');
+        displayContainer.classList.add('replay-displayContainer');
+        displayContainer.appendChild(this.displayElement);
+        element.appendChild(displayContainer);
+
         this.engine = new BABYLON.Engine(this.canvas, true);
         //Initialize scene
         this.scene = new BABYLON.Scene(this.engine);
@@ -189,6 +208,10 @@ export class Viewer{
 
 
     render(state: GameState, animated: boolean){
+        this.display.round.innerText = state.turn < 10 ? '0' +  state.turn.toString() : state.turn.toString();
+        this.display.redPoints.innerText = state.red.points.toString();
+        this.display.bluePoints.innerText = state.blue.points.toString();
+
         var getTileName = (t:Field) => "Tile(" + t.x + "," + t.y + ")";
 
         //Iterate over new tiles
