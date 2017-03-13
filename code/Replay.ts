@@ -219,22 +219,7 @@ export class Board{
     }
 
     public static RotateNumberDirectionBy(d: number, r: number){//Rotates a direction given as the number d by the amount r
-        while(r != 0){
-            if(r < 0){
-                d --;
-                if(d < 0){
-                    d = 5;
-                }
-                r++;
-            }else if(r > 0){
-                d++;
-                if(d > 5){
-                    d = 0;
-                }
-                r--;
-            }
-        }
-        return d;
+        return ((d + r + 6) % 6);
     }
 
     public static calculateNewPosition(start: {x: number, y: number}, direction: DIRECTION, steps: number): {x: number, y:number}{
