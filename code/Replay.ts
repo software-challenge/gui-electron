@@ -164,12 +164,12 @@ export class Board{
 
     public static StringToDirection(d: string){
         switch(d){
-            case "UP_LEFT": return DIRECTION.UP_LEFT; 
-            case "UP_RIGHT": return DIRECTION.UP_RIGHT; 
-            case "LEFT": return DIRECTION.LEFT; 
-            case "DOWN_LEFT": return DIRECTION.DOWN_LEFT; 
-            case "DOWN_RIGHT": return DIRECTION.UP_RIGHT; 
-            case "RIGHT": return DIRECTION.RIGHT; 
+            case "UP_LEFT": return DIRECTION.UP_LEFT;
+            case "UP_RIGHT": return DIRECTION.UP_RIGHT;
+            case "LEFT": return DIRECTION.LEFT;
+            case "DOWN_LEFT": return DIRECTION.DOWN_LEFT;
+            case "DOWN_RIGHT": return DIRECTION.DOWN_RIGHT;
+            case "RIGHT": return DIRECTION.RIGHT;
             default: throw new RangeError("player direction was not parsable: " + d);
         }
     }
