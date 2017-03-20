@@ -1,4 +1,5 @@
-///  <reference path="../node_modules/babylonjs/babylon.d.ts" />
+///  <reference path="../babylonjs/babylon.2.5.d.ts" />
+///  <reference path="../babylonjs/babylon.2.5.canvas2d.d.ts.d.ts" />
 import {Replay, FIELDTYPE, Tile, GameState, Field, Board, DIRECTION, MOVETYPE, Move, PLAYERCOLOR} from "./Replay";
 import {Helpers} from "./Helpers";
 
@@ -155,6 +156,11 @@ export class Viewer{
         player2.position.y = 1;
         player2.rotation.y = Math.PI / 2;
         player2.rotation.z = Math.PI / 2;
+
+        
+        var canvas = new BABYLON.ScreenSpaceCanvas2D(this.scene, {
+            id: "ScreenCanvas"
+        });
 
         /*groundmaterial.diffuseColor = new BABYLON.Color3(0.1,0.1,0.2);
         groundmaterial.specularColor = new BABYLON.Color3(1,1,1);
