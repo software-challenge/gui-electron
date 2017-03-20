@@ -5,6 +5,7 @@ replay-viewer{
     display:block;
     position:relative;
     margin: auto auto;
+    overflow: hidden;
 }
 
 replay-viewer>canvas{
@@ -75,4 +76,23 @@ replay-viewer .replay-bluePoints{
     display: inline-block;
     padding-left: 0.2em;
     text-align: center;
+}
+
+replay-viewer>.replay-progressbar{
+    width: 101%;
+    height: 1ex;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    background-color: rgba(255,255,255,0.5);
+}
+replay-viewer .replay-progress{
+    width: 0%;
+    height: 1ex;
+    transition: width 1s;
+    padding: 0;
+    margin: 0;
+    background-color: green;
 }

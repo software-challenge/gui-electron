@@ -1,5 +1,5 @@
 ///  <reference path="../babylonjs/babylon.2.5.d.ts" />
-///  <reference path="../babylonjs/babylon.2.5.canvas2d.d.ts.d.ts" />
+///  <reference path="../babylonjs/babylon.2.5.canvas2d.d.ts" />
 import {Replay, FIELDTYPE, Tile, GameState, Field, Board, DIRECTION, MOVETYPE, Move, PLAYERCOLOR} from "./Replay";
 import {Helpers} from "./Helpers";
 
@@ -12,13 +12,28 @@ export class Viewer{
     scene:  BABYLON.Scene;
     camera: BABYLON.ArcRotateCamera;
     controlsElement: HTMLDivElement;
-    controls: {'next': HTMLButtonElement, 'previous': HTMLButtonElement, 'play': HTMLButtonElement, 'first': HTMLButtonElement, 'last': HTMLButtonElement, 'playing':boolean} = {'next': null, 'previous': null, 'play': null,'first':null,'last':null, 'playing':false};
+    controls: {'next': HTMLButtonElement, 'previous': HTMLButtonElement, 'play': HTMLButtonElement, 'first': HTMLButtonElement, 'last': HTMLButtonElement, 'playing':boolean, 'playCallback': ()=>void} = {'next': null, 'previous': null, 'play': null,'first':null,'last':null, 'playing':false, playCallback: null};
 
     currentMove: number = 0;
 
     debug: HTMLDivElement;
     displayElement: HTMLDivElement;
-    display: {'redPoints': HTMLDivElement, 'round': HTMLDivElement, 'bluePoints': HTMLDivElement} = {'redPoints': null,'round':null,'bluePoints':null};
+    display: {
+        'redPoints': HTMLDivElement, 
+        'round': HTMLDivElement, 
+        'bluePoints': HTMLDivElement, 
+        'progress': HTMLDivElement,
+        player1Text: BABYLON.Text2D, 
+        player2Text: BABYLON.Text2D
+    } = {
+        'redPoints': null,
+        'round':null,
+        'bluePoints':null, 
+        player1Text: null, 
+        player2Text: null,
+        'progress': null
+    };
+
 
     constructor(replay: Replay, element: Element, document: Document, window: Window){
         var now = performance.now();
@@ -51,11 +66,28 @@ export class Viewer{
         });
         this.controls.play = document.createElement('button');
         this.controls.play.innerText = "►";
-        this.controls.play.addEventListener('click',()=>{
-            if(this.currentMove < (this.replay.states.length -1)){
-                this.currentMove ++;
+        this.controls.playCallback = () =>{
+            if(this.controls.playing){
+                if(this.currentMove < (this.replay.states.length -1)){
+                    this.currentMove ++;
+                }else{
+                    this.controls.play.click();
+                }
+                this.render(this.replay.states[this.currentMove], true);
+                //setTimeout(this.controls.playCallback,((Viewer.ANIMATION_FRAMES / 60) * 1000) * 2);
             }
-            this.render(this.replay.states[this.currentMove], true);
+        }
+        this.controls.play.addEventListener('click',()=>{
+            if(!this.controls.playing){//Not playing, start playing
+                this.controls.play.innerText = "▮▮";
+                this.controls.playing = true;
+                this.controls.playCallback();
+            }
+            else{//Playing, stop playing
+                this.controls.play.innerText = "►";
+                this.controls.playing = false;
+            }
+           
         });
         this.controls.first = document.createElement('button');
         this.controls.first.innerText = "⏮";
@@ -83,13 +115,19 @@ export class Viewer{
         this.display.round.classList.add('replay-round');
         this.display.bluePoints = document.createElement('div');
         this.display.bluePoints.classList.add('replay-bluePoints');
+        var progressbar = document.createElement('div');
+        progressbar.classList.add('replay-progressbar');
+        this.display.progress = document.createElement('div');
+        this.display.progress.classList.add('replay-progress');
+        progressbar.appendChild(this.display.progress);
+
         this.displayElement.appendChild(this.display.redPoints);
         this.displayElement.appendChild(this.display.round);
         this.displayElement.appendChild(this.display.bluePoints);
-
         element.appendChild(this.canvas);
         element.appendChild(this.debug);
         element.appendChild(this.controlsElement);
+        element.appendChild(progressbar);
         var displayContainer = document.createElement('div');
         displayContainer.classList.add('replay-displayContainer');
         displayContainer.appendChild(this.displayElement);
@@ -158,8 +196,30 @@ export class Viewer{
         player2.rotation.z = Math.PI / 2;
 
         
-        var canvas = new BABYLON.ScreenSpaceCanvas2D(this.scene, {
-            id: "ScreenCanvas"
+       var canvas = new BABYLON.ScreenSpaceCanvas2D(this.scene);
+
+       this.display.player1Text = new BABYLON.Text2D('Player1', { marginAlignment: "h: center, v:center", fontName: "bold 16px Arial"})
+
+        var player1label = new BABYLON.Group2D({
+            parent: canvas, id: "Player1Label", trackNode: player1, origin: BABYLON.Vector2.Zero(),
+            children: [
+                new BABYLON.Rectangle2D({ id: "firstRect", width: 80, height: 28, roundRadius: 3, x: -100, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#FF4444FF", children: [
+                        this.display.player1Text
+                    ]
+                })
+            ]
+        });
+
+        this.display.player2Text = new BABYLON.Text2D('Player2', { marginAlignment: "h: center, v:center", fontName: "bold 16px Arial" });
+
+        var player2label = new BABYLON.Group2D({
+            parent: canvas, id: "Player2Label", trackNode: player2, origin: BABYLON.Vector2.Zero(),
+            children: [
+                new BABYLON.Rectangle2D({ id: "firstRect", width: 80, height: 30,roundRadius: 3, x: -100, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#4444FFFF", children: [
+                        this.display.player2Text
+                    ]
+                })
+            ]
         });
 
         /*groundmaterial.diffuseColor = new BABYLON.Color3(0.1,0.1,0.2);
@@ -214,9 +274,13 @@ export class Viewer{
 
 
     render(state: GameState, animated: boolean){
-        this.display.round.innerText = state.turn < 10 ? '0' +  state.turn.toString() : state.turn.toString();
+        this.display.progress.style.width = (((state.turn / 2) / 30) * 100).toString() + "%";
+        var round = state.turn == 0 ? 0 : Math.floor((state.turn / 2) - 0.5)
+        this.display.round.innerText = round < 10 ? '0' +  round.toString() : round.toString();
         this.display.redPoints.innerText = state.red.points.toString();
         this.display.bluePoints.innerText = state.blue.points.toString();
+        this.display.player1Text.text = "Kohle: "  + state.red.coal.toString();
+        this.display.player2Text.text = "Kohle: "  + state.blue.coal.toString();
 
         var getTileName = (t:Field) => "Tile(" + t.x + "," + t.y + ")";
 
@@ -388,7 +452,7 @@ export class Viewer{
                 break;
             }
         }
-        this.scene.beginAnimation(activePlayer,0,frame,false);
+        this.scene.beginAnimation(activePlayer,0,frame,false,1,()=>(setTimeout(this.controls.playCallback,100)));
         this.scene.beginAnimation(otherPlayer,0,frame,false);
 
         }
