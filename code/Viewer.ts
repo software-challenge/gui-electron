@@ -12,6 +12,8 @@ export class Viewer{
     scene:  BABYLON.Scene;
     camera: BABYLON.ArcRotateCamera;
     controlsElement: HTMLDivElement;
+    player1: BABYLON.Mesh;
+    player2: BABYLON.Mesh;
     controls: {'next': HTMLButtonElement, 'previous': HTMLButtonElement, 'play': HTMLButtonElement, 'first': HTMLButtonElement, 'last': HTMLButtonElement, 'playing':boolean, 'playCallback': ()=>void} = {'next': null, 'previous': null, 'play': null,'first':null,'last':null, 'playing':false, playCallback: null};
 
     currentMove: number = 0;
@@ -181,76 +183,97 @@ export class Viewer{
             new BABYLON.Vector3(1,0,0)
         ];
 
-        var player1 = BABYLON.Mesh.ExtrudeShape("player1",shape,path,1,0,BABYLON.Mesh.CAP_ALL,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
-        player1.rotation.y = Math.PI / 2;
-        player1.rotation.z = Math.PI / 2;
+        BABYLON.SceneLoader.ImportMesh('ship','assets/ship/','ship.babylon',this.scene,meshes =>{
+            if(meshes.length == 1){
+                var rootmesh = meshes[0];
+                rootmesh.scaling = rootmesh.scaling.multiplyByFloats(0.9,0.9,0.7);
+                var clonemesh = rootmesh.clone('clone',null);
+                var player1 = rootmesh;//BABYLON.Mesh.ExtrudeShape("player1",shape,path,1,0,BABYLON.Mesh.CAP_ALL,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                player1.name = "player1";
+                player1.id = "player1";
+                player1.rotation.y = Math.PI / 2;
+                //player1.rotation.z = Math.PI / 2;
+                player1.position.x = 3;
 
-        //var player1 = BABYLON.Mesh.CreateSphere("player1",15,2,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
-        player1.material = player1material;
-        player1.position.y = 1;
-        //var player2 = BABYLON.Mesh.CreateSphere("player2",15,2,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
-        var player2 = BABYLON.Mesh.ExtrudeShape("player2",shape,path,1,0,BABYLON.Mesh.CAP_ALL,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
-        player2.material = player2material;
-        player2.position.y = 1;
-        player2.rotation.y = Math.PI / 2;
-        player2.rotation.z = Math.PI / 2;
+                //var player1 = BABYLON.Mesh.CreateSphere("player1",15,2,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                //player1.material = player1material;
+                var heightoffset = 0.58;
 
-        
-       var canvas = new BABYLON.ScreenSpaceCanvas2D(this.scene);
+                player1.position.y = heightoffset;
+                //var player2 = BABYLON.Mesh.CreateSphere("player2",15,2,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                var player2 = clonemesh;//BABYLON.Mesh.ExtrudeShape("player2",shape,path,1,0,BABYLON.Mesh.CAP_ALL,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                player2.id = "player2";
+                player2.name = "player2";
+                //player2.material = player2material;
+                player2.position.y = heightoffset;
+                player2.position.x = 5;
+                //player2.rotation.y = Math.PI / 2;
+                //player2.rotation.z = Math.PI / 2;
 
-       this.display.player1Text = new BABYLON.Text2D('Player1', { marginAlignment: "h: center, v:center", fontName: "bold 16px Arial"})
+                
+            var canvas = new BABYLON.ScreenSpaceCanvas2D(this.scene);
 
-        var player1label = new BABYLON.Group2D({
-            parent: canvas, id: "Player1Label", trackNode: player1, origin: BABYLON.Vector2.Zero(),
-            children: [
-                new BABYLON.Rectangle2D({ id: "firstRect", width: 80, height: 28, roundRadius: 3, x: -100, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#FF4444FF", children: [
-                        this.display.player1Text
+            this.display.player1Text = new BABYLON.Text2D('Player1', { marginAlignment: "h: center, v:center", fontName: "bold 16px Arial"})
+
+                var player1label = new BABYLON.Group2D({
+                    parent: canvas, id: "Player1Label", trackNode: player1, origin: BABYLON.Vector2.Zero(),
+                    children: [
+                        new BABYLON.Rectangle2D({ id: "firstRect", width: 80, height: 28, roundRadius: 3, x: -100, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#FF4444FF", children: [
+                                this.display.player1Text
+                            ]
+                        })
                     ]
-                })
-            ]
-        });
+                });
 
-        this.display.player2Text = new BABYLON.Text2D('Player2', { marginAlignment: "h: center, v:center", fontName: "bold 16px Arial" });
+                this.display.player2Text = new BABYLON.Text2D('Player2', { marginAlignment: "h: center, v:center", fontName: "bold 16px Arial" });
 
-        var player2label = new BABYLON.Group2D({
-            parent: canvas, id: "Player2Label", trackNode: player2, origin: BABYLON.Vector2.Zero(),
-            children: [
-                new BABYLON.Rectangle2D({ id: "firstRect", width: 80, height: 30,roundRadius: 3, x: -100, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#4444FFFF", children: [
-                        this.display.player2Text
+                var player2label = new BABYLON.Group2D({
+                    parent: canvas, id: "Player2Label", trackNode: player2, origin: BABYLON.Vector2.Zero(),
+                    children: [
+                        new BABYLON.Rectangle2D({ id: "firstRect", width: 80, height: 30,roundRadius: 3, x: -100, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#4444FFFF", children: [
+                                this.display.player2Text
+                            ]
+                        })
                     ]
-                })
-            ]
-        });
+                });
 
-        /*groundmaterial.diffuseColor = new BABYLON.Color3(0.1,0.1,0.2);
-        groundmaterial.specularColor = new BABYLON.Color3(1,1,1);
-        ground.material = groundmaterial;*/
-        FieldTypeMaterialFactory.init(this.scene);
-        this.camera.beta = 0.7;
-        this.camera.alpha = 0;
-        this.camera.radius = 75;
-        //this.camera.zoomOnFactor = 0;
-        this.engine.runRenderLoop(() =>{
-            this.scene.render();
-            //this.camera.alpha += 0.003;
-            this.debug.innerText = "currentRound: " + this.currentMove + ", α: " + this.camera.alpha.toString() + ", β: " + this.camera.beta.toString() + ", (x,y,z): " + this.camera.position.x + "," + this.camera.position.y + "," + this.camera.position.z;
-            if(this.scene.meshUnderPointer){
-                this.debug.innerText = this.scene.meshUnderPointer.name;
+                /*groundmaterial.diffuseColor = new BABYLON.Color3(0.1,0.1,0.2);
+                groundmaterial.specularColor = new BABYLON.Color3(1,1,1);
+                ground.material = groundmaterial;*/
+                FieldTypeMaterialFactory.init(this.scene);
+                this.camera.beta = 0.7;
+                this.camera.alpha = 0;
+                this.camera.radius = 75;
+                //this.camera.zoomOnFactor = 0;
+                this.engine.runRenderLoop(() =>{
+                    this.scene.render();
+                    //this.camera.alpha += 0.003;
+                    this.debug.innerText = "currentRound: " + this.currentMove + ", α: " + this.camera.alpha.toString() + ", β: " + this.camera.beta.toString() + ", (x,y,z): " + this.camera.position.x + "," + this.camera.position.y + "," + this.camera.position.z;
+                    if(this.scene.meshUnderPointer){
+                        this.debug.innerText = this.scene.meshUnderPointer.name;
+                    }
+                });
+                window.addEventListener('resize', () => {
+                    this.engine.resize();
+                });
+
+                window.addEventListener("click",  () => {
+                    var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+                    if(pickResult.hit){
+                        console.log(pickResult.pickedMesh.id);
+                    }
+                });
+
+                console.log("initializing viewer took " + (performance.now() - now) + "ms");
+                this.render(replay.states[this.currentMove], false);
+
+
+            }else{
+                throw new Error("Loaded more than one mesh from file!");
             }
         });
-        window.addEventListener('resize', () => {
-            this.engine.resize();
-        });
 
-        window.addEventListener("click",  () => {
-            var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
-            if(pickResult.hit){
-                console.log(pickResult.pickedMesh.id);
-            }
-        });
-
-        console.log("initializing viewer took " + (performance.now() - now) + "ms");
-        this.render(replay.states[this.currentMove], false);
+       
     }
 
     getCenterOfBoard(board: Board):[number,number]{
@@ -498,19 +521,20 @@ class Grid {
     }
 
     public static getRotation(rot: DIRECTION){
+        const offset = Math.PI / 2;
         switch(rot){
             case DIRECTION.RIGHT:
-                return Math.PI / 2;
+                return 0;//Math.PI / 2;
             case DIRECTION.LEFT:
-                return -Math.PI / 2;
+                return -Math.PI / 2 - offset;
             case DIRECTION.DOWN_RIGHT:
-                return Math.PI * 5/6;
+                return Math.PI * 5/6 - offset;
             case DIRECTION.DOWN_LEFT:
-                return Math.PI * 7/6;
+                return Math.PI * 7/6 - offset;
             case DIRECTION.UP_RIGHT:
-                return Math.PI * 1/6;
+                return Math.PI * 1/6 - offset;
             case DIRECTION.UP_LEFT:
-                return -Math.PI * 1/6;
+                return -Math.PI * 1/6 - offset;
         }
     }
 

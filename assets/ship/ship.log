@@ -1,0 +1,67 @@
+	Exporter version: 4.6.1, Blender version: 2.76 (sub 0)
+========= Conversion from Blender to Babylon.js =========
+	Scene settings used:
+		selected layers only:  false
+		flat shading entire scene:  false
+		inline textures:  false
+		texture directory:  /home/apexys/Documents/Work/socha_graphical_client/assets/ship/
+	Python World class constructor completed
+	WARNING: No active camera has been assigned, or is not in a currently selected Blender layer
+	processing begun of mesh:  ship
+		processing begun of Standard material:  Default
+		processing begun of Standard material:  MQblacf
+		processing begun of Standard material:  MQwhite1
+		processing begun of Standard material:  MQwbump
+			Bump texture found "Bump"
+				Image texture found, type:  bumpTexture, mapped using: "UVMap"
+		processing begun of Standard material:  MQblanco
+		processing begun of Standard material:  MQsuelo
+			Bump texture found "Bump.001"
+				Image texture found, type:  bumpTexture, mapped using: "UVMap"
+		registered as also a user of material:  MQblanco
+		registered as also a user of material:  MQsuelo
+		registered as also a user of material:  MQblanco
+		processing begun of Standard material:  MQcasco2
+			Diffuse texture found "Diffuse"
+				Image texture found, type:  diffuseTexture, mapped using: "UVMap"
+			Bump texture found "Bump.002"
+				Image texture found, type:  bumpTexture, mapped using: "UVMap"
+		processing begun of Standard material:  MQcasco1
+			Diffuse texture found "Diffuse.001"
+				Image texture found, type:  diffuseTexture, mapped using: "UVMap"
+			Bump texture found "Bump.003"
+				Image texture found, type:  bumpTexture, mapped using: "UVMap"
+		processing begun of Standard material:  MQred
+		registered as also a user of material:  MQsuelo
+		registered as also a user of material:  MQblacf
+		processing begun of Standard material:  MQgoldf
+		processing begun of Standard material:  MQpalas
+		processing begun of Standard material:  MQflag2
+			Diffuse texture found "Diffuse.002"
+				Image texture found, type:  diffuseTexture, mapped using: "UVMap"
+		processing begun of Standard material:  MQflag
+		processing begun of Standard material:  MQwhite
+		processing begun of Standard material:  MQtest
+		processing begun of Standard material:  MQred1
+		registered as also a user of material:  MQgoldf
+		registered as also a user of material:  MQblacf
+		registered as also a user of material:  MQblanco
+		registered as also a user of material:  MQsuelo
+		registered as also a user of material:  MQblanco
+		registered as also a user of material:  MQsuelo
+		registered as also a user of material:  MQblanco
+		registered as also a user of material:  MQsuelo
+		registered as also a user of material:  MQred
+		registered as also a user of material:  MQblanco
+		registered as also a user of material:  MQsuelo
+		processing begun of multimaterial:  ship.Multimaterial#0
+		num positions      :  14094
+		num normals        :  14094
+		num uvs            :  28188
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  40776
+========= Writing of scene file started =========
+========= Writing of scene file completed =========
+========= end of processing =========
+elapsed time:  0 min, 1.2773 secs
