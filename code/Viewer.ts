@@ -166,6 +166,7 @@ export class Viewer{
 
         var player1material = new BABYLON.StandardMaterial('player1material',this.scene);
         player1material.diffuseColor = new BABYLON.Color3(1,0,0);
+        player1material.alpha = 0;
         var player2material = new BABYLON.StandardMaterial('player2material',this.scene);
         player2material.diffuseColor = new BABYLON.Color3(0,0,1);
 
@@ -183,30 +184,102 @@ export class Viewer{
             new BABYLON.Vector3(1,0,0)
         ];
 
+        //load mesh from file
         BABYLON.SceneLoader.ImportMesh('ship','assets/ship/','ship.babylon',this.scene,meshes =>{
-            if(meshes.length == 1){
-                var rootmesh = meshes[0];
-                rootmesh.scaling = rootmesh.scaling.multiplyByFloats(0.9,0.9,0.7);
-                var clonemesh = rootmesh.clone('clone',null);
-                var player1 = rootmesh;//BABYLON.Mesh.ExtrudeShape("player1",shape,path,1,0,BABYLON.Mesh.CAP_ALL,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+            if(meshes.length == 1){//check if mesh loaded correctly
+                var rootmesh = meshes[0]; //it's the only mesh in the file
+                rootmesh.scaling = rootmesh.scaling.multiplyByFloats(0.9,0.9,0.7); //Scale, to make it fit the field better
+
+                var clonemesh = rootmesh.clone('clone',null); //Copy mesh for second player
+
+                /*
+                Players have the following structure
+                dockMesh
+                    - actual ship mesh
+                    - particleMesh
+                        - particle emitter 1
+                    - particleMesh 2
+                        - particle emitter 2
+                */
+
+
+                var player1 = BABYLON.Mesh.CreateSphere("dockMesh1",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                rootmesh.parent = player1;
                 player1.name = "player1";
                 player1.id = "player1";
                 player1.rotation.y = Math.PI / 2;
-                //player1.rotation.z = Math.PI / 2;
-                player1.position.x = 3;
+                var p1particleMesh = BABYLON.Mesh.CreateSphere("p1particleMesh",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                p1particleMesh.parent = this.scene.getMeshByID('player1');
+                p1particleMesh.material = player1material;
+                var p1particleMesh2 = BABYLON.Mesh.CreateSphere("p1particleMesh2",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                p1particleMesh2.parent = p1particleMesh;
+                p1particleMesh2.material = player1material;
+                p1particleMesh.position.y = 0.72;
+                p1particleMesh.position.z = 0.04;
+                p1particleMesh.position.x = -0.11;
+                p1particleMesh2.position.x = 0.25;
 
-                //var player1 = BABYLON.Mesh.CreateSphere("player1",15,2,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
-                //player1.material = player1material;
-                var heightoffset = 0.58;
-
-                player1.position.y = heightoffset;
-                //var player2 = BABYLON.Mesh.CreateSphere("player2",15,2,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
-                var player2 = clonemesh;//BABYLON.Mesh.ExtrudeShape("player2",shape,path,1,0,BABYLON.Mesh.CAP_ALL,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                var player2 = BABYLON.Mesh.CreateSphere("dockMesh2",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                clonemesh.parent = player2;//BABYLON.Mesh.ExtrudeShape("player2",shape,path,1,0,BABYLON.Mesh.CAP_ALL,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
                 player2.id = "player2";
                 player2.name = "player2";
-                //player2.material = player2material;
-                player2.position.y = heightoffset;
                 player2.position.x = 5;
+                
+                var p2particleMesh = BABYLON.Mesh.CreateSphere("p2particleMesh",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                p2particleMesh.parent = this.scene.getMeshByID('player2');
+                p2particleMesh.material = player1material;
+                var p2particleMesh2 = BABYLON.Mesh.CreateSphere("p2particleMesh2",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                p2particleMesh2.parent = p2particleMesh;
+                p2particleMesh2.material = player1material;
+                p2particleMesh.position.y = 0.72;
+                p2particleMesh.position.z = 0.04;
+                p2particleMesh.position.x = -0.11;
+                p2particleMesh2.position.x = 0.25;
+
+
+
+
+                var particleTexture = new BABYLON.Texture('assets/smoke.png',this.scene);
+
+                var particleSystem = new BABYLON.ParticleSystem(p1particleMesh.name + 'ps1',8000,this.scene);
+                particleSystem.particleTexture = particleTexture;
+                particleSystem.emitter = p1particleMesh;
+                particleSystem.minEmitBox = new BABYLON.Vector3(-0.01, -0.01, -0.01); // Starting all From
+                particleSystem.maxEmitBox = new BABYLON.Vector3(0.01, 0.01, 0.01); // To...
+                particleSystem.minSize = 0.03;
+                particleSystem.maxSize = 0.05;
+                particleSystem.minLifeTime = 0.5;
+                particleSystem.maxLifeTime = 1;
+                particleSystem.minAngularSpeed = 0;
+                particleSystem.maxAngularSpeed = Math.PI;
+                particleSystem.color1 = new BABYLON.Color4(1,0,0,1);
+                particleSystem.color2 = new BABYLON.Color4(1,0.5,0.5,1);
+                particleSystem.colorDead = new BABYLON.Color4(1,1,1,0);
+                particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_STANDARD;
+                particleSystem.gravity = new BABYLON.Vector3(0, 4, 0.1);
+                particleSystem.emitRate = 1000;
+                particleSystem.direction1 = new BABYLON.Vector3(-0.12,0,-0.12);
+                particleSystem.direction2 = new BABYLON.Vector3(0.12,0,0.12);
+
+                var particleSystem2 = particleSystem.clone(p1particleMesh2.name + 'ps2',p1particleMesh2);
+
+                var particleSystem3 = particleSystem.clone(p2particleMesh.name +'ps1',p2particleMesh);
+                particleSystem3.color1 = new BABYLON.Color4(0,0,1,1);
+                particleSystem3.color2 = new BABYLON.Color4(0.5,0.5,1,1);
+                var particleSystem4 = particleSystem3.clone(p2particleMesh2.name + 'ps2',p2particleMesh2);
+                
+                particleSystem.start();
+                particleSystem2.start();
+                particleSystem3.start();
+                particleSystem4.start();
+
+                
+                var heightoffset = 0.65;
+                //0.58;
+
+                player1.position.y = heightoffset;
+                player2.position.y = heightoffset;
+               
                 //player2.rotation.y = Math.PI / 2;
                 //player2.rotation.z = Math.PI / 2;
 
