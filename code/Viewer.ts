@@ -1,5 +1,7 @@
 ///  <reference path="../babylonjs/babylon.2.5.d.ts" />
 ///  <reference path="../babylonjs/babylon.2.5.canvas2d.d.ts" />
+///  <reference path="../babylonjs/materialsLibrary/babylon.skyMaterial.d.ts" />
+///  <reference path="../babylonjs/materialsLibrary/babylon.waterMaterial.d.ts" />
 import {Replay, FIELDTYPE, Tile, GameState, Field, Board, DIRECTION, MOVETYPE, Move, PLAYERCOLOR} from "./Replay";
 import {Helpers} from "./Helpers";
 
@@ -10,6 +12,7 @@ export class Viewer{
     canvas: HTMLCanvasElement;
     engine: BABYLON.Engine;
     scene:  BABYLON.Scene;
+    shadow: BABYLON.ShadowGenerator;
     camera: BABYLON.ArcRotateCamera;
     controlsElement: HTMLDivElement;
     player1: BABYLON.Mesh;
@@ -141,48 +144,78 @@ export class Viewer{
         this.camera = new BABYLON.ArcRotateCamera('camera1',Math.PI, Math.PI, 10,new BABYLON.Vector3(0,0,0),this.scene);
         this.camera.attachControl(this.canvas, false);
         this.camera.setPosition(new BABYLON.Vector3(3,3,15));
+        //var postProcess = new BABYLON.FxaaPostProcess("fxaa", 2.0,this.camera, null, this.engine, true);
+
+        var luminance = Math.abs(Math.sin( (new Date().getHours() / 24 * Math.PI) + Math.PI ));
+        luminance = 0.2;
+        console.log("luminance: " + luminance);
+
+        var skyMaterial = new BABYLON.SkyMaterial("skyMaterial", this.scene);
+        skyMaterial.backFaceCulling = false;
+        skyMaterial.turbidity = 10;
+        skyMaterial.luminance = (1.179 - (1.179 * luminance)) + 0.1;
+        skyMaterial.rayleigh = luminance * 2;
+        skyMaterial.useSunPosition = true;
+        var sunPosition = new BABYLON.Vector3(0,0,0);
+        sunPosition.y = 1000 * luminance;
+        sunPosition.x = -1500 + (1000 * luminance);
+        skyMaterial.sunPosition = sunPosition;
+        //skyMaterial.inclination = 0.15
+        //skyMaterial.inclination = 1; // The solar inclination, related to the solar azimuth in interval [0, 1]
+        //skyMaterial.azimuth = 1; // The solar azimuth in interval [0, 1]
+
+
+        //skyMaterial.azimuth = 0.5;
+        //skyMaterial.inclination = 0.5;
+        console.log([skyMaterial.azimuth,skyMaterial.inclination]);
+        var skybox = BABYLON.Mesh.CreateBox("skyBox", 1000, this.scene);
+        skybox.material = skyMaterial;
+
         var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,100,0),this.scene);
         //var light = new BABYLON.DirectionalLight('sun',new BABYLON.Vector3(0,-1,0),this.scene);
-        light.specular = new BABYLON.Color3(0.2,0.2,0.2);
-        var ground = BABYLON.Mesh.CreateGround('ground1', 1000,1000,0,this.scene);
-        var groundmaterial = new BABYLON.StandardMaterial('groundMaterial', this.scene);
-        groundmaterial.diffuseColor = new BABYLON.Color3(116/255,184/255,254/255);
-        ground.material = groundmaterial;
-        /*
-        var skybox = BABYLON.Mesh.CreateBox("skyBox", 1000.0, this.scene);
-        var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", this.scene);
-        skyboxMaterial.backFaceCulling = false;
-        skyboxMaterial.disableLighting = true;
-        skybox.material = skyboxMaterial;
-        skybox.infiniteDistance = true;
-        skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
-        skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-        skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/skybox/skybox", this.scene);
-        skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-        skybox.position.y = 450;
-        skybox.renderingGroupId = 0;
-        */
-        //Meshes: http://graphics.cs.williams.edu/data/meshes.xml#2
+        light.specular = new BABYLON.Color3(0.5,0.5,0.5);
+        light.diffuse = new BABYLON.Color3(0.5,0.5,0.5);
+        var radius = 1, inclination = skyMaterial.luminance * Math.PI, azimuth = skyMaterial.azimuth * Math.PI * 2;
+        var x = radius * Math.sin(inclination) * Math.cos(azimuth), y = radius * Math.sin(inclination) * Math.sin(azimuth),z = radius * Math.cos(inclination);
+        console.log([x,y,z]);
+        /*var lines = BABYLON.Mesh.CreateLines("lines", [
+            new BABYLON.Vector3(0, 0, 0),
+            sunPosition
+            ],this.scene);
+*/
+        var light0 = new BABYLON.DirectionalLight("Dir0", BABYLON.Vector3.Zero().subtract(sunPosition), this.scene);
+        light0.diffuse = new BABYLON.Color3(0.7,0.7,0.7);
+        light0.specular = new BABYLON.Color3(0.9,0.9,0.9);
+        this.shadow = new BABYLON.ShadowGenerator(1024,light0);
+        this.shadow.filter = 0.2;
 
+        // Water
+        /*var testm = new BABYLON.StandardMaterial('tesm',this.scene);
+        testm.diffuseColor = new BABYLON.Color3(1,0,0);
+        var gm = BABYLON.Mesh.CreateGround("deepMesh",1024,1024,16,this.scene);
+        gm.material = testm;*/
+
+        var waterMesh = BABYLON.Mesh.CreateGround("waterMesh", 1024, 1024, 16, this.scene, false);
+        waterMesh.position = new BABYLON.Vector3(0,-6,0);
+        var water = new BABYLON.WaterMaterial("water", this.scene, new BABYLON.Vector2(1024, 1024));
+        water.backFaceCulling = true;
+        water.bumpTexture = new BABYLON.Texture("assets/water/waterbump.png", this.scene);
+        water.windForce = -3;
+        water.waveHeight = 0.7;
+        water.bumpHeight = 0.5;
+        water.windDirection = new BABYLON.Vector2(1, 1);
+        water.waterColor = new BABYLON.Color3(0, 0, 221 / 255);
+        water.colorBlendFactor = 0.1;
+        water.addToRenderList(skybox);
+        waterMesh.material = water;
+        waterMesh.receiveShadows = true;
+
+        
         var player1material = new BABYLON.StandardMaterial('player1material',this.scene);
         player1material.diffuseColor = new BABYLON.Color3(1,0,0);
         player1material.alpha = 0;
         var player2material = new BABYLON.StandardMaterial('player2material',this.scene);
         player2material.diffuseColor = new BABYLON.Color3(0,0,1);
-
-        var shape = [
-            new BABYLON.Vector3(1,0.5,0),
-            new BABYLON.Vector3(0,1,0),
-            new BABYLON.Vector3(-1,0.5,0),
-            new BABYLON.Vector3(-1,-1,0),
-            new BABYLON.Vector3(1,-1,0),
-            new BABYLON.Vector3(1,0.5,0)
-        ];
-
-        var path = [
-            BABYLON.Vector3.Zero(),
-            new BABYLON.Vector3(1,0,0)
-        ];
 
         //load mesh from file
         BABYLON.SceneLoader.ImportMesh('ship','assets/ship/','ship.babylon',this.scene,meshes =>{
@@ -205,6 +238,7 @@ export class Viewer{
 
                 var player1 = BABYLON.Mesh.CreateSphere("dockMesh1",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
                 rootmesh.parent = player1;
+                this.shadow.getShadowMap().renderList.push(rootmesh);
                 player1.name = "player1";
                 player1.id = "player1";
                 player1.rotation.y = Math.PI / 2;
@@ -219,8 +253,22 @@ export class Viewer{
                 p1particleMesh.position.x = -0.11;
                 p1particleMesh2.position.x = 0.25;
 
+
+                var p1light = new BABYLON.PointLight('p1light',BABYLON.Vector3.Zero(),this.scene);
+                p1light.specular = new BABYLON.Color3(0.4,0,0);
+                p1light.diffuse = new BABYLON.Color3(0.4,0,0);
+                p1light.parent = player1;
+                p1light.position.y = 0.2;
+                p1light.position.z = -0.1;
+                p1light.range = 2;
+
+                var p1shadow = new BABYLON.ShadowGenerator(1024,p1light);
+                p1shadow.getShadowMap().renderList.push(rootmesh);
+                rootmesh.receiveShadows = true;
+
                 var player2 = BABYLON.Mesh.CreateSphere("dockMesh2",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
                 clonemesh.parent = player2;//BABYLON.Mesh.ExtrudeShape("player2",shape,path,1,0,BABYLON.Mesh.CAP_ALL,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                this.shadow.getShadowMap().renderList.push(clonemesh);
                 player2.id = "player2";
                 player2.name = "player2";
                 player2.position.x = 5;
@@ -235,6 +283,19 @@ export class Viewer{
                 p2particleMesh.position.z = 0.04;
                 p2particleMesh.position.x = -0.11;
                 p2particleMesh2.position.x = 0.25;
+
+                var p2light = new BABYLON.PointLight('p2light',BABYLON.Vector3.Zero(),this.scene);
+                p2light.specular = new BABYLON.Color3(0,0,0.2);
+                p2light.diffuse = new BABYLON.Color3(0,0,0.4);
+                p2light.parent = player2;
+                p2light.position.y = 0.2;
+                p2light.position.z = -0.1;
+                p2light.range = 2;
+
+                var p2shadow = new BABYLON.ShadowGenerator(1024,p2light);
+                p2shadow.getShadowMap().renderList.push(clonemesh);
+                clonemesh.receiveShadows = true;
+
 
 
 
@@ -274,36 +335,33 @@ export class Viewer{
                 particleSystem4.start();
 
                 
-                var heightoffset = 0.65;
+                var heightoffset = 0.65 + 0;
                 //0.58;
 
                 player1.position.y = heightoffset;
                 player2.position.y = heightoffset;
-               
-                //player2.rotation.y = Math.PI / 2;
-                //player2.rotation.z = Math.PI / 2;
 
                 
             var canvas = new BABYLON.ScreenSpaceCanvas2D(this.scene);
 
-            this.display.player1Text = new BABYLON.Text2D('Player1', { marginAlignment: "h: center, v:center", fontName: "bold 16px Arial"})
+            this.display.player1Text = new BABYLON.Text2D('Player1', { marginAlignment: "h: center, v:center", fontName: "bold 16px Arial", marginTop: 3})
 
                 var player1label = new BABYLON.Group2D({
                     parent: canvas, id: "Player1Label", trackNode: player1, origin: BABYLON.Vector2.Zero(),
                     children: [
-                        new BABYLON.Rectangle2D({ id: "firstRect", width: 80, height: 28, roundRadius: 3, x: -100, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#FF4444FF", children: [
+                        new BABYLON.Rectangle2D({ id: "firstRect", width: 70, height: 23, roundRadius: 3, x: -100, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#FF4444FF", children: [
                                 this.display.player1Text
                             ]
                         })
                     ]
                 });
 
-                this.display.player2Text = new BABYLON.Text2D('Player2', { marginAlignment: "h: center, v:center", fontName: "bold 16px Arial" });
+                this.display.player2Text = new BABYLON.Text2D('Player2', { marginAlignment: "h: center, v:center", fontName: "bold 16px Arial", marginTop: 3 });
 
                 var player2label = new BABYLON.Group2D({
                     parent: canvas, id: "Player2Label", trackNode: player2, origin: BABYLON.Vector2.Zero(),
                     children: [
-                        new BABYLON.Rectangle2D({ id: "firstRect", width: 80, height: 30,roundRadius: 3, x: -100, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#4444FFFF", children: [
+                        new BABYLON.Rectangle2D({ id: "firstRect", width: 70, height: 23,roundRadius: 3, x: -100, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#4444FFFF", children: [
                                 this.display.player2Text
                             ]
                         })
@@ -375,8 +433,8 @@ export class Viewer{
         this.display.round.innerText = round < 10 ? '0' +  round.toString() : round.toString();
         this.display.redPoints.innerText = state.red.points.toString();
         this.display.bluePoints.innerText = state.blue.points.toString();
-        this.display.player1Text.text = "Kohle: "  + state.red.coal.toString();
-        this.display.player2Text.text = "Kohle: "  + state.blue.coal.toString();
+        this.display.player1Text.text = state.red.coal.toString() + "⬢   "  + state.red.speed.toString() + '➡' ;
+        this.display.player2Text.text = state.blue.coal.toString() + "⬢  "  + state.blue.speed.toString() + '➡' ;
 
         var getTileName = (t:Field) => "Tile(" + t.x + "," + t.y + ")";
 
@@ -389,6 +447,7 @@ export class Viewer{
                     [mesh.position.x, mesh.position.z] = Grid.getCoordinates(f.x, f.y, 3/2);
                     mesh.position.z += (Math.random() * 0.1); //Vary height a bit
                     mesh.material = FieldTypeMaterialFactory.getMaterialForFieldType(f.type);
+                    mesh.receiveShadows = true;
                 }
                 this.scene.getMeshByName(getTileName(f)).position.y = 0; //Raise all current meshes to the surface
             }
