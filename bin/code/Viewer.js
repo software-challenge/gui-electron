@@ -167,8 +167,8 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
             skybox.material = skyMaterial;
             var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 100, 0), this.scene);
             //var light = new BABYLON.DirectionalLight('sun',new BABYLON.Vector3(0,-1,0),this.scene);
-            light.specular = new BABYLON.Color3(0.5, 0.5, 0.5);
-            light.diffuse = new BABYLON.Color3(0.5, 0.5, 0.5);
+            light.specular = new BABYLON.Color3(0.7, 0.7, 0.7);
+            light.diffuse = new BABYLON.Color3(0.7, 0.7, 0.7);
             var radius = 1, inclination = skyMaterial.luminance * Math.PI, azimuth = skyMaterial.azimuth * Math.PI * 2;
             var x = radius * Math.sin(inclination) * Math.cos(azimuth), y = radius * Math.sin(inclination) * Math.sin(azimuth), z = radius * Math.cos(inclination);
             console.log([x, y, z]);
@@ -183,10 +183,8 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
             this.shadow = new BABYLON.ShadowGenerator(1024, light0);
             this.shadow.filter = 0.2;
             // Water
-            /*var testm = new BABYLON.StandardMaterial('tesm',this.scene);
-            testm.diffuseColor = new BABYLON.Color3(1,0,0);
-            var gm = BABYLON.Mesh.CreateGround("deepMesh",1024,1024,16,this.scene);
-            gm.material = testm;*/
+            var testm = new BABYLON.StandardMaterial('tesm', this.scene);
+            testm.diffuseColor = new BABYLON.Color3(0.4, 0.4, 1);
             var waterMesh = BABYLON.Mesh.CreateGround("waterMesh", 1024, 1024, 16, this.scene, false);
             waterMesh.position = new BABYLON.Vector3(0, -6, 0);
             var water = new BABYLON.WaterMaterial("water", this.scene, new BABYLON.Vector2(1024, 1024));
@@ -199,7 +197,7 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
             water.waterColor = new BABYLON.Color3(0, 0, 221 / 255);
             water.colorBlendFactor = 0.1;
             water.addToRenderList(skybox);
-            waterMesh.material = water;
+            waterMesh.material = testm;
             waterMesh.receiveShadows = true;
             var player1material = new BABYLON.StandardMaterial('player1material', this.scene);
             player1material.diffuseColor = new BABYLON.Color3(1, 0, 0);
@@ -331,9 +329,11 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
                     groundmaterial.specularColor = new BABYLON.Color3(1,1,1);
                     ground.material = groundmaterial;*/
                     FieldTypeMaterialFactory.init(this.scene);
-                    this.camera.beta = 0.7;
-                    this.camera.alpha = 0;
-                    this.camera.radius = 75;
+                    setTimeout(() => {
+                        this.camera.beta = 0.41;
+                        this.camera.alpha = 0;
+                        this.camera.radius = 30;
+                    }, 1000);
                     //this.camera.zoomOnFactor = 0;
                     this.engine.runRenderLoop(() => {
                         this.scene.render();
@@ -379,10 +379,12 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
         }
         render(state, animated) {
             if (state.last) {
+                this.display.endScreen.style.display = 'block';
                 this.display.endScreen.style.opacity = "1";
             }
             else {
                 this.display.endScreen.style.opacity = "0";
+                setTimeout(() => this.display.endScreen.style.display = 'none', 500);
             }
             this.display.progress.style.width = (((state.turn / 2) / 30) * 100).toString() + "%";
             var round = state.turn == 0 ? 0 : Math.floor((state.turn / 2) - 0.5);

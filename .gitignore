@@ -1,4 +1,4 @@
-bin/*.js
+bin
 !require.js
 *.map
 node_modules
