@@ -5,6 +5,7 @@ import {Helpers} from "./Helpers";
 export class Replay{
     public replayName: string;
     public states: GameState[];
+    public score: Score; 
     /**
      * Initializes the Replay from a URL and calls the callback once done
      */
@@ -41,8 +42,30 @@ export class Replay{
             this.states.push(g);
         }
         this.states[0].animated = false;
+        this.states[this.states.length -1].last = true;
+        this.score = new Score(xml.getElementsByTagName('result')[0]);
         console.log(this);
         console.log("parsing took " + (performance.now()-now) + "ms");
+    }
+}
+
+/**
+ * Represents the result of a game
+ */
+export class Score{
+    /** The color of the player who won */
+    public winner: PLAYERCOLOR;
+    /** The displayName of the winning player */
+    public winnerName: string;
+    /** The reason why the game was terminated */
+    public winReason: string;
+    /** The resaon including the displayName of the winning player */
+    public processedReason: string;
+    constructor(resultNode: Element){
+        this.winReason = resultNode.getElementsByTagName('score')[0].getAttribute('reason');
+        this.winner = resultNode.getElementsByTagName('winner')[0].getAttribute('color') == 'RED' ? PLAYERCOLOR.RED : PLAYERCOLOR.BLUE;
+        this.winnerName = resultNode.getElementsByTagName('winner')[0].getAttribute('displayName');
+        this.processedReason = this.winReason.replace('Ein Spieler',this.winnerName);
     }
 }
 
@@ -339,6 +362,7 @@ export class GameState{
     public red: Player;
     public blue: Player;
     public turn: number;
+    public last: boolean = false;
     public startPlayer: PLAYERCOLOR;
     public currentPlayer: PLAYERCOLOR;
     public freeTurn: boolean;

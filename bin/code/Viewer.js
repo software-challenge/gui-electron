@@ -9,9 +9,15 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
                 'redPoints': null,
                 'round': null,
                 'bluePoints': null,
+                'redName': null,
+                'blueName': null,
                 player1Text: null,
                 player2Text: null,
-                'progress': null
+                'progress': null,
+                endScreen: null,
+                winPicture: null,
+                winnerName: null,
+                winReason: null
             };
             var now = performance.now();
             //Save replay for later
@@ -95,13 +101,38 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
             this.display.progress = document.createElement('div');
             this.display.progress.classList.add('replay-progress');
             progressbar.appendChild(this.display.progress);
+            this.display.redName = document.createElement('div');
+            this.display.redName.innerText = replay.states[0].red.displayName;
+            this.display.redName.classList.add('replay-redName');
+            this.display.blueName = document.createElement('div');
+            this.display.blueName.innerText = replay.states[0].blue.displayName;
+            this.display.blueName.classList.add('replay-blueName');
+            this.display.endScreen = document.createElement('div');
+            this.display.endScreen.classList.add('replay-endScreen');
+            this.display.winnerName = document.createElement('span');
+            this.display.winnerName.innerText = replay.score.winnerName;
+            this.display.winPicture = document.createElement('img');
+            this.display.winPicture.src = "assets/win/pokal.svg";
+            this.display.winPicture.classList.add('replay-winPicture');
+            this.display.winReason = document.createElement('span');
+            var winnerColorClass = replay.score.winner == 0 /* RED */ ? 'replay-winRed' : 'replay-winBlue';
+            var htmlScore = replay.score.processedReason.replace(replay.score.winnerName, '<span class="' + winnerColorClass + '">' + replay.score.winnerName + '</span>');
+            this.display.winReason.innerHTML = htmlScore;
+            this.display.winReason.classList.add('replay-winReason');
+            this.display.endScreen.appendChild(this.display.winPicture);
+            //this.display.endScreen.appendChild(this.display.winnerName);
+            this.display.endScreen.appendChild(document.createElement('br'));
+            this.display.endScreen.appendChild(this.display.winReason);
             this.displayElement.appendChild(this.display.redPoints);
             this.displayElement.appendChild(this.display.round);
             this.displayElement.appendChild(this.display.bluePoints);
+            this.displayElement.appendChild(this.display.redName);
+            this.displayElement.appendChild(this.display.blueName);
             element.appendChild(this.canvas);
             element.appendChild(this.debug);
             element.appendChild(this.controlsElement);
             element.appendChild(progressbar);
+            element.appendChild(this.display.endScreen);
             var displayContainer = document.createElement('div');
             displayContainer.classList.add('replay-displayContainer');
             displayContainer.appendChild(this.displayElement);
@@ -347,6 +378,12 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
             return [x, y];
         }
         render(state, animated) {
+            if (state.last) {
+                this.display.endScreen.style.opacity = "1";
+            }
+            else {
+                this.display.endScreen.style.opacity = "0";
+            }
             this.display.progress.style.width = (((state.turn / 2) / 30) * 100).toString() + "%";
             var round = state.turn == 0 ? 0 : Math.floor((state.turn / 2) - 0.5);
             this.display.round.innerText = round < 10 ? '0' + round.toString() : round.toString();

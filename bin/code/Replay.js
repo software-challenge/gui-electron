@@ -41,11 +41,25 @@ define(["require", "exports"], function (require, exports) {
                 this.states.push(g);
             }
             this.states[0].animated = false;
+            this.states[this.states.length - 1].last = true;
+            this.score = new Score(xml.getElementsByTagName('result')[0]);
             console.log(this);
             console.log("parsing took " + (performance.now() - now) + "ms");
         }
     }
     exports.Replay = Replay;
+    /**
+     * Represents the result of a game
+     */
+    class Score {
+        constructor(resultNode) {
+            this.winReason = resultNode.getElementsByTagName('score')[0].getAttribute('reason');
+            this.winner = resultNode.getElementsByTagName('winner')[0].getAttribute('color') == 'RED' ? 0 /* RED */ : 1 /* BLUE */;
+            this.winnerName = resultNode.getElementsByTagName('winner')[0].getAttribute('displayName');
+            this.processedReason = this.winReason.replace('Ein Spieler', this.winnerName);
+        }
+    }
+    exports.Score = Score;
     class Field {
         constructor(type, x, y, points) {
             this.type = type;
@@ -285,6 +299,7 @@ define(["require", "exports"], function (require, exports) {
     exports.Move = Move;
     class GameState {
         constructor() {
+            this.last = false;
             this.moves = [];
             this.animated = true;
         }
