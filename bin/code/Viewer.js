@@ -221,7 +221,7 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
                     */
                     var player1 = BABYLON.Mesh.CreateSphere("dockMesh1", 15, 0.1, this.scene, false, BABYLON.Mesh.DEFAULTSIDE);
                     rootmesh.parent = player1;
-                    this.shadow.getShadowMap().renderList.push(rootmesh);
+                    //this.shadow.getShadowMap().renderList.push(rootmesh);
                     player1.name = "player1";
                     player1.id = "player1";
                     player1.rotation.y = Math.PI / 2;
@@ -247,7 +247,7 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
                     rootmesh.receiveShadows = true;
                     var player2 = BABYLON.Mesh.CreateSphere("dockMesh2", 15, 0.1, this.scene, false, BABYLON.Mesh.DEFAULTSIDE);
                     clonemesh.parent = player2; //BABYLON.Mesh.ExtrudeShape("player2",shape,path,1,0,BABYLON.Mesh.CAP_ALL,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
-                    this.shadow.getShadowMap().renderList.push(clonemesh);
+                    //this.shadow.getShadowMap().renderList.push(clonemesh);
                     player2.id = "player2";
                     player2.name = "player2";
                     player2.position.x = 5;
