@@ -117,6 +117,7 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
             this.display.winReason = document.createElement('span');
             var winnerColorClass = replay.score.winner == 0 /* RED */ ? 'replay-winRed' : 'replay-winBlue';
             var htmlScore = replay.score.processedReason.replace(replay.score.winnerName, '<span class="' + winnerColorClass + '">' + replay.score.winnerName + '</span>');
+            htmlScore = htmlScore.replace('&#xa;', '<br>'); //Fix linefeeds
             this.display.winReason.innerHTML = htmlScore;
             this.display.winReason.classList.add('replay-winReason');
             this.display.endScreen.appendChild(this.display.winPicture);

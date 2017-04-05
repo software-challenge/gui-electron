@@ -53,10 +53,23 @@ define(["require", "exports"], function (require, exports) {
      */
     class Score {
         constructor(resultNode) {
-            this.winReason = resultNode.getElementsByTagName('score')[0].getAttribute('reason');
+            //Loop through score nodes, there might be multiple ones that don't all contain a reason attribute
+            var scoreNodes = resultNode.getElementsByTagName('score');
+            for (var i = 0; i < scoreNodes.length; i++) {
+                if (scoreNodes[i].hasAttribute('cause')) {
+                    this.cause = scoreNodes[i].getAttribute('cause');
+                }
+                if (scoreNodes[i].hasAttribute('reason')) {
+                    this.winReason = scoreNodes[i].getAttribute('reason');
+                    break;
+                }
+            }
             this.winner = resultNode.getElementsByTagName('winner')[0].getAttribute('color') == 'RED' ? 0 /* RED */ : 1 /* BLUE */;
             this.winnerName = resultNode.getElementsByTagName('winner')[0].getAttribute('displayName');
             this.processedReason = this.winReason.replace('Ein Spieler', this.winnerName);
+            if (this.cause == 'RULE_VIOLATION') {
+                this.processedReason = 'Ungültiger Zug: ' + this.processedReason + "&#xa;" + this.winnerName + " gewinnt";
+            }
         }
     }
     exports.Score = Score;

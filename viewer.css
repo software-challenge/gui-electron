@@ -107,7 +107,7 @@ replay-viewer .replay-progress{
     padding: 1em;
     margin: 3em 3em;
     border-radius: 3em;
-    background-color: rgba(255,255,255,0.5);
+    background-color: rgba(255,255,255,0.6);
     transition: opacity 0.5s;
     opacity: 0;
     text-align: center;

@@ -61,11 +61,27 @@ export class Score{
     public winReason: string;
     /** The resaon including the displayName of the winning player */
     public processedReason: string;
+
+    /** The raw cause given in the replay */
+    public cause: string;
     constructor(resultNode: Element){
-        this.winReason = resultNode.getElementsByTagName('score')[0].getAttribute('reason');
+        //Loop through score nodes, there might be multiple ones that don't all contain a reason attribute
+        var scoreNodes = resultNode.getElementsByTagName('score');
+        for(var i = 0; i< scoreNodes.length; i++){
+            if(scoreNodes[i].hasAttribute('cause')){
+                    this.cause = scoreNodes[i].getAttribute('cause');
+            }
+            if(scoreNodes[i].hasAttribute('reason')){
+                this.winReason = scoreNodes[i].getAttribute('reason');
+                break;
+            }
+        }
         this.winner = resultNode.getElementsByTagName('winner')[0].getAttribute('color') == 'RED' ? PLAYERCOLOR.RED : PLAYERCOLOR.BLUE;
         this.winnerName = resultNode.getElementsByTagName('winner')[0].getAttribute('displayName');
         this.processedReason = this.winReason.replace('Ein Spieler',this.winnerName);
+        if(this.cause == 'RULE_VIOLATION'){
+            this.processedReason = 'Ungültiger Zug: ' + this.processedReason + "&#xa;" + this.winnerName + " gewinnt";
+        }
     }
 }
 
