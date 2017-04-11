@@ -1,3 +1,5 @@
+# Deployment
+
 Um den Replay-Viewer zu deployen müssen folgende Dateien gehostet werden:
 - babylonjs/babylon.2.5.js
 - babylonjs/babylon.2.5.canvas2d.js
@@ -9,7 +11,10 @@ Um den Replay-Viewer zu deployen müssen folgende Dateien gehostet werden:
 - der Ordner assets mit allem in den Unterordnern 'ship', 'win' sowie 'smoke.png'
 - alle JS-Dateien aus 'bin/code'
 
+Die JS-Dateien können eingebunden werden wie in `viewer.html` gezeigt, im ein
+Replay zu erzeugen ist kein Iframe mehr nötig, sondern es wird pro Replay ein
+Tag `<replay-viewer>` mit dem 'replay'-Attribut auf den Pfad des Replays gesetzt
+angelegt.
 
-Die JS-Dateien können eingebunden werden wie in viewer.html gezeigt, im ein Replay zu erzeugen ist kein Iframe mehr nötig, sondern es wird pro Replay ein Tag <replay-viewer> mit dem 'replay'-Attribut auf den Pfad des Replays gesetzt angelegt.
-
-Die Anwendung scannt dann alle tags und legt für jeden Replay-Viewer-Tag ein Canvas an. Auf diese Weise müssen Texturen nicht mehrfach geladen werden.
+Die Anwendung scannt dann alle tags und legt für jeden Replay-Viewer-Tag ein
+Canvas an. Auf diese Weise müssen Texturen nicht mehrfach geladen werden.
