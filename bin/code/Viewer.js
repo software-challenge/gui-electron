@@ -19,6 +19,7 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
                 winnerName: null,
                 winReason: null
             };
+            this.needsRerender = 0;
             var now = performance.now();
             //Save replay for later
             this.replay = replay;
@@ -27,6 +28,12 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
             this.canvas.classList.add('viewerCanvas');
             this.debug = document.createElement('div');
             this.debug.classList.add('replay-debug');
+            //Initialize rendercontrol
+            element.addEventListener('mousemove', () => {
+                if (this.needsRerender <= 30) {
+                    this.needsRerender += 30;
+                }
+            });
             //Initialize controls
             this.controlsElement = document.createElement('div');
             this.controlsElement.classList.add("replay-controls");
@@ -173,11 +180,6 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
             var radius = 1, inclination = skyMaterial.luminance * Math.PI, azimuth = skyMaterial.azimuth * Math.PI * 2;
             var x = radius * Math.sin(inclination) * Math.cos(azimuth), y = radius * Math.sin(inclination) * Math.sin(azimuth), z = radius * Math.cos(inclination);
             console.log([x, y, z]);
-            /*var lines = BABYLON.Mesh.CreateLines("lines", [
-                new BABYLON.Vector3(0, 0, 0),
-                sunPosition
-                ],this.scene);
-    */
             var light0 = new BABYLON.DirectionalLight("Dir0", BABYLON.Vector3.Zero().subtract(sunPosition), this.scene);
             light0.diffuse = new BABYLON.Color3(0.7, 0.7, 0.7);
             light0.specular = new BABYLON.Color3(0.9, 0.9, 0.9);
@@ -336,12 +338,17 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
                         this.camera.radius = 30;
                     }, 1000);
                     //this.camera.zoomOnFactor = 0;
+                    this.needsRerender += 60;
+                    this.debug.innerText = "TEST";
                     this.engine.runRenderLoop(() => {
-                        this.scene.render();
-                        //this.camera.alpha += 0.003;
-                        this.debug.innerText = "currentRound: " + this.currentMove + ", α: " + this.camera.alpha.toString() + ", β: " + this.camera.beta.toString() + ", (x,y,z): " + this.camera.position.x + "," + this.camera.position.y + "," + this.camera.position.z;
-                        if (this.scene.meshUnderPointer) {
-                            this.debug.innerText = this.scene.meshUnderPointer.name;
+                        if (this.needsRerender > 0) {
+                            this.needsRerender--;
+                            this.scene.render();
+                            //this.camera.alpha += 0.003;
+                            this.debug.innerText = "currentRound: " + this.currentMove + ", α: " + this.camera.alpha.toString() + ", β: " + this.camera.beta.toString() + ", (x,y,z): " + this.camera.position.x + "," + this.camera.position.y + "," + this.camera.position.z + ", needsRerender: " + this.needsRerender.toString();
+                            if (this.scene.meshUnderPointer) {
+                                //this.debug.innerText = this.scene.meshUnderPointer.name;
+                            }
                         }
                     });
                     window.addEventListener('resize', () => {
@@ -421,31 +428,9 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
                 }
             }
             this.lastBoard = state.board;
-            //Render players
-            /*
-            console.log("Red: " + state.red.x + "," + state.red.y);
-            var [px,py] = Grid.getCoordinates(state.red.x,state.red.y,3/2);
-            var player1 = this.scene.getMeshByName('player1');
-    
-            BABYLON.Animation.CreateAndStartAnimation("player1movex",player1,"position.x",30,30,player1.position.x,px,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-            BABYLON.Animation.CreateAndStartAnimation("player1movez",player1,"position.z",30,30,player1.position.z,py,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-            BABYLON.Animation.CreateAndStartAnimation("player1rotatez",player1,"rotation.y",30,30,player1.rotation.y,Grid.getRotation(state.red.direction),BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-            console.log("red: " + Grid.rotationToString(state.red.direction));
-            //player1.position.x = px;
-            //player1.position.z = py;
-    
-            console.log("Blue: " + state.blue.x + "," + state.blue.y);
-            [px,py] = Grid.getCoordinates(state.blue.x,state.blue.y,3/2);
-            var player2 = this.scene.getMeshByName('player2');
-            //player2.position.x = px;
-            //player2.position.z = py;
-            BABYLON.Animation.CreateAndStartAnimation("player2movex",player2,"position.x",30,30,player2.position.x,px,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-            BABYLON.Animation.CreateAndStartAnimation("player2movez",player2,"position.z",30,30,player2.position.z,py,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-            BABYLON.Animation.CreateAndStartAnimation("player2rotatez",player2,"rotation.y",30,30,player2.rotation.y,Grid.getRotation(state.blue.direction),BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-            console.log("blue: " + Grid.rotationToString(state.blue.direction));
-            */
             //Do not animate if zero-turn
             if (!state.animated || (!animated)) {
+                this.needsRerender += 30;
                 console.log("Red: " + state.red.x + "," + state.red.y);
                 var [px, py] = Grid.getCoordinates(state.red.x, state.red.y, 3 / 2);
                 var player1 = this.scene.getMeshByName('player1');
@@ -559,6 +544,7 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
                 }
                 this.scene.beginAnimation(activePlayer, 0, frame, false, 1, () => (setTimeout(this.controls.playCallback, 100)));
                 this.scene.beginAnimation(otherPlayer, 0, frame, false);
+                this.needsRerender += frame + 10;
             }
             //Adjust camera
             let [x, y] = this.getCenterOfBoard(state.board);
