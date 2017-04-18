@@ -18,3 +18,9 @@ angelegt.
 
 Die Anwendung scannt dann alle tags und legt für jeden Replay-Viewer-Tag ein
 Canvas an. Auf diese Weise müssen Texturen nicht mehrfach geladen werden.
+
+Mit r.js kann man auch ein einzelnes js file produzieren. Das ist noch in der Entstehung, aber grundsaeztlich:
+
+./node_modules/requirejs/bin/r.js -o build.js
+
+In build.js sind die Einstellungen. viewer2.html laedt dann das einzelne js file (geht aber noch nicht).
