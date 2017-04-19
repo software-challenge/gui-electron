@@ -64,9 +64,15 @@ define(["require", "exports"], function (require, exports) {
                     break;
                 }
             }
+            if (!this.winReason) {
+                this.winReason = "";
+            }
             this.winner = resultNode.getElementsByTagName('winner')[0].getAttribute('color') == 'RED' ? 0 /* RED */ : 1 /* BLUE */;
             this.winnerName = resultNode.getElementsByTagName('winner')[0].getAttribute('displayName');
             this.processedReason = this.winReason.replace('Ein Spieler', this.winnerName);
+            if (this.processedReason == "") {
+                this.processedReason = "Das Spiel wurde vorzeitig beendet. " + this.winnerName + " gewinnt nach Punktestand.";
+            }
             if (this.cause == 'RULE_VIOLATION') {
                 this.processedReason = 'Ungültiger Zug: ' + this.processedReason + "&#xa;" + this.winnerName + " gewinnt";
             }

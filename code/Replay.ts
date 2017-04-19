@@ -76,9 +76,15 @@ export class Score{
                 break;
             }
         }
+        if(!this.winReason){
+            this.winReason = "";
+        }
         this.winner = resultNode.getElementsByTagName('winner')[0].getAttribute('color') == 'RED' ? PLAYERCOLOR.RED : PLAYERCOLOR.BLUE;
         this.winnerName = resultNode.getElementsByTagName('winner')[0].getAttribute('displayName');
         this.processedReason = this.winReason.replace('Ein Spieler',this.winnerName);
+        if(this.processedReason == ""){
+            this.processedReason = "Das Spiel wurde vorzeitig beendet. " + this.winnerName + " gewinnt nach Punktestand.";
+        }
         if(this.cause == 'RULE_VIOLATION'){
             this.processedReason = 'Ungültiger Zug: ' + this.processedReason + "&#xa;" + this.winnerName + " gewinnt";
         }
