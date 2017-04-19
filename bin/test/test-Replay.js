@@ -1,6 +1,5 @@
-define(["require", "exports", "../code/Replay", "chai", "jsdom"], function (require, exports, Replay_1, chai, jsdom) {
+define(["require", "exports", "../code/Replay", 'chai', 'jsdom'], function (require, exports, Replay_1, chai, jsdom) {
     "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
     var assert = chai.assert;
     describe('Replay', () => {
         let replay;

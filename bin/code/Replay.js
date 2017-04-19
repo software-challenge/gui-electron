@@ -1,6 +1,5 @@
 define(["require", "exports"], function (require, exports) {
     "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
     /**
      * Represents the parsed data from an xml replay
      */
@@ -32,8 +31,6 @@ define(["require", "exports"], function (require, exports) {
                     }
                     //fill any gaps that might have occured
                     tempmoves.forEach(o => g.moves.push(o));
-                    /*forEach iterates only over items that exists.
-                      So if, for example, we have an array that has elements at indices four and six, but nothing at five, it won't insert an undefined into our list.*/
                 }
                 if (this.states.length > 0) {
                     g.addAnimationHints(this.states[this.states.length - 1]);

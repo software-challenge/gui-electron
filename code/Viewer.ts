@@ -6,6 +6,10 @@ import {Replay, FIELDTYPE, Tile, GameState, Field, Board, DIRECTION, MOVETYPE, M
 import {Helpers} from "./Helpers";
 
 export class Viewer{
+//    static PATH_PREFIX: string = "/replay_viewers/mississippi_queen/";
+    static PATH_PREFIX: string = "";
+    static ASSET_PATH: string = Viewer.PATH_PREFIX + "assets";
+    static TEXTURE_PATH: string = Viewer.PATH_PREFIX + "textures";
     static ANIMATION_FRAMES: number = 30;
     static GRID_SIZE: number = 3/2;
     replay: Replay;
@@ -22,16 +26,16 @@ export class Viewer{
 
     currentMove: number = 0;
 
-    debug: HTMLDivElement;      
+    debug: HTMLDivElement;
     displayElement: HTMLDivElement;
     display: {
-        'redPoints': HTMLDivElement, 
-        'round': HTMLDivElement, 
-        'bluePoints': HTMLDivElement, 
+        'redPoints': HTMLDivElement,
+        'round': HTMLDivElement,
+        'bluePoints': HTMLDivElement,
         'progress': HTMLDivElement,
         'redName': HTMLDivElement,
         'blueName': HTMLDivElement,
-        player1Text: BABYLON.Text2D, 
+        player1Text: BABYLON.Text2D,
         player2Text: BABYLON.Text2D,
         endScreen: HTMLDivElement,
         winPicture: HTMLImageElement,
@@ -40,10 +44,10 @@ export class Viewer{
     } = {
         'redPoints': null,
         'round':null,
-        'bluePoints':null, 
+        'bluePoints':null,
         'redName': null,
         'blueName': null,
-        player1Text: null, 
+        player1Text: null,
         player2Text: null,
         'progress': null,
         endScreen: null,
@@ -113,7 +117,7 @@ export class Viewer{
                 this.controls.play.innerText = "►";
                 this.controls.playing = false;
             }
-           
+
         });
         this.controls.first = document.createElement('button');
         this.controls.first.innerText = "⏮";
@@ -158,7 +162,7 @@ export class Viewer{
         this.display.winnerName = document.createElement('span');
         this.display.winnerName.innerText = replay.score.winnerName;
         this.display.winPicture = document.createElement('img');
-        this.display.winPicture.src = "assets/win/pokal.svg";
+        this.display.winPicture.src = Viewer.ASSET_PATH + "/win/pokal.svg";
         this.display.winPicture.classList.add('replay-winPicture');
         this.display.winReason = document.createElement('span');
         var winnerColorClass = replay.score.winner == PLAYERCOLOR.RED ? 'replay-winRed' : 'replay-winBlue';
@@ -242,7 +246,7 @@ export class Viewer{
         waterMesh.position = new BABYLON.Vector3(0,-6,0);
         var water = new BABYLON.WaterMaterial("water", this.scene, new BABYLON.Vector2(1024, 1024));
         water.backFaceCulling = true;
-        water.bumpTexture = new BABYLON.Texture("assets/water/waterbump.png", this.scene);
+        water.bumpTexture = new BABYLON.Texture(Viewer.ASSET_PATH + "/water/waterbump.png", this.scene);
         water.windForce = -3;
         water.waveHeight = 0.7;
         water.bumpHeight = 0.5;
@@ -253,7 +257,7 @@ export class Viewer{
         waterMesh.material = testm;
         waterMesh.receiveShadows = true;
 
-        
+
         var player1material = new BABYLON.StandardMaterial('player1material',this.scene);
         player1material.diffuseColor = new BABYLON.Color3(1,0,0);
         player1material.alpha = 0;
@@ -261,7 +265,7 @@ export class Viewer{
         player2material.diffuseColor = new BABYLON.Color3(0,0,1);
 
         //load mesh from file
-        BABYLON.SceneLoader.ImportMesh('ship','assets/ship/','ship.babylon',this.scene,meshes =>{
+        BABYLON.SceneLoader.ImportMesh('ship',Viewer.ASSET_PATH + '/ship/','ship.babylon',this.scene,meshes =>{
             if(meshes.length == 1){//check if mesh loaded correctly
                 var rootmesh = meshes[0]; //it's the only mesh in the file
                 rootmesh.scaling = rootmesh.scaling.multiplyByFloats(0.9,0.9,0.7); //Scale, to make it fit the field better
@@ -315,7 +319,7 @@ export class Viewer{
                 player2.id = "player2";
                 player2.name = "player2";
                 player2.position.x = 5;
-                
+
                 var p2particleMesh = BABYLON.Mesh.CreateSphere("p2particleMesh",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
                 p2particleMesh.parent = this.scene.getMeshByID('player2');
                 p2particleMesh.material = player1material;
@@ -343,7 +347,7 @@ export class Viewer{
 
 
 
-                var particleTexture = new BABYLON.Texture('assets/smoke.png',this.scene);
+                var particleTexture = new BABYLON.Texture(Viewer.ASSET_PATH + '/smoke.png',this.scene);
 
                 var particleSystem = new BABYLON.ParticleSystem(p1particleMesh.name + 'ps1',8000,this.scene);
                 particleSystem.particleTexture = particleTexture;
@@ -371,20 +375,20 @@ export class Viewer{
                 particleSystem3.color1 = new BABYLON.Color4(0,0,1,1);
                 particleSystem3.color2 = new BABYLON.Color4(0.5,0.5,1,1);
                 var particleSystem4 = particleSystem3.clone(p2particleMesh2.name + 'ps2',p2particleMesh2);
-                
+
                 particleSystem.start();
                 particleSystem2.start();
                 particleSystem3.start();
                 particleSystem4.start();
 
-                
+
                 var heightoffset = 0.65 + 0;
                 //0.58;
 
                 player1.position.y = heightoffset;
                 player2.position.y = heightoffset;
 
-                
+
             var canvas = new BABYLON.ScreenSpaceCanvas2D(this.scene);
 
             this.display.player1Text = new BABYLON.Text2D('Player1', { marginAlignment: "h: center, v:center", fontName: "bold 16px Arial", marginTop: 3})
@@ -454,7 +458,7 @@ export class Viewer{
             }
         });
 
-       
+
     }
 
     getCenterOfBoard(board: Board):[number,number]{
@@ -498,7 +502,7 @@ export class Viewer{
         //Iterate over new tiles
         for(let t of state.board.tiles){
             for(let f of t.fields){
-                if(! this.scene.getMeshByName(getTileName(f))){ //Create new meshes 
+                if(! this.scene.getMeshByName(getTileName(f))){ //Create new meshes
                     //console.log("(" + f.x + "," + f.y + ") = " +  f.type);
                     var mesh = BABYLON.Mesh.CreateCylinder(getTileName(f),1,3,3,6,1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
                     [mesh.position.x, mesh.position.z] = Grid.getCoordinates(f.x, f.y, 3/2);
@@ -545,7 +549,7 @@ export class Viewer{
             console.log("Blue direction:" + Board.DirectionToString(state.blue.direction));
         }else{
         //Create new animations
-        
+
         var frame = 0;
         //Remember, the following is actually relative to the turn before this one, so the players are switched 🙈
         if(state.currentPlayer == PLAYERCOLOR.BLUE){
@@ -608,7 +612,7 @@ export class Viewer{
                     anim.setKeys(keys);
                     activePlayer.animations.push(anim);
                     console.log("[animation] TURN activePlayer from " + Board.DirectionToString(move.animationHints['startDirection']) + " to " + Board.DirectionToString(move.animationHints['targetDirection'])+ " @" + frame);
-                break; 
+                break;
                 case MOVETYPE.PUSH:
                     var anim = new BABYLON.Animation("otherPlayerX","position.x",30,BABYLON.Animation.ANIMATIONTYPE_FLOAT,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
                     var anim2 = new BABYLON.Animation("otherPlayerZ","position.z",30,BABYLON.Animation.ANIMATIONTYPE_FLOAT,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
@@ -663,10 +667,10 @@ export class Viewer{
 
 class Grid {
     public static getCoordinates(x: number, y:number, size:number){
-        /*Next we want to put several hexagons together. 
-        In the horizontal orientation, the height of a hexagon is height = size * 2. 
+        /*Next we want to put several hexagons together.
+        In the horizontal orientation, the height of a hexagon is height = size * 2.
         The vertical distance between adjacent hexes is vert = height * 3/4.
-        The width of a hexagon is width = sqrt(3)/2 * height. 
+        The width of a hexagon is width = sqrt(3)/2 * height.
         The horizontal distance between adjacent hexes is horiz = width. */
         let spacer = 0.05;
         size += spacer;
@@ -744,7 +748,7 @@ class FieldTypeMaterialFactory{
                      console.log("New fieldtype: water");
                      m.diffuseColor = new BABYLON.Color3(1,1,1);
                      //m.specularColor = new BABYLON.Color3(0.2,0.2,1);
-                     m.diffuseTexture = new BABYLON.Texture("textures/water.png", this.scene);
+                     m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/water.png", this.scene);
                      FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                 break;
                 case FIELDTYPE.LOG:
@@ -752,13 +756,13 @@ class FieldTypeMaterialFactory{
                      console.log("New fieldtype: log");
                      //m.diffuseColor = new BABYLON.Color3(0.6,0.1,0.5);
                      //m.specularColor = new BABYLON.Color3(1,0.5,0.1);
-                     m.diffuseTexture = new BABYLON.Texture("textures/logs.png", this.scene);
+                     m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/logs.png", this.scene);
                      FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                 break;
                 case FIELDTYPE.BLOCKED:
                      var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
                      console.log("New fieldtype: blocked");
-                     m.diffuseTexture = new BABYLON.Texture("textures/island.png", this.scene);
+                     m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/island.png", this.scene);
                      FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                 break;
                  case FIELDTYPE.SANDBANK:
@@ -766,58 +770,58 @@ class FieldTypeMaterialFactory{
                      console.log("New fieldtype: sandbank");
                      //m.diffuseColor = new BABYLON.Color3(0,0,1);
                      //m.specularColor = new BABYLON.Color3(1,1,1);
-                      m.diffuseTexture = new BABYLON.Texture("textures/sandbank.png", this.scene);
+                      m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/sandbank.png", this.scene);
                      FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                 break;
                 case FIELDTYPE.GOAL:
                     var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
                     console.log("New fieldtype: goal");
-                    m.diffuseTexture = new BABYLON.Texture("textures/goal.png", this.scene);
+                    m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/goal.png", this.scene);
                     FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                 break;
                 case FIELDTYPE.PASSENGER0:
                     var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
                     console.log("New fieldtype: passenger");
-                    m.diffuseTexture = new BABYLON.Texture("textures/passenger.png", this.scene);
+                    m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger.png", this.scene);
                     FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                 break;
                 case FIELDTYPE.PASSENGER1:
                     var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
                     console.log("New fieldtype: passenger");
-                    m.diffuseTexture = new BABYLON.Texture("textures/passenger1.png", this.scene);
+                    m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger1.png", this.scene);
                     FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                 break;
                 case FIELDTYPE.PASSENGER2:
                     var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
                     console.log("New fieldtype: passenger");
-                    m.diffuseTexture = new BABYLON.Texture("textures/passenger2.png", this.scene);
+                    m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger2.png", this.scene);
                     FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                 break;
                 case FIELDTYPE.PASSENGER3:
                     var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
                     console.log("New fieldtype: passenger");
-                    m.diffuseTexture = new BABYLON.Texture("textures/passenger3.png", this.scene);
+                    m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger3.png", this.scene);
                     FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                 break;
                 case FIELDTYPE.PASSENGER4:
                     var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
                     console.log("New fieldtype: passenger");
-                    m.diffuseTexture = new BABYLON.Texture("textures/passenger4.png", this.scene);
+                    m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger4.png", this.scene);
                     FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                 break;
                 case FIELDTYPE.PASSENGER5:
                     var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
                     console.log("New fieldtype: passenger");
-                    m.diffuseTexture = new BABYLON.Texture("textures/passenger5.png", this.scene);
+                    m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger5.png", this.scene);
                     FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                 break;
                 case FIELDTYPE.PASSENGER6:
                     var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
                     console.log("New fieldtype: passenger");
-                    m.diffuseTexture = new BABYLON.Texture("textures/passenger6.png", this.scene);
+                    m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger6.png", this.scene);
                     FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                 break;
-                
+
 
             }
             return FieldTypeMaterialFactory.fieldMap[f.toString()];

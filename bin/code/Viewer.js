@@ -1,6 +1,5 @@
 define(["require", "exports", "./Replay"], function (require, exports, Replay_1) {
     "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
     class Viewer {
         constructor(replay, element, document, window) {
             this.controls = { 'next': null, 'previous': null, 'play': null, 'first': null, 'last': null, 'playing': false, playCallback: null };
@@ -64,7 +63,6 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
                         this.controls.play.click();
                     }
                     this.render(this.replay.states[this.currentMove], true);
-                    //setTimeout(this.controls.playCallback,((Viewer.ANIMATION_FRAMES / 60) * 1000) * 2);
                 }
             };
             this.controls.play.addEventListener('click', () => {
@@ -119,7 +117,7 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
             this.display.winnerName = document.createElement('span');
             this.display.winnerName.innerText = replay.score.winnerName;
             this.display.winPicture = document.createElement('img');
-            this.display.winPicture.src = "assets/win/pokal.svg";
+            this.display.winPicture.src = Viewer.ASSET_PATH + "/win/pokal.svg";
             this.display.winPicture.classList.add('replay-winPicture');
             this.display.winReason = document.createElement('span');
             var winnerColorClass = replay.score.winner == 0 /* RED */ ? 'replay-winRed' : 'replay-winBlue';
@@ -192,7 +190,7 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
             waterMesh.position = new BABYLON.Vector3(0, -6, 0);
             var water = new BABYLON.WaterMaterial("water", this.scene, new BABYLON.Vector2(1024, 1024));
             water.backFaceCulling = true;
-            water.bumpTexture = new BABYLON.Texture("assets/water/waterbump.png", this.scene);
+            water.bumpTexture = new BABYLON.Texture(Viewer.ASSET_PATH + "/water/waterbump.png", this.scene);
             water.windForce = -3;
             water.waveHeight = 0.7;
             water.bumpHeight = 0.5;
@@ -208,7 +206,7 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
             var player2material = new BABYLON.StandardMaterial('player2material', this.scene);
             player2material.diffuseColor = new BABYLON.Color3(0, 0, 1);
             //load mesh from file
-            BABYLON.SceneLoader.ImportMesh('ship', 'assets/ship/', 'ship.babylon', this.scene, meshes => {
+            BABYLON.SceneLoader.ImportMesh('ship', Viewer.ASSET_PATH + '/ship/', 'ship.babylon', this.scene, meshes => {
                 if (meshes.length == 1) {
                     var rootmesh = meshes[0]; //it's the only mesh in the file
                     rootmesh.scaling = rootmesh.scaling.multiplyByFloats(0.9, 0.9, 0.7); //Scale, to make it fit the field better
@@ -274,7 +272,7 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
                     var p2shadow = new BABYLON.ShadowGenerator(1024, p2light);
                     p2shadow.getShadowMap().renderList.push(clonemesh);
                     clonemesh.receiveShadows = true;
-                    var particleTexture = new BABYLON.Texture('assets/smoke.png', this.scene);
+                    var particleTexture = new BABYLON.Texture(Viewer.ASSET_PATH + '/smoke.png', this.scene);
                     var particleSystem = new BABYLON.ParticleSystem(p1particleMesh.name + 'ps1', 8000, this.scene);
                     particleSystem.particleTexture = particleTexture;
                     particleSystem.emitter = p1particleMesh;
@@ -347,7 +345,6 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
                             //this.camera.alpha += 0.003;
                             this.debug.innerText = "currentRound: " + this.currentMove + ", α: " + this.camera.alpha.toString() + ", β: " + this.camera.beta.toString() + ", (x,y,z): " + this.camera.position.x + "," + this.camera.position.y + "," + this.camera.position.z + ", needsRerender: " + this.needsRerender.toString();
                             if (this.scene.meshUnderPointer) {
-                                //this.debug.innerText = this.scene.meshUnderPointer.name;
                             }
                         }
                     });
@@ -422,7 +419,6 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
                     if (state.board.tileIndices.indexOf(lt) == -1) {
                         for (let f of this.lastBoard.getTileByIndex(lt).fields) {
                             var tile = this.scene.getMeshByName(getTileName(f));
-                            //BABYLON.Animation.CreateAndStartAnimation("sinktile"+lt,tile,"position.y",30,60,tile.position.y,-3.5,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
                         }
                     }
                 }
@@ -557,6 +553,10 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
             console.log("coal: " + state.red.coal);
         }
     }
+    //    static PATH_PREFIX: string = "/replay_viewers/mississippi_queen/";
+    Viewer.PATH_PREFIX = "";
+    Viewer.ASSET_PATH = Viewer.PATH_PREFIX + "assets";
+    Viewer.TEXTURE_PATH = Viewer.PATH_PREFIX + "textures";
     Viewer.ANIMATION_FRAMES = 30;
     Viewer.GRID_SIZE = 3 / 2;
     exports.Viewer = Viewer;
@@ -636,7 +636,7 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
                         console.log("New fieldtype: water");
                         m.diffuseColor = new BABYLON.Color3(1, 1, 1);
                         //m.specularColor = new BABYLON.Color3(0.2,0.2,1);
-                        m.diffuseTexture = new BABYLON.Texture("textures/water.png", this.scene);
+                        m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/water.png", this.scene);
                         FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                         break;
                     case 1 /* LOG */:
@@ -644,13 +644,13 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
                         console.log("New fieldtype: log");
                         //m.diffuseColor = new BABYLON.Color3(0.6,0.1,0.5);
                         //m.specularColor = new BABYLON.Color3(1,0.5,0.1);
-                        m.diffuseTexture = new BABYLON.Texture("textures/logs.png", this.scene);
+                        m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/logs.png", this.scene);
                         FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                         break;
                     case 2 /* BLOCKED */:
                         var m = new BABYLON.StandardMaterial(f.toString(), this.scene);
                         console.log("New fieldtype: blocked");
-                        m.diffuseTexture = new BABYLON.Texture("textures/island.png", this.scene);
+                        m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/island.png", this.scene);
                         FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                         break;
                     case 10 /* SANDBANK */:
@@ -658,55 +658,55 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
                         console.log("New fieldtype: sandbank");
                         //m.diffuseColor = new BABYLON.Color3(0,0,1);
                         //m.specularColor = new BABYLON.Color3(1,1,1);
-                        m.diffuseTexture = new BABYLON.Texture("textures/sandbank.png", this.scene);
+                        m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/sandbank.png", this.scene);
                         FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                         break;
                     case 11 /* GOAL */:
                         var m = new BABYLON.StandardMaterial(f.toString(), this.scene);
                         console.log("New fieldtype: goal");
-                        m.diffuseTexture = new BABYLON.Texture("textures/goal.png", this.scene);
+                        m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/goal.png", this.scene);
                         FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                         break;
                     case 3 /* PASSENGER0 */:
                         var m = new BABYLON.StandardMaterial(f.toString(), this.scene);
                         console.log("New fieldtype: passenger");
-                        m.diffuseTexture = new BABYLON.Texture("textures/passenger.png", this.scene);
+                        m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger.png", this.scene);
                         FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                         break;
                     case 4 /* PASSENGER1 */:
                         var m = new BABYLON.StandardMaterial(f.toString(), this.scene);
                         console.log("New fieldtype: passenger");
-                        m.diffuseTexture = new BABYLON.Texture("textures/passenger1.png", this.scene);
+                        m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger1.png", this.scene);
                         FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                         break;
                     case 5 /* PASSENGER2 */:
                         var m = new BABYLON.StandardMaterial(f.toString(), this.scene);
                         console.log("New fieldtype: passenger");
-                        m.diffuseTexture = new BABYLON.Texture("textures/passenger2.png", this.scene);
+                        m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger2.png", this.scene);
                         FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                         break;
                     case 6 /* PASSENGER3 */:
                         var m = new BABYLON.StandardMaterial(f.toString(), this.scene);
                         console.log("New fieldtype: passenger");
-                        m.diffuseTexture = new BABYLON.Texture("textures/passenger3.png", this.scene);
+                        m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger3.png", this.scene);
                         FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                         break;
                     case 7 /* PASSENGER4 */:
                         var m = new BABYLON.StandardMaterial(f.toString(), this.scene);
                         console.log("New fieldtype: passenger");
-                        m.diffuseTexture = new BABYLON.Texture("textures/passenger4.png", this.scene);
+                        m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger4.png", this.scene);
                         FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                         break;
                     case 8 /* PASSENGER5 */:
                         var m = new BABYLON.StandardMaterial(f.toString(), this.scene);
                         console.log("New fieldtype: passenger");
-                        m.diffuseTexture = new BABYLON.Texture("textures/passenger5.png", this.scene);
+                        m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger5.png", this.scene);
                         FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                         break;
                     case 9 /* PASSENGER6 */:
                         var m = new BABYLON.StandardMaterial(f.toString(), this.scene);
                         console.log("New fieldtype: passenger");
-                        m.diffuseTexture = new BABYLON.Texture("textures/passenger6.png", this.scene);
+                        m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger6.png", this.scene);
                         FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
                         break;
                 }

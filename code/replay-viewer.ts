@@ -8,12 +8,13 @@ export let init = function(): void{
     let viewerNodes = document.getElementsByTagName("replay-viewer");
     for(let i = 0; i < viewerNodes.length; i++){
         if(viewerNodes[i] != undefined){
-            var replay:Element = viewerNodes[i];
-            var replayButton:HTMLButtonElement = document.createElement('button');
+            let replay:Element = viewerNodes[i];
+            let replayButton:HTMLButtonElement = document.createElement('button');
             replayButton.innerText = "Anzeigen";
             replayButton.addEventListener('click',()=>{
                 (function(){
                     replay.removeChild(replayButton);
+                    replay.removeAttribute('style'); // remove the display inline style
                     let replayPath = viewerNodes[i].getAttribute("replay");
                     Loader.getReplay(replayPath).then(replay => {
                         console.log('loaded replay ' + replay.replayName);
