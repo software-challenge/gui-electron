@@ -420,7 +420,7 @@ export class Viewer{
                 var player1label = new BABYLON.Group2D({
                     parent: canvas, id: "Player1Label", trackNode: this.player1, origin: BABYLON.Vector2.Zero(),
                     children: [
-                        new BABYLON.Rectangle2D({ id: "firstRect", width: 110, height: 34, roundRadius: 3, x: -145, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#FF4444FF", children: [
+                        new BABYLON.Rectangle2D({ id: "firstRect", width: 110, height: 34, roundRadius: 3, x: -145, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#FF4444B0", children: [
                                 this.display.player1Text
                             ]
                         })
@@ -432,7 +432,7 @@ export class Viewer{
                 var player2label = new BABYLON.Group2D({
                     parent: canvas, id: "Player2Label", trackNode: this.player2, origin: BABYLON.Vector2.Zero(),
                     children: [
-                        new BABYLON.Rectangle2D({ id: "firstRect", width: 110, height: 34,roundRadius: 3, x: -145, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#4444FFFF", children: [
+                        new BABYLON.Rectangle2D({ id: "firstRect", width: 110, height: 34,roundRadius: 3, x: -145, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#4444FFB0", children: [
                                 this.display.player2Text
                             ]
                         })
