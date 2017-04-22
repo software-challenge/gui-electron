@@ -17,9 +17,11 @@ export class Viewer{
     engine: BABYLON.Engine;
     scene:  BABYLON.Scene;
     shadow: BABYLON.ShadowGenerator;
-    camera: BABYLON.ArcRotateCamera;
+    cameraFocus: BABYLON.Mesh;
+    camera: BABYLON.ArcFollowCamera;
     fieldtypematerialfactory: FieldTypeMaterialFactory;
     controlsElement: HTMLDivElement;
+    animationsPlayed: number = 0;
     needsRerender: number;
     player1: BABYLON.Mesh;
     player2: BABYLON.Mesh;
@@ -81,24 +83,33 @@ export class Viewer{
         this.controlsElement.classList.add("replay-controls");
         this.controls.next = document.createElement('button');
         this.controls.next.innerText = "⏩";
-        this.controls.next.addEventListener('click',()=>{
+        this.controls.next.addEventListener('click',(e)=>{
             if(this.currentMove < (this.replay.states.length -1)){
                 this.currentMove ++;
             }
-            this.render(this.replay.states[this.currentMove], false);
+            if(e.ctrlKey == true){
+                this.render(this.replay.states[this.currentMove], true);
+            }else{
+                this.render(this.replay.states[this.currentMove], false);
+            }
         });
         this.controls.previous = document.createElement('button');
         this.controls.previous.innerText = "⏪";
-        this.controls.previous.addEventListener('click',()=>{
+        this.controls.previous.addEventListener('click',(e)=>{
             if(this.currentMove > 0 ){
                 this.currentMove --;
             }
-            this.render(this.replay.states[this.currentMove], false);
+            if(e.ctrlKey == true){
+                this.render(this.replay.states[this.currentMove], true);
+            }else{
+                this.render(this.replay.states[this.currentMove], false);
+            }
         });
         this.controls.play = document.createElement('button');
         this.controls.play.innerText = "►";
         this.controls.playCallback = () =>{
-            if(this.controls.playing){
+            this.animationsPlayed++;
+            if(this.animationsPlayed == 2 && this.controls.playing){
                 if(this.currentMove < (this.replay.states.length -1)){
                     this.currentMove ++;
                 }else{
@@ -112,6 +123,7 @@ export class Viewer{
             if(!this.controls.playing){//Not playing, start playing
                 this.controls.play.innerText = "▮▮";
                 this.controls.playing = true;
+                this.animationsPlayed = 1;
                 this.controls.playCallback();
             }
             else{//Playing, stop playing
@@ -195,9 +207,16 @@ export class Viewer{
         this.engine = new BABYLON.Engine(this.canvas, true);
         //Initialize scene
         this.scene = new BABYLON.Scene(this.engine);
-        this.camera = new BABYLON.ArcRotateCamera('camera1',Math.PI, Math.PI, 10,new BABYLON.Vector3(0,0,0),this.scene);
-        this.camera.attachControl(this.canvas, false);
-        this.camera.setPosition(new BABYLON.Vector3(3,3,15));
+        this.fieldtypematerialfactory = new FieldTypeMaterialFactory(this.scene);
+        this.cameraFocus = BABYLON.Mesh.CreateSphere("dockMesh1",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+        this.cameraFocus.material = this.fieldtypematerialfactory.getAlphaMaterial();
+        this.camera = new BABYLON.ArcFollowCamera('camera',- 2*Math.PI,1,60,this.cameraFocus,this.scene);
+        window.camera = this.camera;
+        //this.camera = new BABYLON.ArcRotateCamera('camera1',Math.PI, Math.PI, 10,new BABYLON.Vector3(0,0,0),this.scene);
+        //this.camera.attachControl(this.canvas, false);
+        this.scene.activeCamera = this.camera;
+        this.scene.activeCamera.attachControl(this.canvas);
+        //this.camera.setPosition(new BABYLON.Vector3(3,3,15));
         //var postProcess = new BABYLON.FxaaPostProcess("fxaa", 2.0,this.camera, null, this.engine, true);
 
         var luminance = Math.abs(Math.sin( (new Date().getHours() / 24 * Math.PI) + Math.PI ));
@@ -258,13 +277,6 @@ export class Viewer{
         waterMesh.material = testm;
         waterMesh.receiveShadows = true;
 
-
-        var player1material = new BABYLON.StandardMaterial('player1material',this.scene);
-        player1material.diffuseColor = new BABYLON.Color3(1,0,0);
-        player1material.alpha = 0;
-        var player2material = new BABYLON.StandardMaterial('player2material',this.scene);
-        player2material.diffuseColor = new BABYLON.Color3(0,0,1);
-
         //load mesh from file
         BABYLON.SceneLoader.ImportMesh('ship',Viewer.ASSET_PATH + '/ship/','ship.babylon',this.scene,meshes =>{
             if(meshes.length == 1){//check if mesh loaded correctly
@@ -284,18 +296,18 @@ export class Viewer{
                 */
 
 
-                var player1 = BABYLON.Mesh.CreateSphere("dockMesh1",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
-                rootmesh.parent = player1;
+                this.player1 = BABYLON.Mesh.CreateSphere("dockMesh1",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                rootmesh.parent = this.player1;
                 //this.shadow.getShadowMap().renderList.push(rootmesh);
-                player1.name = "player1";
-                player1.id = "player1";
-                player1.rotation.y = Math.PI / 2;
+                this.player1.name = "player1";
+                this.player1.id = "player1";
+                this.player1.rotation.y = Math.PI / 2;
                 var p1particleMesh = BABYLON.Mesh.CreateSphere("p1particleMesh",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
                 p1particleMesh.parent = this.scene.getMeshByID('player1');
-                p1particleMesh.material = player1material;
+                p1particleMesh.material = this.fieldtypematerialfactory.getAlphaMaterial();
                 var p1particleMesh2 = BABYLON.Mesh.CreateSphere("p1particleMesh2",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
                 p1particleMesh2.parent = p1particleMesh;
-                p1particleMesh2.material = player1material;
+                p1particleMesh2.material = this.fieldtypematerialfactory.getAlphaMaterial();
                 p1particleMesh.position.y = 0.72;
                 p1particleMesh.position.z = 0.04;
                 p1particleMesh.position.x = -0.11;
@@ -305,7 +317,7 @@ export class Viewer{
                 var p1light = new BABYLON.PointLight('p1light',BABYLON.Vector3.Zero(),this.scene);
                 p1light.specular = new BABYLON.Color3(0.4,0,0);
                 p1light.diffuse = new BABYLON.Color3(0.4,0,0);
-                p1light.parent = player1;
+                p1light.parent = this.player1;
                 p1light.position.y = 0.2;
                 p1light.position.z = -0.1;
                 p1light.range = 2;
@@ -314,19 +326,19 @@ export class Viewer{
                 p1shadow.getShadowMap().renderList.push(rootmesh);
                 rootmesh.receiveShadows = true;
 
-                var player2 = BABYLON.Mesh.CreateSphere("dockMesh2",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
-                clonemesh.parent = player2;//BABYLON.Mesh.ExtrudeShape("player2",shape,path,1,0,BABYLON.Mesh.CAP_ALL,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                this.player2 = BABYLON.Mesh.CreateSphere("dockMesh2",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                clonemesh.parent = this.player2;//BABYLON.Mesh.ExtrudeShape("player2",shape,path,1,0,BABYLON.Mesh.CAP_ALL,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
                 //this.shadow.getShadowMap().renderList.push(clonemesh);
-                player2.id = "player2";
-                player2.name = "player2";
-                player2.position.x = 5;
+                this.player2.id = "player2";
+                this.player2.name = "player2";
+                this.player2.position.x = 5;
 
                 var p2particleMesh = BABYLON.Mesh.CreateSphere("p2particleMesh",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
                 p2particleMesh.parent = this.scene.getMeshByID('player2');
-                p2particleMesh.material = player1material;
+                p2particleMesh.material = this.fieldtypematerialfactory.getAlphaMaterial();
                 var p2particleMesh2 = BABYLON.Mesh.CreateSphere("p2particleMesh2",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
                 p2particleMesh2.parent = p2particleMesh;
-                p2particleMesh2.material = player1material;
+                p2particleMesh2.material = this.fieldtypematerialfactory.getAlphaMaterial();
                 p2particleMesh.position.y = 0.72;
                 p2particleMesh.position.z = 0.04;
                 p2particleMesh.position.x = -0.11;
@@ -335,7 +347,7 @@ export class Viewer{
                 var p2light = new BABYLON.PointLight('p2light',BABYLON.Vector3.Zero(),this.scene);
                 p2light.specular = new BABYLON.Color3(0,0,0.2);
                 p2light.diffuse = new BABYLON.Color3(0,0,0.4);
-                p2light.parent = player2;
+                p2light.parent = this.player2;
                 p2light.position.y = 0.2;
                 p2light.position.z = -0.1;
                 p2light.range = 2;
@@ -386,8 +398,8 @@ export class Viewer{
                 var heightoffset = 0.65 + 0;
                 //0.58;
 
-                player1.position.y = heightoffset;
-                player2.position.y = heightoffset;
+                this.player1.position.y = heightoffset;
+                this.player2.position.y = heightoffset;
 
 
             var canvas = new BABYLON.ScreenSpaceCanvas2D(this.scene);
@@ -395,7 +407,7 @@ export class Viewer{
             this.display.player1Text = new BABYLON.Text2D('Player1', { marginAlignment: "h: center, v:center", fontName: "bold 28px Arial", marginTop: 5})
 
                 var player1label = new BABYLON.Group2D({
-                    parent: canvas, id: "Player1Label", trackNode: player1, origin: BABYLON.Vector2.Zero(),
+                    parent: canvas, id: "Player1Label", trackNode: this.player1, origin: BABYLON.Vector2.Zero(),
                     children: [
                         new BABYLON.Rectangle2D({ id: "firstRect", width: 110, height: 34, roundRadius: 3, x: -145, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#FF4444FF", children: [
                                 this.display.player1Text
@@ -407,7 +419,7 @@ export class Viewer{
                 this.display.player2Text = new BABYLON.Text2D('Player2', { marginAlignment: "h: center, v:center", fontName: "bold 28px Arial", marginTop: 5 });
 
                 var player2label = new BABYLON.Group2D({
-                    parent: canvas, id: "Player2Label", trackNode: player2, origin: BABYLON.Vector2.Zero(),
+                    parent: canvas, id: "Player2Label", trackNode: this.player2, origin: BABYLON.Vector2.Zero(),
                     children: [
                         new BABYLON.Rectangle2D({ id: "firstRect", width: 110, height: 34,roundRadius: 3, x: -145, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#4444FFFF", children: [
                                 this.display.player2Text
@@ -419,18 +431,18 @@ export class Viewer{
                 /*groundmaterial.diffuseColor = new BABYLON.Color3(0.1,0.1,0.2);
                 groundmaterial.specularColor = new BABYLON.Color3(1,1,1);
                 ground.material = groundmaterial;*/
-                this.fieldtypematerialfactory = new FieldTypeMaterialFactory(this.scene);
-                setTimeout(() => {
+                /*setTimeout(() => {
                     this.camera.beta = 0.41;
                     this.camera.alpha = 0;
                     this.camera.radius = 30;
-                },1000);
+                },1000);*/
                 //this.camera.zoomOnFactor = 0;
                 this.needsRerender += 60;
                 this.debug.innerText = "TEST";
                 this.engine.runRenderLoop( () =>{
                     if(this.needsRerender > 0){
                         this.needsRerender --;
+                        //this.focus();
                         this.scene.render();
                         //this.camera.alpha += 0.003;
                         this.debug.innerText = "currentRound: " + this.currentMove + ", α: " + this.camera.alpha.toString() + ", β: " + this.camera.beta.toString() + ", (x,y,z): " + this.camera.position.x + "," + this.camera.position.y + "," + this.camera.position.z + ", needsRerender: " + this.needsRerender.toString();
@@ -530,6 +542,11 @@ export class Viewer{
 
         this.lastBoard = state.board;
 
+        //Precalculate camera position
+        var [rpx,rpy] = Grid.getCoordinates(state.red.x,state.red.y,3/2);
+        var [bpx,bpy] = Grid.getCoordinates(state.blue.x,state.blue.y,3/2);
+        var newPos = new BABYLON.Vector3((rpx + bpx) * 0.5, 0,(rpy + bpy) * 0.5);
+
         //Do not animate if zero-turn
         if(!state.animated || (!animated)){
             this.needsRerender += 30;
@@ -548,121 +565,125 @@ export class Viewer{
             player2.position.z = py;
             player2.rotation.y = Grid.getRotation(state.blue.direction);
             console.log("Blue direction:" + Board.DirectionToString(state.blue.direction));
+
+            this.cameraFocus.position = newPos;
+
         }else{
         //Create new animations
 
-        var frame = 0;
+        let frame = 0;
+        let counter = 0;
+        let p1Position = [], p2Position = [], p1Rotation = [], p2Rotation = [];
+        let p1PositionAnimation = new BABYLON.Animation("Player1Position" + state.turn,"position",30,BABYLON.Animation.ANIMATIONTYPE_VECTOR3,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+        let p2PositionAnimation = new BABYLON.Animation("Player2Position" + state.turn,"position",30,BABYLON.Animation.ANIMATIONTYPE_VECTOR3,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+        let p1RotationAnimation = new BABYLON.Animation("Player1Rotation" + state.turn,"rotation.y",30,BABYLON.Animation.ANIMATIONTYPE_FLOAT,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+        let p2RotationAnimation = new BABYLON.Animation("Player2Rotation" + state.turn,"rotation.y",30,BABYLON.Animation.ANIMATIONTYPE_FLOAT,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+        let yalign = this.player1.position.y;
+
         //Remember, the following is actually relative to the turn before this one, so the players are switched 🙈
         if(state.currentPlayer == PLAYERCOLOR.BLUE){
             console.log("Active player should be blue");
         }
 
+        this.player1.animations = [];
+        this.player2.animations = [];
+
         for(var i = 0; i < state.moves.length; i++){
             let move = state.moves[i];
-            var activePlayer = move.activePlayer == PLAYERCOLOR.RED ? this.scene.getMeshByName('player1') : this.scene.getMeshByName('player2');
-            var otherPlayer = move.activePlayer == PLAYERCOLOR.RED ? this.scene.getMeshByName('player2') : this.scene.getMeshByName('player1');
+            var activePlayer = move.activePlayer == PLAYERCOLOR.RED ? {'position': p1Position, 'rotation': p1Rotation, 'id': 1} :{'position': p2Position, 'rotation': p2Rotation, 'id': 2};
+            var otherPlayer = move.activePlayer == PLAYERCOLOR.RED ? {'position': p2Position, 'rotation': p2Rotation, 'id': 2} : {'position': p1Position, 'rotation': p1Rotation, 'id': 1};
             if(i == 0){
                 console.log("[animation] SELECT activePlayer = " + activePlayer.id + " @" + frame);
                 console.log("[animation] SELECT otherPlayer = " + otherPlayer.id + " @" + frame);
-                activePlayer.animations = [];
-                otherPlayer.animations = [];
             }
+
             switch(move.type){
                 case MOVETYPE.STEP:
-                    var anim = new BABYLON.Animation("activePlayerX","position.x",30,BABYLON.Animation.ANIMATIONTYPE_FLOAT,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-                    var anim2 = new BABYLON.Animation("activePlayerZ","position.z",30,BABYLON.Animation.ANIMATIONTYPE_FLOAT,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-                    var keys = [];
-                    var keys2 = [];
                     var coords = Grid.getCoordinates(move.animationHints['startX'],move.animationHints['startY'],Viewer.GRID_SIZE);
-                    keys.push({
+                    activePlayer.position.push({
                         'frame': frame,
-                        'value': coords[0]
-                    });
-                    keys2.push({
-                        'frame': frame,
-                        'value': coords[1]
+                        'value': new BABYLON.Vector3(coords[0],yalign,coords[1])
                     });
                     frame += Viewer.ANIMATION_FRAMES;
                     coords = Grid.getCoordinates(move.animationHints['targetX'],move.animationHints['targetY'],Viewer.GRID_SIZE);
-                    keys.push({
+                    activePlayer.position.push({
                         'frame': frame,
-                        'value': coords[0]
+                        'value': new BABYLON.Vector3(coords[0],yalign,coords[1])
                     });
-                    keys2.push({
-                        'frame': frame,
-                        'value': coords[1]
-                    });
-                    anim.setKeys(keys);
-                    anim2.setKeys(keys2);
-                    activePlayer.animations.push(anim);
-                    activePlayer.animations.push(anim2);
                     console.log("[animation] STEP activePlayer from " + move.animationHints['startX'] + "," + move.animationHints['startY'] + " to " + move.animationHints['targetX'] + "," + move.animationHints['targetY']+ " @" + frame);
                 break;
                 case MOVETYPE.TURN:
-                    var anim = new BABYLON.Animation("activePlayerRotation","rotation.y",30,BABYLON.Animation.ANIMATIONTYPE_FLOAT,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-                    var keys = [];
-                    keys.push({
+                    activePlayer.rotation.push({
                         'frame': frame,
                         'value': Grid.getRotation(move.animationHints['startDirection'])
                     });
                     frame += Viewer.ANIMATION_FRAMES;
-                    keys.push({
+                    activePlayer.rotation.push({
                         'frame': frame,
                         'value': Grid.getRotation(move.animationHints['targetDirection'])
                     });
-                    anim.setKeys(keys);
-                    activePlayer.animations.push(anim);
                     console.log("[animation] TURN activePlayer from " + Board.DirectionToString(move.animationHints['startDirection']) + " to " + Board.DirectionToString(move.animationHints['targetDirection'])+ " @" + frame);
                 break;
                 case MOVETYPE.PUSH:
-                    var anim = new BABYLON.Animation("otherPlayerX","position.x",30,BABYLON.Animation.ANIMATIONTYPE_FLOAT,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-                    var anim2 = new BABYLON.Animation("otherPlayerZ","position.z",30,BABYLON.Animation.ANIMATIONTYPE_FLOAT,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-                    var keys = [];
-                    var keys2 = [];
                     var coords = Grid.getCoordinates(move.animationHints['startOtherX'],move.animationHints['startOtherY'],Viewer.GRID_SIZE);
-                    keys.push({
+                    otherPlayer.position.push({
                         'frame': frame,
-                        'value': coords[0]
-                    });
-                    keys2.push({
-                        'frame': frame,
-                        'value': coords[1]
+                        'value': new BABYLON.Vector3(coords[0],yalign,coords[1])
                     });
                     frame += Viewer.ANIMATION_FRAMES;
                     coords = Grid.getCoordinates(move.animationHints['targetOtherX'],move.animationHints['targetOtherY'],Viewer.GRID_SIZE);
-                    keys.push({
+                    otherPlayer.position.push({
                         'frame': frame,
-                        'value': coords[0]
+                        'value': new BABYLON.Vector3(coords[0],yalign,coords[1])
                     });
-                    keys2.push({
-                        'frame': frame,
-                        'value': coords[1]
-                    });
-                    anim.setKeys(keys);
-                    anim2.setKeys(keys2);
-                    otherPlayer.animations.push(anim);
-                    otherPlayer.animations.push(anim2);
                     console.log("[animation] PUSH otherPlayer to " + move.animationHints['targetOtherX'] + "," + move.animationHints['targetOtherY']+ " @" + frame);
                 break;
             }
         }
-        this.scene.beginAnimation(activePlayer,0,frame,false,1,()=>(setTimeout(this.controls.playCallback,100)));
-        this.scene.beginAnimation(otherPlayer,0,frame,false);
+        //Camera adjustments:
+        var camanim = new BABYLON.Animation("camera" + counter++,"position",30,BABYLON.Animation.ANIMATIONTYPE_VECTOR3,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+        camanim.setKeys([{'frame': 0, 'value': this.cameraFocus.position}, {'frame': frame, 'value': newPos}]);
+        this.cameraFocus.animations.push(camanim);
+
+        p1PositionAnimation.setKeys(p1Position);
+        if(p1Position.length > 0){
+            this.player1.animations.push(p1PositionAnimation);
+        }
+        p1RotationAnimation.setKeys(p1Rotation);
+        if(p1Rotation.length > 0){
+            this.player1.animations.push(p1RotationAnimation);
+        }
+
+        p2PositionAnimation.setKeys(p2Position);
+        if(p2Position.length > 0){
+            this.player2.animations.push(p2PositionAnimation);
+        }
+        p2RotationAnimation.setKeys(p2Rotation);
+        if(p2Rotation.length > 0){
+            this.player2.animations.push(p2RotationAnimation);
+        }
+
+        this.animationsPlayed = 0;
+
+
+        console.log(this.player1.animations);
+        console.log(this.player2.animations);
+
+        this.scene.beginAnimation(this.cameraFocus,0,frame,false);
+        this.scene.beginAnimation(this.player1,0,frame,false,1,()=>(setTimeout(this.controls.playCallback,100)));
+        this.scene.beginAnimation(this.player2,0,frame,false,1,()=>(setTimeout(this.controls.playCallback,100)));
         this.needsRerender += frame + 10;
 
         }
 
-        //Adjust camera
+        /*//Adjust camera
         let [x,y] = this.getCenterOfBoard(state.board);
         [x,y] = Grid.getCoordinates(x,y,3/2);
         console.log([x,y]);
-
         this.camera.setTarget(new BABYLON.Vector3(x,0,y));
         //this.camera.beta = 0.7;
         //this.camera.alpha = 0;
-        //this.camera.radius = 75;
-
-        console.log("coal: " + state.red.coal);
+        //this.camera.radius = 75;*/
     }
 }
 
@@ -734,12 +755,32 @@ class Grid {
 class FieldTypeMaterialFactory{
     private scene: BABYLON.Scene;
     private fieldMap: {[type: string]: BABYLON.Material} = {};
+    private alphaMaterial: BABYLON.StandardMaterial;
 
     constructor(scene: BABYLON.Scene){
         this.scene = scene;
+        this.alphaMaterial = new BABYLON.StandardMaterial('alphamaterial',this.scene);
+        this.alphaMaterial.diffuseColor = new BABYLON.Color3(1,0,0);
+        this.alphaMaterial.alpha = 0;
+        this.getMaterialForFieldType(FIELDTYPE.BLOCKED);
+        this.getMaterialForFieldType(FIELDTYPE.GOAL);
+        this.getMaterialForFieldType(FIELDTYPE.LOG);
+        this.getMaterialForFieldType(FIELDTYPE.PASSENGER0);
+        this.getMaterialForFieldType(FIELDTYPE.PASSENGER1);
+        this.getMaterialForFieldType(FIELDTYPE.PASSENGER2);
+        this.getMaterialForFieldType(FIELDTYPE.PASSENGER3);
+        this.getMaterialForFieldType(FIELDTYPE.PASSENGER4);
+        this.getMaterialForFieldType(FIELDTYPE.PASSENGER5);
+        this.getMaterialForFieldType(FIELDTYPE.PASSENGER6);
+        this.getMaterialForFieldType(FIELDTYPE.SANDBANK);
+        this.getMaterialForFieldType(FIELDTYPE.WATER);
     }
 
-    public  getMaterialForFieldType(f: FIELDTYPE):BABYLON.Material{
+    public getAlphaMaterial():BABYLON.StandardMaterial{
+        return this.alphaMaterial;
+    }
+
+    public getMaterialForFieldType(f: FIELDTYPE):BABYLON.Material{
         if(this.fieldMap[f.toString()]){
             return this.fieldMap[f.toString()];
         }else{
