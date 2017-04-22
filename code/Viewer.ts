@@ -22,6 +22,7 @@ export class Viewer{
     fieldtypematerialfactory: FieldTypeMaterialFactory;
     controlsElement: HTMLDivElement;
     animationsPlayed: number = 0;
+    lastRoundRendered: boolean = false;
     needsRerender: number;
     player1: BABYLON.Mesh;
     player2: BABYLON.Mesh;
@@ -87,23 +88,19 @@ export class Viewer{
             if(this.currentMove < (this.replay.states.length -1)){
                 this.currentMove ++;
             }
-            if(e.ctrlKey == true){
-                this.render(this.replay.states[this.currentMove], true);
-            }else{
-                this.render(this.replay.states[this.currentMove], false);
-            }
+            this.render(this.replay.states[this.currentMove], e.ctrlKey);
         });
         this.controls.previous = document.createElement('button');
         this.controls.previous.innerText = "⏪";
         this.controls.previous.addEventListener('click',(e)=>{
-            if(this.currentMove > 0 ){
+            if(this.currentMove > 0){
                 this.currentMove --;
             }
-            if(e.ctrlKey == true){
-                this.render(this.replay.states[this.currentMove], true);
-            }else{
-                this.render(this.replay.states[this.currentMove], false);
+            if(this.lastRoundRendered){
+                this.lastRoundRendered = false;
+                this.currentMove ++;
             }
+            this.render(this.replay.states[this.currentMove], e.ctrlKey);
         });
         this.controls.play = document.createElement('button');
         this.controls.play.innerText = "►";
@@ -141,6 +138,7 @@ export class Viewer{
         this.controls.last = document.createElement('button');
         this.controls.last.innerText = "⏭";
         this.controls.last.addEventListener('click',()=>{
+            this.lastRoundRendered = true;
             this.currentMove = this.replay.states.length - 1;
             this.render(this.replay.states[this.currentMove], false);
         });
@@ -493,14 +491,25 @@ export class Viewer{
 
     private lastBoard: Board;
 
+    displayEndScreen(){
+
+    }
+
 
     render(state: GameState, animated: boolean){
         if(state.last){
-            setTimeout(()=> {this.display.endScreen.style.display = 'block';},1000);
-            setTimeout(() => {
-                this.display.endScreen.style.opacity = "1";
-            },1500);
+            if(! this.lastRoundRendered){
+                this.lastRoundRendered = true;
+                this.display.endScreen.style.opacity = "0";
+                setTimeout(() => this.display.endScreen.style.display = 'none',500);
+            }else{
+                this.display.endScreen.style.display = 'block';
+                setTimeout(() => {
+                    this.display.endScreen.style.opacity = "1";
+                },100);
+            }
         }else{
+            this.lastRoundRendered = false;
             this.display.endScreen.style.opacity = "0";
             setTimeout(() => this.display.endScreen.style.display = 'none',500);
         }
