@@ -445,6 +445,8 @@ export class GameState{
                     var activePlayerTargetPosition = Board.calculateNewPosition({x: player_attributes[activePlayer].x,y:player_attributes[activePlayer].y},Board.NumberToDirection(player_attributes[activePlayer].direction),move.attribute);
                     move.animationHints['targetX'] = activePlayerTargetPosition.x;
                     move.animationHints['targetY'] = activePlayerTargetPosition.y;
+                    player_attributes[activePlayer].x = activePlayerTargetPosition.x;
+                    player_attributes[activePlayer].y = activePlayerTargetPosition.y;
                 break;
             }
         }
