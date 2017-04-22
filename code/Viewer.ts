@@ -26,6 +26,7 @@ export class Viewer{
     needsRerender: number;
     player1: BABYLON.Mesh;
     player2: BABYLON.Mesh;
+    debugActive: boolean;
     controls: {'next': HTMLButtonElement, 'previous': HTMLButtonElement, 'play': HTMLButtonElement, 'first': HTMLButtonElement, 'last': HTMLButtonElement, 'playing':boolean, 'playCallback': ()=>void} = {'next': null, 'previous': null, 'play': null,'first':null,'last':null, 'playing':false, playCallback: null};
 
     currentMove: number = 0;
@@ -62,6 +63,7 @@ export class Viewer{
 
 
     constructor(replay: Replay, element: Element, document: Document, window: Window){
+       this.debugActive = element.hasAttribute('debug');
         this.needsRerender = 1;
         window.addEventListener('blur', () => {
             this.needsRerender = 0;
@@ -77,6 +79,9 @@ export class Viewer{
         this.canvas.classList.add('viewerCanvas');
         this.debug = document.createElement('div');
         this.debug.classList.add('replay-debug');
+        if(!this.debugActive){
+            this.debug.style.display = 'none';
+        }
 
         //Initialize rendercontrol
         /*element.addEventListener('mousemove',() => {
@@ -449,7 +454,9 @@ export class Viewer{
                         //this.focus();
                         this.scene.render();
                         //this.camera.alpha += 0.003;
-                        this.debug.innerText = "currentRound: " + this.currentMove + ", α: " + this.camera.alpha.toString() + ", β: " + this.camera.beta.toString() + ", (x,y,z): " + this.camera.position.x + "," + this.camera.position.y + "," + this.camera.position.z + ", needsRerender: " + this.needsRerender.toString();
+                        if(this.debugActive){
+                            this.debug.innerText = "currentRound: " + this.currentMove + ", α: " + this.camera.alpha.toString() + ", β: " + this.camera.beta.toString() + ", (x,y,z): " + this.camera.position.x + "," + this.camera.position.y + "," + this.camera.position.z + ", needsRerender: " + this.needsRerender.toString();
+                        }
                         if(this.scene.meshUnderPointer){
                             //this.debug.innerText = this.scene.meshUnderPointer.name;
                         }
