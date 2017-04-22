@@ -392,24 +392,24 @@ export class Viewer{
 
             var canvas = new BABYLON.ScreenSpaceCanvas2D(this.scene);
 
-            this.display.player1Text = new BABYLON.Text2D('Player1', { marginAlignment: "h: center, v:center", fontName: "bold 16px Arial", marginTop: 3})
+            this.display.player1Text = new BABYLON.Text2D('Player1', { marginAlignment: "h: center, v:center", fontName: "bold 28px Arial", marginTop: 5})
 
                 var player1label = new BABYLON.Group2D({
                     parent: canvas, id: "Player1Label", trackNode: player1, origin: BABYLON.Vector2.Zero(),
                     children: [
-                        new BABYLON.Rectangle2D({ id: "firstRect", width: 70, height: 23, roundRadius: 3, x: -100, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#FF4444FF", children: [
+                        new BABYLON.Rectangle2D({ id: "firstRect", width: 110, height: 34, roundRadius: 3, x: -145, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#FF4444FF", children: [
                                 this.display.player1Text
                             ]
                         })
                     ]
                 });
 
-                this.display.player2Text = new BABYLON.Text2D('Player2', { marginAlignment: "h: center, v:center", fontName: "bold 16px Arial", marginTop: 3 });
+                this.display.player2Text = new BABYLON.Text2D('Player2', { marginAlignment: "h: center, v:center", fontName: "bold 28px Arial", marginTop: 5 });
 
                 var player2label = new BABYLON.Group2D({
                     parent: canvas, id: "Player2Label", trackNode: player2, origin: BABYLON.Vector2.Zero(),
                     children: [
-                        new BABYLON.Rectangle2D({ id: "firstRect", width: 70, height: 23,roundRadius: 3, x: -100, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#4444FFFF", children: [
+                        new BABYLON.Rectangle2D({ id: "firstRect", width: 110, height: 34,roundRadius: 3, x: -145, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#4444FFFF", children: [
                                 this.display.player2Text
                             ]
                         })
@@ -495,7 +495,7 @@ export class Viewer{
         this.display.round.innerText = round < 10 ? '0' +  round.toString() : round.toString();
         this.display.redPoints.innerText = state.red.points.toString();
         this.display.bluePoints.innerText = state.blue.points.toString();
-        this.display.player1Text.text = state.red.coal.toString() + "⬢   "  + state.red.speed.toString() + '➡' ;
+        this.display.player1Text.text = state.red.coal.toString() +  "⬢  "  + state.red.speed.toString() + '➡' ;
         this.display.player2Text.text = state.blue.coal.toString() + "⬢  "  + state.blue.speed.toString() + '➡' ;
 
         var getTileName = (t:Field) => "Tile(" + t.x + "," + t.y + ")";
