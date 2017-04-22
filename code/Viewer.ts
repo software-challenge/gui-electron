@@ -18,6 +18,7 @@ export class Viewer{
     scene:  BABYLON.Scene;
     shadow: BABYLON.ShadowGenerator;
     camera: BABYLON.ArcRotateCamera;
+    fieldtypematerialfactory: FieldTypeMaterialFactory;
     controlsElement: HTMLDivElement;
     needsRerender: number;
     player1: BABYLON.Mesh;
@@ -418,7 +419,7 @@ export class Viewer{
                 /*groundmaterial.diffuseColor = new BABYLON.Color3(0.1,0.1,0.2);
                 groundmaterial.specularColor = new BABYLON.Color3(1,1,1);
                 ground.material = groundmaterial;*/
-                FieldTypeMaterialFactory.init(this.scene);
+                this.fieldtypematerialfactory = new FieldTypeMaterialFactory(this.scene);
                 setTimeout(() => {
                     this.camera.beta = 0.41;
                     this.camera.alpha = 0;
@@ -507,7 +508,7 @@ export class Viewer{
                     var mesh = BABYLON.Mesh.CreateCylinder(getTileName(f),1,3,3,6,1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
                     [mesh.position.x, mesh.position.z] = Grid.getCoordinates(f.x, f.y, 3/2);
                     mesh.position.z += (Math.random() * 0.1); //Vary height a bit
-                    mesh.material = FieldTypeMaterialFactory.getMaterialForFieldType(f.type);
+                    mesh.material = this.fieldtypematerialfactory.getMaterialForFieldType(f.type);
                     mesh.receiveShadows = true;
                 }
                 this.scene.getMeshByName(getTileName(f)).position.y = 0; //Raise all current meshes to the surface
@@ -731,16 +732,16 @@ class Grid {
     This is very preliminary, it's probably better to create Textured Materials while loading the replay
 */
 class FieldTypeMaterialFactory{
-    private static scene: BABYLON.Scene;
-    private static fieldMap: {[type: string]: BABYLON.Material} = {};
+    private scene: BABYLON.Scene;
+    private fieldMap: {[type: string]: BABYLON.Material} = {};
 
-    public static init(scene: BABYLON.Scene){
+    constructor(scene: BABYLON.Scene){
         this.scene = scene;
     }
 
-    public static getMaterialForFieldType(f: FIELDTYPE):BABYLON.Material{
-        if(FieldTypeMaterialFactory.fieldMap[f.toString()]){
-            return FieldTypeMaterialFactory.fieldMap[f.toString()];
+    public  getMaterialForFieldType(f: FIELDTYPE):BABYLON.Material{
+        if(this.fieldMap[f.toString()]){
+            return this.fieldMap[f.toString()];
         }else{
             switch(f){
                 case FIELDTYPE.WATER:
@@ -749,7 +750,7 @@ class FieldTypeMaterialFactory{
                      m.diffuseColor = new BABYLON.Color3(1,1,1);
                      //m.specularColor = new BABYLON.Color3(0.2,0.2,1);
                      m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/water.png", this.scene);
-                     FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                     this.fieldMap[f.toString()] = m;
                 break;
                 case FIELDTYPE.LOG:
                      var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
@@ -757,13 +758,13 @@ class FieldTypeMaterialFactory{
                      //m.diffuseColor = new BABYLON.Color3(0.6,0.1,0.5);
                      //m.specularColor = new BABYLON.Color3(1,0.5,0.1);
                      m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/logs.png", this.scene);
-                     FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                     this.fieldMap[f.toString()] = m;
                 break;
                 case FIELDTYPE.BLOCKED:
                      var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
                      console.log("New fieldtype: blocked");
                      m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/island.png", this.scene);
-                     FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                     this.fieldMap[f.toString()] = m;
                 break;
                  case FIELDTYPE.SANDBANK:
                      var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
@@ -771,60 +772,60 @@ class FieldTypeMaterialFactory{
                      //m.diffuseColor = new BABYLON.Color3(0,0,1);
                      //m.specularColor = new BABYLON.Color3(1,1,1);
                       m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/sandbank.png", this.scene);
-                     FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                     this.fieldMap[f.toString()] = m;
                 break;
                 case FIELDTYPE.GOAL:
                     var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
                     console.log("New fieldtype: goal");
                     m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/goal.png", this.scene);
-                    FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                    this.fieldMap[f.toString()] = m;
                 break;
                 case FIELDTYPE.PASSENGER0:
                     var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
                     console.log("New fieldtype: passenger");
                     m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger.png", this.scene);
-                    FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                    this.fieldMap[f.toString()] = m;
                 break;
                 case FIELDTYPE.PASSENGER1:
                     var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
                     console.log("New fieldtype: passenger");
                     m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger1.png", this.scene);
-                    FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                    this.fieldMap[f.toString()] = m;
                 break;
                 case FIELDTYPE.PASSENGER2:
                     var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
                     console.log("New fieldtype: passenger");
                     m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger2.png", this.scene);
-                    FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                    this.fieldMap[f.toString()] = m;
                 break;
                 case FIELDTYPE.PASSENGER3:
                     var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
                     console.log("New fieldtype: passenger");
                     m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger3.png", this.scene);
-                    FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                    this.fieldMap[f.toString()] = m;
                 break;
                 case FIELDTYPE.PASSENGER4:
                     var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
                     console.log("New fieldtype: passenger");
                     m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger4.png", this.scene);
-                    FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                    this.fieldMap[f.toString()] = m;
                 break;
                 case FIELDTYPE.PASSENGER5:
                     var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
                     console.log("New fieldtype: passenger");
                     m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger5.png", this.scene);
-                    FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                    this.fieldMap[f.toString()] = m;
                 break;
                 case FIELDTYPE.PASSENGER6:
                     var m = new BABYLON.StandardMaterial(f.toString(),this.scene);
                     console.log("New fieldtype: passenger");
                     m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger6.png", this.scene);
-                    FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                    this.fieldMap[f.toString()] = m;
                 break;
 
 
             }
-            return FieldTypeMaterialFactory.fieldMap[f.toString()];
+            return this.fieldMap[f.toString()];
         }
     }
 }

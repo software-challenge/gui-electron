@@ -1,5 +1,6 @@
 define(["require", "exports", "./Viewer", "./Loader"], function (require, exports, Viewer_1, Loader_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     let viewers = [];
     exports.init = function () {
         //Find all viewer nodes in the document and create a viewer in them

@@ -1,5 +1,6 @@
 define(["require", "exports", "./Replay"], function (require, exports, Replay_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     class Viewer {
         constructor(replay, element, document, window) {
             this.controls = { 'next': null, 'previous': null, 'play': null, 'first': null, 'last': null, 'playing': false, playCallback: null };
@@ -63,6 +64,7 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
                         this.controls.play.click();
                     }
                     this.render(this.replay.states[this.currentMove], true);
+                    //setTimeout(this.controls.playCallback,((Viewer.ANIMATION_FRAMES / 60) * 1000) * 2);
                 }
             };
             this.controls.play.addEventListener('click', () => {
@@ -329,7 +331,7 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
                     /*groundmaterial.diffuseColor = new BABYLON.Color3(0.1,0.1,0.2);
                     groundmaterial.specularColor = new BABYLON.Color3(1,1,1);
                     ground.material = groundmaterial;*/
-                    FieldTypeMaterialFactory.init(this.scene);
+                    this.fieldtypematerialfactory = new FieldTypeMaterialFactory(this.scene);
                     setTimeout(() => {
                         this.camera.beta = 0.41;
                         this.camera.alpha = 0;
@@ -345,6 +347,7 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
                             //this.camera.alpha += 0.003;
                             this.debug.innerText = "currentRound: " + this.currentMove + ", α: " + this.camera.alpha.toString() + ", β: " + this.camera.beta.toString() + ", (x,y,z): " + this.camera.position.x + "," + this.camera.position.y + "," + this.camera.position.z + ", needsRerender: " + this.needsRerender.toString();
                             if (this.scene.meshUnderPointer) {
+                                //this.debug.innerText = this.scene.meshUnderPointer.name;
                             }
                         }
                     });
@@ -407,7 +410,7 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
                         var mesh = BABYLON.Mesh.CreateCylinder(getTileName(f), 1, 3, 3, 6, 1, this.scene, false, BABYLON.Mesh.DEFAULTSIDE);
                         [mesh.position.x, mesh.position.z] = Grid.getCoordinates(f.x, f.y, 3 / 2);
                         mesh.position.z += (Math.random() * 0.1); //Vary height a bit
-                        mesh.material = FieldTypeMaterialFactory.getMaterialForFieldType(f.type);
+                        mesh.material = this.fieldtypematerialfactory.getMaterialForFieldType(f.type);
                         mesh.receiveShadows = true;
                     }
                     this.scene.getMeshByName(getTileName(f)).position.y = 0; //Raise all current meshes to the surface
@@ -419,6 +422,7 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
                     if (state.board.tileIndices.indexOf(lt) == -1) {
                         for (let f of this.lastBoard.getTileByIndex(lt).fields) {
                             var tile = this.scene.getMeshByName(getTileName(f));
+                            //BABYLON.Animation.CreateAndStartAnimation("sinktile"+lt,tile,"position.y",30,60,tile.position.y,-3.5,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
                         }
                     }
                 }
@@ -622,12 +626,13 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
         This is very preliminary, it's probably better to create Textured Materials while loading the replay
     */
     class FieldTypeMaterialFactory {
-        static init(scene) {
+        constructor(scene) {
+            this.fieldMap = {};
             this.scene = scene;
         }
-        static getMaterialForFieldType(f) {
-            if (FieldTypeMaterialFactory.fieldMap[f.toString()]) {
-                return FieldTypeMaterialFactory.fieldMap[f.toString()];
+        getMaterialForFieldType(f) {
+            if (this.fieldMap[f.toString()]) {
+                return this.fieldMap[f.toString()];
             }
             else {
                 switch (f) {
@@ -637,7 +642,7 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
                         m.diffuseColor = new BABYLON.Color3(1, 1, 1);
                         //m.specularColor = new BABYLON.Color3(0.2,0.2,1);
                         m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/water.png", this.scene);
-                        FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                        this.fieldMap[f.toString()] = m;
                         break;
                     case 1 /* LOG */:
                         var m = new BABYLON.StandardMaterial(f.toString(), this.scene);
@@ -645,13 +650,13 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
                         //m.diffuseColor = new BABYLON.Color3(0.6,0.1,0.5);
                         //m.specularColor = new BABYLON.Color3(1,0.5,0.1);
                         m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/logs.png", this.scene);
-                        FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                        this.fieldMap[f.toString()] = m;
                         break;
                     case 2 /* BLOCKED */:
                         var m = new BABYLON.StandardMaterial(f.toString(), this.scene);
                         console.log("New fieldtype: blocked");
                         m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/island.png", this.scene);
-                        FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                        this.fieldMap[f.toString()] = m;
                         break;
                     case 10 /* SANDBANK */:
                         var m = new BABYLON.StandardMaterial(f.toString(), this.scene);
@@ -659,61 +664,60 @@ define(["require", "exports", "./Replay"], function (require, exports, Replay_1)
                         //m.diffuseColor = new BABYLON.Color3(0,0,1);
                         //m.specularColor = new BABYLON.Color3(1,1,1);
                         m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/sandbank.png", this.scene);
-                        FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                        this.fieldMap[f.toString()] = m;
                         break;
                     case 11 /* GOAL */:
                         var m = new BABYLON.StandardMaterial(f.toString(), this.scene);
                         console.log("New fieldtype: goal");
                         m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/goal.png", this.scene);
-                        FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                        this.fieldMap[f.toString()] = m;
                         break;
                     case 3 /* PASSENGER0 */:
                         var m = new BABYLON.StandardMaterial(f.toString(), this.scene);
                         console.log("New fieldtype: passenger");
                         m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger.png", this.scene);
-                        FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                        this.fieldMap[f.toString()] = m;
                         break;
                     case 4 /* PASSENGER1 */:
                         var m = new BABYLON.StandardMaterial(f.toString(), this.scene);
                         console.log("New fieldtype: passenger");
                         m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger1.png", this.scene);
-                        FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                        this.fieldMap[f.toString()] = m;
                         break;
                     case 5 /* PASSENGER2 */:
                         var m = new BABYLON.StandardMaterial(f.toString(), this.scene);
                         console.log("New fieldtype: passenger");
                         m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger2.png", this.scene);
-                        FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                        this.fieldMap[f.toString()] = m;
                         break;
                     case 6 /* PASSENGER3 */:
                         var m = new BABYLON.StandardMaterial(f.toString(), this.scene);
                         console.log("New fieldtype: passenger");
                         m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger3.png", this.scene);
-                        FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                        this.fieldMap[f.toString()] = m;
                         break;
                     case 7 /* PASSENGER4 */:
                         var m = new BABYLON.StandardMaterial(f.toString(), this.scene);
                         console.log("New fieldtype: passenger");
                         m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger4.png", this.scene);
-                        FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                        this.fieldMap[f.toString()] = m;
                         break;
                     case 8 /* PASSENGER5 */:
                         var m = new BABYLON.StandardMaterial(f.toString(), this.scene);
                         console.log("New fieldtype: passenger");
                         m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger5.png", this.scene);
-                        FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                        this.fieldMap[f.toString()] = m;
                         break;
                     case 9 /* PASSENGER6 */:
                         var m = new BABYLON.StandardMaterial(f.toString(), this.scene);
                         console.log("New fieldtype: passenger");
                         m.diffuseTexture = new BABYLON.Texture(Viewer.TEXTURE_PATH + "/passenger6.png", this.scene);
-                        FieldTypeMaterialFactory.fieldMap[f.toString()] = m;
+                        this.fieldMap[f.toString()] = m;
                         break;
                 }
-                return FieldTypeMaterialFactory.fieldMap[f.toString()];
+                return this.fieldMap[f.toString()];
             }
         }
     }
-    FieldTypeMaterialFactory.fieldMap = {};
 });
 //# sourceMappingURL=Viewer.js.map

@@ -1,5 +1,6 @@
-define(["require", "exports", "../code/Adder", 'chai'], function (require, exports, Adder_1, chai) {
+define(["require", "exports", "../code/Adder", "chai"], function (require, exports, Adder_1, chai) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var assert = chai.assert;
     describe('Adder', () => {
         let subject;
