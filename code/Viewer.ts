@@ -62,7 +62,13 @@ export class Viewer{
 
 
     constructor(replay: Replay, element: Element, document: Document, window: Window){
-        this.needsRerender = 0;
+        this.needsRerender = 1;
+        window.addEventListener('blur', () => {
+            this.needsRerender = 0;
+        });
+        window.addEventListener('focus',() =>{
+            this.needsRerender = 1;
+        });
         var now = performance.now();
         //Save replay for later
         this.replay = replay;
@@ -73,11 +79,11 @@ export class Viewer{
         this.debug.classList.add('replay-debug');
 
         //Initialize rendercontrol
-        element.addEventListener('mousemove',() => {
+        /*element.addEventListener('mousemove',() => {
             if(this.needsRerender <= 30){
                 this.needsRerender += 30;
             }
-        });
+        });*/
 
         //Initialize controls
         this.controlsElement = document.createElement('div');
@@ -435,11 +441,11 @@ export class Viewer{
                     this.camera.radius = 30;
                 },1000);*/
                 //this.camera.zoomOnFactor = 0;
-                this.needsRerender += 60;
+                //this.needsRerender += 60;
                 this.debug.innerText = "TEST";
                 this.engine.runRenderLoop( () =>{
                     if(this.needsRerender > 0){
-                        this.needsRerender --;
+                        //this.needsRerender --;
                         //this.focus();
                         this.scene.render();
                         //this.camera.alpha += 0.003;
@@ -502,16 +508,19 @@ export class Viewer{
                 this.lastRoundRendered = true;
                 this.display.endScreen.style.opacity = "0";
                 setTimeout(() => this.display.endScreen.style.display = 'none',500);
+                this.needsRerender = 1;
             }else{
                 this.display.endScreen.style.display = 'block';
                 setTimeout(() => {
                     this.display.endScreen.style.opacity = "1";
+                    this.needsRerender = 0;
                 },100);
             }
         }else{
             this.lastRoundRendered = false;
             this.display.endScreen.style.opacity = "0";
             setTimeout(() => this.display.endScreen.style.display = 'none',500);
+            this.needsRerender = 1;
         }
         this.display.progress.style.width = (((state.turn / 2) / 30) * 100).toString() + "%";
         var round = state.turn == 0 ? 0 : Math.floor((state.turn / 2) - 0.5)
@@ -560,7 +569,7 @@ export class Viewer{
 
         //Do not animate if zero-turn
         if(!state.animated || (!animated)){
-            this.needsRerender += 30;
+            //this.needsRerender += 30;
             console.log("Red: " + state.red.x + "," + state.red.y);
             var [px,py] = Grid.getCoordinates(state.red.x,state.red.y,3/2);
             var player1 = this.scene.getMeshByName('player1');
@@ -683,7 +692,7 @@ export class Viewer{
         this.scene.beginAnimation(this.cameraFocus,0,frame,false);
         this.scene.beginAnimation(this.player1,0,frame,false,1,()=>(setTimeout(this.controls.playCallback,100)));
         this.scene.beginAnimation(this.player2,0,frame,false,1,()=>(setTimeout(this.controls.playCallback,100)));
-        this.needsRerender += frame + 10;
+        //this.needsRerender += frame + 10;
 
         }
 
