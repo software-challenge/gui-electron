@@ -496,8 +496,10 @@ export class Viewer{
 
     render(state: GameState, animated: boolean){
         if(state.last){
-            this.display.endScreen.style.display = 'block';
-            this.display.endScreen.style.opacity = "1";
+            setTimeout(()=> {this.display.endScreen.style.display = 'block';},1000);
+            setTimeout(() => {
+                this.display.endScreen.style.opacity = "1";
+            },1500);
         }else{
             this.display.endScreen.style.opacity = "0";
             setTimeout(() => this.display.endScreen.style.display = 'none',500);
