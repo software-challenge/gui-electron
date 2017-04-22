@@ -7,7 +7,7 @@ replay-viewer{
     margin: auto auto;
     overflow: hidden;
     font-family: 'Ubuntu', 'Arial', sans-serif;
-    border: 2pt solid red;
+    /*border: 2pt solid red;*/
 }
 
 replay-viewer>canvas{
