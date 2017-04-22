@@ -24,6 +24,7 @@ export class Viewer{
     animationsPlayed: number = 0;
     lastRoundRendered: boolean = false;
     needsRerender: number;
+    rerenderControlActive: boolean;
     player1: BABYLON.Mesh;
     player2: BABYLON.Mesh;
     debugActive: boolean;
@@ -64,6 +65,7 @@ export class Viewer{
 
     constructor(replay: Replay, element: Element, document: Document, window: Window){
        this.debugActive = element.hasAttribute('debug');
+       this.rerenderControlActive = element.hasAttribute('rerender-control');
         this.needsRerender = 1;
         window.addEventListener('blur', () => {
             this.needsRerender = 0;
@@ -449,7 +451,7 @@ export class Viewer{
                 //this.needsRerender += 60;
                 this.debug.innerText = "TEST";
                 this.engine.runRenderLoop( () =>{
-                    if(this.needsRerender > 0){
+                    if(this.needsRerender > 0 || (! this.rerenderControlActive)){
                         //this.needsRerender --;
                         //this.focus();
                         this.scene.render();
