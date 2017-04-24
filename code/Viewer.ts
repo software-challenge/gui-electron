@@ -222,7 +222,6 @@ export class Viewer{
         this.cameraFocus = BABYLON.Mesh.CreateSphere("dockMesh1",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
         this.cameraFocus.material = this.fieldtypematerialfactory.getAlphaMaterial();
         this.camera = new BABYLON.ArcFollowCamera('camera',- 2*Math.PI,1,35,this.cameraFocus,this.scene);
-        window.camera = this.camera;
         //this.camera = new BABYLON.ArcRotateCamera('camera1',Math.PI, Math.PI, 10,new BABYLON.Vector3(0,0,0),this.scene);
         //this.camera.attachControl(this.canvas, false);
         this.scene.activeCamera = this.camera;
