@@ -58,7 +58,7 @@ export class Replay{
     }
 
 
-    findPassengers():void{
+    private findPassengers():void{
         this.passengers = [];
 
         var processedTileIds = [];

@@ -6,537 +6,538 @@ import {Replay, FIELDTYPE, Tile, GameState, Field, Board, DIRECTION, MOVETYPE, M
 import {Helpers} from "./Helpers";
 
 export class Viewer{
-//    static PATH_PREFIX: string = "/replay_viewers/mississippi_queen/";
-    static PATH_PREFIX: string = "";
-    static ASSET_PATH: string = Viewer.PATH_PREFIX + "assets";
-    static TEXTURE_PATH: string = Viewer.PATH_PREFIX + "textures";
-    static ANIMATION_FRAMES: number = 30;
-    static GRID_SIZE: number = 3/2;
-    replay: Replay;
-    canvas: HTMLCanvasElement;
-    engine: BABYLON.Engine;
-    scene:  BABYLON.Scene;
-    shadow: BABYLON.ShadowGenerator;
-    cameraFocus: BABYLON.Mesh;
-    camera: BABYLON.ArcFollowCamera;
-    fieldtypematerialfactory: FieldTypeMaterialFactory;
-    controlsElement: HTMLDivElement;
-    animationsPlayed: number = 0;
-    lastRoundRendered: boolean = false;
-    needsRerender: number;
-    rerenderControlActive: boolean;
-    player1: BABYLON.Mesh;
-    player2: BABYLON.Mesh;
-    debugActive: boolean;
-    controls: {'next': HTMLButtonElement, 'previous': HTMLButtonElement, 'play': HTMLButtonElement, 'first': HTMLButtonElement, 'last': HTMLButtonElement, 'playing':boolean, 'playCallback': ()=>void} = {'next': null, 'previous': null, 'play': null,'first':null,'last':null, 'playing':false, playCallback: null};
+    //Path constants
+        //static PATH_PREFIX: string = "/replay_viewers/mississippi_queen/";
+        static PATH_PREFIX: string = "";
+        static ASSET_PATH: string = Viewer.PATH_PREFIX + "assets";
+        static TEXTURE_PATH: string = Viewer.PATH_PREFIX + "textures";
+    //Display settings
+        static ANIMATION_FRAMES: number = 30;
+        static GRID_SIZE: number = 3/2;
+        debugActive: boolean;
+    //DOM Elements
+        controls: {'next': HTMLButtonElement, 'previous': HTMLButtonElement, 'play': HTMLButtonElement, 'first': HTMLButtonElement, 'last': HTMLButtonElement, 'playing':boolean, 'playCallback': ()=>void} = {'next': null, 'previous': null, 'play': null,'first':null,'last':null, 'playing':false, playCallback: null};
+        display: {
+                'redPoints': HTMLDivElement,
+                'round': HTMLDivElement,
+                'bluePoints': HTMLDivElement,
+                'progress': HTMLDivElement,
+                'redName': HTMLDivElement,
+                'blueName': HTMLDivElement,
+                player1Text: BABYLON.Text2D,
+                player2Text: BABYLON.Text2D,
+                endScreen: HTMLDivElement,
+                winPicture: HTMLImageElement,
+                winnerName: HTMLSpanElement,
+                winReason: HTMLSpanElement
+            } = {
+                'redPoints': null,
+                'round':null,
+                'bluePoints':null,
+                'redName': null,
+                'blueName': null,
+                player1Text: null,
+                player2Text: null,
+                'progress': null,
+                endScreen: null,
+                winPicture: null,
+                winnerName: null,
+                winReason: null
+            };
+        canvas: HTMLCanvasElement;
+        controlsElement: HTMLDivElement;
+        debug: HTMLDivElement;
+        displayElement: HTMLDivElement;
+    //Engine
+        engine: BABYLON.Engine;
+        scene:  BABYLON.Scene;
+        shadow: BABYLON.ShadowGenerator;
+        cameraFocus: BABYLON.Mesh;
+        camera: BABYLON.ArcFollowCamera;
+        fieldtypematerialfactory: FieldTypeMaterialFactory;
+        initialization_steps_remaining: number;
+        startup_timestamp: number;
+    //Replay
+        replay: Replay;
+        private lastBoard: Board;
+    //Players
+        player1: BABYLON.Mesh;
+        player2: BABYLON.Mesh;
+    //Passengers
+        passengers: BABYLON.Mesh[];
+    //Rendering
+        rerenderControlActive: boolean;
+        animationsPlayed: number = 0;
+        lastRoundRendered: boolean = false;
+        needsRerender: number;
+        currentMove: number = 0;
+        tiles_to_sink: BABYLON.AbstractMesh[] = [];
 
-    currentMove: number = 0;
-
-    debug: HTMLDivElement;
-    displayElement: HTMLDivElement;
-    display: {
-        'redPoints': HTMLDivElement,
-        'round': HTMLDivElement,
-        'bluePoints': HTMLDivElement,
-        'progress': HTMLDivElement,
-        'redName': HTMLDivElement,
-        'blueName': HTMLDivElement,
-        player1Text: BABYLON.Text2D,
-        player2Text: BABYLON.Text2D,
-        endScreen: HTMLDivElement,
-        winPicture: HTMLImageElement,
-        winnerName: HTMLSpanElement,
-        winReason: HTMLSpanElement
-    } = {
-        'redPoints': null,
-        'round':null,
-        'bluePoints':null,
-        'redName': null,
-        'blueName': null,
-        player1Text: null,
-        player2Text: null,
-        'progress': null,
-        endScreen: null,
-        winPicture: null,
-        winnerName: null,
-        winReason: null
-    };
-
-
+    //
     constructor(replay: Replay, element: Element, document: Document, window: Window){
-       this.debugActive = element.hasAttribute('debug');
-       this.rerenderControlActive = element.hasAttribute('rerender-control');
-        this.needsRerender = 1;
-        window.addEventListener('blur', () => {
-            this.needsRerender = 0;
-        });
-        window.addEventListener('focus',() =>{
-            this.needsRerender = 1;
-        });
-        var now = performance.now();
+        //Take time measurement for later performance analysis
+        this.startup_timestamp = performance.now();
+
+        //Initialize engine startup dependency management
+        this.initialization_steps_remaining = 0;
+
         //Save replay for later
         this.replay = replay;
+
         //Initialize engine
-        this.canvas = document.createElement('canvas');
-        this.canvas.classList.add('viewerCanvas');
-        this.debug = document.createElement('div');
-        this.debug.classList.add('replay-debug');
-        if(!this.debugActive){
-            this.debug.style.display = 'none';
-        }
-
-        //Initialize rendercontrol
-        /*element.addEventListener('mousemove',() => {
-            if(this.needsRerender <= 30){
-                this.needsRerender += 30;
+            this.canvas = document.createElement('canvas');
+            this.canvas.classList.add('viewerCanvas');
+            element.appendChild(this.canvas);
+            this.engine = new BABYLON.Engine(this.canvas, true);
+        //
+        //Debug-Display
+            this.debugActive = element.hasAttribute('debug');
+            this.debug = document.createElement('div');
+            this.debug.classList.add('replay-debug');
+            if(!this.debugActive){
+                this.debug.style.display = 'none';
             }
-        });*/
-
+        //
+        //Rerender-control
+            this.rerenderControlActive = element.hasAttribute('rerender-control');
+            this.needsRerender = 1;
+            window.addEventListener('blur', () => {
+                this.needsRerender = 0;
+            });
+            window.addEventListener('focus',() =>{
+                this.needsRerender = 1;
+            });
+        //
         //Initialize controls
-        this.controlsElement = document.createElement('div');
-        this.controlsElement.classList.add("replay-controls");
-        this.controls.next = document.createElement('button');
-        this.controls.next.innerText = "⏩";
-        this.controls.next.addEventListener('click',(e)=>{
-            if(this.currentMove < (this.replay.states.length -1)){
-                this.currentMove ++;
-            }
-            this.render(this.replay.states[this.currentMove], e.ctrlKey);
-        });
-        this.controls.previous = document.createElement('button');
-        this.controls.previous.innerText = "⏪";
-        this.controls.previous.addEventListener('click',(e)=>{
-            if(this.currentMove > 0){
-                this.currentMove --;
-            }
-            if(this.lastRoundRendered){
-                this.lastRoundRendered = false;
-                this.currentMove ++;
-            }
-            this.render(this.replay.states[this.currentMove], e.ctrlKey);
-        });
-        this.controls.play = document.createElement('button');
-        this.controls.play.innerText = "►";
-        this.controls.playCallback = () =>{
-            this.animationsPlayed++;
-            if(this.animationsPlayed == 2 && this.controls.playing){
+            this.controlsElement = document.createElement('div');
+            this.controlsElement.classList.add("replay-controls");
+            this.controls.next = document.createElement('button');
+            this.controls.next.innerText = "⏩";
+            this.controls.next.addEventListener('click',(e)=>{
                 if(this.currentMove < (this.replay.states.length -1)){
                     this.currentMove ++;
-                }else{
-                    this.controls.play.click();
                 }
-                this.render(this.replay.states[this.currentMove], true);
-                //setTimeout(this.controls.playCallback,((Viewer.ANIMATION_FRAMES / 60) * 1000) * 2);
-            }
-        }
-        this.controls.play.addEventListener('click',()=>{
-            if(!this.controls.playing){//Not playing, start playing
-                this.controls.play.innerText = "▮▮";
-                this.controls.playing = true;
-                this.animationsPlayed = 1;
-                this.controls.playCallback();
-            }
-            else{//Playing, stop playing
-                this.controls.play.innerText = "►";
-                this.controls.playing = false;
-            }
-
-        });
-        this.controls.first = document.createElement('button');
-        this.controls.first.innerText = "⏮";
-        this.controls.first.addEventListener('click',()=>{
-            this.currentMove = 0;
-            this.render(this.replay.states[this.currentMove], false);
-        });
-        this.controls.last = document.createElement('button');
-        this.controls.last.innerText = "⏭";
-        this.controls.last.addEventListener('click',()=>{
-            this.lastRoundRendered = true;
-            this.currentMove = this.replay.states.length - 1;
-            this.render(this.replay.states[this.currentMove], false);
-        });
-        this.controlsElement.appendChild(this.controls.first);
-        this.controlsElement.appendChild(this.controls.previous);
-        this.controlsElement.appendChild(this.controls.play);
-        this.controlsElement.appendChild(this.controls.next);
-        this.controlsElement.appendChild(this.controls.last);
-
-        this.displayElement = document.createElement('div');
-        this.displayElement.classList.add('replay-display');
-        this.display.redPoints = document.createElement('div');
-        this.display.redPoints.classList.add('replay-redPoints');
-        this.display.round = document.createElement('div');
-        this.display.round.classList.add('replay-round');
-        this.display.bluePoints = document.createElement('div');
-        this.display.bluePoints.classList.add('replay-bluePoints');
-        var progressbar = document.createElement('div');
-        progressbar.classList.add('replay-progressbar');
-        this.display.progress = document.createElement('div');
-        this.display.progress.classList.add('replay-progress');
-        progressbar.appendChild(this.display.progress);
-
-        this.display.redName = document.createElement('div');
-        this.display.redName.innerText = replay.states[0].red.displayName;
-        this.display.redName.classList.add('replay-redName');
-        this.display.blueName = document.createElement('div');
-        this.display.blueName.innerText = replay.states[0].blue.displayName;
-        this.display.blueName.classList.add('replay-blueName');
-        this.display.endScreen = document.createElement('div');
-        this.display.endScreen.classList.add('replay-endScreen');
-        this.display.winnerName = document.createElement('span');
-        this.display.winnerName.innerText = replay.score.winnerName;
-        this.display.winPicture = document.createElement('img');
-        this.display.winPicture.src = Viewer.ASSET_PATH + "/win/pokal.svg";
-        this.display.winPicture.classList.add('replay-winPicture');
-        this.display.winReason = document.createElement('span');
-        var winnerColorClass = replay.score.winner == PLAYERCOLOR.RED ? 'replay-winRed' : 'replay-winBlue';
-        var htmlScore = replay.score.processedReason.replace(replay.score.winnerName, '<span class="' + winnerColorClass + '">' + replay.score.winnerName + '</span>');
-        htmlScore = htmlScore.replace('&#xa;','<br>'); //Fix linefeeds
-        this.display.winReason.innerHTML = htmlScore;
-        this.display.winReason.classList.add('replay-winReason');
-        this.display.endScreen.appendChild(this.display.winPicture);
-        //this.display.endScreen.appendChild(this.display.winnerName);
-        this.display.endScreen.appendChild(document.createElement('br'));
-        this.display.endScreen.appendChild(this.display.winReason);
-
-
-        this.displayElement.appendChild(this.display.redPoints);
-        this.displayElement.appendChild(this.display.round);
-        this.displayElement.appendChild(this.display.bluePoints);
-        this.displayElement.appendChild(this.display.redName);
-        this.displayElement.appendChild(this.display.blueName);
-        element.appendChild(this.canvas);
-        element.appendChild(this.debug);
-        element.appendChild(this.controlsElement);
-        element.appendChild(progressbar);
-        element.appendChild(this.display.endScreen);
-        var displayContainer = document.createElement('div');
-        displayContainer.classList.add('replay-displayContainer');
-        displayContainer.appendChild(this.displayElement);
-        element.appendChild(displayContainer);
-
-        this.engine = new BABYLON.Engine(this.canvas, true);
-        //Initialize scene
-        this.scene = new BABYLON.Scene(this.engine);
-        this.fieldtypematerialfactory = new FieldTypeMaterialFactory(this.scene);
-        this.cameraFocus = BABYLON.Mesh.CreateSphere("dockMesh1",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
-        this.cameraFocus.material = this.fieldtypematerialfactory.getAlphaMaterial();
-        this.camera = new BABYLON.ArcFollowCamera('camera',- 2*Math.PI,1,35,this.cameraFocus,this.scene);
-        //this.camera = new BABYLON.ArcRotateCamera('camera1',Math.PI, Math.PI, 10,new BABYLON.Vector3(0,0,0),this.scene);
-        //this.camera.attachControl(this.canvas, false);
-        this.scene.activeCamera = this.camera;
-        this.scene.activeCamera.attachControl(this.canvas);
-        //this.camera.setPosition(new BABYLON.Vector3(3,3,15));
-        //var postProcess = new BABYLON.FxaaPostProcess("fxaa", 2.0,this.camera, null, this.engine, true);
-
-        var luminance = Math.abs(Math.sin( (new Date().getHours() / 24 * Math.PI) + Math.PI ));
-        luminance = 0.2;
-        console.log("luminance: " + luminance);
-
-        var skyMaterial = new BABYLON.SkyMaterial("skyMaterial", this.scene);
-        skyMaterial.backFaceCulling = false;
-        skyMaterial.turbidity = 10;
-        skyMaterial.luminance = (1.179 - (1.179 * luminance)) + 0.1;
-        skyMaterial.rayleigh = luminance * 2;
-        skyMaterial.useSunPosition = true;
-        var sunPosition = new BABYLON.Vector3(0,0,0);
-        sunPosition.y = 1000 * luminance;
-        sunPosition.x = -1500 + (1000 * luminance);
-        skyMaterial.sunPosition = sunPosition;
-        //skyMaterial.inclination = 0.15
-        //skyMaterial.inclination = 1; // The solar inclination, related to the solar azimuth in interval [0, 1]
-        //skyMaterial.azimuth = 1; // The solar azimuth in interval [0, 1]
-
-
-        //skyMaterial.azimuth = 0.5;
-        //skyMaterial.inclination = 0.5;
-        console.log([skyMaterial.azimuth,skyMaterial.inclination]);
-        var skybox = BABYLON.Mesh.CreateBox("skyBox", 1000, this.scene);
-        skybox.material = skyMaterial;
-
-        var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,100,0),this.scene);
-        //var light = new BABYLON.DirectionalLight('sun',new BABYLON.Vector3(0,-1,0),this.scene);
-        light.specular = new BABYLON.Color3(0.7,0.7,0.7);
-        light.diffuse = new BABYLON.Color3(0.7,0.7,0.7);
-        var radius = 1, inclination = skyMaterial.luminance * Math.PI, azimuth = skyMaterial.azimuth * Math.PI * 2;
-        var x = radius * Math.sin(inclination) * Math.cos(azimuth), y = radius * Math.sin(inclination) * Math.sin(azimuth),z = radius * Math.cos(inclination);
-        console.log([x,y,z]);
-
-        var light0 = new BABYLON.DirectionalLight("Dir0", BABYLON.Vector3.Zero().subtract(sunPosition), this.scene);
-        light0.diffuse = new BABYLON.Color3(0.7,0.7,0.7);
-        light0.specular = new BABYLON.Color3(0.9,0.9,0.9);
-        this.shadow = new BABYLON.ShadowGenerator(1024,light0);
-        this.shadow.filter = 0.2;
-
-        // Water
-        var testm = new BABYLON.StandardMaterial('tesm',this.scene);
-        testm.diffuseColor = new BABYLON.Color3(0.4,0.4,1);
-
-        var waterMesh = BABYLON.Mesh.CreateGround("waterMesh", 1024, 1024, 16, this.scene, false);
-        waterMesh.position = new BABYLON.Vector3(0,-6,0);
-        var water = new BABYLON.WaterMaterial("water", this.scene, new BABYLON.Vector2(1024, 1024));
-        water.backFaceCulling = true;
-        water.bumpTexture = new BABYLON.Texture(Viewer.ASSET_PATH + "/water/waterbump.png", this.scene);
-        water.windForce = -3;
-        water.waveHeight = 0.7;
-        water.bumpHeight = 0.5;
-        water.windDirection = new BABYLON.Vector2(1, 1);
-        water.waterColor = new BABYLON.Color3(0, 0, 221 / 255);
-        water.colorBlendFactor = 0.1;
-        water.addToRenderList(skybox);
-        waterMesh.material = testm;
-        waterMesh.receiveShadows = true;
-
-        //load mesh from file
-        BABYLON.SceneLoader.ImportMesh('ship',Viewer.ASSET_PATH + '/ship/','ship.babylon',this.scene,meshes =>{
-            if(meshes.length == 1){//check if mesh loaded correctly
-                var rootmesh = meshes[0]; //it's the only mesh in the file
-                rootmesh.scaling = rootmesh.scaling.multiplyByFloats(0.9,0.9,0.7); //Scale, to make it fit the field better
-
-                var clonemesh = rootmesh.clone('clone',null); //Copy mesh for second player
-
-                /*
-                Players have the following structure
-                dockMesh
-                    - actual ship mesh
-                    - particleMesh
-                        - particle emitter 1
-                    - particleMesh 2
-                        - particle emitter 2
-                */
-
-
-                this.player1 = BABYLON.Mesh.CreateSphere("dockMesh1",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
-                rootmesh.parent = this.player1;
-                //this.shadow.getShadowMap().renderList.push(rootmesh);
-                this.player1.name = "player1";
-                this.player1.id = "player1";
-                this.player1.rotation.y = Math.PI / 2;
-                var p1particleMesh = BABYLON.Mesh.CreateSphere("p1particleMesh",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
-                p1particleMesh.parent = this.scene.getMeshByID('player1');
-                p1particleMesh.material = this.fieldtypematerialfactory.getAlphaMaterial();
-                var p1particleMesh2 = BABYLON.Mesh.CreateSphere("p1particleMesh2",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
-                p1particleMesh2.parent = p1particleMesh;
-                p1particleMesh2.material = this.fieldtypematerialfactory.getAlphaMaterial();
-                p1particleMesh.position.y = 0.72;
-                p1particleMesh.position.z = 0.04;
-                p1particleMesh.position.x = -0.11;
-                p1particleMesh2.position.x = 0.25;
-
-
-                var p1light = new BABYLON.PointLight('p1light',BABYLON.Vector3.Zero(),this.scene);
-                p1light.specular = new BABYLON.Color3(0.4,0,0);
-                p1light.diffuse = new BABYLON.Color3(0.4,0,0);
-                p1light.parent = this.player1;
-                p1light.position.y = 0.2;
-                p1light.position.z = -0.1;
-                p1light.range = 2;
-
-                var p1shadow = new BABYLON.ShadowGenerator(1024,p1light);
-                p1shadow.getShadowMap().renderList.push(rootmesh);
-                rootmesh.receiveShadows = true;
-
-                this.player2 = BABYLON.Mesh.CreateSphere("dockMesh2",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
-                clonemesh.parent = this.player2;//BABYLON.Mesh.ExtrudeShape("player2",shape,path,1,0,BABYLON.Mesh.CAP_ALL,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
-                //this.shadow.getShadowMap().renderList.push(clonemesh);
-                this.player2.id = "player2";
-                this.player2.name = "player2";
-                this.player2.position.x = 5;
-
-                var p2particleMesh = BABYLON.Mesh.CreateSphere("p2particleMesh",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
-                p2particleMesh.parent = this.scene.getMeshByID('player2');
-                p2particleMesh.material = this.fieldtypematerialfactory.getAlphaMaterial();
-                var p2particleMesh2 = BABYLON.Mesh.CreateSphere("p2particleMesh2",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
-                p2particleMesh2.parent = p2particleMesh;
-                p2particleMesh2.material = this.fieldtypematerialfactory.getAlphaMaterial();
-                p2particleMesh.position.y = 0.72;
-                p2particleMesh.position.z = 0.04;
-                p2particleMesh.position.x = -0.11;
-                p2particleMesh2.position.x = 0.25;
-
-                var p2light = new BABYLON.PointLight('p2light',BABYLON.Vector3.Zero(),this.scene);
-                p2light.specular = new BABYLON.Color3(0,0,0.2);
-                p2light.diffuse = new BABYLON.Color3(0,0,0.4);
-                p2light.parent = this.player2;
-                p2light.position.y = 0.2;
-                p2light.position.z = -0.1;
-                p2light.range = 2;
-
-                var p2shadow = new BABYLON.ShadowGenerator(1024,p2light);
-                p2shadow.getShadowMap().renderList.push(clonemesh);
-                clonemesh.receiveShadows = true;
-
-
-
-
-
-                var particleTexture = new BABYLON.Texture(Viewer.ASSET_PATH + '/smoke.png',this.scene);
-
-                var particleSystem = new BABYLON.ParticleSystem(p1particleMesh.name + 'ps1',8000,this.scene);
-                particleSystem.particleTexture = particleTexture;
-                particleSystem.emitter = p1particleMesh;
-                particleSystem.minEmitBox = new BABYLON.Vector3(-0.01, -0.01, -0.01); // Starting all From
-                particleSystem.maxEmitBox = new BABYLON.Vector3(0.01, 0.01, 0.01); // To...
-                particleSystem.minSize = 0.03;
-                particleSystem.maxSize = 0.05;
-                particleSystem.minLifeTime = 0.5;
-                particleSystem.maxLifeTime = 1;
-                particleSystem.minAngularSpeed = 0;
-                particleSystem.maxAngularSpeed = Math.PI;
-                particleSystem.color1 = new BABYLON.Color4(1,0,0,1);
-                particleSystem.color2 = new BABYLON.Color4(1,0.5,0.5,1);
-                particleSystem.colorDead = new BABYLON.Color4(1,1,1,0);
-                particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_STANDARD;
-                particleSystem.gravity = new BABYLON.Vector3(0, 4, 0.1);
-                particleSystem.emitRate = 1000;
-                particleSystem.direction1 = new BABYLON.Vector3(-0.12,0,-0.12);
-                particleSystem.direction2 = new BABYLON.Vector3(0.12,0,0.12);
-
-                var particleSystem2 = particleSystem.clone(p1particleMesh2.name + 'ps2',p1particleMesh2);
-
-                var particleSystem3 = particleSystem.clone(p2particleMesh.name +'ps1',p2particleMesh);
-                particleSystem3.color1 = new BABYLON.Color4(0,0,1,1);
-                particleSystem3.color2 = new BABYLON.Color4(0.5,0.5,1,1);
-                var particleSystem4 = particleSystem3.clone(p2particleMesh2.name + 'ps2',p2particleMesh2);
-
-                particleSystem.start();
-                particleSystem2.start();
-                particleSystem3.start();
-                particleSystem4.start();
-
-
-                var heightoffset = 0.65 + 0;
-                //0.58;
-
-                this.player1.position.y = heightoffset;
-                this.player2.position.y = heightoffset;
-
-
-            var canvas = new BABYLON.ScreenSpaceCanvas2D(this.scene);
-
-            this.display.player1Text = new BABYLON.Text2D('Player1', { marginAlignment: "h: center, v:center", fontName: "bold 28px Arial", marginTop: 5})
-
-                var player1label = new BABYLON.Group2D({
-                    parent: canvas, id: "Player1Label", trackNode: this.player1, origin: BABYLON.Vector2.Zero(),
-                    children: [
-                        new BABYLON.Rectangle2D({ id: "firstRect", width: 110, height: 34, roundRadius: 3, x: -145, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#FF4444B0", children: [
-                                this.display.player1Text
-                            ]
-                        })
-                    ]
-                });
-
-                this.display.player2Text = new BABYLON.Text2D('Player2', { marginAlignment: "h: center, v:center", fontName: "bold 28px Arial", marginTop: 5 });
-
-                var player2label = new BABYLON.Group2D({
-                    parent: canvas, id: "Player2Label", trackNode: this.player2, origin: BABYLON.Vector2.Zero(),
-                    children: [
-                        new BABYLON.Rectangle2D({ id: "firstRect", width: 110, height: 34,roundRadius: 3, x: -145, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#4444FFB0", children: [
-                                this.display.player2Text
-                            ]
-                        })
-                    ]
-                });
-
-                /*groundmaterial.diffuseColor = new BABYLON.Color3(0.1,0.1,0.2);
-                groundmaterial.specularColor = new BABYLON.Color3(1,1,1);
-                ground.material = groundmaterial;*/
-                /*setTimeout(() => {
-                    this.camera.beta = 0.41;
-                    this.camera.alpha = 0;
-                    this.camera.radius = 30;
-                },1000);*/
-                //this.camera.zoomOnFactor = 0;
-                //this.needsRerender += 60;
-                this.debug.innerText = "TEST";
-                this.engine.runRenderLoop( () =>{
-                    if(this.needsRerender > 0 || (! this.rerenderControlActive)){
-                        //this.needsRerender --;
-                        //this.focus();
-                        this.scene.render();
-                        //this.camera.alpha += 0.003;
-                        if(this.debugActive){
-                            this.debug.innerText = "currentRound: " + this.currentMove + ", α: " + this.camera.alpha.toString() + ", β: " + this.camera.beta.toString() + ", (x,y,z): " + this.camera.position.x + "," + this.camera.position.y + "," + this.camera.position.z + ", needsRerender: " + this.needsRerender.toString();
-                        }
-                        if(this.scene.meshUnderPointer){
-                            //this.debug.innerText = this.scene.meshUnderPointer.name;
-                        }
+                this.render(this.replay.states[this.currentMove], e.ctrlKey);
+            });
+            this.controls.previous = document.createElement('button');
+            this.controls.previous.innerText = "⏪";
+            this.controls.previous.addEventListener('click',(e)=>{
+                if(this.currentMove > 0){
+                    this.currentMove --;
+                }
+                if(this.lastRoundRendered){
+                    this.lastRoundRendered = false;
+                    this.currentMove ++;
+                }
+                this.render(this.replay.states[this.currentMove], e.ctrlKey);
+            });
+            this.controls.play = document.createElement('button');
+            this.controls.play.innerText = "►";
+            this.controls.playCallback = () =>{
+                this.animationsPlayed++;
+                if(this.animationsPlayed == 2 && this.controls.playing){
+                    if(this.currentMove < (this.replay.states.length -1)){
+                        this.currentMove ++;
+                    }else{
+                        this.controls.play.click();
                     }
-                });
-                window.addEventListener('resize', () => {
-                    this.engine.resize();
-                });
+                    this.render(this.replay.states[this.currentMove], true);
+                    //setTimeout(this.controls.playCallback,((Viewer.ANIMATION_FRAMES / 60) * 1000) * 2);
+                }
+            }
+            this.controls.play.addEventListener('click',()=>{
+                if(!this.controls.playing){//Not playing, start playing
+                    this.controls.play.innerText = "▮▮";
+                    this.controls.playing = true;
+                    this.animationsPlayed = 1;
+                    this.controls.playCallback();
+                }
+                else{//Playing, stop playing
+                    this.controls.play.innerText = "►";
+                    this.controls.playing = false;
+                }
 
-                window.addEventListener("click",  () => {
-                    var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
-                    if(pickResult.hit){
-                        console.log(pickResult.pickedMesh.id);
-                    }
-                });
+            });
+            this.controls.first = document.createElement('button');
+            this.controls.first.innerText = "⏮";
+            this.controls.first.addEventListener('click',()=>{
+                this.currentMove = 0;
+                this.render(this.replay.states[this.currentMove], false);
+            });
+            this.controls.last = document.createElement('button');
+            this.controls.last.innerText = "⏭";
+            this.controls.last.addEventListener('click',()=>{
+                this.lastRoundRendered = true;
+                this.currentMove = this.replay.states.length - 1;
+                this.render(this.replay.states[this.currentMove], false);
+            });
+            this.controlsElement.appendChild(this.controls.first);
+            this.controlsElement.appendChild(this.controls.previous);
+            this.controlsElement.appendChild(this.controls.play);
+            this.controlsElement.appendChild(this.controls.next);
+            this.controlsElement.appendChild(this.controls.last);        
+        //
+        //Initialize display
+            this.displayElement = document.createElement('div');
+            this.displayElement.classList.add('replay-display');
+            this.display.redPoints = document.createElement('div');
+            this.display.redPoints.classList.add('replay-redPoints');
+            this.display.round = document.createElement('div');
+            this.display.round.classList.add('replay-round');
+            this.display.bluePoints = document.createElement('div');
+            this.display.bluePoints.classList.add('replay-bluePoints');
+            var progressbar = document.createElement('div');
+            progressbar.classList.add('replay-progressbar');
+            this.display.progress = document.createElement('div');
+            this.display.progress.classList.add('replay-progress');
+            progressbar.appendChild(this.display.progress);
 
-                console.log("initializing viewer took " + (performance.now() - now) + "ms");
-                this.render(replay.states[this.currentMove], false);
+            this.display.redName = document.createElement('div');
+            this.display.redName.innerText = replay.states[0].red.displayName;
+            this.display.redName.classList.add('replay-redName');
+            this.display.blueName = document.createElement('div');
+            this.display.blueName.innerText = replay.states[0].blue.displayName;
+            this.display.blueName.classList.add('replay-blueName');
+            this.display.endScreen = document.createElement('div');
+            this.display.endScreen.classList.add('replay-endScreen');
+            this.display.winnerName = document.createElement('span');
+            this.display.winnerName.innerText = replay.score.winnerName;
+            this.display.winPicture = document.createElement('img');
+            this.display.winPicture.src = Viewer.ASSET_PATH + "/win/pokal.svg";
+            this.display.winPicture.classList.add('replay-winPicture');
+            this.display.winReason = document.createElement('span');
+            var winnerColorClass = replay.score.winner == PLAYERCOLOR.RED ? 'replay-winRed' : 'replay-winBlue';
+            var htmlScore = replay.score.processedReason.replace(replay.score.winnerName, '<span class="' + winnerColorClass + '">' + replay.score.winnerName + '</span>');
+            htmlScore = htmlScore.replace('&#xa;','<br>'); //Fix linefeeds
+            this.display.winReason.innerHTML = htmlScore;
+            this.display.winReason.classList.add('replay-winReason');
+            this.display.endScreen.appendChild(this.display.winPicture);
+            //this.display.endScreen.appendChild(this.display.winnerName);
+            this.display.endScreen.appendChild(document.createElement('br'));
+            this.display.endScreen.appendChild(this.display.winReason);
 
 
-            }else{
-                throw new Error("Loaded more than one mesh from file!");
+            this.displayElement.appendChild(this.display.redPoints);
+            this.displayElement.appendChild(this.display.round);
+            this.displayElement.appendChild(this.display.bluePoints);
+            this.displayElement.appendChild(this.display.redName);
+            this.displayElement.appendChild(this.display.blueName);
+
+            element.appendChild(this.debug);
+            element.appendChild(this.controlsElement);
+            element.appendChild(progressbar);
+            element.appendChild(this.display.endScreen);
+            var displayContainer = document.createElement('div');
+            displayContainer.classList.add('replay-displayContainer');
+            displayContainer.appendChild(this.displayElement);
+            element.appendChild(displayContainer);
+
+        //
+        //Initialize scene...
+            this.scene = new BABYLON.Scene(this.engine);
+            this.fieldtypematerialfactory = new FieldTypeMaterialFactory(this.scene);
+            this.cameraFocus = BABYLON.Mesh.CreateSphere("dockMesh1",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+            this.cameraFocus.material = this.fieldtypematerialfactory.getAlphaMaterial();
+            this.camera = new BABYLON.ArcFollowCamera('camera',- 2*Math.PI,1,35,this.cameraFocus,this.scene);
+            this.scene.activeCamera = this.camera;
+            this.scene.activeCamera.attachControl(this.canvas);
+
+            if(element.hasAttribute('fxaa')){
+                var fxaa_level:number = parseInt(element.getAttribute('fxaa'));
+                var postProcess = new BABYLON.FxaaPostProcess("fxaa", fxaa_level,this.camera, null, this.engine, true);
+                console.log("Activated " + fxaa_level +"x FXAA post-processing");
+            }
+        //
+        //Set up sky
+            var luminance = Math.abs(Math.sin( (new Date().getHours() / 24 * Math.PI) + Math.PI ));
+            luminance = 0.2;
+            var skyMaterial = new BABYLON.SkyMaterial("skyMaterial", this.scene);
+            skyMaterial.backFaceCulling = false;
+            skyMaterial.turbidity = 10;
+            skyMaterial.luminance = (1.179 - (1.179 * luminance)) + 0.1;
+            skyMaterial.rayleigh = luminance * 2;
+            skyMaterial.useSunPosition = true;
+            var sunPosition = new BABYLON.Vector3(0,0,0);
+            sunPosition.y = 1000 * luminance;
+            sunPosition.x = -1500 + (1000 * luminance);
+            skyMaterial.sunPosition = sunPosition;
+            var skybox = BABYLON.Mesh.CreateBox("skyBox", 1000, this.scene);
+            skybox.material = skyMaterial;
+        //
+        //Set up scene lighting
+            var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,100,0),this.scene);
+            //var light = new BABYLON.DirectionalLight('sun',new BABYLON.Vector3(0,-1,0),this.scene);
+            light.specular = new BABYLON.Color3(0.7,0.7,0.7);
+            light.diffuse = new BABYLON.Color3(0.7,0.7,0.7);
+            var radius = 1, inclination = skyMaterial.luminance * Math.PI, azimuth = skyMaterial.azimuth * Math.PI * 2;
+            var x = radius * Math.sin(inclination) * Math.cos(azimuth), y = radius * Math.sin(inclination) * Math.sin(azimuth),z = radius * Math.cos(inclination);
+
+            var light0 = new BABYLON.DirectionalLight("Dir0", BABYLON.Vector3.Zero().subtract(sunPosition), this.scene);
+            light0.diffuse = new BABYLON.Color3(0.7,0.7,0.7);
+            light0.specular = new BABYLON.Color3(0.9,0.9,0.9);
+            this.shadow = new BABYLON.ShadowGenerator(1024,light0);
+            this.shadow.filter = 0.2;
+        //
+        //Water
+            var waterMaterial = new BABYLON.StandardMaterial('tesm',this.scene);
+            waterMaterial.diffuseColor = new BABYLON.Color3(0.4,0.4,1);
+            var waterMesh = BABYLON.Mesh.CreateGround("waterMesh", 1024, 1024, 16, this.scene, false);
+            waterMesh.position = new BABYLON.Vector3(0,-6,0);
+            waterMesh.material = waterMaterial;
+            waterMesh.receiveShadows = true;
+        //
+        //Set up players
+            //load mesh from file
+            this.initialization_steps_remaining++;
+            BABYLON.SceneLoader.ImportMesh('ship',Viewer.ASSET_PATH + '/ship/','ship.babylon',this.scene,meshes =>{
+                if(meshes.length == 1){//check if mesh loaded correctly
+                    var rootmesh = meshes[0]; //it's the only mesh in the file
+                    rootmesh.scaling = rootmesh.scaling.multiplyByFloats(0.9,0.9,0.7); //Scale, to make it fit the field better
+
+                    var clonemesh = rootmesh.clone('clone',null); //Copy mesh for second player
+
+                    /*
+                    Players have the following structure
+                    dockMesh
+                        - actual ship mesh
+                        - particleMesh
+                            - particle emitter 1
+                        - particleMesh 2
+                            - particle emitter 2
+                    */
+
+
+                    this.player1 = BABYLON.Mesh.CreateSphere("dockMesh1",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                    rootmesh.parent = this.player1;
+                    //this.shadow.getShadowMap().renderList.push(rootmesh);
+                    this.player1.name = "player1";
+                    this.player1.id = "player1";
+                    this.player1.rotation.y = Math.PI / 2;
+                    var p1particleMesh = BABYLON.Mesh.CreateSphere("p1particleMesh",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                    p1particleMesh.parent = this.scene.getMeshByID('player1');
+                    p1particleMesh.material = this.fieldtypematerialfactory.getAlphaMaterial();
+                    var p1particleMesh2 = BABYLON.Mesh.CreateSphere("p1particleMesh2",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                    p1particleMesh2.parent = p1particleMesh;
+                    p1particleMesh2.material = this.fieldtypematerialfactory.getAlphaMaterial();
+                    p1particleMesh.position.y = 0.72;
+                    p1particleMesh.position.z = 0.04;
+                    p1particleMesh.position.x = -0.11;
+                    p1particleMesh2.position.x = 0.25;
+
+
+                    var p1light = new BABYLON.PointLight('p1light',BABYLON.Vector3.Zero(),this.scene);
+                    p1light.specular = new BABYLON.Color3(0.4,0,0);
+                    p1light.diffuse = new BABYLON.Color3(0.4,0,0);
+                    p1light.parent = this.player1;
+                    p1light.position.y = 0.2;
+                    p1light.position.z = -0.1;
+                    p1light.range = 2;
+
+                    var p1shadow = new BABYLON.ShadowGenerator(1024,p1light);
+                    p1shadow.getShadowMap().renderList.push(rootmesh);
+                    rootmesh.receiveShadows = true;
+
+                    this.player2 = BABYLON.Mesh.CreateSphere("dockMesh2",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                    clonemesh.parent = this.player2;//BABYLON.Mesh.ExtrudeShape("player2",shape,path,1,0,BABYLON.Mesh.CAP_ALL,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                    //this.shadow.getShadowMap().renderList.push(clonemesh);
+                    this.player2.id = "player2";
+                    this.player2.name = "player2";
+                    this.player2.position.x = 5;
+
+                    var p2particleMesh = BABYLON.Mesh.CreateSphere("p2particleMesh",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                    p2particleMesh.parent = this.scene.getMeshByID('player2');
+                    p2particleMesh.material = this.fieldtypematerialfactory.getAlphaMaterial();
+                    var p2particleMesh2 = BABYLON.Mesh.CreateSphere("p2particleMesh2",15,0.1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                    p2particleMesh2.parent = p2particleMesh;
+                    p2particleMesh2.material = this.fieldtypematerialfactory.getAlphaMaterial();
+                    p2particleMesh.position.y = 0.72;
+                    p2particleMesh.position.z = 0.04;
+                    p2particleMesh.position.x = -0.11;
+                    p2particleMesh2.position.x = 0.25;
+
+                    var p2light = new BABYLON.PointLight('p2light',BABYLON.Vector3.Zero(),this.scene);
+                    p2light.specular = new BABYLON.Color3(0,0,0.2);
+                    p2light.diffuse = new BABYLON.Color3(0,0,0.4);
+                    p2light.parent = this.player2;
+                    p2light.position.y = 0.2;
+                    p2light.position.z = -0.1;
+                    p2light.range = 2;
+
+                    var p2shadow = new BABYLON.ShadowGenerator(1024,p2light);
+                    p2shadow.getShadowMap().renderList.push(clonemesh);
+                    clonemesh.receiveShadows = true;
+
+
+
+
+
+                    var particleTexture = new BABYLON.Texture(Viewer.ASSET_PATH + '/smoke.png',this.scene);
+
+                    var particleSystem = new BABYLON.ParticleSystem(p1particleMesh.name + 'ps1',8000,this.scene);
+                    particleSystem.particleTexture = particleTexture;
+                    particleSystem.emitter = p1particleMesh;
+                    particleSystem.minEmitBox = new BABYLON.Vector3(-0.01, -0.01, -0.01); // Starting all From
+                    particleSystem.maxEmitBox = new BABYLON.Vector3(0.01, 0.01, 0.01); // To...
+                    particleSystem.minSize = 0.03;
+                    particleSystem.maxSize = 0.05;
+                    particleSystem.minLifeTime = 0.5;
+                    particleSystem.maxLifeTime = 1;
+                    particleSystem.minAngularSpeed = 0;
+                    particleSystem.maxAngularSpeed = Math.PI;
+                    particleSystem.color1 = new BABYLON.Color4(1,0,0,1);
+                    particleSystem.color2 = new BABYLON.Color4(1,0.5,0.5,1);
+                    particleSystem.colorDead = new BABYLON.Color4(1,1,1,0);
+                    particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_STANDARD;
+                    particleSystem.gravity = new BABYLON.Vector3(0, 4, 0.1);
+                    particleSystem.emitRate = 1000;
+                    particleSystem.direction1 = new BABYLON.Vector3(-0.12,0,-0.12);
+                    particleSystem.direction2 = new BABYLON.Vector3(0.12,0,0.12);
+
+                    var particleSystem2 = particleSystem.clone(p1particleMesh2.name + 'ps2',p1particleMesh2);
+
+                    var particleSystem3 = particleSystem.clone(p2particleMesh.name +'ps1',p2particleMesh);
+                    particleSystem3.color1 = new BABYLON.Color4(0,0,1,1);
+                    particleSystem3.color2 = new BABYLON.Color4(0.5,0.5,1,1);
+                    var particleSystem4 = particleSystem3.clone(p2particleMesh2.name + 'ps2',p2particleMesh2);
+
+                    particleSystem.start();
+                    particleSystem2.start();
+                    particleSystem3.start();
+                    particleSystem4.start();
+
+
+                    var heightoffset = 0.65 + 0;
+                    //0.58;
+
+                    this.player1.position.y = heightoffset;
+                    this.player2.position.y = heightoffset;
+
+
+                var canvas = new BABYLON.ScreenSpaceCanvas2D(this.scene);
+
+                this.display.player1Text = new BABYLON.Text2D('Player1', { marginAlignment: "h: center, v:center", fontName: "bold 28px Arial", marginTop: 5})
+
+                    var player1label = new BABYLON.Group2D({
+                        parent: canvas, id: "Player1Label", trackNode: this.player1, origin: BABYLON.Vector2.Zero(),
+                        children: [
+                            new BABYLON.Rectangle2D({ id: "firstRect", width: 150, height: 34, roundRadius: 3, x: -170, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#FF4444B0", children: [
+                                    this.display.player1Text
+                                ]
+                            })
+                        ]
+                    });
+
+                    this.display.player2Text = new BABYLON.Text2D('Player2', { marginAlignment: "h: center, v:center", fontName: "bold 28px Arial", marginTop: 5 });
+
+                    var player2label = new BABYLON.Group2D({
+                        parent: canvas, id: "Player2Label", trackNode: this.player2, origin: BABYLON.Vector2.Zero(),
+                        children: [
+                            new BABYLON.Rectangle2D({ id: "firstRect", width: 150, height: 34,roundRadius: 3, x: -170, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#4444FFB0", children: [
+                                    this.display.player2Text
+                                ]
+                            })
+                        ]
+                    });
+
+
+
+
+                }else{
+                    throw new Error("Loaded more than one mesh from file!");
+                }
+
+                //All done, try to start engine
+                this.initialization_steps_remaining --;
+                this.startEngine();
+            });
+        //
+        //Set up passengers
+            this.initialization_steps_remaining ++;
+            this.passengers = [];
+            var passengerMaterial = new BABYLON.StandardMaterial('passengerMaterial', this.scene);
+            passengerMaterial.diffuseColor = BABYLON.Color3.Yellow();
+            passengerMaterial.specularColor = BABYLON.Color3.Yellow();
+            this.replay.passengers.forEach(passenger => {
+                //Create passenger geometry
+                var p = BABYLON.Mesh.CreateSphere('passenger-' + passenger.id,15,1,this.scene,false,BABYLON.Mesh.DEFAULTSIDE);
+                p.material = passengerMaterial;
+                var [x,y] = Grid.getCoordinates(passenger.x,passenger.y,Viewer.GRID_SIZE);
+                p.position = new BABYLON.Vector3(x,1,y);
+                p.position.y = -50;
+                this.passengers[passenger.id] = p;
+            });
+            this.initialization_steps_remaining --;
+        //
+        //Attempt startup
+            this.startEngine();
+            setTimeout(() => this.startEngine(),500);
+            setTimeout(() => this.startEngine(),1000);
+    }
+
+    startEngine(){
+        if(this.initialization_steps_remaining == 0){
+            this.initialization_steps_remaining = -1;
+            this.engine.runRenderLoop( () =>{
+            if(this.needsRerender > 0 || (! this.rerenderControlActive)){
+                //this.needsRerender --;
+                //this.focus();
+                this.scene.render();
+                //this.camera.alpha += 0.003;
+                if(this.debugActive){
+                    this.debug.innerText = "currentRound: " + this.currentMove + ", α: " + this.camera.alpha.toString() + ", β: " + this.camera.beta.toString() + ", (x,y,z): " + this.camera.position.x + "," + this.camera.position.y + "," + this.camera.position.z + ", needsRerender: " + this.needsRerender.toString();
+                }
+                if(this.scene.meshUnderPointer){
+                    //this.debug.innerText = this.scene.meshUnderPointer.name;
+                }
+            }
+        });
+        window.addEventListener('resize', () => {
+            this.engine.resize();
+        });
+
+        window.addEventListener("click",  () => {
+            var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+            if(pickResult.hit){
+                console.log(pickResult.pickedMesh.id);
             }
         });
 
-
-    }
-
-    getCenterOfBoard(board: Board):[number,number]{
-        let x: number, y: number;
-        x = 0; y = 0;
-        let tiles: number;
-        let n: number = 0;
-        for(let t of board.tiles){
-            if(t.visible){
-                x += t.center_x;
-                y += t.center_y;
-                n ++;
-            }
+        console.log("initializing viewer took " + (performance.now() - this.startup_timestamp) + "ms");
+        this.render(this.replay.states[this.currentMove], false);
         }
-        x = x/n;
-        y = y/n;
-        return [x,y];
     }
 
-    private lastBoard: Board;
-
-    displayEndScreen(){
-
-    }
 
 
     render(state: GameState, animated: boolean){
-        if(state.last){
-            if(! this.lastRoundRendered){
-                this.lastRoundRendered = true;
+        //Handle possible last state
+            if(state.last){
+                if(! this.lastRoundRendered){
+                    this.lastRoundRendered = true;
+                    this.display.endScreen.style.opacity = "0";
+                    setTimeout(() => this.display.endScreen.style.display = 'none',500);
+                    this.needsRerender = 1;
+                }else{
+                    this.display.endScreen.style.display = 'block';
+                    setTimeout(() => {
+                        this.display.endScreen.style.opacity = "1";
+                        this.needsRerender = 0;
+                    },100);
+                }
+            }else{
+                this.lastRoundRendered = false;
                 this.display.endScreen.style.opacity = "0";
                 setTimeout(() => this.display.endScreen.style.display = 'none',500);
                 this.needsRerender = 1;
-            }else{
-                this.display.endScreen.style.display = 'block';
-                setTimeout(() => {
-                    this.display.endScreen.style.opacity = "1";
-                    this.needsRerender = 0;
-                },100);
             }
-        }else{
-            this.lastRoundRendered = false;
-            this.display.endScreen.style.opacity = "0";
-            setTimeout(() => this.display.endScreen.style.display = 'none',500);
-            this.needsRerender = 1;
-        }
-        this.display.progress.style.width = (((state.turn / 2) / 30) * 100).toString() + "%";
-        var round = state.turn == 0 ? 0 : Math.floor((state.turn / 2) - 0.5)
-        this.display.round.innerText = round < 10 ? '0' +  round.toString() : round.toString();
-        this.display.redPoints.innerText = state.red.points.toString();
-        this.display.bluePoints.innerText = state.blue.points.toString();
-        this.display.player1Text.text = state.red.coal.toString() +  "⬢  "  + state.red.speed.toString() + '➡';
-        this.display.player2Text.text = state.blue.coal.toString() + "⬢  "  + state.blue.speed.toString() + '➡';
+        //Update display
+            this.display.progress.style.width = (((state.turn / 2) / 30) * 100).toString() + "%";
+            var round = state.turn == 0 ? 0 : Math.floor((state.turn / 2) - 0.5)
+            this.display.round.innerText = round < 10 ? '0' +  round.toString() : round.toString();
+            this.display.redPoints.innerText = state.red.points.toString();
+            this.display.bluePoints.innerText = state.blue.points.toString();
+            this.display.player1Text.text = state.red.coal.toString() +  "⬢  "  + state.red.speed.toString() + '➡  ' + state.red.passenger.toString() + "P";
+            this.display.player2Text.text = state.blue.coal.toString() + "⬢  "  + state.blue.speed.toString() + '➡  ' + state.blue.passenger.toString() + "P";
 
         var getTileName = (t:Field) => "Tile(" + t.x + "," + t.y + ")";
 
@@ -557,11 +558,15 @@ export class Viewer{
 
         var i = 0;
 
+        this.tiles_to_sink.forEach(tile => tile.position.y = -50);
+        this.tiles_to_sink = [];
+
         if(this.lastBoard != null){
             for(let lt of this.lastBoard.tileIndices){//Iterate over tiles of the last board
                 if(state.board.tileIndices.indexOf(lt) == -1){//If they're not part of the current board
                     for(let f of this.lastBoard.getTileByIndex(lt).fields){
                         var tile  =this.scene.getMeshByName(getTileName(f));
+                        this.tiles_to_sink.push(tile); //Disappear tiles that aren't in the game anymore
                         //BABYLON.Animation.CreateAndStartAnimation("sinktile"+lt,tile,"position.y",30,60,tile.position.y,-3.5,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
                     }
                 }
@@ -574,6 +579,19 @@ export class Viewer{
         var [rpx,rpy] = Grid.getCoordinates(state.red.x,state.red.y,3/2);
         var [bpx,bpy] = Grid.getCoordinates(state.blue.x,state.blue.y,3/2);
         var newPos = new BABYLON.Vector3((rpx + bpx) * 0.5, 0,(rpy + bpy) * 0.5);
+
+
+        //Set state on passengers
+        this.replay.passengers.forEach((passenger)=>{
+            //Appear passengers that are on tiles that appeared in the current round
+            if(passenger.appears_turn <= this.currentMove){
+                this.passengers[passenger.id].position.y = 1;
+            }
+            //Disappear passengers that got picked up last turn
+            if(passenger.picked_up_turn < this.currentMove){
+                this.passengers[passenger.id].position.y = -50;
+            }
+        });
 
         //Do not animate if zero-turn
         if(!state.animated || (!animated)){
@@ -700,18 +718,8 @@ export class Viewer{
         this.scene.beginAnimation(this.cameraFocus,0,frame,false);
         this.scene.beginAnimation(this.player1,0,frame,false,1,()=>(setTimeout(this.controls.playCallback,100)));
         this.scene.beginAnimation(this.player2,0,frame,false,1,()=>(setTimeout(this.controls.playCallback,100)));
-        //this.needsRerender += frame + 10;
 
         }
-
-        /*//Adjust camera
-        let [x,y] = this.getCenterOfBoard(state.board);
-        [x,y] = Grid.getCoordinates(x,y,3/2);
-        console.log([x,y]);
-        this.camera.setTarget(new BABYLON.Vector3(x,0,y));
-        //this.camera.beta = 0.7;
-        //this.camera.alpha = 0;
-        //this.camera.radius = 75;*/
     }
 }
 

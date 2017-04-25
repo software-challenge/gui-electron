@@ -28,6 +28,14 @@ Die Importfunktionen können mit dem node-Modul `jsdom` getestet werden.
 * Modularer Replay-Loader/Parser: Das Replay wird als Objekt auf der Konsole ausgegeben
 * App-Loader mit require.js
 
+## Viewer-Argumente
+Ein Viewer wird mit dem Tag `<replay-viewer>` eingebunden. Dabei werden mehrere Argumente unterstützt.
+
+- `replay="file.xml"` Lädt das Replay vom Pfad `file.xml`
+- `rerender-control` Aktiviert die Einsparung von Renderzyklen bei Inaktivität
+- `debug` Aktiviert das Debug-Display
+- `fxaa="n"` Aktiviert n-faches FXAA-Postprocessing. n muss eine natürliche Zahl größer eins sein, z.B `fxaa="4"` für vierfaches Fast-Approximate-Anti-Aliasing
+
 ## TODO
 
 * Basis GUI mit [BabylonJS](http://www.babylonjs.com/)
