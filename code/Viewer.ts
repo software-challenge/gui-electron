@@ -210,7 +210,7 @@ export class Viewer{
             var loserColorClass = replay.score.winner == PLAYERCOLOR.RED ? 'replay-winBlue' : 'replay-winRed';
     
             var htmlScore = replay.score.processedReason.replace(replay.score.winnerName, '<span class="' + winnerColorClass + '">' + replay.score.winnerName + '</span>');
-            htmlScore = replay.score.processedReason.replace(replay.score.loserName, '<span class="' + loserColorClass + '">' + replay.score.loserName + '</span>');
+            htmlScore = htmlScore.replace(replay.score.loserName, '<span class="' + loserColorClass + '">' + replay.score.loserName + '</span>');
 
             htmlScore = htmlScore.replace('&#xa;','<br>'); //Fix linefeeds
             this.display.winReason.innerHTML = htmlScore;

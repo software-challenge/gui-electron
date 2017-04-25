@@ -147,7 +147,7 @@ export class Score{
             this.processedReason = "Das Spiel wurde vorzeitig beendet. " + this.winnerName + " gewinnt nach Punktestand.";
         }
         if(this.cause == 'RULE_VIOLATION'){
-            this.processedReason = 'Ungültiger Zug: ' + this.processedReason + "&#xa;" + this.winnerName + " gewinnt";
+            this.processedReason = 'Ungültiger Zug: ' + this.processedReason + "&#xa; " + this.winnerName + " gewinnt";
         }
     }
 }
