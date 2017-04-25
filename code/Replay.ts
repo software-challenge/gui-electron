@@ -67,6 +67,8 @@ export class Replay{
 
         var isPassengerFieldType = (ft: FIELDTYPE) => ft == FIELDTYPE.PASSENGER0 || ft == FIELDTYPE.PASSENGER1 || ft == FIELDTYPE.PASSENGER2 || ft == FIELDTYPE.PASSENGER3 || ft == FIELDTYPE.PASSENGER4 || ft == FIELDTYPE.PASSENGER5 || ft == FIELDTYPE.PASSENGER6;
 
+        var next_passenger_id:number = 0;
+
         for(var i = 0; i < this.states.length; i++){
             var tiles = this.states[i].board.tiles;
             //1. Find new passengers
@@ -75,6 +77,8 @@ export class Replay{
                     tile.fields.forEach(field => {
                         if(isPassengerFieldType(field.type) && ! hasPassengerAt(field.x,field.y)){//New passenger, create
                             var p:Passenger = new Passenger();
+                            p.id = next_passenger_id;
+                            next_passenger_id++;
                             p.appears_turn = i;
                             p.tile_id = tile.index;
                             p.x = field.x;
@@ -435,6 +439,7 @@ export class Move{
 }
 
 export class Passenger{
+    public id: number;
     public x: number;
     public y: number;
     public appears_turn: number;
