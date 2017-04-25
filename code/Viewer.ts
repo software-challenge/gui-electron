@@ -558,7 +558,9 @@ export class Viewer{
 
         var i = 0;
 
-        this.tiles_to_sink.forEach(tile => tile.position.y = -50);
+        this.tiles_to_sink.forEach(tile => {
+            tile.position.y = -50;
+        });
         this.tiles_to_sink = [];
 
         if(this.lastBoard != null){
