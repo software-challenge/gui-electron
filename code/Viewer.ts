@@ -207,7 +207,11 @@ export class Viewer{
             this.display.winPicture.classList.add('replay-winPicture');
             this.display.winReason = document.createElement('span');
             var winnerColorClass = replay.score.winner == PLAYERCOLOR.RED ? 'replay-winRed' : 'replay-winBlue';
+            var loserColorClass = replay.score.winner == PLAYERCOLOR.RED ? 'replay-winBlue' : 'replay-winRed';
+    
             var htmlScore = replay.score.processedReason.replace(replay.score.winnerName, '<span class="' + winnerColorClass + '">' + replay.score.winnerName + '</span>');
+            htmlScore = replay.score.processedReason.replace(replay.score.loserName, '<span class="' + loserColorClass + '">' + replay.score.loserName + '</span>');
+
             htmlScore = htmlScore.replace('&#xa;','<br>'); //Fix linefeeds
             this.display.winReason.innerHTML = htmlScore;
             this.display.winReason.classList.add('replay-winReason');

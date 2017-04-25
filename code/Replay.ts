@@ -52,7 +52,7 @@ export class Replay{
 
         this.states[0].animated = false;
         this.states[this.states.length -1].last = true;
-        this.score = new Score(xml.getElementsByTagName('result')[0]);
+        this.score = new Score(xml.getElementsByTagName('result')[0],this.states[0].red.displayName,this.states[0].blue.displayName);
         console.log(this);
         console.log("parsing took " + (performance.now()-now) + "ms");
     }
@@ -111,6 +111,8 @@ export class Score{
     public winner: PLAYERCOLOR;
     /** The displayName of the winning player */
     public winnerName: string;
+    /** The displayName of the losing player */
+    public loserName: string;
     /** The reason why the game was terminated */
     public winReason: string;
     /** The resaon including the displayName of the winning player */
@@ -118,7 +120,7 @@ export class Score{
 
     /** The raw cause given in the replay */
     public cause: string;
-    constructor(resultNode: Element){
+    constructor(resultNode: Element, redName: string, blueName : string){
         //Loop through score nodes, there might be multiple ones that don't all contain a reason attribute
         var scoreNodes = resultNode.getElementsByTagName('score');
         for(var i = 0; i< scoreNodes.length; i++){
@@ -135,7 +137,12 @@ export class Score{
         }
         this.winner = resultNode.getElementsByTagName('winner')[0].getAttribute('color') == 'RED' ? PLAYERCOLOR.RED : PLAYERCOLOR.BLUE;
         this.winnerName = resultNode.getElementsByTagName('winner')[0].getAttribute('displayName');
-        this.processedReason = this.winReason.replace('Ein Spieler',this.winnerName);
+        this.loserName = this.winner == PLAYERCOLOR.RED ? blueName : redName;
+        if(/abgehängt/.test(this.winReason)){
+            this.processedReason = this.winReason.replace('Ein Spieler',this.loserName);
+        }else{
+            this.processedReason = this.winReason.replace('Ein Spieler',this.winnerName);
+        }
         if(this.processedReason == ""){
             this.processedReason = "Das Spiel wurde vorzeitig beendet. " + this.winnerName + " gewinnt nach Punktestand.";
         }
