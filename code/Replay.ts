@@ -5,6 +5,7 @@ import {Helpers} from "./Helpers";
 export class Replay{
     public replayName: string;
     public states: GameState[];
+    public passengers: Passenger[];
     public score: Score; 
     /**
      * Initializes the Replay from a URL and calls the callback once done
@@ -36,16 +37,65 @@ export class Replay{
                 /*forEach iterates only over items that exists.
                   So if, for example, we have an array that has elements at indices four and six, but nothing at five, it won't insert an undefined into our list.*/
             }
-            if(this.states.length > 0){
-                g.addAnimationHints(this.states[this.states.length -1]);
-            }
             this.states.push(g);
         }
+
+        //All states read, find passengers
+        this.findPassengers();
+
+        console.log(this.passengers);
+
+        //Finalize by adding animation hints
+        for(var i = 1; i < this.states.length; i++){
+            this.states[i].addAnimationHints(this.states[i-1]);
+        }
+
         this.states[0].animated = false;
         this.states[this.states.length -1].last = true;
         this.score = new Score(xml.getElementsByTagName('result')[0]);
         console.log(this);
         console.log("parsing took " + (performance.now()-now) + "ms");
+    }
+
+
+    findPassengers():void{
+        this.passengers = [];
+
+        var processedTileIds = [];
+
+        var hasPassengerAt = (x: number, y:number) => this.passengers.findIndex((passenger => passenger.x == x && passenger.y == y)) != -1;
+
+        var isPassengerFieldType = (ft: FIELDTYPE) => ft == FIELDTYPE.PASSENGER0 || ft == FIELDTYPE.PASSENGER1 || ft == FIELDTYPE.PASSENGER2 || ft == FIELDTYPE.PASSENGER3 || ft == FIELDTYPE.PASSENGER4 || ft == FIELDTYPE.PASSENGER5 || ft == FIELDTYPE.PASSENGER6;
+
+        for(var i = 0; i < this.states.length; i++){
+            var tiles = this.states[i].board.tiles;
+            //1. Find new passengers
+            tiles.forEach(tile => {
+                if(processedTileIds.indexOf(tile.index) == -1){//We only need to go through each tile once for this, passengers get created at tile creation
+                    tile.fields.forEach(field => {
+                        if(isPassengerFieldType(field.type) && ! hasPassengerAt(field.x,field.y)){//New passenger, create
+                            var p:Passenger = new Passenger();
+                            p.appears_turn = i;
+                            p.tile_id = tile.index;
+                            p.x = field.x;
+                            p.y = field.y;
+                            p.gets_picked_up = false;//Updated later
+                            this.passengers.push(p);
+                        }
+                    });
+                }
+            });
+            //2. Check if any of the current passengers have been picked up
+            this.passengers.forEach(passenger => {
+                if(this.states[i].board.tileIndices. indexOf(passenger.tile_id) != -1){
+                    if(! isPassengerFieldType(this.states[i].board.getTileByIndex(passenger.tile_id).getFieldByIndex(passenger.x,passenger.y).type)){ //Tile vanished, passenger picked up
+                        passenger.gets_picked_up = true;
+                        passenger.picked_up_turn = i;
+                        passenger.picked_up_by = this.states[i].currentPlayer;
+                    }
+                }
+            });
+        }
     }
 }
 
@@ -185,6 +235,10 @@ export class Tile{
         }
         this.center_x /= fields.length;
         this.center_y /= fields.length;
+    }
+
+    public getFieldByIndex(x: number, y:number){
+        return this.fields.find(field => field.x == x && field.y == y);
     }
 
 }
@@ -380,6 +434,16 @@ export class Move{
     }
 }
 
+export class Passenger{
+    public x: number;
+    public y: number;
+    public appears_turn: number;
+    public gets_picked_up: boolean;
+    public picked_up_by: PLAYERCOLOR;
+    public picked_up_turn: number;
+    public tile_id: number;
+}
+
 export class GameState{
     public red: Player;
     public blue: Player;
@@ -391,6 +455,7 @@ export class GameState{
     public board: Board;
     public moves: Move[] = [];
     public animated: boolean = true;
+
     public addAnimationHints(previousState:GameState){//Calculates hints for the animation subsystem based on other information of this turn
         //1. Store old attributes, so we can add them as hints
         var player_attributes: {red: {x: number, y: number, direction: number, speed: number}, blue: {x: number, y: number, direction: number, speed: number}} = {

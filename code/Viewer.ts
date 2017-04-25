@@ -535,8 +535,8 @@ export class Viewer{
         this.display.round.innerText = round < 10 ? '0' +  round.toString() : round.toString();
         this.display.redPoints.innerText = state.red.points.toString();
         this.display.bluePoints.innerText = state.blue.points.toString();
-        this.display.player1Text.text = state.red.coal.toString() +  "⬢  "  + state.red.speed.toString() + '➡' ;
-        this.display.player2Text.text = state.blue.coal.toString() + "⬢  "  + state.blue.speed.toString() + '➡' ;
+        this.display.player1Text.text = state.red.coal.toString() +  "⬢  "  + state.red.speed.toString() + '➡';
+        this.display.player2Text.text = state.blue.coal.toString() + "⬢  "  + state.blue.speed.toString() + '➡';
 
         var getTileName = (t:Field) => "Tile(" + t.x + "," + t.y + ")";
 
