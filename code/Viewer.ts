@@ -639,6 +639,7 @@ export class Viewer{
 
         this.player1.animations = [];
         this.player2.animations = [];
+        this.passengers.forEach(p => p.animations = []);
 
         for(var i = 0; i < state.moves.length; i++){
             let move = state.moves[i];
@@ -651,6 +652,29 @@ export class Viewer{
 
             switch(move.type){
                 case MOVETYPE.STEP:
+                    if(move.animationHints['picked_up_passengers'] > 0){
+                        for(var p = 0; p < move.animationHints['picked_up_passengers']; p++){
+                            var pid = move.animationHints['picked_up_passenger_' + p];
+                            console.log("[animation] Picking up Passenger " + pid + " @" + frame);
+                            var sinksteps = [];
+                            sinksteps.push({
+                                'frame': 0,
+                                'value': 1
+                            });
+                            sinksteps.push({
+                                'frame': frame,
+                                'value': 1
+                            });
+                            sinksteps.push({
+                                'frame': frame,
+                                'value': -50
+                            });
+                            var sinkanim = new BABYLON.Animation('sink-passenger-' + pid, 'position.y',30,BABYLON.Animation.ANIMATIONTYPE_FLOAT,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                            sinkanim.setKeys(sinksteps);
+                            this.passengers[move.animationHints['picked_up_passenger_' + p]].animations.push(sinkanim);
+
+                        }
+                    }
                     var coords = Grid.getCoordinates(move.animationHints['startX'],move.animationHints['startY'],Viewer.GRID_SIZE);
                     activePlayer.position.push({
                         'frame': frame,
@@ -724,6 +748,7 @@ export class Viewer{
         this.scene.beginAnimation(this.cameraFocus,0,frame,false);
         this.scene.beginAnimation(this.player1,0,frame,false,1,()=>(setTimeout(this.controls.playCallback,100)));
         this.scene.beginAnimation(this.player2,0,frame,false,1,()=>(setTimeout(this.controls.playCallback,100)));
+        this.passengers.forEach(p => this.scene.beginAnimation(p,0,frame,false));
 
         }
     }

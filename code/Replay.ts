@@ -47,12 +47,24 @@ export class Replay{
 
         //Finalize by adding animation hints
         for(var i = 1; i < this.states.length; i++){
-            this.states[i].addAnimationHints(this.states[i-1]);
+            this.states[i].addAnimationHints(this.states[i-1], this.passengers);
         }
 
         this.states[0].animated = false;
         this.states[this.states.length -1].last = true;
         this.score = new Score(xml.getElementsByTagName('result')[0],this.states[0].red.displayName,this.states[0].blue.displayName);
+
+
+        this.states[0].board.tiles[0].getFieldByIndex(0,0).type = FIELDTYPE.PASSENGER0;
+        this.states[0].board.tiles[0].getFieldByIndex(0,1).type = FIELDTYPE.PASSENGER1;
+        this.states[0].board.tiles[0].getFieldByIndex(0,2).type = FIELDTYPE.PASSENGER2;
+        this.states[0].board.tiles[0].getFieldByIndex(1,0).type = FIELDTYPE.PASSENGER3;
+        this.states[0].board.tiles[0].getFieldByIndex(1,1).type = FIELDTYPE.PASSENGER4;
+        this.states[0].board.tiles[0].getFieldByIndex(1,2).type = FIELDTYPE.PASSENGER5;
+        this.states[0].board.tiles[0].getFieldByIndex(2,0).type = FIELDTYPE.PASSENGER6;
+
+        console.log(this.states[9].board.getFieldByIndex(5,-6));
+
         console.log(this);
         console.log("parsing took " + (performance.now()-now) + "ms");
     }
@@ -65,7 +77,6 @@ export class Replay{
 
         var hasPassengerAt = (x: number, y:number) => this.passengers.findIndex((passenger => passenger.x == x && passenger.y == y)) != -1;
 
-        var isPassengerFieldType = (ft: FIELDTYPE) => ft == FIELDTYPE.PASSENGER0 || ft == FIELDTYPE.PASSENGER1 || ft == FIELDTYPE.PASSENGER2 || ft == FIELDTYPE.PASSENGER3 || ft == FIELDTYPE.PASSENGER4 || ft == FIELDTYPE.PASSENGER5 || ft == FIELDTYPE.PASSENGER6;
 
         var next_passenger_id:number = 0;
 
@@ -75,7 +86,7 @@ export class Replay{
             tiles.forEach(tile => {
                 if(processedTileIds.indexOf(tile.index) == -1){//We only need to go through each tile once for this, passengers get created at tile creation
                     tile.fields.forEach(field => {
-                        if(isPassengerFieldType(field.type) && ! hasPassengerAt(field.x,field.y)){//New passenger, create
+                        if(field.isPassengerField && ! hasPassengerAt(field.x,field.y)){//New passenger, create
                             var p:Passenger = new Passenger();
                             p.id = next_passenger_id;
                             next_passenger_id++;
@@ -84,6 +95,7 @@ export class Replay{
                             p.x = field.x;
                             p.y = field.y;
                             p.gets_picked_up = false;//Updated later
+                            p.pickup_tile = field.pickup_hints;
                             this.passengers.push(p);
                         }
                     });
@@ -92,7 +104,7 @@ export class Replay{
             //2. Check if any of the current passengers have been picked up
             this.passengers.forEach(passenger => {
                 if(this.states[i].board.tileIndices. indexOf(passenger.tile_id) != -1){
-                    if(! isPassengerFieldType(this.states[i].board.getTileByIndex(passenger.tile_id).getFieldByIndex(passenger.x,passenger.y).type)){ //Tile vanished, passenger picked up
+                    if(!(this.states[i].board.getTileByIndex(passenger.tile_id).getFieldByIndex(passenger.x,passenger.y).isPassengerField)){ //Tile vanished, passenger picked up
                         passenger.gets_picked_up = true;
                         passenger.picked_up_turn = i;
                         passenger.picked_up_by = this.states[i].currentPlayer;
@@ -187,6 +199,8 @@ export class Field{
     public y: number;
     public id: number;
     public points: number;
+    public pickup_hints: {x: number, y:number};
+    public isPassengerField: boolean;
     constructor(type: FIELDTYPE, x: number, y: number, points: number){
         this.type = type;
         this.x = x;
@@ -216,6 +230,38 @@ export class Field{
         f.y = parseInt(fieldNode.getAttribute("y"));
         f.id = (f.x * 10000) + f.y;
         f.points = parseInt(fieldNode.getAttribute("points"));
+        f.isPassengerField = false;
+        switch(f.type){
+            case FIELDTYPE.PASSENGER0:
+            f.pickup_hints = Board.calculateNewPosition({x: f.x, y:f.y},DIRECTION.RIGHT,1);
+            f.isPassengerField = true;
+            break;
+            case FIELDTYPE.PASSENGER1:
+            f.pickup_hints = Board.calculateNewPosition({x: f.x, y:f.y},DIRECTION.UP_RIGHT,1);
+            f.isPassengerField = true;
+            break;
+            case FIELDTYPE.PASSENGER2:
+            f.pickup_hints = Board.calculateNewPosition({x: f.x, y:f.y},DIRECTION.UP_LEFT,1);
+            f.isPassengerField = true;
+            break;
+            case FIELDTYPE.PASSENGER3:
+            f.pickup_hints = Board.calculateNewPosition({x: f.x, y:f.y},DIRECTION.LEFT,1);
+            f.isPassengerField = true;
+            break;
+            case FIELDTYPE.PASSENGER4:
+            f.pickup_hints = Board.calculateNewPosition({x: f.x, y:f.y},DIRECTION.DOWN_LEFT,1);
+            f.isPassengerField = true;
+            break;
+            case FIELDTYPE.PASSENGER5:
+            f.pickup_hints = Board.calculateNewPosition({x: f.x, y:f.y},DIRECTION.DOWN_RIGHT,1);
+            f.isPassengerField = true;
+            break;
+            case FIELDTYPE.PASSENGER6:
+            f.pickup_hints = Board.calculateNewPosition({x: f.x, y:f.y},DIRECTION.RIGHT,1);
+            f.isPassengerField = true;
+            break;
+        }
+
         return f;
     }
 
@@ -270,6 +316,25 @@ export class Board{
 
     public getTileByIndex(index: number){
         return this.tiles.find(t => t.index == index);
+    }
+
+    public getFieldByIndex(x: number, y:number){
+        return this.tiles.reduce((prev, curr) => prev != undefined ? prev : curr.getFieldByIndex(x,y),undefined);
+    }
+
+    public getFieldByObject(o: {x: number, y: number}){
+        return this.getFieldByIndex(o.x,o.y);
+    }
+
+    public getFieldCircleCenteredAt(x: number, y: number):Field[]{
+        return [
+            this.getFieldByObject(Board.calculateNewPosition({x:x, y:y},DIRECTION.DOWN_LEFT,1)),
+            this.getFieldByObject(Board.calculateNewPosition({x:x, y:y},DIRECTION.DOWN_RIGHT,1)),
+            this.getFieldByObject(Board.calculateNewPosition({x:x, y:y},DIRECTION.LEFT,1)),
+            this.getFieldByObject(Board.calculateNewPosition({x:x, y:y},DIRECTION.RIGHT,1)),
+            this.getFieldByObject(Board.calculateNewPosition({x:x, y:y},DIRECTION.UP_LEFT,1)),
+            this.getFieldByObject(Board.calculateNewPosition({x:x, y:y},DIRECTION.UP_RIGHT,1))
+        ].filter(f => f != undefined);
     }
 
     public static StringToDirection(d: string){
@@ -454,6 +519,7 @@ export class Passenger{
     public picked_up_by: PLAYERCOLOR;
     public picked_up_turn: number;
     public tile_id: number;
+    public pickup_tile: {x: number, y: number};
 }
 
 export class GameState{
@@ -468,7 +534,8 @@ export class GameState{
     public moves: Move[] = [];
     public animated: boolean = true;
 
-    public addAnimationHints(previousState:GameState){//Calculates hints for the animation subsystem based on other information of this turn
+    public addAnimationHints(previousState:GameState, passengers: Passenger[]){//Calculates hints for the animation subsystem based on other information of this turn
+
         //1. Store old attributes, so we can add them as hints
         var player_attributes: {red: {x: number, y: number, direction: number, speed: number}, blue: {x: number, y: number, direction: number, speed: number}} = {
             red: {
@@ -515,6 +582,15 @@ export class GameState{
                     move.animationHints['targetOtherY'] = otherPlayerTargetPosition.y;
                 break;
                 case MOVETYPE.STEP:
+
+                    var picked_up_passengers = passengers.filter(p => p.pickup_tile.x == player_attributes[activePlayer].x && p.pickup_tile.y == player_attributes[activePlayer].y);
+                    move.animationHints['picked_up_passengers'] = picked_up_passengers.length;
+                    picked_up_passengers.forEach((p, i) => { //SELECT * FROM PASSENGERS WHERE EXISTS FIELD AT SAME POSITION
+                            move.animationHints['picked_up_passenger_' + i] = p.id;
+                            p.gets_picked_up = true;
+                            p.picked_up_turn = this.turn;
+                    });
+
                     move.animationHints['rotation'] = player_attributes[activePlayer].direction;
                     move.animationHints['animated'] = 1;
                     move.animationHints['startX'] = player_attributes[activePlayer].x;
