@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "sed -i 's/amd/commonjs/' tsconfig.json; node_modules/mocha/bin/mocha --compilers ts:ts-node/register,tsx:ts-node/register; sed -i 's/commonjs/amd/' tsconfig.json;",
-    "postinstall": "node_modules/typings/dist/bin.js install"
+    "postinstall": "node_modules/typings/dist/bin.js install",
+    "start": "python3 -m http.server"
   },
   "repository": {
     "type": "git",
