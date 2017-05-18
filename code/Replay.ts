@@ -53,18 +53,7 @@ export class Replay{
         this.states[0].animated = false;
         this.states[this.states.length -1].last = true;
         this.score = new Score(xml.getElementsByTagName('result')[0],this.states[0].red.displayName,this.states[0].blue.displayName);
-
-
-        this.states[0].board.tiles[0].getFieldByIndex(0,0).type = FIELDTYPE.PASSENGER0;
-        this.states[0].board.tiles[0].getFieldByIndex(0,1).type = FIELDTYPE.PASSENGER1;
-        this.states[0].board.tiles[0].getFieldByIndex(0,2).type = FIELDTYPE.PASSENGER2;
-        this.states[0].board.tiles[0].getFieldByIndex(1,0).type = FIELDTYPE.PASSENGER3;
-        this.states[0].board.tiles[0].getFieldByIndex(1,1).type = FIELDTYPE.PASSENGER4;
-        this.states[0].board.tiles[0].getFieldByIndex(1,2).type = FIELDTYPE.PASSENGER5;
-        this.states[0].board.tiles[0].getFieldByIndex(2,0).type = FIELDTYPE.PASSENGER6;
-
-        console.log(this.states[9].board.getFieldByIndex(5,-6));
-
+        
         console.log(this);
         console.log("parsing took " + (performance.now()-now) + "ms");
     }

@@ -72,6 +72,7 @@ export class Viewer{
         needsRerender: number;
         currentMove: number = 0;
         tiles_to_sink: BABYLON.AbstractMesh[] = [];
+        sunk_passengers:number[] = [];
 
     //
     constructor(replay: Replay, element: Element, document: Document, window: Window){
@@ -654,25 +655,33 @@ export class Viewer{
                 case MOVETYPE.STEP:
                     if(move.animationHints['picked_up_passengers'] > 0){
                         for(var p = 0; p < move.animationHints['picked_up_passengers']; p++){
-                            var pid = move.animationHints['picked_up_passenger_' + p];
-                            console.log("[animation] Picking up Passenger " + pid + " @" + frame);
-                            var sinksteps = [];
-                            sinksteps.push({
-                                'frame': 0,
-                                'value': 1
-                            });
-                            sinksteps.push({
-                                'frame': frame,
-                                'value': 1
-                            });
-                            sinksteps.push({
-                                'frame': frame,
-                                'value': -50
-                            });
-                            var sinkanim = new BABYLON.Animation('sink-passenger-' + pid, 'position.y',30,BABYLON.Animation.ANIMATIONTYPE_FLOAT,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-                            sinkanim.setKeys(sinksteps);
-                            this.passengers[move.animationHints['picked_up_passenger_' + p]].animations.push(sinkanim);
-
+                            var pid:number = move.animationHints['picked_up_passenger_' + p];
+                            if(this.sunk_passengers.indexOf(pid) == -1){
+                                var a = ()=>{
+                                    this.sunk_passengers.push(pid);
+                                    console.log("[animation] PICKUP Passenger " + pid + " @" + frame);
+                                    var sinksteps = [];
+                                    sinksteps.push({
+                                        'frame': 0,
+                                        'value': 1
+                                    });
+                                    sinksteps.push({
+                                        'frame': frame,
+                                        'value': 1
+                                    });
+                                    sinksteps.push({
+                                        'frame': frame,
+                                        'value': -50
+                                    });
+                                    var sinkanim = new BABYLON.Animation('sink-passenger-' + pid, 'position.y',30,BABYLON.Animation.ANIMATIONTYPE_FLOAT,BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                                    sinkanim.setKeys(sinksteps);
+                                    console.log(sinkanim);
+                                    if(sinkanim.getKeys().length > 0){
+                                        this.passengers[pid].animations.push(sinkanim);
+                                    }
+                                };
+                                a();
+                            }
                         }
                     }
                     var coords = Grid.getCoordinates(move.animationHints['startX'],move.animationHints['startY'],Viewer.GRID_SIZE);
@@ -748,7 +757,9 @@ export class Viewer{
         this.scene.beginAnimation(this.cameraFocus,0,frame,false);
         this.scene.beginAnimation(this.player1,0,frame,false,1,()=>(setTimeout(this.controls.playCallback,100)));
         this.scene.beginAnimation(this.player2,0,frame,false,1,()=>(setTimeout(this.controls.playCallback,100)));
-        this.passengers.forEach(p => this.scene.beginAnimation(p,0,frame,false));
+
+        //Don't run empty animations
+        this.passengers.filter(p => p.animations != undefined && p.animations != []).filter(p => p.animations.every( a => a.getKeys() != undefined)).forEach(p => this.scene.beginAnimation(p,0,frame,false));
 
         }
     }
