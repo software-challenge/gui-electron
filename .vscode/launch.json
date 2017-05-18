@@ -1,0 +1,18 @@
+{
+  // Use IntelliSense to learn about possible Node.js debug attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // NOTE: You should not have a chromium instance already open, as this
+      // command launches chromium with debugging functionaliy.
+      "name": "Launch localhost",
+      "type": "chrome",
+      "request": "launch",
+      "runtimeExecutable": "/usr/bin/chromium",
+      "url": "http://localhost:8000/viewer.html",
+      "webRoot": "${workspaceRoot}"
+    }
+  ]
+}
