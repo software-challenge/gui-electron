@@ -145,7 +145,7 @@ export class Score {
       this.processedReason = this.winReason.replace('Ein Spieler', this.winnerName);
     }
     if (this.processedReason == "") {
-      this.processedReason = "Das Spiel wurde vorzeitig beendet. " + this.winnerName + " gewinnt nach Punktestand.";
+      this.processedReason = "Das Spiel wurde vorzeitig beendet. " + this.winnerName + " gewinnt.";
     }
     if (this.cause == 'RULE_VIOLATION') {
       this.processedReason = 'Ungültiger Zug: ' + this.processedReason + "&#xa; " + this.winnerName + " gewinnt";
