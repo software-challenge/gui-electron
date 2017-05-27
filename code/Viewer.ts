@@ -515,6 +515,10 @@ export class Viewer {
   }
 
 
+  updatePlayerDisplays(state: GameState) {
+    this.display.player1Text.text = state.red.coal.toString() + "⬢  " + state.red.speed.toString() + '➡  ' + state.red.simulated_passengers.toString() + "P";
+    this.display.player2Text.text = state.blue.coal.toString() + "⬢  " + state.blue.speed.toString() + '➡  ' + state.blue.simulated_passengers.toString() + "P";
+  }
 
   render(state: GameState, animated: boolean) {
     //Handle possible last state
@@ -537,15 +541,15 @@ export class Viewer {
       setTimeout(() => this.display.endScreen.style.display = 'none', 500);
       this.needsRerender = 1;
     }
+
     //Update display
     this.display.progress.style.width = (((state.turn / 2) / 30) * 100).toString() + "%";
     var round = state.turn == 0 ? 0 : Math.floor((state.turn / 2) - 0.5)
     this.display.round.innerText = round < 10 ? '0' + round.toString() : round.toString();
     this.display.redPoints.innerText = state.red.points.toString();
     this.display.bluePoints.innerText = state.blue.points.toString();
-    this.display.player1Text.text = state.red.coal.toString() + "⬢  " + state.red.speed.toString() + '➡  ' + state.red.passenger.toString() + "P";
-    this.display.player2Text.text = state.blue.coal.toString() + "⬢  " + state.blue.speed.toString() + '➡  ' + state.blue.passenger.toString() + "P";
 
+    this.updatePlayerDisplays(state);
     var getTileName = (t: Field) => "Tile(" + t.x + "," + t.y + ")";
 
     //Iterate over new tiles

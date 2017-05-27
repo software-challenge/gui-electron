@@ -444,6 +444,7 @@ class Player {
   public coal: number;
   public tile: number;
   public passenger: number;
+  public simulated_passengers: number = 0; //This attribute exists because the number in the XML files is often off by a bit (because it's per turn and not per move)
   constructor(playerNode: Element) {
     this.displayName = playerNode.getAttribute("displayName");
     this.color = playerNode.getAttribute("color") == "RED" ? PLAYERCOLOR.RED : PLAYERCOLOR.BLUE;
@@ -524,6 +525,10 @@ export class GameState {
   public animated: boolean = true;
 
   public addAnimationHints(previousState: GameState, passengers: Passenger[]) {//Calculates hints for the animation subsystem based on other information of this turn
+    //0. carry over simulated passengers
+    this.red.simulated_passengers = previousState.red.simulated_passengers;
+    this.blue.simulated_passengers = previousState.blue.simulated_passengers;
+
 
     //1. Store old attributes, so we can add them as hints
     var player_attributes: { red: { x: number, y: number, direction: number, speed: number }, blue: { x: number, y: number, direction: number, speed: number } } = {
@@ -576,6 +581,7 @@ export class GameState {
           move.animationHints['picked_up_passengers'] = picked_up_passengers.length;
           picked_up_passengers.forEach((p, i) => { //SELECT * FROM PASSENGERS WHERE EXISTS FIELD AT SAME POSITION
             move.animationHints['picked_up_passenger_' + i] = p.id;
+            this[activePlayer].simulated_passengers++;
             p.gets_picked_up = true;
             p.picked_up_turn = this.turn;
           });
