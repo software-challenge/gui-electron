@@ -27,4 +27,13 @@ export let init = function (): void {
   }
 }
 
+export let init_replay = function (node: HTMLElement): void {
+  let replayPath = node.getAttribute("replay");
+  Loader.getReplay(replayPath).then(replay => {
+    viewers.push(new Viewer(replay, node, document, window));
+  });
+}
+
+window['init_replay'] = init_replay;
+
 init();
