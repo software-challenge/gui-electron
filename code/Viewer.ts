@@ -522,6 +522,11 @@ export class Viewer {
   }
 
   render(state: GameState, animated: boolean) {
+    //Handle changes in animation speed
+    if(window['animationFrames'] && parseInt(window['animationFrames']) != Viewer.ANIMATION_FRAMES){
+      Viewer.ANIMATION_FRAMES = parseInt(window['animationFrames']);
+    }
+
     //Handle possible last state
     if (state.last) {
       if (!this.lastRoundRendered) {
