@@ -98,6 +98,7 @@ export class Viewer {
     if (!this.debugActive) {
       this.debug.style.display = 'none';
     }
+    window['printDebug'] = () => console.log(this);
     //
     //Rerender-control
     this.rerenderControlActive = element.hasAttribute('rerender-control');
@@ -243,7 +244,7 @@ export class Viewer {
     this.fieldtypematerialfactory = new FieldTypeMaterialFactory(this.scene);
     this.cameraFocus = BABYLON.Mesh.CreateSphere("dockMesh1", 15, 0.1, this.scene, false, BABYLON.Mesh.DEFAULTSIDE);
     this.cameraFocus.material = this.fieldtypematerialfactory.getAlphaMaterial();
-    this.camera = new BABYLON.ArcFollowCamera('camera', - 2 * Math.PI, 1, 35, this.cameraFocus, this.scene);
+    this.camera = new BABYLON.ArcFollowCamera('camera', - 2 * Math.PI, 1, 50, this.cameraFocus, this.scene);
     this.scene.activeCamera = this.camera;
     this.scene.activeCamera.attachControl(this.canvas);
 
@@ -602,6 +603,10 @@ export class Viewer {
       }
       //Disappear passengers that got picked up last turn
       if (passenger.picked_up_turn < this.currentMove) {
+        this.passengers[passenger.id].position.y = -50;
+      }
+      //Disappear passengers that are on tiles that aren't in the game anymore
+      if(state.board.tileIndices.indexOf(passenger.tile_id) == -1){
         this.passengers[passenger.id].position.y = -50;
       }
     });
