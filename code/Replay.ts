@@ -566,6 +566,16 @@ export class GameState {
           move.animationHints['targetOtherY'] = otherPlayerTargetPosition.y;
           break;
         case MOVETYPE.STEP:
+          move.animationHints['rotation'] = player_attributes[activePlayer].direction;
+          move.animationHints['animated'] = 1;
+          move.animationHints['startX'] = player_attributes[activePlayer].x;
+          move.animationHints['startY'] = player_attributes[activePlayer].y;
+          var activePlayerTargetPosition = Board.calculateNewPosition({ x: player_attributes[activePlayer].x, y: player_attributes[activePlayer].y }, Board.NumberToDirection(player_attributes[activePlayer].direction), move.attribute);
+          move.animationHints['targetX'] = activePlayerTargetPosition.x;
+          move.animationHints['targetY'] = activePlayerTargetPosition.y;
+          player_attributes[activePlayer].x = activePlayerTargetPosition.x;
+          player_attributes[activePlayer].y = activePlayerTargetPosition.y;
+
           if (player_attributes[activePlayer].speed == 1) {
             var picked_up_passengers = passengers.filter(p => p.pickup_tile.x == player_attributes[activePlayer].x && p.pickup_tile.y == player_attributes[activePlayer].y && p.gets_picked_up == false);
             move.animationHints['picked_up_passengers'] = picked_up_passengers.length;
@@ -576,16 +586,6 @@ export class GameState {
               p.picked_up_turn = this.turn;
             });
           }
-
-          move.animationHints['rotation'] = player_attributes[activePlayer].direction;
-          move.animationHints['animated'] = 1;
-          move.animationHints['startX'] = player_attributes[activePlayer].x;
-          move.animationHints['startY'] = player_attributes[activePlayer].y;
-          var activePlayerTargetPosition = Board.calculateNewPosition({ x: player_attributes[activePlayer].x, y: player_attributes[activePlayer].y }, Board.NumberToDirection(player_attributes[activePlayer].direction), move.attribute);
-          move.animationHints['targetX'] = activePlayerTargetPosition.x;
-          move.animationHints['targetY'] = activePlayerTargetPosition.y;
-          player_attributes[activePlayer].x = activePlayerTargetPosition.x;
-          player_attributes[activePlayer].y = activePlayerTargetPosition.y;
           break;
       }
     }

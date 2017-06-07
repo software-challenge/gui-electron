@@ -242,7 +242,7 @@ export class Viewer {
     //Initialize scene...
     this.scene = new BABYLON.Scene(this.engine);
     this.fieldtypematerialfactory = new FieldTypeMaterialFactory(this.scene);
-    this.cameraFocus = BABYLON.Mesh.CreateSphere("dockMesh1", 15, 0.1, this.scene, false, BABYLON.Mesh.DEFAULTSIDE);
+    this.cameraFocus = BABYLON.Mesh.CreateSphere("cameraFocus", 15, 0.1, this.scene, false, BABYLON.Mesh.DEFAULTSIDE);
     this.cameraFocus.material = this.fieldtypematerialfactory.getAlphaMaterial();
     this.camera = new BABYLON.ArcFollowCamera('camera', - 2 * Math.PI, 1, 50, this.cameraFocus, this.scene);
     this.scene.activeCamera = this.camera;
@@ -523,8 +523,12 @@ export class Viewer {
 
   render(state: GameState, animated: boolean) {
     //Handle changes in animation speed
-    if(window['animationFrames'] && parseInt(window['animationFrames']) != Viewer.ANIMATION_FRAMES){
-      Viewer.ANIMATION_FRAMES = parseInt(window['animationFrames']);
+    if (window['animationSpeed']) {
+      var newSpeed = parseInt(window['animationSpeed']);
+      if (newSpeed != Viewer.ANIMATION_FRAMES && newSpeed > 3) {
+        console.log("setting speed to " + newSpeed);
+        Viewer.ANIMATION_FRAMES = newSpeed;
+      }
     }
 
     //Handle possible last state
@@ -540,6 +544,7 @@ export class Viewer {
           this.display.endScreen.style.opacity = "1";
           this.needsRerender = 0;
         }, 100);
+        return;
       }
     } else {
       this.lastRoundRendered = false;
@@ -598,7 +603,7 @@ export class Viewer {
     var [rpx, rpy] = Grid.getCoordinates(state.red.x, state.red.y, 3 / 2);
     var [bpx, bpy] = Grid.getCoordinates(state.blue.x, state.blue.y, 3 / 2);
     var newPos = new BABYLON.Vector3((rpx + bpx) * 0.5, 0, (rpy + bpy) * 0.5);
-
+    console.log("Moving camera to " + newPos + " this turn");
 
     //Set state on passengers
     this.replay.passengers.forEach((passenger) => {
@@ -611,7 +616,7 @@ export class Viewer {
         this.passengers[passenger.id].position.y = -50;
       }
       //Disappear passengers that are on tiles that aren't in the game anymore
-      if(state.board.tileIndices.indexOf(passenger.tile_id) == -1){
+      if (state.board.tileIndices.indexOf(passenger.tile_id) == -1) {
         this.passengers[passenger.id].position.y = -50;
       }
     });
@@ -656,6 +661,7 @@ export class Viewer {
 
       this.player1.animations = [];
       this.player2.animations = [];
+      this.cameraFocus.animations = [];
       this.passengers.forEach(p => p.animations = []);
 
       for (var i = 0; i < state.moves.length; i++) {
@@ -669,6 +675,18 @@ export class Viewer {
 
         switch (move.type) {
           case MOVETYPE.STEP:
+            var coords = Grid.getCoordinates(move.animationHints['startX'], move.animationHints['startY'], Viewer.GRID_SIZE);
+            activePlayer.position.push({
+              'frame': frame,
+              'value': new BABYLON.Vector3(coords[0], yalign, coords[1])
+            });
+            frame += Viewer.ANIMATION_FRAMES;
+            coords = Grid.getCoordinates(move.animationHints['targetX'], move.animationHints['targetY'], Viewer.GRID_SIZE);
+            activePlayer.position.push({
+              'frame': frame,
+              'value': new BABYLON.Vector3(coords[0], yalign, coords[1])
+            });
+            console.log("[animation] STEP activePlayer from " + move.animationHints['startX'] + "," + move.animationHints['startY'] + " to " + move.animationHints['targetX'] + "," + move.animationHints['targetY'] + " @" + frame);
             if (move.animationHints['picked_up_passengers'] > 0) {
               for (var p = 0; p < move.animationHints['picked_up_passengers']; p++) {
                 var pid: number = move.animationHints['picked_up_passenger_' + p];
@@ -702,25 +720,18 @@ export class Viewer {
                 }
               }
             }
-            var coords = Grid.getCoordinates(move.animationHints['startX'], move.animationHints['startY'], Viewer.GRID_SIZE);
-            activePlayer.position.push({
-              'frame': frame,
-              'value': new BABYLON.Vector3(coords[0], yalign, coords[1])
-            });
-            frame += Viewer.ANIMATION_FRAMES;
-            coords = Grid.getCoordinates(move.animationHints['targetX'], move.animationHints['targetY'], Viewer.GRID_SIZE);
-            activePlayer.position.push({
-              'frame': frame,
-              'value': new BABYLON.Vector3(coords[0], yalign, coords[1])
-            });
-            console.log("[animation] STEP activePlayer from " + move.animationHints['startX'] + "," + move.animationHints['startY'] + " to " + move.animationHints['targetX'] + "," + move.animationHints['targetY'] + " @" + frame);
             break;
           case MOVETYPE.TURN:
             activePlayer.rotation.push({
               'frame': frame,
               'value': Grid.getRotation(move.animationHints['startDirection'])
             });
-            frame += Viewer.ANIMATION_FRAMES;
+            frame += Viewer.ANIMATION_FRAMES / 2;
+            activePlayer.rotation.push({
+              'frame': frame,
+              'value': (Grid.getRotation(move.animationHints['startDirection']) + Grid.getRotation(move.animationHints['targetDirection'])) / 2
+            });
+            frame += Viewer.ANIMATION_FRAMES / 2;
             activePlayer.rotation.push({
               'frame': frame,
               'value': Grid.getRotation(move.animationHints['targetDirection'])
