@@ -90,16 +90,6 @@ export class Replay {
           });
         }
       });
-      //2. Check if any of the current passengers have been picked up
-      this.passengers.forEach(passenger => {
-        if (this.states[i].board.tileIndices.indexOf(passenger.tile_id) != -1) {
-          if (!(this.states[i].board.getTileByIndex(passenger.tile_id).getFieldByIndex(passenger.x, passenger.y).isPassengerField)) { //Tile vanished, passenger picked up
-            passenger.gets_picked_up = true;
-            passenger.picked_up_turn = i;
-            passenger.picked_up_by = this.states[i].currentPlayer;
-          }
-        }
-      });
     }
   }
 }
@@ -576,15 +566,16 @@ export class GameState {
           move.animationHints['targetOtherY'] = otherPlayerTargetPosition.y;
           break;
         case MOVETYPE.STEP:
-
-          var picked_up_passengers = passengers.filter(p => p.pickup_tile.x == player_attributes[activePlayer].x && p.pickup_tile.y == player_attributes[activePlayer].y);
-          move.animationHints['picked_up_passengers'] = picked_up_passengers.length;
-          picked_up_passengers.forEach((p, i) => { //SELECT * FROM PASSENGERS WHERE EXISTS FIELD AT SAME POSITION
-            move.animationHints['picked_up_passenger_' + i] = p.id;
-            this[activePlayer].simulated_passengers++;
-            p.gets_picked_up = true;
-            p.picked_up_turn = this.turn;
-          });
+          if (player_attributes[activePlayer].speed == 1) {
+            var picked_up_passengers = passengers.filter(p => p.pickup_tile.x == player_attributes[activePlayer].x && p.pickup_tile.y == player_attributes[activePlayer].y && p.gets_picked_up == false);
+            move.animationHints['picked_up_passengers'] = picked_up_passengers.length;
+            picked_up_passengers.forEach((p, i) => { //SELECT * FROM PASSENGERS WHERE EXISTS FIELD AT SAME POSITION
+              move.animationHints['picked_up_passenger_' + i] = p.id;
+              this[activePlayer].simulated_passengers++;
+              p.gets_picked_up = true;
+              p.picked_up_turn = this.turn;
+            });
+          }
 
           move.animationHints['rotation'] = player_attributes[activePlayer].direction;
           move.animationHints['animated'] = 1;
