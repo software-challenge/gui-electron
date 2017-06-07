@@ -26,6 +26,8 @@ export class Viewer {
     'blueName': HTMLDivElement,
     player1Text: BABYLON.Text2D,
     player2Text: BABYLON.Text2D,
+    player1Passengers: number,
+    player2Passengers: number,
     endScreen: HTMLDivElement,
     winPicture: HTMLImageElement,
     winnerName: HTMLSpanElement,
@@ -38,6 +40,8 @@ export class Viewer {
     'blueName': null,
     player1Text: null,
     player2Text: null,
+    player1Passengers: 0,
+    player2Passengers: 0,
     'progress': null,
     endScreen: null,
     winPicture: null,
@@ -244,7 +248,7 @@ export class Viewer {
     this.fieldtypematerialfactory = new FieldTypeMaterialFactory(this.scene);
     this.cameraFocus = BABYLON.Mesh.CreateSphere("cameraFocus", 15, 0.1, this.scene, false, BABYLON.Mesh.DEFAULTSIDE);
     this.cameraFocus.material = this.fieldtypematerialfactory.getAlphaMaterial();
-    this.camera = new BABYLON.ArcFollowCamera('camera', - 2 * Math.PI, 1, 50, this.cameraFocus, this.scene);
+    this.camera = new BABYLON.ArcFollowCamera('camera', - 2 * Math.PI, 1, 35, this.cameraFocus, this.scene);
     this.scene.activeCamera = this.camera;
     this.scene.activeCamera.attachControl(this.canvas);
 
@@ -427,7 +431,7 @@ export class Viewer {
           parent: canvas, id: "Player1Label", trackNode: this.player1, origin: BABYLON.Vector2.Zero(),
           children: [
             new BABYLON.Rectangle2D({
-              id: "firstRect", width: 150, height: 34, roundRadius: 3, x: -170, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#FF4444B0", children: [
+              id: "firstRect", width: 190, height: 40, roundRadius: 6, x: -170, y: 30, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#FF4444B0", children: [
                 this.display.player1Text
               ]
             })
@@ -440,7 +444,7 @@ export class Viewer {
           parent: canvas, id: "Player2Label", trackNode: this.player2, origin: BABYLON.Vector2.Zero(),
           children: [
             new BABYLON.Rectangle2D({
-              id: "firstRect", width: 150, height: 34, roundRadius: 3, x: -170, y: 0, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#4444FFB0", children: [
+              id: "firstRect", width: 190, height: 40, roundRadius: 6, x: -170, y: 30, origin: BABYLON.Vector2.Zero(), border: "#FFFFFFFF", fill: "#4444FFB0", children: [
                 this.display.player2Text
               ]
             })
@@ -467,7 +471,11 @@ export class Viewer {
     passengerMaterial.specularColor = BABYLON.Color3.Yellow();
     this.replay.passengers.forEach(passenger => {
       //Create passenger geometry
-      var p = BABYLON.Mesh.CreateSphere('passenger-' + passenger.id, 15, 1, this.scene, false, BABYLON.Mesh.DEFAULTSIDE);
+      var p = BABYLON.Mesh.CreateCylinder('passenger-' + passenger.id, 1, 0, 1, 15, 1, this.scene, false, BABYLON.Mesh.DEFAULTSIDE);
+      var p_ball = BABYLON.Mesh.CreateSphere('passenger-ball-' + passenger.id, 15, 0.75, this.scene, false, BABYLON.Mesh.DEFAULTSIDE);
+      p_ball.position.y = 0.5;
+      p_ball.parent = p;
+      p_ball.material = passengerMaterial;
       p.material = passengerMaterial;
       var [x, y] = Grid.getCoordinates(passenger.x, passenger.y, Viewer.GRID_SIZE);
       p.position = new BABYLON.Vector3(x, 1, y);
@@ -516,9 +524,13 @@ export class Viewer {
   }
 
 
+
   updatePlayerDisplays(state: GameState) {
-    this.display.player1Text.text = state.red.coal.toString() + "⬢  " + state.red.speed.toString() + '➡  ' + state.red.simulated_passengers.toString() + "P";
-    this.display.player2Text.text = state.blue.coal.toString() + "⬢  " + state.blue.speed.toString() + '➡  ' + state.blue.simulated_passengers.toString() + "P";
+    var redpassengers = new Array(this.display.player1Passengers + 1).join('⬤') + new Array((2 - this.display.player1Passengers) + 1).join('◯');
+    var bluepassengers = new Array(this.display.player2Passengers + 1).join('⬤') + new Array((2 - this.display.player2Passengers) + 1).join('◯');
+
+    this.display.player1Text.text = state.red.coal.toString() + "⬢  " + state.red.speed.toString() + '➡  ' + redpassengers;
+    this.display.player2Text.text = state.blue.coal.toString() + "⬢  " + state.blue.speed.toString() + '➡  ' + bluepassengers;
   }
 
   render(state: GameState, animated: boolean) {
@@ -561,6 +573,7 @@ export class Viewer {
     this.display.bluePoints.innerText = state.blue.points.toString();
 
     this.updatePlayerDisplays(state);
+
     var getTileName = (t: Field) => "Tile(" + t.x + "," + t.y + ")";
 
     //Iterate over new tiles
@@ -788,7 +801,11 @@ export class Viewer {
       this.scene.beginAnimation(this.player2, 0, frame, false, 1, () => (setTimeout(this.controls.playCallback, 100)));
 
       //Don't run empty animations
-      this.passengers.filter(p => p.animations != undefined && p.animations != []).filter(p => p.animations.every(a => a.getKeys() != undefined)).forEach(p => this.scene.beginAnimation(p, 0, frame, false));
+      this.passengers.filter(p => p.animations != undefined && p.animations != []).filter(p => p.animations.every(a => a.getKeys() != undefined)).forEach(p => this.scene.beginAnimation(p, 0, frame, false, 1, () => {
+        this.display.player1Passengers = state.red.simulated_passengers;
+        this.display.player2Passengers = state.blue.simulated_passengers;
+        //this.updatePlayerDisplays(state);
+      }));
 
     }
   }
