@@ -73,6 +73,7 @@ export class Viewer {
   rerenderControlActive: boolean;
   animationsPlayed: number = 0;
   lastRoundRendered: boolean = false;
+  endscreenRendered: boolean = false;
   needsRerender: number;
   currentMove: number = 0;
   tiles_to_sink: BABYLON.AbstractMesh[] = [];
@@ -133,6 +134,7 @@ export class Viewer {
       }
       if (this.lastRoundRendered) {
         this.lastRoundRendered = false;
+        this.endscreenRendered = false;
         this.currentMove++;
       }
       this.render(this.replay.states[this.currentMove], e.ctrlKey);
@@ -141,11 +143,16 @@ export class Viewer {
     this.controls.play.innerText = "►";
     this.controls.playCallback = () => {
       this.animationsPlayed++;
+      console.log("Playcallback (" + this.animationsPlayed + ")");
       if (this.animationsPlayed == 2 && this.controls.playing) {
+        this.animationsPlayed = 0;
         if (this.currentMove < (this.replay.states.length - 1)) {
           this.currentMove++;
         } else {
-          this.controls.play.click();
+          if (this.endscreenRendered) {
+            console.log("Endscreen was rendered, stop playing");
+            this.controls.play.click();
+          }
         }
         this.render(this.replay.states[this.currentMove], true);
         //setTimeout(this.controls.playCallback,((Viewer.ANIMATION_FRAMES / 60) * 1000) * 2);
@@ -534,6 +541,8 @@ export class Viewer {
   }
 
   render(state: GameState, animated: boolean) {
+    console.log("RENDER!");
+    console.log(state);
     //Handle changes in animation speed
     if (window['animationSpeed']) {
       var newSpeed = parseInt(window['animationSpeed']);
@@ -556,10 +565,14 @@ export class Viewer {
           this.display.endScreen.style.opacity = "1";
           this.needsRerender = 0;
         }, 100);
-        return;
+        this.endscreenRendered = true;
+        animated = false;
+        setTimeout(this.controls.playCallback, 150);
+        setTimeout(this.controls.playCallback, 150);
       }
     } else {
       this.lastRoundRendered = false;
+      this.endscreenRendered = false;
       this.display.endScreen.style.opacity = "0";
       setTimeout(() => this.display.endScreen.style.display = 'none', 500);
       this.needsRerender = 1;
@@ -790,7 +803,7 @@ export class Viewer {
         this.player2.animations.push(p2RotationAnimation);
       }
 
-      this.animationsPlayed = 0;
+
 
 
       console.log(this.player1.animations);
