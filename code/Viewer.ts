@@ -57,7 +57,7 @@ export class Viewer {
   scene: BABYLON.Scene;
   shadow: BABYLON.ShadowGenerator;
   cameraFocus: BABYLON.Mesh;
-  camera: BABYLON.ArcFollowCamera;
+  camera: BABYLON.FollowCamera;
   fieldtypematerialfactory: FieldTypeMaterialFactory;
   initialization_steps_remaining: number;
   startup_timestamp: number;
@@ -255,7 +255,26 @@ export class Viewer {
     this.fieldtypematerialfactory = new FieldTypeMaterialFactory(this.scene);
     this.cameraFocus = BABYLON.Mesh.CreateSphere("cameraFocus", 15, 0.1, this.scene, false, BABYLON.Mesh.DEFAULTSIDE);
     this.cameraFocus.material = this.fieldtypematerialfactory.getAlphaMaterial();
-    this.camera = new BABYLON.ArcFollowCamera('camera', - 2 * Math.PI, 1, 35, this.cameraFocus, this.scene);
+    //this.camera = new BABYLON.ArcFollowCamera('camera', - 2 * Math.PI, 1, 35, this.cameraFocus, this.scene);
+    this.camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 15, -125), this.scene, this.cameraFocus);
+    this.camera.radius = 20;
+    this.camera.heightOffset = 30;
+    this.camera.rotationOffset = 90;
+    this.camera.cameraAcceleration = 0.03;
+    this.camera.maxCameraSpeed = 20;
+    window['resetCamera'] = () => {
+      /*this.camera.beta = -2 * Math.PI;
+      this.camera.alpha = 1;
+      this.camera.radius = 35;
+      this.cameraFocus.position = new BABYLON.Vector3(0, 0, 0);
+      this.camera.target = this.cameraFocus;*/
+      this.camera.update();
+      console.log(this.camera.position);
+      console.log(this.camera.rotation);
+    }
+
+
+
     this.scene.activeCamera = this.camera;
     this.scene.activeCamera.attachControl(this.canvas);
 
@@ -507,7 +526,7 @@ export class Viewer {
           this.scene.render();
           //this.camera.alpha += 0.003;
           if (this.debugActive) {
-            this.debug.innerText = "currentRound: " + this.currentMove + ", α: " + this.camera.alpha.toString() + ", β: " + this.camera.beta.toString() + ", (x,y,z): " + this.camera.position.x + "," + this.camera.position.y + "," + this.camera.position.z + ", needsRerender: " + this.needsRerender.toString();
+            this.debug.innerText = "currentRound: " + this.currentMove /*+ ", α: " + this.camera.alpha.toString() + ", β: " + this.camera.beta.toString()*/ + ", (x,y,z): " + this.camera.position.x + "," + this.camera.position.y + "," + this.camera.position.z + ", needsRerender: " + this.needsRerender.toString();
           }
           if (this.scene.meshUnderPointer) {
             //this.debug.innerText = this.scene.meshUnderPointer.name;
