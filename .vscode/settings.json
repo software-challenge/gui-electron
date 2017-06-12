@@ -16,5 +16,10 @@
   "typescript.format.enable": true,
   "typescript.tsdk": "./node_modules/typescript/lib",
   "editor.formatOnSave": true,
-  "editor.detectIndentation": false
+  "editor.detectIndentation": false,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript"
+  ]
 }

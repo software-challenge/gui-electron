@@ -1,15 +1,14 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "module": "amd",
-    "moduleResolution": "node",
+    "module": "es6",
+    "moduleResolution": "classic",
     "sourceMap": true,
     "outDir": "bin",
     "watch": true
   },
   "include": [
-    "code/*",
-    "test/*"
+    "code/*"
   ],
   "compileOnSave": true
 }

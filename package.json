@@ -7,7 +7,6 @@
     "socha_graphical_client": "Helpers.js"
   },
   "scripts": {
-    "test": "sed -i 's/amd/commonjs/' tsconfig.json; node_modules/mocha/bin/mocha --compilers ts:ts-node/register,tsx:ts-node/register; sed -i 's/commonjs/amd/' tsconfig.json;",
     "postinstall": "node_modules/typings/dist/bin.js install",
     "start": "python3 -m http.server"
   },
@@ -22,15 +21,10 @@
   },
   "homepage": "https://github.com/CAU-Kiel-Tech-Inf/socha_graphical_client#readme",
   "dependencies": {
-    "handjs": "^1.3.11",
-    "jsdom": "^9.8.3",
-    "requirejs": "^2.3.2"
+    "handjs": "^1.3.11"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
-    "mocha": "^3.2.0",
-    "ts-node": "^1.7.0",
-    "typescript": "^2.0.9",
+    "typescript": "^2.3.4",
     "typings": "^2.0.0"
   }
 }

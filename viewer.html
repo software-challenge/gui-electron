@@ -3,28 +3,25 @@
 <head>
   <meta charset="utf-8">
   <link rel="stylesheet" href="viewer.css">
+  <script src="polyfill/babel-browser-build.js"></script>
+  <script src="polyfill/browser-es-module-loader.js"></script>
+
   <script src="babylonjs/babylon.2.5.js" type="text/ecmascript"></script>
   <script src="babylonjs/babylon.2.5.canvas2d.js" type="text/ecmascript"></script>
   <script src="babylonjs/materialsLibrary/babylon.skyMaterial.js"></script>
   <script src="babylonjs/materialsLibrary/babylon.waterMaterial.js"></script>
   <script src="node_modules/handjs/hand.js" type="text/ecmascript"></script>
-  <script src="node_modules/requirejs/require.js" data-main="bin/code/replay-viewer" type="text/ecmascript"></script>
-  <!--<script src="replay-viewer.js"  type="text/ecmascript"></script>-->
+
+  <script type="module">
+    import {init} from './bin/replay-viewer.js'; init();
+  </script>
+
 </head>
 
 <body>
   <h1>Replay-Viewer</h1>
   <replay-viewer style="display: inline;" replay="1496733214_log_162716.xml" rerender-control></replay-viewer>
-  <replay-viewer style="display: inline;" replay="replay_leave.xml" debug></replay-viewer>
-  <replay-viewer style="display: inline;" replay="replay_abdraengen2.xml" debug></replay-viewer>
-  <script type="text/ecmascript">
-    window.animationFrames = 5;
-  </script>
-  <!--<script type="text/ecmascript">
-            requirejs(['replay-viewer'], function(r){
-                r.init();
-            });
-        </script>-->
+
 </body>
 
 </html>
