@@ -4,7 +4,6 @@
 import { Engine } from './Engine.js';
 
 export class Camera {
-
   camera: BABYLON.FollowCamera;
   cameraFocus: BABYLON.Mesh;
   engine: Engine;
@@ -14,9 +13,9 @@ export class Camera {
     this.cameraFocus = BABYLON.Mesh.CreateSphere("cameraFocus", 15, 0.1, this.engine.scene, false, BABYLON.Mesh.DEFAULTSIDE);
 
     this.camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 0, 0), this.engine.scene, this.cameraFocus);
-    this.camera.radius = 60;
-    this.camera.heightOffset = 60;
-    this.camera.rotationOffset = 90;
+    this.camera.radius = 120;
+    this.camera.heightOffset = 100;
+    this.camera.rotationOffset = 0;
     this.camera.cameraAcceleration = 0.03;
     this.camera.maxCameraSpeed = 20;
 

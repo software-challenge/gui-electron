@@ -38,10 +38,10 @@ export class Engine {
 
     //this.setupPointers();
 
-    this.shaderBuilder = new ShaderBuilder(this);
+    /*this.shaderBuilder = new ShaderBuilder(this);
 
     var test = BABYLON.Mesh.CreateSphere('test', 128, 56, this.scene, false);
-    test.material = this.shaderBuilder.standardShaderMaterial;
+    test.material = this.shaderBuilder.standardShaderMaterial;*/
 
   }
 
