@@ -21,5 +21,7 @@
     "javascript",
     "javascriptreact",
     "typescript"
-  ]
+  ],
+  "tslint.enable": true,
+  "tslint.run": "onSave"
 }
