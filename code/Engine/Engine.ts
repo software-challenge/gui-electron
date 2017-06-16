@@ -2,12 +2,17 @@
 ///  <reference path="../../babylonjs/materialsLibrary/babylon.skyMaterial.d.ts" />
 
 import { Camera } from './Camera.js';
+import { MaterialBuilder } from './MaterialBuilder.js';
+import { ShaderBuilder } from './ShaderBuilder.js';
 
 export class Engine {
   engine: BABYLON.Engine;
   scene: BABYLON.Scene;
   canvas: HTMLCanvasElement;
   shadow: BABYLON.ShadowGenerator;
+
+  materialBuilder: MaterialBuilder;
+  shaderBuilder: ShaderBuilder;
 
   skyMaterial: BABYLON.SkyMaterial;
   sunPosition: BABYLON.Vector3;
@@ -23,17 +28,46 @@ export class Engine {
 
     this.scene = new BABYLON.Scene(this.engine);
 
+    this.materialBuilder = new MaterialBuilder(this);
+
     this.camera = new Camera(this);
 
     this.setupSky();
 
     this.setupLighting();
+
+    //this.setupPointers();
+
+    this.shaderBuilder = new ShaderBuilder(this);
+
+    var test = BABYLON.Mesh.CreateSphere('test', 128, 56, this.scene, false);
+    test.material = this.shaderBuilder.standardShaderMaterial;
+
   }
 
 
   enableFXAA(FXAALevel: number) {
-    var postProcess = new BABYLON.FxaaPostProcess("fxaa", FXAALevel, this.camera, null, this.engine, true);
+    var postProcess = new BABYLON.FxaaPostProcess("fxaa", FXAALevel, this.camera.camera, null, this.engine, true);
     console.log("Activated " + FXAALevel + "x FXAA post-processing");
+  }
+
+  setupPointers() {
+    var width: number = 1;
+    var x_line = BABYLON.Mesh.CreateCylinder('x_line', 20, width, width, 50, 10, this.scene);
+    x_line.position.x = 10;
+    x_line.material = this.materialBuilder.getRedMaterial();
+    x_line.rotation.z = Math.PI / 2;
+
+    var y_line = BABYLON.Mesh.CreateCylinder('y_line', 20, width, width, 50, 10, this.scene);
+    y_line.position.y = 10;
+    y_line.material = this.materialBuilder.getGreenMaterial();
+
+
+    var z_line = BABYLON.Mesh.CreateCylinder('z_line', 20, width, width, 50, 10, this.scene);
+    z_line.position.z = 10;
+    z_line.material = this.materialBuilder.getBlueMaterial();
+    z_line.rotation.x = Math.PI / 2;
+
   }
 
   setupSky() {
@@ -80,6 +114,14 @@ export class Engine {
     window.addEventListener('resize', () => {
       this.engine.resize();
     });
+
+    window.addEventListener("click", () => {
+      var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+      if (pickResult.hit) {
+        console.log(pickResult.pickedMesh.id);
+      }
+    });
+
   }
 
 
