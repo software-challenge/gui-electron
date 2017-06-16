@@ -1,17 +1,18 @@
 ///  <reference path="../../babylonjs/babylon.2.5.d.ts" />
 ///  <reference path="../../babylonjs/materialsLibrary/babylon.skyMaterial.d.ts" />
 
+import { Camera } from './Camera.js';
 
 export class Engine {
   engine: BABYLON.Engine;
   scene: BABYLON.Scene;
-  camera: BABYLON.FollowCamera;
   canvas: HTMLCanvasElement;
   shadow: BABYLON.ShadowGenerator;
-  cameraFocus: BABYLON.Mesh;
 
   skyMaterial: BABYLON.SkyMaterial;
   sunPosition: BABYLON.Vector3;
+
+  camera: Camera;
 
   rerenderControlActive: boolean;
   needsRerender: boolean;
@@ -22,26 +23,13 @@ export class Engine {
 
     this.scene = new BABYLON.Scene(this.engine);
 
-    this.setupCamera();
+    this.camera = new Camera(this);
 
     this.setupSky();
 
     this.setupLighting();
   }
 
-  setupCamera() {
-    this.camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 0, 0), this.scene, this.cameraFocus);
-    this.camera.radius = 60;
-    this.camera.heightOffset = 60;
-    this.camera.rotationOffset = 180;
-    this.camera.cameraAcceleration = 0.03;
-    this.camera.maxCameraSpeed = 20;
-
-    this.scene.activeCamera = this.camera;
-    this.scene.activeCamera.attachControl(this.canvas);
-    this.cameraFocus = BABYLON.Mesh.CreateSphere("cameraFocus", 15, 0.1, this.scene, false, BABYLON.Mesh.DEFAULTSIDE);
-
-  }
 
   enableFXAA(FXAALevel: number) {
     var postProcess = new BABYLON.FxaaPostProcess("fxaa", FXAALevel, this.camera, null, this.engine, true);
