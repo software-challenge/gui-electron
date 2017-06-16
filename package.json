@@ -24,6 +24,8 @@
     "handjs": "^1.3.11"
   },
   "devDependencies": {
+    "eslint": "^4.0.0",
+    "tslint": "^5.4.3",
     "typescript": "^2.3.4",
     "typings": "^2.0.0"
   }
