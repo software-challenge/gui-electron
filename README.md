@@ -13,13 +13,14 @@ Wahlweise in VSCode `Strg+Umschalt+B` oder in einem Terminal im Codeverzeichnis
 
 ## Ausführen
 
-Mittels `python3 -m http.server` oder etwas vergleichbarem einen HTTP-Server im
-Verzeichnis starten und die Seite öffnen.
+Mittels `npm start` einen HTTP-Server im Verzeichnis starten und die Seite
+http://localhost:8000/viewer.html öffnen.
 
 ## Aktuell implementiert
 
 ## Viewer-Argumente
-Ein Viewer wird mit dem Tag `<replay-viewer>` eingebunden. Dabei werden mehrere Argumente unterstützt.
+Ein Viewer wird mit dem Tag `<replay-viewer>` eingebunden. Dabei werden mehrere
+Argumente unterstützt.
 
 - `replay="file.xml"` Lädt das Replay vom Pfad `file.xml`
 - `rerender-control` Aktiviert die Einsparung von Renderzyklen bei Inaktivität
