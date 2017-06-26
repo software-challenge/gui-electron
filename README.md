@@ -29,4 +29,9 @@ Argumente unterstützt.
 
 ## TODO
 
+- Feldtypen für `1`, `2`, `Hase`, `Igel`, `Salat`, `Karotte`, `Start`, `Ziel`
+- Anzeige für `Karotten`, `Wegpunkte`, `Salat`
+- Anzeige für Karten: `Hase`, `Vorwärts`, `Rückwärts`, `Salat`, `Karotten`
+- Anzeige für Spielerpositionen (Coloured Orbs)
+
 * Basis GUI mit [BabylonJS](http://www.babylonjs.com/)
