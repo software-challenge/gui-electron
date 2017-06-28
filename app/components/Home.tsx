@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Button } from 'react-photonkit';
 
 export default class Home extends React.Component {
   constructor() {
@@ -7,7 +8,10 @@ export default class Home extends React.Component {
 
   render() {
     return (
-      <div>Hello</div>
+      <div>
+        <Button text="Press me!" onClick={() => console.log('Clicked!')} />
+        <div>Hello</div>
+      </div>
     );
   }
 }
