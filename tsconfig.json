@@ -1,14 +1,38 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "es6",
-    "moduleResolution": "classic",
+    "target": "es2015",
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "jsx": "react",
+    "types": [],
+
+    "alwaysStrict": false,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+
+    "noUnusedLocals": false,
+
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
     "sourceMap": true,
-    "outDir": "bin",
-    "watch": true
+
+    "outDir": "dist"
   },
-  "include": [
-    "code/*"
+  "files": [
+    "app/index.tsx"
   ],
-  "compileOnSave": true
+  "include": [
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "code/*",
+    "test/**/*.ts",
+    "test/**/*.tsx",
+    "node_modules/@types/**/*.d.ts"
+  ],
+  "exclude": [
+    "dist"
+  ]
 }
