@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import Server from '../components/Server';
+import Dummy from '../components/Dummy';
 import ControllingClient from '../components/ControllingClient';
 import { Content, PaneGroup, Pane, TabGroup, TabItem } from "react-photonkit";
 import * as cp from 'child_process';
@@ -17,7 +18,7 @@ export class HomePage extends React.Component<RouteComponentProps<any>, void> {
         <TabItem eventKey={1} title="Server">
           <Content>
             <Pane className="padded-more">
-              <Server />
+              <Dummy />
             </Pane>
           </Content>
         </TabItem>
