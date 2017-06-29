@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Button } from 'react-photonkit';
 import * as Net from 'net';
+import Server from '../components/Server';
 
 export default class Home extends React.Component {
   constructor() {

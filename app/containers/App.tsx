@@ -18,14 +18,7 @@ export default class App extends React.Component {
             </ButtonGroup>
           </Actionbar>
         </Toolbar>
-        <Content>
-          <PaneGroup>
-            <Pane className="padded-more">
-              Hello, react-photonkit!!!
-              {this.props.children}
-            </Pane>
-          </PaneGroup>
-        </Content>
+        {this.props.children}
       </Window>
     );
   }
