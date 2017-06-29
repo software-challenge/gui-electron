@@ -3,6 +3,12 @@ import { RouteComponentProps } from 'react-router';
 import Server from '../components/Server';
 import ControllingClient from '../components/ControllingClient';
 import { Content, PaneGroup, Pane, TabGroup, TabItem } from "react-photonkit";
+import * as cp from 'child_process';
+
+interface State {
+  serverStdout: string
+  serverProcess: cp.ChildProcess | null
+}
 
 export class HomePage extends React.Component<RouteComponentProps<any>, void> {
   render() {
