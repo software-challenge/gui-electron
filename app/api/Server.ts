@@ -51,6 +51,7 @@ export class Server extends EventEmitter {
     this.stop();
     console.log("Starting server (server should reside in ./server directory)");
     this.process = spawn('java', ['-jar', SERVER_NAME], { cwd: SERVER_CWD });
+    this.setStatus(ExecutableStatus.Status.RUNNING);
     this.process.stdout.on('data', (data) => {
       this.stdout.push(data);
       this.emit('stdout', data + '');
@@ -60,12 +61,10 @@ export class Server extends EventEmitter {
       this.emit('stderr', data + '');
     });
     this.process.on('error', () => {
-      this.status = ExecutableStatus.Status.ERROR;
-      this.emit('status', ExecutableStatus.Status.ERROR);
+      this.setStatus(ExecutableStatus.Status.ERROR);
     });
     this.process.on('close', () => {
-      this.status = ExecutableStatus.Status.EXITED;
-      this.emit('status', ExecutableStatus.Status.EXITED);
+      this.setStatus(ExecutableStatus.Status.EXITED);
     });
   }
 
@@ -73,8 +72,14 @@ export class Server extends EventEmitter {
     if (this.process != null) {
       console.log("Stopping server");
       this.process.kill();
+      this.setStatus(ExecutableStatus.Status.EXITED);
       this.process = null;
     }
+  }
+
+  private setStatus(s: ExecutableStatus.Status) {
+    this.status = s;
+    this.emit('status', s);
   }
 
   getEvents(): ServerEvent[] {

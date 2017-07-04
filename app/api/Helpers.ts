@@ -11,4 +11,8 @@ export module Helpers {
     return `[${Helpers.getReadableTimestamp(time)}] ${msg}`;
   }
 
+  export function log(msg: string) {
+    console.log(Helpers.getLogLine(msg));
+  }
+
 }
