@@ -13,23 +13,23 @@ export default class Server extends React.Component<{}, State> {
 
   constructor() {
     super();
-    this.state = { 
+    this.state = {
       events: Api.getServer().getEvents(),
-      listener : ((e) => {
+      listener: ((e) => {
         this.setState((prev, props) => { prev.events.push(e); return prev; });
         console.log(this.state.events);
-    }).bind(this)
+      }).bind(this)
     };
   }
 
   componentDidMount() {
     console.log("MOUNTED");
-    setTimeout(() => Api.getServer().registerListener(this.state.listener),1000);
+    //setTimeout(() => Api.getServer().registerListener(this.state.listener),1000);
   }
 
   componentWillUnmount() {
     console.log("UNMOUNTED");
-    Api.getServer().deregisterListener(this.state.listener);
+    //Api.getServer().deregisterListener(this.state.listener);
   }
 
   clearLog() {
@@ -54,7 +54,7 @@ export default class Server extends React.Component<{}, State> {
     return (
       <div>
         <h1>Server</h1>
-      <Button text="Start" onClick={() => this.startServer()} />
+        <Button text="Start" onClick={() => this.startServer()} />
         <Button text="Stop" onClick={() => this.stopServer()} />
         <Button text="Clear Log" onClick={() => this.clearLog()} />
         <pre style={consoleStyle} id="console">
