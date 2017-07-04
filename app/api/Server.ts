@@ -34,11 +34,26 @@ export class Server extends EventEmitter {
   private events: ServerEvent[] = [];
   private status: ExecutableStatus.Status;
   private process;
+  ready: Promise<void>;
   //private listeners: ((ServerEvent) => void)[] = [];
 
   constructor(autostart: boolean = true) {
     super();
     this.status = ExecutableStatus.Status.NOT_STARTED;
+
+    this.ready = new Promise((resolve, reject) => {
+      try {
+        this.on("stdout", s => {
+          if (/ClientManager running/.test(s)) {
+            Helpers.log("Server ready");
+            resolve();
+          }
+        });
+      } catch (e) {
+        reject(e);
+      }
+    });
+
     if (autostart) {
       this.start();
     }

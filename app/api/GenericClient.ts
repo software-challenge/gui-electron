@@ -6,19 +6,36 @@ const SERVER_PORT = 13050;
 
 export class GenericClient extends events.EventEmitter {
 
-  private clientSocket: any;
+  clientSocket: any;
+  status: ClientStatus.Status;
+  ready: Promise<void>;
 
   constructor() {
     super();
+    this.status = ClientStatus.Status.NOT_CONNECTED;
     this.clientSocket = net.createConnection({ port: SERVER_PORT }, () => {
-      console.log("connected");
+      this.clientSocket.write('<object-stream>', () => {
+        this.setStatus(ClientStatus.Status.CONNECTED);
+      });
     });
     this.clientSocket.on('data', (data) => {
       console.log("data: " + data);
     });
     this.clientSocket.on('end', () => {
-      console.log("disconnected");
+      this.setStatus(ClientStatus.Status.DISCONNECTED);
     });
+    this.ready = new Promise((res, rej) => {
+      this.on('status', s => {
+        if (s == ClientStatus.Status.CONNECTED) {
+          res();
+        }
+      })
+    });
+  }
+
+  private setStatus(s: ClientStatus.Status) {
+    this.status = s;
+    this.emit('status', s);
   }
 }
 

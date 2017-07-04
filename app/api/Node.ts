@@ -1,42 +1,52 @@
 import { Api, ExecutableStatus } from './Api';
 import { ServerEvent } from './Server';
-import { GenericClient } from './GenericClient';
+import { ObserverClient } from './ObserverClient';
 import { Helpers } from './Helpers';
 import "process";
+import { PlayerClientOptions } from './PlayerClient';
 
-//1. Create Server
-Helpers.log("Starting server");
-var server = Api.getServer(false); //Create a server but don't start it yet
+async function main() {
 
-server.on('stdout', s => console.log(s));
-server.on('stderr', s => console.error("ERROR: " + s));
-server.on('status', s => console.log(Helpers.getLogLine("SERVER STATUS: " + ExecutableStatus.toString(s))));
+  //1. Create Server
+  Helpers.log("Starting server");
+  var server = Api.getServer(false); //Create a server but don't start it yet
 
-//Exit hooks to terminate the server
-process.on('beforeExit', () => server.stop());
-process.on('SIGINT', () => { server.stop(); process.exit(0); });
-// 2. Start server and wait for okay signal
-server.start();
+  server.on('stdout', s => console.log(s));
+  server.on('stderr', s => console.error("ERROR: " + s));
+  server.on('status', s => console.log(Helpers.getLogLine("SERVER STATUS: " + ExecutableStatus.toString(s))));
 
-let server_ready = new Promise((resolve, reject) => {
-  try {
-    server.on("stdout", s => {
-      if (/ClientManager running/.test(s)) {
-        Helpers.log("Server ready");
-        resolve();
-      }
-    });
-  } catch (e) {
-    reject(e);
-  }
-})
+  //Exit hooks to terminate the server
+  process.on('beforeExit', () => server.stop());
+  process.on('SIGINT', () => { server.stop(); process.exit(0); });
+  // 2. Start server and wait for okay signal
 
 
 
+  server.start();
 
-// 3. Start observer client
-server_ready.then(() => {
+  await server.ready;
+
+  // 3. Start observer client
   Helpers.log("Starting client");
-  var c = new GenericClient();
-});
+  var c = new ObserverClient();
 
+  await c.ready;
+
+  Helpers.log("Preparing room");
+
+  var p1 = new PlayerClientOptions('p1', false, true);
+  var p2 = new PlayerClientOptions('p2', false, true);
+
+  var reservation = await c.prepareRoom(p1, p2);
+
+  await c.observeRoom(reservation.roomId);
+
+  Helpers.log("Observing room");
+
+  Helpers.log("Requesting step");
+
+  await c.requestStep(reservation.roomId);
+
+}
+
+main();
