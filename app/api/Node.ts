@@ -3,7 +3,7 @@ import { ServerEvent } from './Server';
 import { ObserverClient } from './ObserverClient';
 import { Helpers } from './Helpers';
 import "process";
-import { PlayerClientOptions } from './PlayerClient';
+import { PlayerClientOptions, GenericPlayer } from './PlayerClient';
 
 async function main() {
 
@@ -42,6 +42,19 @@ async function main() {
   await c.observeRoom(reservation.roomId);
 
   Helpers.log("Observing room");
+
+  //Creating players
+  Helpers.log("Creating player 1");
+  var red = new GenericPlayer();
+  var rid = await red.joinPrepared(reservation.reservation1);
+  console.log(rid);
+
+  Helpers.log("Creating player 2");
+  //var blue = new GenericPlayer();
+  //blue.joinPrepared(reservation.reservation2);
+
+
+
 
   Helpers.log("Requesting step");
 

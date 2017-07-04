@@ -10,13 +10,17 @@ export class GenericClient extends events.EventEmitter {
   status: ClientStatus.Status;
   ready: Promise<void>;
 
-  constructor() {
+  constructor(sendObjectStream: boolean = false) {
     super();
     this.status = ClientStatus.Status.NOT_CONNECTED;
     this.clientSocket = net.createConnection({ port: SERVER_PORT }, () => {
-      this.clientSocket.write('<object-stream>', () => {
+      if (sendObjectStream) {
+        this.clientSocket.write('<object-stream>', () => {
+          this.setStatus(ClientStatus.Status.CONNECTED);
+        });
+      } else {
         this.setStatus(ClientStatus.Status.CONNECTED);
-      });
+      }
     });
     this.clientSocket.on('data', (data) => {
       console.log("data: " + data);

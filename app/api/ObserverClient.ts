@@ -7,7 +7,7 @@ import { Helpers } from './Helpers';
 
 export class ObserverClient extends GenericClient {
   constructor() {
-    super();
+    super(true);
   }
 
   prepareRoom(player1: PlayerClientOptions, player2: PlayerClientOptions): Promise<RoomReservation> {
@@ -40,7 +40,7 @@ export class ObserverClient extends GenericClient {
 
   observeRoom(roomId: string): Promise<void> {
     return new Promise((res, rej) => {
-      this.clientSocket.write(`<observe roomId="${roomId}" passphrase="secret" />`);//Send request
+      this.clientSocket.write(`<observe roomId="${roomId}" passphrase="swordfish" />`);//Send request
       this.clientSocket.once('data', d => {//Wait for answer
         d = d.toString(); //Stringify buffer
         Parser.getJSONFromXML(d).then(ans => {
@@ -56,7 +56,7 @@ export class ObserverClient extends GenericClient {
 
   requestStep(roomId: string, forced: boolean = true): Promise<void> {
     return new Promise((res, rej) => {
-      this.clientSocket.write(`<step roomId="${roomId}" forced="${forced}" />`, () => res());//Send request
+      //this.clientSocket.write(`<step roomId="${roomId}" forced="${forced}" />`, () => res());//Send request
     });
   }
 }
