@@ -7,7 +7,7 @@ import { Helpers } from './Helpers';
 
 export class ObserverClient extends GenericClient {
   constructor() {
-    super(true);
+    super();
   }
 
   prepareRoom(player1: PlayerClientOptions, player2: PlayerClientOptions): Promise<RoomReservation> {

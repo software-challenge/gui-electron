@@ -19,7 +19,7 @@ export class GenericPlayer extends GenericClient {
 
   joinPrepared(reservation: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      this.clientSocket.write(`<joinPrepared reservationCode="${reservation}"  passphrase="swordfish" />`);
+      this.clientSocket.write(`<joinPrepared reservationCode="${reservation}" />`);
       this.clientSocket.on('data', d => {
         d = d.toString(); //Stringify data
         if (/\<joined/.test(d)) {//If we got the message that we joined

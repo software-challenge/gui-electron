@@ -1,6 +1,7 @@
 ///<references path="../../node_modules/@types/node/index.d.ts" />
 const net = require('net');
 import * as events from "events"
+import { Helpers } from './Helpers';
 
 const SERVER_PORT = 13050;
 
@@ -10,12 +11,13 @@ export class GenericClient extends events.EventEmitter {
   status: ClientStatus.Status;
   ready: Promise<void>;
 
-  constructor(sendObjectStream: boolean = false) {
+  constructor(sendProtocol: boolean = true) {
     super();
     this.status = ClientStatus.Status.NOT_CONNECTED;
     this.clientSocket = net.createConnection({ port: SERVER_PORT }, () => {
-      if (sendObjectStream) {
-        this.clientSocket.write('<object-stream>', () => {
+      if (sendProtocol) {
+        this.clientSocket.write('<protocol>', () => {
+          Helpers.log('Protocol sent');
           this.setStatus(ClientStatus.Status.CONNECTED);
         });
       } else {
