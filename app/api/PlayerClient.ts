@@ -1,5 +1,7 @@
 import { GenericClient } from './GenericClient';
 import { Parser } from './Parser';
+import { Player, GameState } from './HaseUndIgel';
+
 
 export class PlayerClientOptions {
   constructor(displayName: string, canTimeout: boolean, shouldBePaused: boolean) {
@@ -13,21 +15,38 @@ export class PlayerClientOptions {
 }
 
 export class GenericPlayer extends GenericClient {
-  constructor() {
-    super();
+
+  constructor(name: string) {
+    super(true, name);
+
+    this.on('message', this.handleMessage);
+
   }
 
-  joinPrepared(reservation: string): Promise<string> {
+  private async handleMessage(msg: string) {
+    var decoded = await Parser.getJSONFromXML(msg);
+    switch (decoded.room.data[0]['$'].class) {
+      case 'memento':
+        var state = decoded.room.data[0].state[0];
+        var gs = GameState.fromJSON(state);
+        this.emit('state', gs);
+        break;
+      case 'sc.framework.plugins.protocol.MoveRequest':
+        this.emit('moverequest');
+        break;
+      case 'welcomeMessage':
+        this.emit('welcome', { mycolor: Player.ColorFromString(decoded.room.data[0].myColor[0]) });
+        break;
+      default:
+        throw `Unknown data class: ${decoded.room.data[0]['$'].class}\n\n${JSON.stringify(decoded)}`;
+    }
+  }
+
+  joinPrepared(reservation: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.clientSocket.write(`<joinPrepared reservationCode="${reservation}" />`);
-      this.clientSocket.on('data', d => {
-        d = d.toString(); //Stringify data
-        if (/\<joined/.test(d)) {//If we got the message that we joined
-          console.log(Parser.getJSONFromXML(d));
-        } else {
-          console.log("Debug: " + d);//Output for debug purposes
-        }
-      })
+      this.writeData(`<joinPrepared reservationCode="${reservation}" />`, () => resolve());
     });
   }
+
+
 }

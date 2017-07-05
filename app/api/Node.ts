@@ -4,6 +4,7 @@ import { ObserverClient } from './ObserverClient';
 import { Helpers } from './Helpers';
 import "process";
 import { PlayerClientOptions, GenericPlayer } from './PlayerClient';
+import { SimpleClient } from './SimpleClient';
 
 async function main() {
 
@@ -45,13 +46,14 @@ async function main() {
 
   //Creating players
   Helpers.log("Creating player 1");
-  var red = new GenericPlayer();
-  var rid = await red.joinPrepared(reservation.reservation1);
-  console.log(rid);
+  var red = new SimpleClient(p1.displayName);
+  await red.ready;
+  await red.joinPrepared(reservation.reservation1);
 
   Helpers.log("Creating player 2");
-  //var blue = new GenericPlayer();
-  //blue.joinPrepared(reservation.reservation2);
+  var blue = new SimpleClient(p2.displayName);
+  await blue.ready;
+  await blue.joinPrepared(reservation.reservation2);
 
 
 

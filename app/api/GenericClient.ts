@@ -7,16 +7,20 @@ const SERVER_PORT = 13050;
 
 export class GenericClient extends events.EventEmitter {
 
-  clientSocket: any;
+  private clientSocket: any;
+  private name: string;
   status: ClientStatus.Status;
   ready: Promise<void>;
+  private dataSoFar: string;
 
-  constructor(sendProtocol: boolean = true) {
+  constructor(sendProtocol: boolean = true, name?: string) {
     super();
+    this.name = name;
+    this.dataSoFar = "";
     this.status = ClientStatus.Status.NOT_CONNECTED;
     this.clientSocket = net.createConnection({ port: SERVER_PORT }, () => {
       if (sendProtocol) {
-        this.clientSocket.write('<protocol>', () => {
+        this.writeData('<protocol>', () => {
           Helpers.log('Protocol sent');
           this.setStatus(ClientStatus.Status.CONNECTED);
         });
@@ -25,7 +29,13 @@ export class GenericClient extends events.EventEmitter {
       }
     });
     this.clientSocket.on('data', (data) => {
-      console.log("data: " + data);
+      //console.log("data: " + data);
+      this.dataSoFar += data;
+      if (this.bracketsMatch()) {
+        var msg = this.dataSoFar;
+        this.emit('message', msg);
+        this.dataSoFar = "";
+      }
     });
     this.clientSocket.on('end', () => {
       this.setStatus(ClientStatus.Status.DISCONNECTED);
@@ -37,6 +47,30 @@ export class GenericClient extends events.EventEmitter {
         }
       })
     });
+  }
+
+  writeData(data: string, callback?: () => void) {
+    if (this.name) {
+      Helpers.log(`${this.name} writing data: ` + data);
+      this.clientSocket.write(data, callback);
+    }
+    else {
+      Helpers.log("Writing data: " + data);
+      this.clientSocket.write(data, callback);
+    }
+  }
+
+  private bracketsMatch(): boolean {
+    let opening: number = 0;
+    let closing: number = 0;
+    for (let i = 0; i < this.dataSoFar.length; i++) {
+      if (this.dataSoFar[i] == '<') {
+        opening++;
+      } else if (this.dataSoFar[i] == '>') {
+        closing++;
+      }
+    }
+    return (opening == closing);
   }
 
   private setStatus(s: ClientStatus.Status) {

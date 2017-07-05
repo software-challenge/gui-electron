@@ -7,12 +7,12 @@ import { Helpers } from './Helpers';
 
 export class ObserverClient extends GenericClient {
   constructor() {
-    super();
+    super(true, "Observer");
   }
 
   prepareRoom(player1: PlayerClientOptions, player2: PlayerClientOptions): Promise<RoomReservation> {
     return new Promise<RoomReservation>((resolve, reject) => {
-      this.clientSocket.write(`
+      this.writeData(`
         <prepare gameType="swc_2018_hase_und_igel">
           <slot displayName="${player1.displayName}" canTimeout="${player1.canTimeout}" shouldBePaused="${player1.shouldBePaused}"/>
           <slot displayName="${player2.displayName}" canTimeout="${player2.canTimeout}" shouldBePaused="${player2.shouldBePaused}"/>
@@ -20,7 +20,7 @@ export class ObserverClient extends GenericClient {
       `, () => {
         });
 
-      this.clientSocket.once('data', d => {
+      this.once('message', d => {
         d = d.toString(); //Stringify buffer
         if (/\<prepared/.test(d.toString())) { //Check if it's actually a message something was prepared
           d = d.replace('<protocol>', ''); //Strip unmatched protocol tag
@@ -40,8 +40,8 @@ export class ObserverClient extends GenericClient {
 
   observeRoom(roomId: string): Promise<void> {
     return new Promise((res, rej) => {
-      this.clientSocket.write(`<observe roomId="${roomId}" passphrase="swordfish" />`);//Send request
-      this.clientSocket.once('data', d => {//Wait for answer
+      this.writeData(`<observe roomId="${roomId}" passphrase="swordfish" />`);//Send request
+      this.once('message', d => {//Wait for answer
         d = d.toString(); //Stringify buffer
         Parser.getJSONFromXML(d).then(ans => {
           if (ans.observed.$.roomId == roomId) {
