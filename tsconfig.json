@@ -1,26 +1,29 @@
 {
-    "compileOnSave": true,
-    "compilerOptions": {
-        "jsxFactory": "React.createElement",
-        "jsx": "react",
-        "module": "commonjs",
-        "moduleResolution": "node",
-        "preserveConstEnums": true,
-        "sourceMap": true,
-        "outDir": "build/",
-        "listFiles": true,
-        "checkJs": true,
-        "allowJs": true,
-        "allowSyntheticDefaultImports": true
-            },
-    "typeAcquisition": {
-        "enable": true
-    },
-    "include": [
-        "gui/**/*",
-        "api/**/*"
-    ],
-    "exclude": [
-        "node_modules"
+  "compileOnSave": true,
+  "compilerOptions": {
+    "jsxFactory": "React.createElement",
+    "jsx": "react",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "outDir": "build/",
+    "listFiles": true,
+    "checkJs": true,
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "lib": [
+      "es2015.promise"
     ]
+  },
+  "typeAcquisition": {
+    "enable": true
+  },
+  "include": [
+    "gui/**/*",
+    "api/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

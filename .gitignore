@@ -2,18 +2,5 @@
 *.map
 node_modules
 typings
-bin
-# Compiled binary addons (http://nodejs.org/api/addons.html)
-build/Release
-release
-app/main.js
-app/main.js.map
-app/bundle.js
-app/bundle.js.map
-app/style.css
-app/style.css.map
-dist
-main.js
-main.js.map
-server
+build
 yarn.lock
