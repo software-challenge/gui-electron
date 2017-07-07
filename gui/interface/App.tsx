@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Dummy from './Dummy';
+import Server from './Server';
 import { Content, PaneGroup, Pane, TabGroup, TabItem } from "react-photonkit";
 import * as cp from 'child_process';
 
@@ -15,7 +15,7 @@ export class App extends React.Component {
         <TabItem eventKey={1} title="Server">
           <Content>
             <Pane className="padded-more">
-              <Dummy />
+              <Server />
             </Pane>
           </Content>
         </TabItem>

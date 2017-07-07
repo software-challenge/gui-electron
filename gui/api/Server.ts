@@ -7,7 +7,7 @@ import { EventEmitter } from "events";
 
 //const EventEmitter: NodeJS.EventEmitter = require('events');
 
-const SERVER_CWD = "../.././server";
+const SERVER_CWD = "./server";
 const SERVER_NAME = "softwarechallenge-server.jar"
 
 import { spawn } from 'child_process';
@@ -21,6 +21,7 @@ export class ServerEvent {
   constructor(type: string, data: string) {
     this.type = type;
     this.data = data;
+    this.time = new Date();
   }
 
   toString() {
@@ -70,10 +71,12 @@ export class Server extends EventEmitter {
     this.process.stdout.on('data', (data) => {
       this.stdout.push(data);
       this.emit('stdout', data + '');
+      this.emit('event', new ServerEvent('stdout', data + ''));
     });
     this.process.stderr.on('data', (data) => {
       this.stderr.push(data);
       this.emit('stderr', data + '');
+      this.emit('event', new ServerEvent('stderr', data + ''));
     });
     this.process.on('error', () => {
       this.setStatus(ExecutableStatus.Status.ERROR);

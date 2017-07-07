@@ -1,5 +1,4 @@
 {
-  "compileOnSave": true,
   "compilerOptions": {
     "jsxFactory": "React.createElement",
     "jsx": "react",
@@ -14,10 +13,14 @@
     "allowSyntheticDefaultImports": true,
     "lib": [
       "es2015.promise"
-    ]
+    ],
+    "watch": true
   },
   "typeAcquisition": {
-    "enable": true
+    "enable": true,
+    "include": [
+      "node"
+    ]
   },
   "include": [
     "gui/**/*",
