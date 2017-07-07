@@ -1,0 +1,22 @@
+{
+  "name": "newthings",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node_modules/.bin/electron ."
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/react": "^15.0.35",
+    "@types/react-dom": "^15.5.1",
+    "electron": "^1.6.11",
+    "electron-prebuilt": "^1.4.13",
+    "es-module-loader": "^2.2.4",
+    "preact": "^8.1.0",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1"
+  }
+}
