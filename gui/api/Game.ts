@@ -6,6 +6,8 @@ export class Game {
   client2: GameClient;
 }
 
+
+
 export class GameClient {
 
 }
