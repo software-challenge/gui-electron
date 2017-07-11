@@ -1,6 +1,10 @@
 import { Server } from './Server';
+
+import { GameManager } from './GameManager';
+
 export class Api {
   private static server;
+  private static gameManager;
 
   static getServer(autostart: boolean = true): Server {
     if (!this.server) {
@@ -8,6 +12,8 @@ export class Api {
     }
     return this.server;
   }
+
+  statoc
 }
 
 export module ExecutableStatus {

@@ -10,7 +10,7 @@ interface State {
   status: ExecutableStatus.Status
 }
 
-export default class Server extends React.Component<any, State> {
+export class Administration extends React.Component<any, State> {
   private listener;
 
   constructor() {
@@ -26,7 +26,7 @@ export default class Server extends React.Component<any, State> {
 
     let server = Api.getServer();
 
-    server.on('event', e => this.setState((prev: State, props) => { console.log(e); prev.events.push(e); return prev; }));
+    server.on('event', e => this.setState((prev: State, props) => { prev.events.push(e); return prev; }));
     server.on('status', s => this.setState((prev: State, props) => { prev.status = s; }));
 
     //setTimeout(() => Api.getServer().registerListener(this.state.listener),1000);

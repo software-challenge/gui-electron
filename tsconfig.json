@@ -12,15 +12,11 @@
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "lib": [
-      "es2015.promise"
+      "es2015",
+      "dom",
+      "es6"
     ],
     "watch": true
-  },
-  "typeAcquisition": {
-    "enable": true,
-    "include": [
-      "node"
-    ]
   },
   "include": [
     "gui/**/*",

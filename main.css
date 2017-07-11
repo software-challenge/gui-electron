@@ -1,0 +1,31 @@
+.sidebar.wide{
+  max-width: 40vw;
+  border: 1px solid #ddd;
+}
+
+.sidebar.retractable{
+  transition: max-width 0.2s ease-in-out, min-width 0.2s ease-in-out;
+  overflow-x: hidden;
+}
+
+.retracted{
+  max-width: 0 !important;
+  min-width: 0 !important;
+}
+
+.server{
+  font-family: monospace;
+  background-color: black;
+  color: #EEE;
+  padding: 0.5em;
+  max-height: 80vh;
+  overflow-y: scroll;
+}
+
+.unicode-icon{
+  font-weight: bold;
+  font-size: 100%;
+  padding-right: 0.2em;
+  margin-left: -0.5em;
+  margin-right: 0.5em;
+}
