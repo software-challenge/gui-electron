@@ -1,5 +1,4 @@
 
-const jsdom = require('jsdom');
 import { parseString } from 'xml2js';
 
 
@@ -17,10 +16,6 @@ export module Parser {
       });
     });
 
-  }
-
-  function parse(text) {
-    return new jsdom(text);
   }
 
 }
