@@ -1,5 +1,5 @@
-///  <reference path="../../babylonjs/babylon.2.5.d.ts" />
-///  <reference path="../../babylonjs/materialsLibrary/babylon.skyMaterial.d.ts" />
+///  <reference path="../../babylon.d.ts" />
+///  <reference path="../../babylon-sky-material.d.ts" />
 
 import { Engine } from './Engine.js';
 

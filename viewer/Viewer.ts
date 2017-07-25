@@ -1,6 +1,4 @@
-///  <reference path="../babylonjs/babylon.2.5.d.ts" />
-///  <reference path="../babylonjs/babylon.2.5.canvas2d.d.ts" />
-///  <reference path="../babylonjs/materialsLibrary/babylon.waterMaterial.d.ts" />
+///  <reference path="..//babylon.d.ts" />
 import { Helpers } from "./Helpers.js";
 import { Board } from './Components/Board.js';
 import { Engine } from './Engine/Engine.js';

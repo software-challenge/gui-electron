@@ -41,3 +41,13 @@
   padding: 0;
   margin-bottom: 0.5em;
 }
+
+.viewer{
+  width: 100%;
+  height: 100%;
+}
+
+.viewer>canvas{
+  width: 100%;
+  height: 100%;
+}
