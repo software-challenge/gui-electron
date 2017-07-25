@@ -17,7 +17,7 @@ enum AppContent {
 
 interface State {
   menuRetracted: boolean
-  consoleRetracted: boolean,
+  consoleRetracted: boolean
   contentState: AppContent
 }
 
@@ -60,16 +60,16 @@ export class App extends React.Component<any, State> {
   }
 
   render() {
-    var c;
+    var mainPaneContent;
     switch (this.state.contentState) {
       case AppContent.Administration:
-        c = <Administration />;
+        mainPaneContent = <Administration />;
         break;
       case AppContent.GameCreation:
-        c = <GameCreation />;
+        mainPaneContent = <GameCreation />;
         break;
       default:
-        c = <span></span>
+        mainPaneContent = <span></span>
         break;
     }
 
@@ -98,7 +98,7 @@ export class App extends React.Component<any, State> {
               </NavGroup>
             </RetractableSidebar>
             <Pane>
-              {c}
+              {mainPaneContent}
             </Pane>
             <RetractableSidebar className="wide" retracted={this.state.consoleRetracted}>
               Hier kommt noch das Log hin

@@ -84,7 +84,7 @@ export class Icon extends React.PureComponent<{ i: string }, any>{
   }
 }
 
-export class Button extends React.PureComponent<{ icon?: string, text?: string, onClick?: (e: any) => void, active?: boolean, pullRight?: boolean }, any>{
+export class Button extends React.PureComponent<{ icon?: string, text?: string, onClick?: (e: any) => void, active?: boolean, enabled?: boolean, pullRight?: boolean }, any>{
   render() {
     var ic;
     if (this.props.icon) {
@@ -100,7 +100,12 @@ export class Button extends React.PureComponent<{ icon?: string, text?: string, 
       cn += " pull-right";
     }
 
-    return <button onClick={e => this.props.onClick(e)} className={cn}>{ic}{this.props.text}{this.props.children}</button>
+    var disabled = false;
+    if (this.props.enabled === false) {
+      disabled = true;
+    }
+
+    return <button onClick={e => this.props.onClick(e)} className={cn} disabled={disabled}>{ic}{this.props.text}{this.props.children}</button>
   }
 }
 
@@ -141,3 +146,18 @@ export class NavItem extends React.PureComponent<{ icon?: string, text?: string,
   }
 }
 
+export interface SelectItem {
+  label: string
+  value: string
+}
+
+export class SelectBox extends React.Component<{ value: string, items: SelectItem[], onChange?: (e: any) => void }>{
+  render() {
+    var options = this.props.items.map(i => <option key={i.value} value={i.value}>{i.label}</option>)
+    return (
+      <select className="form-control" value={this.props.value} onChange={this.props.onChange}>
+        {options}
+      </select>
+    )
+  }
+}
