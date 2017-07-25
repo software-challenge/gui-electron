@@ -99,6 +99,11 @@ export class Viewer {
   render(state: GameState, animated: boolean) {
 
   }
+
+  stop() {
+    this.engine.rerenderControlActive = true;
+    this.engine.needsRerender = false;
+  }
 }
 
 class GameState {

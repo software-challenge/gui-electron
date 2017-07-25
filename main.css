@@ -42,12 +42,12 @@
   margin-bottom: 0.5em;
 }
 
-.viewer{
+.replay-viewer{
   width: 100%;
   height: 100%;
 }
 
-.viewer>canvas{
+.replay-viewer>canvas{
   width: 100%;
   height: 100%;
 }
