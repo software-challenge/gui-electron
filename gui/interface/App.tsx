@@ -6,6 +6,8 @@ import { UnicodeIcon } from './generic-components/Components';
 import { Administration } from './Administration';
 import { GameCreation } from './GameCreation';
 import * as cp from 'child_process';
+import { GameCreationOptions } from './GameCreationOptions';
+import { Game } from './Game';
 
 enum AppContent {
   Empty,
@@ -22,6 +24,7 @@ interface State {
 }
 
 export class App extends React.Component<any, State> {
+  private gameCreationOptions;
   constructor() {
     super();
     this.state = {
@@ -59,6 +62,17 @@ export class App extends React.Component<any, State> {
     });
   }
 
+  private startGameWithOptions(o: GameCreationOptions) {
+    console.log(this);
+    this.gameCreationOptions = o;
+    console.log('starting game with options: ' + JSON.stringify(o));
+    this.setState((prev, props) => {
+      prev.contentState = AppContent.GameLive;
+      return prev;
+    });
+    this.forceUpdate();
+  }
+
   render() {
     var mainPaneContent;
     switch (this.state.contentState) {
@@ -66,7 +80,11 @@ export class App extends React.Component<any, State> {
         mainPaneContent = <Administration />;
         break;
       case AppContent.GameCreation:
-        mainPaneContent = <GameCreation />;
+        mainPaneContent = <GameCreation gameCreationCallback={o => this.startGameWithOptions(o)} />;
+        break;
+      case AppContent.GameLive:
+        console.log("starting game");
+        mainPaneContent = <Game options={this.gameCreationOptions} />
         break;
       default:
         mainPaneContent = <span></span>

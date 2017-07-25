@@ -20,7 +20,8 @@
   },
   "include": [
     "gui/**/*",
-    "api/**/*"
+    "api/**/*",
+    "viewer/**/*"
   ],
   "exclude": [
     "node_modules"

@@ -29,3 +29,15 @@
   margin-left: -0.5em;
   margin-right: 0.5em;
 }
+.form-control::after{
+  content: ' '; /* Hotfix for button padding with React*/
+}
+
+.game-creation{
+  padding: 0.2em;
+}
+
+.game-creation select{
+  padding: 0;
+  margin-bottom: 0.5em;
+}
