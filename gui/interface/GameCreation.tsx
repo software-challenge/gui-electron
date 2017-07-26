@@ -2,7 +2,7 @@ import * as electron from 'electron';
 import { remote } from 'electron';
 import * as React from 'react';
 import { SelectBox, Button } from './photon-fix/Components';
-import { GameCreationOptions } from './GameCreationOptions';
+import { GameCreationOptions } from '../api/GameCreationOptions';
 
 const dialog = remote.dialog;
 

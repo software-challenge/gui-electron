@@ -6,7 +6,7 @@ import { UnicodeIcon } from './generic-components/Components';
 import { Administration } from './Administration';
 import { GameCreation } from './GameCreation';
 import * as cp from 'child_process';
-import { GameCreationOptions } from './GameCreationOptions';
+import { GameCreationOptions } from '../api/GameCreationOptions';
 import { Game } from './Game';
 
 enum AppContent {

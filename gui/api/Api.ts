@@ -3,8 +3,8 @@ import { Server } from './Server';
 import { GameManager } from './GameManager';
 
 export class Api {
-  private static server;
-  private static gameManager;
+  private static server: Server;
+  private static gameManager: GameManager;
 
   static getServer(autostart: boolean = true): Server {
     if (!this.server) {
@@ -13,7 +13,14 @@ export class Api {
     return this.server;
   }
 
-  statoc
+  static getGameManager(): GameManager {
+    if (!this.gameManager) {
+      this.gameManager = new GameManager();
+    }
+    return this.gameManager;
+  }
+
+
 }
 
 export module ExecutableStatus {

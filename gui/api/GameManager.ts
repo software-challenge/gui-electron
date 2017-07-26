@@ -1,12 +1,13 @@
 import { Game } from './Game';
+import { GameCreationOptions } from './GameCreationOptions';
 
 export class GameManager {
-  private games: Map<string, Game>;
+  private games: Game[] = [];
 
-  addGame(title: string, game: Game): boolean {
-    if (this.games.has(title)) {
-      return false;
-    }
+  public createGame(gco: GameCreationOptions, name: string): Game {
+    var g = new Game(gco, name);
+    this.games.push(g);
+    return g;
   }
 
 }
