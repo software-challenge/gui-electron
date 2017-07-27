@@ -53,6 +53,12 @@ export class ObserverClient extends GenericClient {
           } else {
             rej(`Expected to observe room ${roomId} but got confirmation for room ${ans.observed.$.roomId}!`);
           }
+        }).then(val => {
+          this.on('message', m => {
+            Parser.getJSONFromXML(m).then(jsonMessage => {
+              Helpers.log("observer got message: " + jsonMessage)
+            })
+          })
         });
       });
     });

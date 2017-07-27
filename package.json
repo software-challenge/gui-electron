@@ -13,11 +13,13 @@
     "@types/es6-promise": "0.0.32",
     "@types/react": "^15.0.35",
     "@types/react-dom": "^15.5.1",
+    "@types/sax": "^1.0.0",
     "electron": "^1.6.11",
     "electron-prebuilt": "^1.4.13",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-photonkit": "^0.4.1",
+    "sax": "^1.2.4",
     "xml2js": "^0.4.17"
   },
   "devDependencies": {

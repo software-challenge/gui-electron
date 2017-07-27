@@ -2,6 +2,7 @@
 const net = require('net');
 import * as events from "events"
 import { Helpers } from './Helpers';
+import { SAXParser } from 'sax';
 
 const SERVER_PORT = 13050;
 
@@ -12,6 +13,9 @@ export class GenericClient extends events.EventEmitter {
   status: ClientStatus.Status;
   ready: Promise<void>;
   private dataSoFar: string;
+  private firstTagOfMessage: string; // the first opening tag of a message
+  private messageLevel: number; // to keep track of the xml nesting, if this drops to zero, we found a matching closing tag for the first opened tag of the message
+  private parser = SAXParser.parser(true);
 
   constructor(sendProtocol: boolean = true, name?: string) {
     super();
@@ -28,10 +32,17 @@ export class GenericClient extends events.EventEmitter {
         this.setStatus(ClientStatus.Status.CONNECTED);
       }
     });
+    this.parser.opentag = function (node) {
+      Helpers.log("START: " + node.name);
+    }
+    this.parser.closetag = function (node) {
+      Helpers.log("END: " + node.name);
+    }
     this.clientSocket.on('data', (data) => {
       var clientName = this.name ? this.name : "unnamed client";
       Helpers.log(clientName + " received data: " + data);
       this.dataSoFar += data;
+      this.parser.write(data);
       if (this.bracketsMatch()) {
         var msg = this.dataSoFar;
         this.emit('message', msg);

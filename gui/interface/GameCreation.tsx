@@ -22,11 +22,14 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
   private gameCreationCallback: (GameCreationOptions) => void;
   constructor() {
     super();
+    var defaultClient = "/home/sven/development/sc/client_server/deploy/simple_client/hase_und_igel_player_new/jar/hase_und_igel_player_new.jar"
     this.state = {
-      firstPlayerType: "Human",
-      firstPlayerProgramPath: undefined,
-      secondPlayerType: "Human",
-      secondPlayerProgramPath: undefined
+      firstPlayerType: "Computer",
+      // XXX
+      firstPlayerProgramPath: defaultClient,
+      secondPlayerType: "Computer",
+      // XXX
+      secondPlayerProgramPath: defaultClient
     }
   }
 
