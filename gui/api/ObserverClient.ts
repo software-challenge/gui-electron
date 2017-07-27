@@ -56,7 +56,7 @@ export class ObserverClient extends GenericClient {
         }).then(val => {
           this.on('message', m => {
             Parser.getJSONFromXML(m).then(jsonMessage => {
-              Helpers.log("observer got message: " + jsonMessage)
+              Helpers.log("observer got message: " + JSON.stringify(jsonMessage))
             })
           })
         });
