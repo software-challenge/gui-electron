@@ -13,15 +13,15 @@ export class ExecutableClient extends EventEmitter implements GameClient {
   private options: string[];
   private process;
 
-  constructor(program: string = 'java', options: string[] = ['-jar'], path: string, host: string = 'localhost', port: number = 13050, reservation: string = "") {
+  constructor(program: string = 'java', options: string[] = ['-jar'], path: string, host: string = '127.0.0.1', port: number = 13050, reservation: string = "") {
     super();
     this.program = program;
     this.options = options;
     this.options.push(path);
-    this.options.push('--host ' + host);
-    this.options.push('--port ' + port);
+    this.options.push('--host', host);
+    this.options.push('--port', port.toString());
     if (reservation) {
-      this.options.push('--reservation ' + reservation);
+      this.options.push('--reservation', reservation);
     }
     this.setStatus(ExecutableStatus.Status.NOT_STARTED);
   }
@@ -45,7 +45,7 @@ export class ExecutableClient extends EventEmitter implements GameClient {
         this.setStatus(ExecutableStatus.Status.EXITED);
       });
 
-    };
+    }.bind(this);
     return start();
   }
 

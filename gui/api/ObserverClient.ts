@@ -5,7 +5,10 @@ import { PlayerClientOptions } from './PlayerClient';
 import { Parser } from './Parser';
 import { Helpers } from './Helpers';
 
+const PASSPHRASE = "examplepassword"; // TODO read from server.properties file (in server directory)
+
 export class ObserverClient extends GenericClient {
+
   constructor() {
     super(true, "Observer");
   }
@@ -13,6 +16,7 @@ export class ObserverClient extends GenericClient {
   prepareRoom(player1: PlayerClientOptions, player2: PlayerClientOptions): Promise<RoomReservation> {
     return new Promise<RoomReservation>((resolve, reject) => {
       this.writeData(`
+        <authenticate passphrase="${PASSPHRASE}" />
         <prepare gameType="swc_2018_hase_und_igel">
           <slot displayName="${player1.displayName}" canTimeout="${player1.canTimeout}" shouldBePaused="${player1.shouldBePaused}"/>
           <slot displayName="${player2.displayName}" canTimeout="${player2.canTimeout}" shouldBePaused="${player2.shouldBePaused}"/>
@@ -40,7 +44,7 @@ export class ObserverClient extends GenericClient {
 
   observeRoom(roomId: string): Promise<void> {
     return new Promise((res, rej) => {
-      this.writeData(`<observe roomId="${roomId}" passphrase="swordfish" />`);//Send request
+      this.writeData(`<observe roomId="${roomId}" passphrase="${PASSPHRASE}" />`);//Send request
       this.once('message', d => {//Wait for answer
         d = d.toString(); //Stringify buffer
         Parser.getJSONFromXML(d).then(ans => {

@@ -119,7 +119,11 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
     );
     var startControl;
     if (this.validConfiguration()) {
-      startControl = <Button text="Start!" onClick={() => this.handleStartGame()} />;
+      if (this.state.firstPlayerType == "Computer" && this.state.secondPlayerType == "Computer") {
+        startControl = <Button text="Start!" onClick={() => this.handleStartGame()} />;
+      } else {
+        startControl = <p>Aktuell sind nur Spiele Computer gegen Computer moeglich!</p>
+      }
     } else {
       startControl = <p>Bitte wähle ein Programm aus.</p>
     }

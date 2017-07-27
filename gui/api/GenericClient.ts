@@ -29,7 +29,8 @@ export class GenericClient extends events.EventEmitter {
       }
     });
     this.clientSocket.on('data', (data) => {
-      //console.log("data: " + data);
+      var clientName = this.name ? this.name : "unnamed client";
+      Helpers.log(clientName + " received data: " + data);
       this.dataSoFar += data;
       if (this.bracketsMatch()) {
         var msg = this.dataSoFar;
@@ -42,6 +43,8 @@ export class GenericClient extends events.EventEmitter {
     });
     this.ready = new Promise((res, rej) => {
       this.on('status', s => {
+        var clientName = this.name ? this.name : "unnamed client";
+        Helpers.log(clientName + ": new client connection status: " + s.toString);
         if (s == ClientStatus.Status.CONNECTED) {
           res();
         }

@@ -69,6 +69,8 @@ export class Server extends EventEmitter {
     this.process = spawn('java', ['-jar', SERVER_NAME], { cwd: SERVER_CWD });
     this.setStatus(ExecutableStatus.Status.RUNNING);
     this.process.stdout.on('data', (data) => {
+      // XXX
+      Helpers.log("Server: " + data);
       this.stdout.push(data);
       this.emit('stdout', data + '');
       this.emit('event', new ServerEvent('stdout', data + ''));

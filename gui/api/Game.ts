@@ -47,8 +47,8 @@ export class Game {
       await this.observer.observeRoom(reservation.roomId);
 
       //Create players
-      this.client1 = new ExecutableClient('java', ['-jar'], gco.player1path, 'localhost', 13050, reservation.reservation1);
-      this.client2 = new ExecutableClient('java', ['-jar'], gco.player2path, 'localhost', 13050, reservation.reservation2);
+      this.client1 = new ExecutableClient('java', ['-jar'], gco.player1path, '127.0.0.1', 13050, reservation.reservation1);
+      this.client2 = new ExecutableClient('java', ['-jar'], gco.player2path, '127.0.0.1', 13050, reservation.reservation2);
 
       this.client1.on('stdout', msg => {
         console.log("[CLIENT1] " + msg);
