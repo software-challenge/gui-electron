@@ -11,18 +11,20 @@ export class GenericClient extends events.EventEmitter {
 
   private clientSocket: any;
   private name: string;
-  status: ClientStatus.Status;
+  status: ClientStatus.Status = ClientStatus.Status.NOT_CONNECTED;
   ready: Promise<void>;
-  private dataSoFar: string;
-  private firstTagOfMessage: string; // the first opening tag of a message
-  private messageLevel: number; // to keep track of the xml nesting, if this drops to zero, we found a matching closing tag for the first opened tag of the message
-  private parser = new SAXParser(true, { lowercase: true });
+  private dataSoFar: string = ""; // all data received after the last completed message
+  private currentData: string; // all data received at the current data-event
+  private firstTagOfMessage: string = undefined; // the first opening tag of a message
+  private firstTagPosition: number;
+  private messageLevel: number = 0; // to keep track of the xml nesting, if this drops to zero, we found a matching closing tag for the first opened tag of the message
+  private offset: number = 0; // the position of the first character in the dataSoFar buffer as far as the parser is concerned (the parser parsed all messages)
+  // TODO: this parser is only used to find the start and end of a xml message. The message string is then emitted as message and parsed AGAIN. This should be merged in the future.
+  private parser = new SAXParser(true, {});
 
   constructor(sendProtocol: boolean = true, name?: string) {
     super();
     this.name = name;
-    this.dataSoFar = "";
-    this.status = ClientStatus.Status.NOT_CONNECTED;
     this.clientSocket = net.createConnection({ port: SERVER_PORT }, () => {
       if (sendProtocol) {
         this.writeData('<protocol>', () => {
@@ -37,8 +39,8 @@ export class GenericClient extends events.EventEmitter {
       if (tag.name != "protocol") {
         if (this.firstTagOfMessage == undefined) {
           this.firstTagOfMessage = tag.name;
+          this.firstTagPosition = this.parser.startTagPosition - 1; // one character more for the <
           this.messageLevel = 0;
-          Helpers.log("found first tag: " + this.firstTagOfMessage)
         }
         if (tag.name == this.firstTagOfMessage) {
           this.messageLevel++;
@@ -46,26 +48,24 @@ export class GenericClient extends events.EventEmitter {
       }
     }
     this.parser.onclosetag = (tagName) => {
-      Helpers.log("END: " + tagName)
-      Helpers.log("looking for " + this.firstTagOfMessage)
       if (tagName == this.firstTagOfMessage) {
         this.messageLevel--;
-        Helpers.log("decreasing message level. it is now " + this.messageLevel)
       }
       if (this.messageComplete()) {
-        Helpers.log("message complete!")
-        // FIXME: the message may be completed by a tag which is in the middle of the corrent data chunk. In this case, we only have to attach the data until this position to the message and continue parsing the current chunk for a new message!
-        var msg = this.dataSoFar;
+        var msg = this.dataSoFar.substring(this.firstTagPosition - this.offset, this.parser.position - this.offset);
+        Helpers.log("emitting complete message: " + msg)
         this.emit('message', msg);
-        this.dataSoFar = "";
+        var nextStart = this.parser.position - this.offset;
+        this.offset = this.parser.position;
+        this.dataSoFar = this.dataSoFar.substring(nextStart + 1)
         this.firstTagOfMessage = undefined;
       }
     }
     this.clientSocket.on('data', (data) => {
       var clientName = this.name ? this.name : "unnamed client";
-      Helpers.log(clientName + " received data: " + data);
+      this.currentData = data;
       this.dataSoFar += data;
-      this.parser.write(data);
+      this.parser.write(this.currentData);
     });
     this.clientSocket.on('end', () => {
       this.setStatus(ClientStatus.Status.DISCONNECTED);
@@ -73,7 +73,6 @@ export class GenericClient extends events.EventEmitter {
     this.ready = new Promise((res, rej) => {
       this.on('status', s => {
         var clientName = this.name ? this.name : "unnamed client";
-        Helpers.log(clientName + ": new client connection status: " + s.toString);
         if (s == ClientStatus.Status.CONNECTED) {
           res();
         }
@@ -93,9 +92,7 @@ export class GenericClient extends events.EventEmitter {
   }
 
   private messageComplete(): boolean {
-    var result = (this.firstTagOfMessage != undefined && this.messageLevel == 0);
-    Helpers.log("checking for complete message " + (this.firstTagOfMessage != undefined) + "  " + (this.messageLevel == 0) + " => " + result + " | " + this.firstTagOfMessage + " " + this.messageLevel);
-    return result;
+    return (this.firstTagOfMessage != undefined && this.messageLevel == 0);
   }
 
   private setStatus(s: ClientStatus.Status) {
