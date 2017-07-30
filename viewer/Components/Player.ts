@@ -25,4 +25,13 @@ export class Player implements Component {
     this.mesh.material = (this.id == 0) ? engine.materialBuilder.getRedMaterial() : engine.materialBuilder.getBlueMaterial();
     console.log("Created player " + this.id);
   }
+
+  update(position: number, animated: boolean) {
+    this.position = position
+    var s = this.grid.getGridCoordsFromFieldId(this.position);
+    var c = this.grid.getScreenCoordsFromGrid(s.x, s.y);
+    this.mesh.position.x = c.x;
+    this.mesh.position.z = c.y;
+    this.mesh.position.y = 1.5;
+  }
 }

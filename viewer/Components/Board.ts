@@ -4,11 +4,12 @@ import { Field } from './Field.js';
 import { Grid } from './Grid.js';
 import { Player } from './Player.js';
 
+import { Board as SC_Board } from '../../api/HaseUndIgel';
+
 export class Board implements Component {
   grid: Grid;
   fields: Field[];
-  red: Player;
-  blue: Player;
+
 
 
   constructor() {
@@ -31,10 +32,13 @@ export class Board implements Component {
     //Init all fields
     this.fields.forEach(f => f.init(engine));
 
-    this.red = new Player(0, 0, this.grid);
-    this.blue = new Player(1, 4, this.grid);
-    this.red.init(engine);
-    this.blue.init(engine);
+
 
   }
+
+  update(board: SC_Board, animated: boolean) {
+
+  }
+
+
 }

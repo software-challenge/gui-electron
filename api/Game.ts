@@ -6,7 +6,7 @@ import { ExecutableClient } from './ExecutableClient';
 import { PlayerClientOptions } from './PlayerClient';
 import { EventEmitter } from "events";
 
-export class Game {
+export class Game extends EventEmitter {
   name: string;
   observer: ObserverClient;
   client1: GameClient;
@@ -18,6 +18,7 @@ export class Game {
 
 
   constructor(gco: GameCreationOptions, name: string) {
+    super();
     this.name = name;
     var construct = (async function () {
 
@@ -32,10 +33,19 @@ export class Game {
       //Wait for server to start
       await Api.getServer().ready;
 
+      console.log("API server ready");
+
       //Create observer
       this.observer = new ObserverClient();
 
+      this.observer.on('state', s => {
+        console.log('state');
+        this.emit('state', s);
+      });
+
       await this.observer.ready;
+
+      console.log("Observer ready");
 
       //Create room
       var p1 = new PlayerClientOptions(gco.player1path, false, true);
@@ -43,6 +53,8 @@ export class Game {
 
       var reservation: RoomReservation = await this.observer.prepareRoom(p1, p2);
       this.roomId = reservation.roomId;
+      console.log("Room reserved");
+      console.log("this.roomid = " + this.roomId);
       //Observe room
       await this.observer.observeRoom(reservation.roomId);
 
@@ -51,24 +63,37 @@ export class Game {
       this.client2 = new ExecutableClient('java', ['-jar'], gco.player2path, '127.0.0.1', 13050, reservation.reservation2);
 
       this.client1.on('stdout', msg => {
-        console.log("[CLIENT1] " + msg);
+        this.emit("client1", {
+          type: "output",
+          message: msg
+        });
       });
 
       this.client1.on('stderr', msg => {
-        console.log("[CLIENT1] ERROR:" + msg);
+        this.emit("client1", {
+          type: "error",
+          message: msg
+        });
       });
 
       this.client2.on('stdout', msg => {
-        console.log("[CLIENT2] " + msg);
+        this.emit("client2", {
+          type: "output",
+          message: msg
+        });
       });
 
       this.client2.on('stderr', msg => {
-        console.log("[CLIENT2] ERROR:" + msg);
+        this.emit("client2", {
+          type: "error",
+          message: msg
+        });
       });
 
       await this.client1.start();
       await this.client2.start();
 
+      console.log("Clients started!");
 
     }).bind(this);
 

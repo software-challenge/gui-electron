@@ -1,8 +1,9 @@
 ///  <reference path="..//babylon.d.ts" />
-import { Helpers } from "./Helpers.js";
+import { Helpers } from "./Helpers";
 import { Board } from './Components/Board.js';
-import { Engine } from './Engine/Engine.js';
-
+import { Player } from './Components/Player';
+import { Engine } from './Engine/Engine';
+import { GameState } from '../api/HaseUndIgel';
 export class Viewer {
   //Path constants
   static PATH_PREFIX: string = "";
@@ -17,14 +18,12 @@ export class Viewer {
   debug: HTMLDivElement;
   //Engine
   engine: Engine;
-
+  board: Board;
+  red: Player;
+  blue: Player;
   initialization_steps_remaining: number;
   startup_timestamp: number;
-  //Players
-  player1: BABYLON.Mesh;
-  player2: BABYLON.Mesh;
-  //Passengers
-  passengers: BABYLON.Mesh[];
+
   //Rendering
   rerenderControlActive: boolean;
   animationsPlayed: number = 0;
@@ -32,11 +31,9 @@ export class Viewer {
   endscreenRendered: boolean = false;
   needsRerender: number;
   currentMove: number = 0;
-  tiles_to_sink: BABYLON.AbstractMesh[] = [];
-  sunk_passengers: number[] = [];
 
   //
-  constructor(element: Element, document: Document, window: Window) {
+  constructor(element: Element, document: Document, window: Window, rerenderControl: boolean) {
     //Take time measurement for later performance analysis
     this.startup_timestamp = performance.now();
 
@@ -55,7 +52,7 @@ export class Viewer {
     window['printDebug'] = () => console.log(this);
     //
     //Rerender-control
-    this.rerenderControlActive = element.hasAttribute('rerender-control');
+    this.rerenderControlActive = rerenderControl;
     this.needsRerender = 1;
     window.addEventListener('blur', () => {
       this.needsRerender = 0;
@@ -81,8 +78,13 @@ export class Viewer {
     }
 
 
-    var b: Board = new Board();
-    b.init(this.engine);
+    this.board = new Board();
+    this.board.init(this.engine);
+
+    this.red = new Player(0, 0, this.board.grid);
+    this.blue = new Player(1, 0, this.board.grid);
+    this.red.init(this.engine);
+    this.blue.init(this.engine);
 
     //
     //Attempt startup
@@ -97,15 +99,15 @@ export class Viewer {
 
 
   render(state: GameState, animated: boolean) {
-
+    this.engine.needsRerender = true;
+    this.board.update(state.board, animated);
+    this.red.update(state.red.index, animated);
+    this.blue.update(state.blue.index, animated);
+    setTimeout(() => this.engine.needsRerender = false, 500);
   }
 
   stop() {
     this.engine.rerenderControlActive = true;
     this.engine.needsRerender = false;
   }
-}
-
-class GameState {
-  something: number;
 }

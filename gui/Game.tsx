@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Viewer } from '../../viewer/Viewer';
+import { Viewer } from '../viewer/Viewer';
 import { GameCreationOptions } from '../api/GameCreationOptions';
 import { Game as SC_Game } from '../api/Game';
 import { Api } from '../api/Api';
@@ -16,13 +16,17 @@ export class Game extends React.Component<{ options: GameCreationOptions }, any>
   }
 
   startViewer(e) {
+    if (!this.viewer) {
+      this.viewer = new Viewer(e, document, window, true);
+    }
     if (!this.game) {
       console.log("props: " + JSON.stringify(this.props.options));
       this.game = Api.getGameManager().createGame(this.props.options, (new Date()).toDateString());
+      this.game.on("state", s => {
+        console.log("state!");
+        this.viewer.render(s, true);
+      })
       console.log(this.game);
-    }
-    if (!this.viewer) {
-      this.viewer = new Viewer(e, document, window);
     }
   }
 

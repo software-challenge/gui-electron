@@ -4,6 +4,7 @@ import { GenericClient } from './GenericClient';
 import { PlayerClientOptions } from './PlayerClient';
 import { Parser } from './Parser';
 import { Helpers } from './Helpers';
+import { GameState } from './HaseUndIgel';
 
 const PASSPHRASE = "examplepassword"; // TODO read from server.properties file (in server directory)
 
@@ -37,7 +38,9 @@ export class ObserverClient extends GenericClient {
             });
           })
         }
-      })
+      });
+
+
 
     });
   }
@@ -54,11 +57,18 @@ export class ObserverClient extends GenericClient {
             rej(`Expected to observe room ${roomId} but got confirmation for room ${ans.observed.$.roomId}!`);
           }
         }).then(val => {
-          this.on('message', m => {
-            Parser.getJSONFromXML(m).then(jsonMessage => {
-              Helpers.log("observer got message: " + JSON.stringify(jsonMessage))
-            })
-          })
+          this.on('message', async function (msg) {
+            var decoded = await Parser.getJSONFromXML(msg);
+            if (decoded.room) {
+              switch (decoded.room.data[0]['$'].class) {
+                case 'memento':
+                  var state = decoded.room.data[0].state[0];
+                  var gs = GameState.fromJSON(state);
+                  this.emit('state', gs);
+                  break;
+              }
+            }
+          });
         });
       });
     });
@@ -66,7 +76,7 @@ export class ObserverClient extends GenericClient {
 
   requestStep(roomId: string, forced: boolean = true): Promise<void> {
     return new Promise((res, rej) => {
-      //this.clientSocket.write(`<step roomId="${roomId}" forced="${forced}" />`, () => res());//Send request
+      this.writeData(`<step roomId="${roomId}" forced="${forced}" />`, () => res());//Send request
     });
   }
 }

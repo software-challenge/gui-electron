@@ -22,7 +22,7 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
   private gameCreationCallback: (GameCreationOptions) => void;
   constructor() {
     super();
-    var defaultClient = "/home/sven/development/sc/client_server/deploy/simple_client/hase_und_igel_player_new/jar/hase_und_igel_player_new.jar"
+    var defaultClient = window.localStorage['defaultProgramPath'] || "/home/sven/development/sc/client_server/deploy/simple_client/hase_und_igel_player_new/jar/hase_und_igel_player_new.jar"
     this.state = {
       firstPlayerType: "Computer",
       // XXX
@@ -89,6 +89,7 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
   // is called when the user wants to start a game with a valid configuration
   private handleStartGame() {
     //TODO: this is not enough, we need to handle human players as well
+    window.localStorage['defaultProgramPath'] = this.state.firstPlayerProgramPath;
     this.gameCreationCallback(new GameCreationOptions(this.state.firstPlayerProgramPath, this.state.secondPlayerProgramPath));
   }
 

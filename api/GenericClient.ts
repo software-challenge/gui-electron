@@ -53,7 +53,7 @@ export class GenericClient extends events.EventEmitter {
       }
       if (this.messageComplete()) {
         var msg = this.dataSoFar.substring(this.firstTagPosition - this.offset, this.parser.position - this.offset);
-        Helpers.log("emitting complete message: " + msg)
+        //Helpers.log("emitting complete message: " + msg)
         this.emit('message', msg);
         var nextStart = this.parser.position - this.offset;
         this.offset = this.parser.position;
