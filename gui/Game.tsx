@@ -20,11 +20,9 @@ export class Game extends React.Component<{ options: GameCreationOptions }, any>
       this.viewer = new Viewer(e, document, window, true);
     }
     if (!this.game) {
-      console.log("props: " + JSON.stringify(this.props.options));
       this.game = Api.getGameManager().createGame(this.props.options, (new Date()).toDateString());
-      this.game.on("state", s => {
-        console.log("state!");
-        this.viewer.render(s, true);
+      this.game.getState(0).then(s => {
+        this.viewer.render(s, false);
       })
       console.log(this.game);
     }
@@ -32,7 +30,6 @@ export class Game extends React.Component<{ options: GameCreationOptions }, any>
 
   componentWillUnmount() {
     if (this.viewer) {
-      console.log("Stopping viewer!");
       this.viewer.stop();
     }
   }
@@ -40,15 +37,26 @@ export class Game extends React.Component<{ options: GameCreationOptions }, any>
   next() {
     console.log("NEXT");
     console.log(this);
-    this.game.next();
+    this.game.getNextState().then(s => {
+      this.viewer.render(s, false);
+    })
+  }
+
+  previous() {
+    console.log("NEXT");
+    console.log(this);
+    this.game.getPreviousState().then(s => {
+      this.viewer.render(s, false);
+    })
   }
 
   render() {
     var b = <button onClick={this.next.bind(this)}>NEXT</button>;
+    var b_prev = <button onClick={this.previous.bind(this)}>PREV</button>;
     return (
       <div className="replay-viewer" ref={elem => { this.startViewer(elem) }}>
         <div className="replay-controls">
-          {b}
+          {b_prev}{b}
         </div>
       </div >
     );

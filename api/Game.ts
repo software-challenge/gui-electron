@@ -12,6 +12,7 @@ export class Game extends EventEmitter {
   client1: GameClient;
   client2: GameClient;
   gameStates: GameState[];
+  private currentState: number;
   private is_live: boolean;
   ready: Promise<void>;
   private roomId: string;
@@ -21,6 +22,9 @@ export class Game extends EventEmitter {
     super();
     this.name = name;
     var construct = (async function () {
+
+      this.gameStates = [];
+      this.currentState = 0;
 
       //Register hook to go offline
       Api.getServer().on('status', s => {
@@ -40,7 +44,8 @@ export class Game extends EventEmitter {
 
       this.observer.on('state', s => {
         console.log('state');
-        this.emit('state', s);
+        this.gameStates.push(s);
+        this.emit('state' + (this.gameStates.length - 1), s);
       });
 
       await this.observer.ready;
@@ -107,7 +112,38 @@ export class Game extends EventEmitter {
     return this.is_live;
   }
 
-  next() {
+  getState(n: number): Promise<GameState> {
+    if (this.gameStates[n]) { //If our next state is already buffered
+      return Promise.resolve(this.gameStates[n]);
+    } else {//Wait for new state to be emitted
+      return new Promise((res, rej) => {
+        this.once('state' + n, s => {
+          res(s);
+        })
+      })
+    }
+  }
+
+  getNextState(): Promise<GameState> {
+    this.currentState++;
+    this.requestNext();
+    return this.getState(this.currentState);
+  }
+
+  getCurrentState(): Promise<GameState> {
+    return this.getState(this.currentState);
+  }
+
+  getPreviousState(): Promise<GameState> {
+    if (this.currentState == 0) {
+      return Promise.reject("Tried to request state from before the beginning of the game");
+    } else {
+      this.currentState--;
+      return this.getState(this.currentState);
+    }
+  }
+
+  requestNext() {
     this.observer.requestStep(this.roomId);
   }
 
