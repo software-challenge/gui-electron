@@ -21,7 +21,7 @@ export class GameState {
 }
 
 
-export type FIELDTYPE = "CARROT" | "SALAD" | "POSITION_1" | "POSITION_2" | "HEDGEHOG" | "RABBIT" | "START" | "GOAL";
+export type FIELDTYPE = "CARROT" | "SALAD" | "POSITION_1" | "POSITION_2" | "HEDGEHOG" | "HARE" | "START" | "GOAL";
 
 
 export class Board {
@@ -31,7 +31,7 @@ export class Board {
     position_1: FIELDTYPE,
     position_2: FIELDTYPE,
     hedgehog: FIELDTYPE,
-    rabbit: FIELDTYPE,
+    hare: FIELDTYPE,
     start: FIELDTYPE,
     goal: FIELDTYPE
   } = {
@@ -40,7 +40,7 @@ export class Board {
     position_1: "POSITION_1",
     position_2: "POSITION_2",
     hedgehog: "HEDGEHOG",
-    rabbit: "RABBIT",
+    hare: "HARE",
     start: "START",
     goal: "GOAL"
   }

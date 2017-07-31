@@ -52,7 +52,6 @@ export class Viewer {
     window['printDebug'] = () => console.log(this);
     //
     //Rerender-control
-    this.rerenderControlActive = rerenderControl;
     this.needsRerender = 1;
     window.addEventListener('blur', () => {
       this.needsRerender = 0;
@@ -69,6 +68,7 @@ export class Viewer {
 
 
     this.engine = new Engine(this.canvas);
+    this.engine.rerenderControlActive = rerenderControl;
 
 
 
@@ -103,7 +103,8 @@ export class Viewer {
     this.board.update(state.board, animated);
     this.red.update(state.red.index, animated);
     this.blue.update(state.blue.index, animated);
-    setTimeout(() => this.engine.needsRerender = false, 500);
+    console.log("updated state");
+    setTimeout(() => this.engine.needsRerender = false, 2000);
   }
 
   stop() {

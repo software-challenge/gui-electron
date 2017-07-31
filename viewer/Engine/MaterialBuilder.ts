@@ -37,8 +37,8 @@ export class MaterialBuilder {
     for (let fieldtype in Board.Fieldtype) {
       let fm = new BABYLON.StandardMaterial(Board.Fieldtype[fieldtype] + "material", engine.scene);
       fm.diffuseTexture = new BABYLON.Texture("assets/" + fieldtype + ".png", engine.scene);
-      console.log("Loaded texture for " + fieldtype);
-      this.texturedFieldMaterials.set(fieldtype, fm);
+      console.log("Loaded texture for " + Board.Fieldtype[fieldtype] + " (" + "assets/" + fieldtype + ".png" + ")");
+      this.texturedFieldMaterials.set(Board.Fieldtype[fieldtype], fm);
     }
 
   }
@@ -58,7 +58,14 @@ export class MaterialBuilder {
     return this.fieldMaterial;
   }
 
+  getHighlightAlpha(): number {
+    return this.fieldMaterial.alpha;
+  }
+
   getTexturedFieldMaterial(fieldtype: FIELDTYPE) {
+    if (!this.texturedFieldMaterials.get(fieldtype)) {
+      console.log("UNKNOWN FIELDTYPE:  " + fieldtype);
+    }
     return this.texturedFieldMaterials.get(fieldtype);
   }
 

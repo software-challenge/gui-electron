@@ -37,7 +37,7 @@ export class Board implements Component {
   }
 
   update(board: SC_Board, animated: boolean) {
-
+    board.fields.forEach((type, index) => this.fields[index].update(type));
   }
 
 
