@@ -94,16 +94,16 @@ export class Engine {
     //Set up scene lighting
     var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 100, 0), this.scene);
     //var light = new BABYLON.DirectionalLight('sun',new BABYLON.Vector3(0,-1,0),this.scene);
-    light.specular = new BABYLON.Color3(0.7, 0.7, 0.7);
-    light.diffuse = new BABYLON.Color3(0.7, 0.7, 0.7);
+    light.specular = new BABYLON.Color3(0.1, 0.1, 0.1);
+    light.diffuse = new BABYLON.Color3(0.8, 0.8, 0.8);
     var radius = 1, inclination = this.skyMaterial.luminance * Math.PI, azimuth = this.skyMaterial.azimuth * Math.PI * 2;
     var x = radius * Math.sin(inclination) * Math.cos(azimuth), y = radius * Math.sin(inclination) * Math.sin(azimuth), z = radius * Math.cos(inclination);
 
-    var light0 = new BABYLON.DirectionalLight("Dir0", BABYLON.Vector3.Zero().subtract(this.sunPosition), this.scene);
-    light0.diffuse = new BABYLON.Color3(0.7, 0.7, 0.7);
-    light0.specular = new BABYLON.Color3(0.9, 0.9, 0.9);
-    this.shadow = new BABYLON.ShadowGenerator(1024, light0);
-    this.shadow.filter = 0.2;
+    /* var light0 = new BABYLON.DirectionalLight("Dir0", BABYLON.Vector3.Zero().subtract(this.sunPosition), this.scene);
+     light0.diffuse = new BABYLON.Color3(0.7, 0.7, 0.7);
+     light0.specular = new BABYLON.Color3(0.9, 0.9, 0.9);
+     this.shadow = new BABYLON.ShadowGenerator(1024, light0);
+     this.shadow.filter = 0.2;*/
   }
 
   startEngine() {

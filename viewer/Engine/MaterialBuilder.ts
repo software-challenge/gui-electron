@@ -37,6 +37,7 @@ export class MaterialBuilder {
     for (let fieldtype in Board.Fieldtype) {
       let fm = new BABYLON.StandardMaterial(Board.Fieldtype[fieldtype] + "material", engine.scene);
       fm.diffuseTexture = new BABYLON.Texture("assets/" + fieldtype + ".png", engine.scene);
+      fm.specularTexture = fm.diffuseTexture;
       console.log("Loaded texture for " + Board.Fieldtype[fieldtype] + " (" + "assets/" + fieldtype + ".png" + ")");
       this.texturedFieldMaterials.set(Board.Fieldtype[fieldtype], fm);
     }
