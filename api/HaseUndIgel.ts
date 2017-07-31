@@ -25,6 +25,25 @@ export type FIELDTYPE = "CARROT" | "SALAD" | "POSITION_1" | "POSITION_2" | "HEDG
 
 
 export class Board {
+  static Fieldtype: {
+    carrot: FIELDTYPE,
+    salad: FIELDTYPE,
+    position_1: FIELDTYPE,
+    position_2: FIELDTYPE,
+    hedgehog: FIELDTYPE,
+    rabbit: FIELDTYPE,
+    start: FIELDTYPE,
+    goal: FIELDTYPE
+  } = {
+    carrot: "CARROT",
+    salad: "SALAD",
+    position_1: "POSITION_1",
+    position_2: "POSITION_2",
+    hedgehog: "HEDGEHOG",
+    rabbit: "RABBIT",
+    start: "START",
+    goal: "GOAL"
+  }
   fields: FIELDTYPE[];
   static fromJSON(json: any): Board {
     var b = new Board();

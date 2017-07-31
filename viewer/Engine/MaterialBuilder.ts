@@ -1,7 +1,8 @@
 ///  <reference path="../../babylon.d.ts" />
 ///  <reference path="../../babylon-sky-material.d.ts" />
 
-import { Engine } from './Engine.js';
+import { Engine } from './Engine';
+import { FIELDTYPE, Board } from '../../api/HaseUndIgel';
 
 export class MaterialBuilder {
 
@@ -12,6 +13,8 @@ export class MaterialBuilder {
   private redMaterial: BABYLON.StandardMaterial;
 
   private fieldMaterial: BABYLON.StandardMaterial;
+
+  private texturedFieldMaterials: Map<string, BABYLON.StandardMaterial>;
 
   constructor(engine: Engine) {
     this.engine = engine;
@@ -29,6 +32,15 @@ export class MaterialBuilder {
     this.fieldMaterial.diffuseColor = new BABYLON.Color3(1, 1, 1);
     this.fieldMaterial.alpha = 0.7;
 
+    this.texturedFieldMaterials = new Map<string, BABYLON.StandardMaterial>();
+
+    for (let fieldtype in Board.Fieldtype) {
+      let fm = new BABYLON.StandardMaterial(Board.Fieldtype[fieldtype] + "material", engine.scene);
+      fm.diffuseTexture = new BABYLON.Texture("assets/" + fieldtype + ".png", engine.scene);
+      console.log("Loaded texture for " + fieldtype);
+      this.texturedFieldMaterials.set(fieldtype, fm);
+    }
+
   }
 
 
@@ -44,6 +56,10 @@ export class MaterialBuilder {
 
   getFieldMaterial(): BABYLON.StandardMaterial {
     return this.fieldMaterial;
+  }
+
+  getTexturedFieldMaterial(fieldtype: FIELDTYPE) {
+    return this.texturedFieldMaterials.get(fieldtype);
   }
 
 }
