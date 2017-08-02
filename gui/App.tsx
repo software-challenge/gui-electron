@@ -21,6 +21,12 @@ interface State {
   menuRetracted: boolean
   consoleRetracted: boolean
   contentState: AppContent
+  consoleMessages: ConsoleMessage[]
+}
+
+export interface ConsoleMessage {
+  sender: "server" | "red" | "blue"
+  text: string
 }
 
 export class App extends React.Component<any, State> {
@@ -30,7 +36,8 @@ export class App extends React.Component<any, State> {
     this.state = {
       menuRetracted: false,
       consoleRetracted: true,
-      contentState: AppContent.Empty
+      contentState: AppContent.Empty,
+      consoleMessages: []
     }
   }
 
@@ -73,6 +80,12 @@ export class App extends React.Component<any, State> {
     this.forceUpdate();
   }
 
+  private postLog(msg: ConsoleMessage) {
+    this.setState((prev, props) => {
+      prev.consoleMessages.push(msg);
+    });
+  }
+
   render() {
     var mainPaneContent;
     switch (this.state.contentState) {
@@ -84,7 +97,7 @@ export class App extends React.Component<any, State> {
         break;
       case AppContent.GameLive:
         console.log("starting game");
-        mainPaneContent = <Game options={this.gameCreationOptions} />
+        mainPaneContent = <Game options={this.gameCreationOptions} logCallback={(msg: ConsoleMessage) => this.postLog(msg)} />
         break;
       default:
         mainPaneContent = <span></span>
@@ -119,7 +132,12 @@ export class App extends React.Component<any, State> {
               {mainPaneContent}
             </Pane>
             <RetractableSidebar className="wide" retracted={this.state.consoleRetracted}>
-              Hier kommt noch das Log hin
+              {this.state.consoleMessages.map(msg =>
+                <div>
+                  <div className="sender">{msg.sender}</div>
+                  <div className="text">{msg.text}</div>
+                </div>
+              )}
             </RetractableSidebar>
           </PaneGroup>
         </Content>

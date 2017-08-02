@@ -147,6 +147,10 @@ export class Game extends EventEmitter {
     this.observer.requestStep(this.roomId);
   }
 
+  getLog(): string {
+    return this.observer.log;
+  }
+
 }
 
 

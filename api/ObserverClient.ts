@@ -9,9 +9,10 @@ import { GameState } from './HaseUndIgel';
 const PASSPHRASE = "examplepassword"; // TODO read from server.properties file (in server directory)
 
 export class ObserverClient extends GenericClient {
-
+  log: string;
   constructor() {
     super(true, "Observer");
+    this.log = "";
   }
 
   prepareRoom(player1: PlayerClientOptions, player2: PlayerClientOptions): Promise<RoomReservation> {
@@ -58,6 +59,7 @@ export class ObserverClient extends GenericClient {
           }
         }).then(val => {
           this.on('message', async function (msg) {
+            this.log += msg;
             var decoded = await Parser.getJSONFromXML(msg);
             if (decoded.room) {
               switch (decoded.room.data[0]['$'].class) {
