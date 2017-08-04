@@ -1,7 +1,7 @@
 import { ObserverClient, RoomReservation } from './ObserverClient';
 import { GameState } from './HaseUndIgel';
 import { GameCreationOptions } from './GameCreationOptions';
-import { Api, ExecutableStatus } from './Api';
+import { Api, ExecutableStatus, ConsoleMessage } from './Api';
 import { ExecutableClient } from './ExecutableClient';
 import { PlayerClientOptions } from './PlayerClient';
 import { EventEmitter } from "events";
@@ -16,16 +16,17 @@ export class Game extends EventEmitter {
   private is_live: boolean;
   ready: Promise<void>;
   private roomId: string;
+  messages: ConsoleMessage[];
 
 
   constructor(gco: GameCreationOptions, name: string) {
     super();
     this.name = name;
+    this.messages = [];
+    this.gameStates = [];
+    this.currentState = 0;
+    console.log("Creating game " + name);
     var construct = (async function () {
-
-      this.gameStates = [];
-      this.currentState = 0;
-
       //Register hook to go offline
       Api.getServer().on('status', s => {
         if (s == ExecutableStatus.Status.EXITED) {
@@ -35,7 +36,9 @@ export class Game extends EventEmitter {
         }
       });
       //Wait for server to start
+      console.log(Api.getServer().ready);
       await Api.getServer().ready;
+      console.log("starting creation");
 
       console.log("API server ready");
 
@@ -46,6 +49,16 @@ export class Game extends EventEmitter {
         console.log('state');
         this.gameStates.push(s);
         this.emit('state' + (this.gameStates.length - 1), s);
+      });
+
+      this.observer.on('message', msg => {
+        let m: ConsoleMessage = {
+          sender: "observer",
+          type: "output",
+          text: msg
+        };
+        this.messages.push(m);
+        this.emit('message', m);
       });
 
       await this.observer.ready;
@@ -68,41 +81,63 @@ export class Game extends EventEmitter {
       this.client2 = new ExecutableClient('java', ['-jar'], gco.player2path, '127.0.0.1', 13050, reservation.reservation2);
 
       this.client1.on('stdout', msg => {
-        this.emit("client1", {
+        let m: ConsoleMessage = {
+          sender: "red",
           type: "output",
-          message: msg
-        });
+          text: msg
+        };
+        this.messages.push(m);
+        this.emit('message', m);
       });
 
       this.client1.on('stderr', msg => {
-        this.emit("client1", {
+        let m: ConsoleMessage = {
+          sender: "red",
           type: "error",
-          message: msg
-        });
+          text: msg
+        };
+        this.messages.push(m);
+        this.emit('message', m);
       });
 
       this.client2.on('stdout', msg => {
-        this.emit("client2", {
+        let m: ConsoleMessage = {
+          sender: "blue",
           type: "output",
-          message: msg
-        });
+          text: msg
+        };
+        this.messages.push(m);
+        this.emit('message', m);
       });
 
       this.client2.on('stderr', msg => {
-        this.emit("client2", {
+        let m: ConsoleMessage = {
+          sender: "blue",
           type: "error",
-          message: msg
-        });
+          text: msg
+        };
+        this.messages.push(m);
+        this.emit('message', m);
       });
 
       await this.client1.start();
       await this.client2.start();
 
       console.log("Clients started!");
-
+      this.emit('ready');
     }).bind(this);
 
-    this.ready = construct();
+    this.ready = new Promise((res, rej) => {
+      this.once('ready', () => {
+        res();
+      });
+    });
+
+    construct();
+  }
+
+  getMessages(): ConsoleMessage[] {
+    return this.messages;
   }
 
   /**
@@ -145,6 +180,7 @@ export class Game extends EventEmitter {
 
   requestNext() {
     this.observer.requestStep(this.roomId);
+    console.log(this.observer);
   }
 
   getLog(): string {

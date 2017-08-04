@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 
-export class Window extends React.PureComponent<>{
+export class Window extends React.PureComponent {
   render() {
     return (
       <div className="window">{this.props.children}</div>
@@ -9,7 +9,7 @@ export class Window extends React.PureComponent<>{
   }
 }
 
-export class Toolbar extends React.PureComponent<>{
+export class Toolbar extends React.PureComponent {
   render() {
     return (
       <header className="toolbar toolbar-header">{this.props.children}</header>
@@ -17,13 +17,13 @@ export class Toolbar extends React.PureComponent<>{
   }
 }
 
-export class ToolbarActions extends React.Component<>{
+export class ToolbarActions extends React.Component {
   render() {
     return <div className="toolbar-actions">{this.props.children}</div>;
   }
 }
 
-export class ButtonGroup extends React.Component<>{
+export class ButtonGroup extends React.Component {
   render() {
     return <div className="btn-group">{this.props.children}</div>
   }
@@ -41,7 +41,7 @@ export class Content extends React.Component {
   propTypes = { children: React.PropTypes.node };
 }
 
-export class Sidebar extends React.Component<>{
+export class Sidebar extends React.Component {
   render() {
     return (
       <div className="pane-sm sidebar">{this.props.children}</div>
@@ -62,7 +62,7 @@ export class RetractableSidebar extends React.Component<{ retracted: boolean, id
   }
 }
 
-export class PaneGroup extends React.Component<>{
+export class PaneGroup extends React.Component {
   render() {
     return (
       <div className="pane-group">{this.props.children}</div>
@@ -70,7 +70,7 @@ export class PaneGroup extends React.Component<>{
   }
 }
 
-export class Pane extends React.Component<>{
+export class Pane extends React.Component {
   render() {
     return (
       <div className="pane">{this.props.children}</div>
@@ -109,7 +109,7 @@ export class Button extends React.PureComponent<{ icon?: string, text?: string, 
   }
 }
 
-export class NavGroup extends React.PureComponent<>{
+export class NavGroup extends React.PureComponent {
   render() {
     return (
       <div className="nav-group">{this.props.children}</div>

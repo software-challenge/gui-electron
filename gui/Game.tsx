@@ -4,9 +4,9 @@ import { Viewer } from '../viewer/Viewer';
 import { GameCreationOptions } from '../api/GameCreationOptions';
 import { Game as SC_Game } from '../api/Game';
 import { Api } from '../api/Api';
-import { ConsoleMessage } from './App';
+import { ConsoleMessage } from '../api/Api';
 
-export class Game extends React.Component<{ options: GameCreationOptions, logCallback: (msg: ConsoleMessage) => void }, any> {
+export class Game extends React.Component<{ options: GameCreationOptions, nameCallback: (string) => void }, any> {
   private viewer: Viewer;
   private elem: Element;
   private elemSet: boolean;
@@ -20,12 +20,20 @@ export class Game extends React.Component<{ options: GameCreationOptions, logCal
     if (!this.viewer) {
       this.viewer = new Viewer(e, document, window, true);
     }
+
     if (!this.game) {
-      this.game = Api.getGameManager().createGame(this.props.options, (new Date()).toDateString());
-      this.game.getState(0).then(s => {
-        this.viewer.render(s, false);
-      })
-      console.log(this.game);
+      let gameName = (new Date()).toDateString();
+      this.props.nameCallback(gameName);
+      this.game = Api.getGameManager().createGame(this.props.options, gameName);
+      var init = async function () {
+        console.log(this.game);
+        await this.game.ready;
+        this.game.requestNext();
+        this.game.getState(0).then(s => {
+          this.viewer.render(s, false);
+        });
+      }.bind(this);
+      init();
     }
   }
 
@@ -51,21 +59,13 @@ export class Game extends React.Component<{ options: GameCreationOptions, logCal
     })
   }
 
-  log() {
-    this.props.logCallback({
-      sender: "server",
-      text: this.game.getLog()
-    })
-  }
-
   render() {
     var b = <button onClick={this.next.bind(this)}>NEXT</button>;
     var b_prev = <button onClick={this.previous.bind(this)}>PREV</button>;
-    var b_log = <button onClick={this.log.bind(this)}>LOG</button>;
     return (
       <div className="replay-viewer" ref={elem => { this.startViewer(elem) }}>
         <div className="replay-controls">
-          {b_prev}{b}{b_log}
+          {b_prev}{b}
         </div>
       </div >
     );

@@ -8,6 +8,7 @@ import { GameCreation } from './GameCreation';
 import * as cp from 'child_process';
 import { GameCreationOptions } from '../api/GameCreationOptions';
 import { Game } from './Game';
+import { LogConsole } from './LogConsole';
 
 enum AppContent {
   Empty,
@@ -21,12 +22,7 @@ interface State {
   menuRetracted: boolean
   consoleRetracted: boolean
   contentState: AppContent
-  consoleMessages: ConsoleMessage[]
-}
-
-export interface ConsoleMessage {
-  sender: "server" | "red" | "blue"
-  text: string
+  activeGame: string
 }
 
 export class App extends React.Component<any, State> {
@@ -37,7 +33,7 @@ export class App extends React.Component<any, State> {
       menuRetracted: false,
       consoleRetracted: true,
       contentState: AppContent.Empty,
-      consoleMessages: []
+      activeGame: null
     }
   }
 
@@ -80,9 +76,11 @@ export class App extends React.Component<any, State> {
     this.forceUpdate();
   }
 
-  private postLog(msg: ConsoleMessage) {
+  private setActiveGameName(name: string) {
     this.setState((prev, props) => {
-      prev.consoleMessages.push(msg);
+      prev.activeGame = name;
+      console.log("Active game: " + name);
+      return prev;
     });
   }
 
@@ -97,7 +95,7 @@ export class App extends React.Component<any, State> {
         break;
       case AppContent.GameLive:
         console.log("starting game");
-        mainPaneContent = <Game options={this.gameCreationOptions} logCallback={(msg: ConsoleMessage) => this.postLog(msg)} />
+        mainPaneContent = <Game options={this.gameCreationOptions} nameCallback={n => /*this.setActiveGameName(n)*/ console.log(n)} />
         break;
       default:
         mainPaneContent = <span></span>
@@ -132,16 +130,12 @@ export class App extends React.Component<any, State> {
               {mainPaneContent}
             </Pane>
             <RetractableSidebar className="wide" retracted={this.state.consoleRetracted}>
-              {this.state.consoleMessages.map(msg =>
-                <div>
-                  <div className="sender">{msg.sender}</div>
-                  <div className="text">{msg.text}</div>
-                </div>
-              )}
+
             </RetractableSidebar>
           </PaneGroup>
         </Content>
       </Window >
     );
+    //{this.state.activeGame ? <LogConsole game={this.state.activeGame} /> : <div />}
   }
 }

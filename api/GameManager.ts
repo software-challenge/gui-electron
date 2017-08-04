@@ -10,4 +10,11 @@ export class GameManager {
     return g;
   }
 
+  public getGame(name: string): Game {
+    let games = this.games.filter(game => game.name == name);
+    if (games.length > 0) {
+      return games[0];
+    }
+  }
+
 }

@@ -28,7 +28,6 @@ export class GenericClient extends events.EventEmitter {
     this.clientSocket = net.createConnection({ port: SERVER_PORT }, () => {
       if (sendProtocol) {
         this.writeData('<protocol>', () => {
-          Helpers.log('Protocol sent');
           this.setStatus(ClientStatus.Status.CONNECTED);
         });
       } else {
