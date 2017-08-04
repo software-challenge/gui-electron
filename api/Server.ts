@@ -45,6 +45,7 @@ export class Server extends EventEmitter {
     this.ready = new Promise((resolve, reject) => {
       try {
         this.on("stdout", s => {
+          console.log("SERVER: " + s);
           if (/ClientManager running/.test(s)) {
             Helpers.log("Server ready");
             resolve();

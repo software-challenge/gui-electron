@@ -17,11 +17,11 @@ export class LogConsole extends React.Component<{ game: string }, State> {
   }
 
   componentDidMount() {
-    //Api.getGameManager().getGame(this.props.game).on('message', m => this.setState((prev: State, props) => { prev.messages.push(m); return prev; }));
-    /*    this.setState((prev, props) => {
-          prev.messages = Api.getGameManager().getGame(this.props.game).getMessages();
-          return prev;
-        });*/
+    Api.getGameManager().getGame(this.props.game).on('message', m => this.setState((prev: State, props) => { prev.messages.push(m); return prev; }));
+    this.setState((prev, props) => {
+      prev.messages = Api.getGameManager().getGame(this.props.game).getMessages();
+      return prev;
+    });
   }
 
   componentWillUnmount() {

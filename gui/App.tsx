@@ -130,12 +130,11 @@ export class App extends React.Component<any, State> {
               {mainPaneContent}
             </Pane>
             <RetractableSidebar className="wide" retracted={this.state.consoleRetracted}>
-
+              {this.state.activeGame ? <LogConsole game={this.state.activeGame} /> : <div />}
             </RetractableSidebar>
           </PaneGroup>
         </Content>
       </Window >
     );
-    //{this.state.activeGame ? <LogConsole game={this.state.activeGame} /> : <div />}
   }
 }
