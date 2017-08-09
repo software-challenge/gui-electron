@@ -59,7 +59,7 @@ export class ObserverClient extends GenericClient {
           }
         }).then(val => {
           this.on('message', async function (msg) {
-            this.emit('message', msg);
+            // this.emit('message', msg);
             var decoded = await Parser.getJSONFromXML(msg);
             if (decoded.room) {
               switch (decoded.room.data[0]['$'].class) {

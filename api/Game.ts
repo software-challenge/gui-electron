@@ -58,7 +58,7 @@ export class Game extends EventEmitter {
           text: msg
         };
         this.messages.push(m);
-        this.emit('message', m);
+        // this.emit('message', m);
       });
 
       await this.observer.ready;
