@@ -3,7 +3,7 @@ import { Helpers } from "./Helpers";
 import { Board } from './Components/Board.js';
 import { Player } from './Components/Player';
 import { Engine } from './Engine/Engine';
-import { GameState } from '../api/HaseUndIgel';
+import { GameState, Card } from '../api/HaseUndIgel';
 export class Viewer {
   //Path constants
   static PATH_PREFIX: string = "";
@@ -16,6 +16,22 @@ export class Viewer {
 
   canvas: HTMLCanvasElement;
   debug: HTMLDivElement;
+  display: {
+    root: HTMLDivElement,
+    red: {
+      root: HTMLDivElement,
+      carrots: HTMLDivElement,
+      salads: HTMLDivElement,
+      cards: HTMLDivElement
+    },
+    blue: {
+      root: HTMLDivElement,
+      carrots: HTMLDivElement,
+      salads: HTMLDivElement,
+      cards: HTMLDivElement
+    },
+    round: HTMLDivElement
+  };
   //Engine
   engine: Engine;
   board: Board;
@@ -33,7 +49,7 @@ export class Viewer {
   currentMove: number = 0;
 
   //
-  constructor(element: Element, document: Document, window: Window, rerenderControl: boolean) {
+  constructor(element: Element, document: Document, window: Window, rerenderControl: boolean = false, debug = false, framerateModifier = 1) {
     //Take time measurement for later performance analysis
     this.startup_timestamp = performance.now();
 
@@ -50,6 +66,40 @@ export class Viewer {
       this.debug.style.display = 'none';
     }
     window['printDebug'] = () => console.log(this);
+
+    //Display
+
+    var cdiv = (classnames: string[], parent: any): HTMLDivElement => {
+      var div = document.createElement('div');
+      classnames.forEach(name => {
+        div.classList.add(name);
+      });
+      parent.appendChild(div);
+      return div;
+    }
+
+
+    var root = cdiv(['display'], element);
+    var redroot = cdiv(['red'], root);
+    var blueroot = cdiv(['blue'], root);
+
+    this.display = {
+      root: root,
+      red: {
+        root: redroot,
+        carrots: cdiv(['carrots'], redroot),
+        salads: cdiv(['salads'], redroot),
+        cards: cdiv(['cards'], redroot)
+      },
+      blue: {
+        root: blueroot,
+        carrots: cdiv(['carrots'], blueroot),
+        salads: cdiv(['salads'], blueroot),
+        cards: cdiv(['cards'], blueroot)
+      },
+      round: cdiv(['round'], root)
+    };
+
     //
     //Rerender-control
     this.needsRerender = 1;
@@ -103,6 +153,7 @@ export class Viewer {
     this.board.update(state.board, animated);
     this.red.update(state.red.index, animated);
     this.blue.update(state.blue.index, animated);
+    this.updateDisplay(state);
     console.log("updated state");
     setTimeout(() => this.engine.needsRerender = false, 2000);
   }
@@ -110,5 +161,28 @@ export class Viewer {
   stop() {
     this.engine.rerenderControlActive = true;
     this.engine.needsRerender = false;
+  }
+
+  private updateDisplay(state: GameState) {
+
+    var cardFactory = (cards: Card[]) => {
+      var cardToTex = (name) => {
+        switch (name) {
+          case Card.EAT_SALAD: return "hasenjoker_salad.png";
+          case Card.FALL_BACK: return "hasenjoker_backward.png";
+          case Card.HURRY_AHEAD: return "hasenjoker_forward.png";
+          case Card.TAKE_OR_DROP_CARROTS: return "hasenjoker_carrots.png";
+        }
+      }
+      return cards.map(card => `<img src="assets/${cardToTex(card.value)}" class="card ${card.value}" />`).join(" ");
+    }
+
+    this.display.round.innerText = state.turn.toString();
+    this.display.red.salads.innerText = state.red.salads.toString();
+    this.display.red.carrots.innerText = state.red.carrots.toString();
+    this.display.red.cards.innerHTML = cardFactory(state.red.cards);
+    this.display.blue.salads.innerText = state.blue.salads.toString();
+    this.display.blue.carrots.innerText = state.blue.carrots.toString();
+    this.display.blue.cards.innerHTML = cardFactory(state.blue.cards);
   }
 }

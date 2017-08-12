@@ -1,14 +1,7 @@
-/*.replay-viewer{
-    width: 80vw;
-    height: 60vh;
-    padding: 0;
-    display:block;
-    position:relative;
-    margin: auto auto;
-    overflow: hidden;
-    font-family: 'Ubuntu', 'Arial', sans-serif;
-    /*border: 2pt solid red;*/
-/*}*/
+.replay-viewer{
+  position: relative;
+  font-family: 'Ubuntu', 'Arial', sans-serif;
+}
 
 .replay-viewer>canvas{
     width: 100%;
@@ -35,120 +28,67 @@
 .replay-viewer>.replay-controls>button{
     border: 1px solid black;
     background-color: white;
+    transition: background-color 1s;
     margin: 2px;
 }
 
-.replay-viewer>.replay-displayContainer{
-    position: absolute;
-    text-align: center;
-    top: 0;
-    width: 100%;
-    margin: auto 0;
-    font-weight: bold;
-    color: white;
-    vertical-align: center;
+.replay-controls>button:hover{
+    background-color:#ddd;
 }
 
-.replay-viewer .replay-display{
-    background-color: rgba(0,0,0,0.5);
-    border-bottom-left-radius: 0.5em;
-    border-bottom-right-radius: 0.5em;
-    display: inline-block;
+.replay-controls>button:active{
+  color: red;
 }
 
-.replay-viewer .replay-redPoints{
-    width: 1.5em;
-    font-size: 2em;
-    color: #FF6961;
-    display: inline-block;
-    padding-right: 0.2em;
-    text-align: center;
+.replay-viewer>.display{
+  position: absolute;
+  top: 0;
+  width: 100%;
+  font-size: 3vh;
+  font-weight: bold;
 }
 
-.replay-viewer .replay-round{
-    font-size: 2.5em;
-    display: inline-block;
+.display>.red{
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #ff0000;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
+  background: rgba(255, 255,255, 0.5);
+  border-bottom-right-radius: 3vh;
 }
 
-.replay-viewer .replay-bluePoints{
-    width: 1.5em;
-    font-size: 2em;
-    color: #89CFF0;
-    display: inline-block;
-    padding-left: 0.2em;
-    text-align: center;
+.display>.blue{
+  position: absolute;
+  right: 0;
+  top: 0;
+  color: #0000ff;
+  text-align: right;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
+  background: rgba(255, 255,255, 0.4);
+  border-bottom-left-radius: 3vh;
 }
 
-.replay-viewer>.replay-progressbar{
-    width: 101%;
-    height: 1ex;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    margin: 0;
-    padding: 0;
-    background-color: rgba(255,255,255,0.5);
-}
-.replay-viewer .replay-progress{
-    width: 0%;
-    height: 1ex;
-    transition: width 1s;
-    padding: 0;
-    margin: 0;
-    background-color: green;
+.carrots::before{
+  content: "Karotten: ";
 }
 
-.replay-endscreen{
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: calc(100% - 6em);
-    height: calc(100% - 8em);
-    padding: 1em;
-    margin: 3em 3em;
-    border-radius: 3em;
-    background-color: rgba(0,0,0,0.6);
-    transition: opacity 0.5s;
-    opacity: 0;
-    text-align: center;
-    color: white;
+.salads::before{
+  content: "Salate: ";
 }
 
-.replay-winPicture{
-    max-height: 12em;
-    margin-top: calc(25% - 12em);
+.display .card{
+  height: 4vh;
 }
 
-.replay-winReason{
-    font-size: 2.5em;
-}
-
-.replay-winBlue{
-    font-weight: bold;
-    color: #89CFF0;
-}
-
-.replay-winRed{
-    font-weight: bold;
-    color: #FF6961;
-}
-
-.replay-redName{
-    position: absolute;
-    left: 0.2em;
-    top: 0.2em;
-    font-weight: bold;
-    color: #FF6961;
-    font-size: 1.5em;
-    text-shadow: 0px 0px 30px #FFFFFF;
-}
-
-.replay-blueName{
-    position: absolute;
-    right: 0.2em;
-    top: 0.2em;
-    font-weight: bold;
-    color: #89CFF0;
-    font-size: 1.5em;
-    text-shadow: 0px 0px 30px #FFFFFF;
+.display .round{
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: 0;
+  left: 0;
+  font-weight: bold;
+  font-size: 5vh;
 }

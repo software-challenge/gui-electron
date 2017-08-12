@@ -5,6 +5,7 @@ import { GameCreationOptions } from '../api/GameCreationOptions';
 import { Game as SC_Game } from '../api/Game';
 import { Api } from '../api/Api';
 import { ConsoleMessage } from '../api/Api';
+import { loadCSS } from './index';
 
 export class Game extends React.Component<{ options: GameCreationOptions, nameCallback: (string) => void }, any> {
   private viewer: Viewer;
@@ -14,6 +15,7 @@ export class Game extends React.Component<{ options: GameCreationOptions, nameCa
   constructor() {
     super();
     this.viewer = null;
+    loadCSS('viewer.css');
   }
 
   startViewer(e) {
