@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node_modules/.bin/electron ."
+    "start": "node_modules/.bin/electron .",
+    "getserver": "git clone git@github.com:CAU-Kiel-Tech-Inf/socha.git; cd socha; git pull; git checkout hase_und_igel_development; git pull; ant; cd ..; rmdir server; rmdir client; cp -r socha/deploy/server server; cp -r socha/deploy/simple_client/hase_und_igel_player_new/jar client; return 0;"
   },
   "author": "",
   "license": "ISC",
