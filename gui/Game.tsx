@@ -30,7 +30,7 @@ export class Game extends React.Component<{ options: GameCreationOptions, nameCa
       var init = async function () {
         console.log(this.game);
         await this.game.ready;
-        this.game.requestNext();
+        console.log("game ready");
         this.game.getState(0).then(s => {
           this.viewer.render(s, false);
         });

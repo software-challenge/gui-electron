@@ -129,6 +129,7 @@ export class Game extends EventEmitter {
       Logger.log("Client 2 ready (reservation: " + reservation.reservation2 + ")");
 
       this.emit('ready');
+      //setTimeout(() => this.emit('ready'), 750);//FIXME: Dirty hack since the server doesn't actually tell us when a client has successfully connected
     }).bind(this);
 
     this.ready = new Promise((res, rej) => {
@@ -184,7 +185,6 @@ export class Game extends EventEmitter {
 
   requestNext() {
     this.observer.requestStep(this.roomId);
-    console.log(this.observer);
   }
 
   getLog(): string {

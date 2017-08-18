@@ -80,7 +80,8 @@ export class ObserverClient extends GenericClient {
   requestStep(roomId: string, forced: boolean = true): Promise<void> {
     Api.getLogger().log("ObserverClient", "requestStep", "Requesting next step for room with id " + roomId + "(forced=" + forced + ")");
     return new Promise((res, rej) => {
-      this.writeData(`<step roomId="${roomId}" forced="${forced}" />`, () => res());//Send request
+      this.writeData(`<step roomId="${roomId}" forced="${forced}" />`);//Send request
+      this.once('state', () => res()); //Wait for state
     });
   }
 }
