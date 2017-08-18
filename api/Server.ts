@@ -1,5 +1,5 @@
 ///<references path="../../node_modules/@types/node/index.d.ts" />
-import { ExecutableStatus } from './Api';
+import { ExecutableStatus, Api } from './Api';
 import { Helpers } from './Helpers';
 
 //import * as events from "events"
@@ -45,7 +45,7 @@ export class Server extends EventEmitter {
     this.ready = new Promise((resolve, reject) => {
       try {
         this.on("stdout", s => {
-          console.log("SERVER: " + s);
+          Api.getLogger().log("server", "stdout", s);
           if (/ClientManager running/.test(s)) {
             Helpers.log("Server ready");
             resolve();

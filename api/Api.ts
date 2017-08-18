@@ -2,9 +2,12 @@ import { Server } from './Server';
 
 import { GameManager } from './GameManager';
 
+import { Logger } from './Logger';
+
 export class Api {
   private static server: Server;
   private static gameManager: GameManager;
+  private static logger: Logger;
 
   static getServer(autostart: boolean = true): Server {
     if (!this.server) {
@@ -18,6 +21,14 @@ export class Api {
       this.gameManager = new GameManager();
     }
     return this.gameManager;
+  }
+
+  static getLogger(): Logger {
+    if (!this.logger) {
+      var d = new Date();
+      this.logger = new Logger(true, `sgc_log_${d.getFullYear()}.${d.getMonth()}.${d.getDay()}_${d.getHours()}.${d.getMinutes()}.${d.getSeconds()}.log`);
+    }
+    return this.logger;
   }
 
 

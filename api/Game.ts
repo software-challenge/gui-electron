@@ -21,11 +21,12 @@ export class Game extends EventEmitter {
 
   constructor(gco: GameCreationOptions, name: string) {
     super();
+    let Logger = Api.getLogger().focus("Game", "constructor");
     this.name = name;
     this.messages = [];
     this.gameStates = [];
     this.currentState = 0;
-    console.log("Creating game " + name);
+    Logger.log("Creating game " + name);
     var construct = (async function () {
       //Register hook to go offline
       Api.getServer().on('status', s => {
@@ -36,13 +37,12 @@ export class Game extends EventEmitter {
         }
       });
       //Wait for server to start
-      console.log(Api.getServer().ready);
       await Api.getServer().ready;
-      console.log("starting creation");
 
-      console.log("API server ready");
+      Logger.log("API Server is ready");
 
       //Create observer
+      Logger.log("Creating Observer Client");
       this.observer = new ObserverClient();
 
       this.observer.on('state', s => {
@@ -63,18 +63,20 @@ export class Game extends EventEmitter {
 
       await this.observer.ready;
 
-      console.log("Observer ready");
+      Logger.log("Observer ready");
 
       //Create room
       var p1 = new PlayerClientOptions(gco.player1path, false, true);
-      var p2 = new PlayerClientOptions(gco.player2path, false, true);
+      var p2 = new PlayerClientOptions(gco.player2path + "TEST", false, true);
 
       var reservation: RoomReservation = await this.observer.prepareRoom(p1, p2);
       this.roomId = reservation.roomId;
-      console.log("Room reserved");
-      console.log("this.roomid = " + this.roomId);
+
+      Logger.log("Reserved room with id " + this.roomId);
+
       //Observe room
       await this.observer.observeRoom(reservation.roomId);
+      Logger.log("Observing room with id " + this.roomId);
 
       //Create players
       this.client1 = new ExecutableClient('java', ['-jar'], gco.player1path, '127.0.0.1', 13050, reservation.reservation1);
@@ -121,9 +123,11 @@ export class Game extends EventEmitter {
       });
 
       await this.client1.start();
-      await this.client2.start();
+      Logger.log("Client 1 ready (reservation: " + reservation.reservation1 + ")");
 
-      console.log("Clients started!");
+      await this.client2.start();
+      Logger.log("Client 2 ready (reservation: " + reservation.reservation2 + ")");
+
       this.emit('ready');
     }).bind(this);
 
