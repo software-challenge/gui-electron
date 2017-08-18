@@ -79,7 +79,7 @@ export class Player {
     p.index = json.$.index;
     p.carrots = json.$.carrots;
     p.salads = json.$.salads;
-    p.cards = json.cards[0].type.map(t => Card.fromString(t));
+    p.cards = json.cards[0].type ? json.cards[0].type.map(t => Card.fromString(t)) : [];
     return p;
   }
 }
