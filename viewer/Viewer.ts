@@ -30,7 +30,11 @@ export class Viewer {
       salads: HTMLDivElement,
       cards: HTMLDivElement
     },
-    round: HTMLDivElement
+    round: HTMLDivElement,
+    progress: {
+      box: HTMLDivElement,
+      bar: HTMLDivElement
+    }
   };
   //Engine
   engine: Engine;
@@ -83,6 +87,8 @@ export class Viewer {
     var redroot = cdiv(['red'], root);
     var blueroot = cdiv(['blue'], root);
 
+    var progressbox = cdiv(['progressbox'], element);
+
     this.display = {
       root: root,
       red: {
@@ -97,7 +103,11 @@ export class Viewer {
         salads: cdiv(['salads'], blueroot),
         cards: cdiv(['cards'], blueroot)
       },
-      round: cdiv(['round'], root)
+      round: cdiv(['round'], root),
+      progress: {
+        box: progressbox,
+        bar: cdiv(['progressbar'], progressbox)
+      }
     };
 
     //
@@ -184,5 +194,6 @@ export class Viewer {
     this.display.blue.salads.innerText = state.blue.salads.toString();
     this.display.blue.carrots.innerText = state.blue.carrots.toString();
     this.display.blue.cards.innerHTML = cardFactory(state.blue.cards);
+    this.display.progress.bar.style.width = ((state.turn / 30) * 100) + "%";
   }
 }
