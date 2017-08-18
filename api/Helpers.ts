@@ -15,4 +15,8 @@ export module Helpers {
     console.log(Helpers.getLogLine(msg));
   }
 
+  export function awaitEventOnce(emitter: any, event: string): Promise<void> {
+    return new Promise((res, rej) => emitter.once(event, () => res()));
+  }
+
 }

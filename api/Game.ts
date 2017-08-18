@@ -5,6 +5,7 @@ import { Api, ExecutableStatus, ConsoleMessage } from './Api';
 import { ExecutableClient } from './ExecutableClient';
 import { PlayerClientOptions } from './PlayerClient';
 import { EventEmitter } from "events";
+import { Helpers } from './Helpers';
 
 export class Game extends EventEmitter {
   name: string;
@@ -123,9 +124,11 @@ export class Game extends EventEmitter {
       });
 
       await this.client1.start();
+      await Helpers.awaitEventOnce(Api.getServer(), 'newclient');
       Logger.log("Client 1 ready (reservation: " + reservation.reservation1 + ")");
 
       await this.client2.start();
+      await Helpers.awaitEventOnce(Api.getServer(), 'newclient');
       Logger.log("Client 2 ready (reservation: " + reservation.reservation2 + ")");
 
       this.emit('ready');

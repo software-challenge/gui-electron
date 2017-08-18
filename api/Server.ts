@@ -50,6 +50,10 @@ export class Server extends EventEmitter {
             Helpers.log("Server ready");
             resolve();
           }
+
+          if (/sc.server.network.NewClientListener/.test(s)) {
+            this.emit('newclient');
+          }
         });
       } catch (e) {
         reject(e);
