@@ -68,7 +68,7 @@ export class Game extends EventEmitter {
 
       //Create room
       var p1 = new PlayerClientOptions(gco.player1path, false, true);
-      var p2 = new PlayerClientOptions(gco.player2path + "TEST", false, true);
+      var p2 = new PlayerClientOptions(gco.player2path, false, true);
 
       var reservation: RoomReservation = await this.observer.prepareRoom(p1, p2);
       this.roomId = reservation.roomId;
