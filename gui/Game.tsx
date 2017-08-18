@@ -46,16 +46,12 @@ export class Game extends React.Component<{ options: GameCreationOptions, nameCa
   }
 
   next() {
-    console.log("NEXT");
-    console.log(this);
     this.game.getNextState().then(s => {
       this.viewer.render(s, false);
     })
   }
 
   previous() {
-    console.log("NEXT");
-    console.log(this);
     this.game.getPreviousState().then(s => {
       this.viewer.render(s, false);
     })

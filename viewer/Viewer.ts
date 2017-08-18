@@ -164,7 +164,6 @@ export class Viewer {
     this.red.update(state.red.index, animated);
     this.blue.update(state.blue.index, animated);
     this.updateDisplay(state);
-    console.log("updated state");
     setTimeout(() => this.engine.needsRerender = false, 2000);
   }
 
@@ -194,6 +193,6 @@ export class Viewer {
     this.display.blue.salads.innerText = state.blue.salads.toString();
     this.display.blue.carrots.innerText = state.blue.carrots.toString();
     this.display.blue.cards.innerHTML = cardFactory(state.blue.cards);
-    this.display.progress.bar.style.width = ((state.turn / 30) * 100) + "%";
+    this.display.progress.bar.style.width = ((state.turn / 60) * 100) + "%";
   }
 }

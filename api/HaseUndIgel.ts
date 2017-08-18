@@ -117,3 +117,23 @@ export class Card {
   }
 
 }
+
+export class GameResult {
+  cause: "REGULAR";
+  reason: string;
+  winner: Player;
+
+  static fromJSON(json: any): GameResult {
+    console.log("Result:");
+    var util = require('util');
+    console.log(util.inspect(json));
+
+    var gr = new GameResult();
+    gr.cause = json.score[0].$.cause;
+    gr.reason = json.score[0].$.reason;
+
+    gr.winner = Player.fromJSON(json.winner[0]);
+
+    return gr;
+  }
+}

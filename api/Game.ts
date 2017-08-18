@@ -47,10 +47,14 @@ export class Game extends EventEmitter {
       this.observer = new ObserverClient();
 
       this.observer.on('state', s => {
-        console.log('state');
         this.gameStates.push(s);
         this.emit('state' + (this.gameStates.length - 1), s);
       });
+
+      this.observer.on('result', r => {
+        console.log(r);
+        this.is_live = false;
+      })
 
       this.observer.on('message', msg => {
         let m: ConsoleMessage = {

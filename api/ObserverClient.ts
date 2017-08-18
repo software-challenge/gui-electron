@@ -4,7 +4,7 @@ import { GenericClient } from './GenericClient';
 import { PlayerClientOptions } from './PlayerClient';
 import { Parser } from './Parser';
 import { Helpers } from './Helpers';
-import { GameState } from './HaseUndIgel';
+import { GameState, GameResult } from './HaseUndIgel';
 import { Api } from './Api';
 
 const PASSPHRASE = "examplepassword"; // TODO read from server.properties file (in server directory)
@@ -68,6 +68,11 @@ export class ObserverClient extends GenericClient {
                   var state = decoded.room.data[0].state[0];
                   var gs = GameState.fromJSON(state);
                   this.emit('state', gs);
+                  break;
+                case 'result':
+                  var result = decoded.room.data[0];
+                  var gr = GameResult.fromJSON(result);
+                  this.emit('result', gr);
                   break;
               }
             }
