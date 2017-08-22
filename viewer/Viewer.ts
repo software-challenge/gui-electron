@@ -3,7 +3,7 @@ import { Helpers } from "./Helpers";
 import { Board } from './Components/Board.js';
 import { Player } from './Components/Player';
 import { Engine } from './Engine/Engine';
-import { GameState, Card } from '../api/HaseUndIgel';
+import { GameState, GameResult, Player as SC_Player, Card } from '../api/HaseUndIgel';
 export class Viewer {
   //Path constants
   static PATH_PREFIX: string = "";
@@ -36,6 +36,13 @@ export class Viewer {
       bar: HTMLDivElement
     }
   };
+
+  endscreen: {
+    root: HTMLDivElement,
+    picture: HTMLImageElement,
+    winner: HTMLDivElement,
+    reason: HTMLDivElement
+  }
   //Engine
   engine: Engine;
   board: Board;
@@ -110,6 +117,18 @@ export class Viewer {
       }
     };
 
+    var endscreen_root = cdiv(['endscreen'], element);
+    var endscreen_picture = document.createElement('img');
+    endscreen_picture.src = "assets/pokal.svg";
+    endscreen_picture.classList.add('winPicture');
+    endscreen_root.appendChild(endscreen_picture);
+    this.endscreen = {
+      root: endscreen_root,
+      picture: endscreen_picture,
+      winner: cdiv(['winName'], endscreen_root),
+      reason: cdiv(['winReason'], endscreen_root)
+    };
+
     //
     //Rerender-control
     this.needsRerender = 1;
@@ -165,6 +184,7 @@ export class Viewer {
     this.blue.update(state.blue.index, animated);
     this.updateDisplay(state);
     setTimeout(() => this.engine.needsRerender = false, 2000);
+    this.endscreen.root.style.opacity = "0";
   }
 
   stop() {
@@ -194,5 +214,18 @@ export class Viewer {
     this.display.blue.carrots.innerText = state.blue.carrots.toString();
     this.display.blue.cards.innerHTML = cardFactory(state.blue.cards);
     this.display.progress.bar.style.width = ((state.turn / 60) * 100) + "%";
+  }
+
+  updateEndscreen(result: GameResult) {
+    this.endscreen.winner.innerHTML = result.winner.displayName;
+    if (result.winner.color == SC_Player.COLOR.BLUE) {
+      this.endscreen.winner.classList.remove("winRed");
+      this.endscreen.winner.classList.add("winBlue");
+    } else {
+      this.endscreen.winner.classList.remove("winBlue");
+      this.endscreen.winner.classList.add("winRed");
+    }
+    this.endscreen.reason.innerHTML = result.reason;
+    this.endscreen.root.style.opacity = "1";
   }
 }

@@ -1,5 +1,5 @@
 import { ObserverClient, RoomReservation } from './ObserverClient';
-import { GameState } from './HaseUndIgel';
+import { GameState, GameResult } from './HaseUndIgel';
 import { GameCreationOptions } from './GameCreationOptions';
 import { Api, ExecutableStatus, ConsoleMessage } from './Api';
 import { ExecutableClient } from './ExecutableClient';
@@ -13,6 +13,7 @@ export class Game extends EventEmitter {
   client1: GameClient;
   client2: GameClient;
   gameStates: GameState[];
+  gameResult: GameResult;
   private currentState: number;
   private is_live: boolean;
   ready: Promise<void>;
@@ -52,7 +53,8 @@ export class Game extends EventEmitter {
       });
 
       this.observer.on('result', r => {
-        console.log(r);
+        this.gameResult = r;
+        this.emit('result', r);
         this.is_live = false;
       })
 
@@ -135,6 +137,8 @@ export class Game extends EventEmitter {
       await Helpers.awaitEventOnce(Api.getServer(), 'newclient');
       Logger.log("Client 2 ready (reservation: " + reservation.reservation2 + ")");
 
+      this.is_live = true;
+
       this.emit('ready');
       //setTimeout(() => this.emit('ready'), 750);//FIXME: Dirty hack since the server doesn't actually tell us when a client has successfully connected
     }).bind(this);
@@ -172,9 +176,20 @@ export class Game extends EventEmitter {
   }
 
   getNextState(): Promise<GameState> {
-    this.currentState++;
-    this.requestNext();
-    return this.getState(this.currentState);
+    if (this.is_live) {
+      this.currentState++;
+      this.requestNext();
+      return this.getState(this.currentState);
+    } else {
+      if (this.currentState < (this.gameStates.length - 1)) {
+        this.currentState++;
+      } else {
+        if (this.gameResult) {
+          this.emit('result', this.gameResult);
+        }
+      }
+      return this.getState(this.currentState);
+    }
   }
 
   getCurrentState(): Promise<GameState> {
@@ -191,7 +206,9 @@ export class Game extends EventEmitter {
   }
 
   requestNext() {
-    this.observer.requestStep(this.roomId);
+    if (this.is_live) {
+      this.observer.requestStep(this.roomId);
+    }
   }
 
   getLog(): string {
