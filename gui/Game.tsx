@@ -27,6 +27,7 @@ export class Game extends React.Component<{ options: GameCreationOptions, nameCa
       let gameName = (new Date()).toDateString();
       //this.props.nameCallback(gameName);
       this.game = Api.getGameManager().createGame(this.props.options, gameName);
+      this.game.on('result', r => this.viewer.updateEndscreen(r));
       var init = async function () {
         console.log(this.game);
         await this.game.ready;

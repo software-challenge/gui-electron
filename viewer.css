@@ -113,3 +113,43 @@
   margin: 0;
   background-color: green;
 }
+
+
+.endscreen{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(100% - 6em);
+    height: calc(100% - 8em);
+    padding: 1em;
+    margin: 3em 3em;
+    border-radius: 3em;
+    background-color: rgba(0,0,0,0.6);
+    transition: opacity 0.5s;
+    opacity: 0;
+    text-align: center;
+    color: white;
+}
+
+.winPicture{
+    max-height: 12em;
+    margin-top: calc(25% - 12em);
+}
+
+.winReason{
+    font-size: 4em;
+}
+
+.winName{
+  font-size: 4em;
+}
+
+.winBlue{
+    font-weight: bold;
+    color: #89CFF0;
+}
+
+.winRed{
+    font-weight: bold;
+    color: #FF6961;
+}
