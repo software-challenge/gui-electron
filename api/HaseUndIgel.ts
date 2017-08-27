@@ -7,6 +7,7 @@ export class GameState {
   startPlayer: PLAYERCOLOR;
   currentPlayer: PLAYERCOLOR;
   board: Board;
+  lastNonSkipAction: Action;
 
   static fromJSON(json: any): GameState {
     var gs = new GameState();
@@ -17,6 +18,18 @@ export class GameState {
     gs.blue = Player.fromJSON(json.blue[0]);
     gs.board = Board.fromJSON(json.board[0]);
     return gs;
+  }
+
+  clone(): GameState {
+    return GameState.fromJSON(JSON.parse(JSON.stringify(this))); //Ugly, slow, horrible
+  }
+
+  getCurrentPlayer(): Player {
+    return (this.currentPlayer == Player.COLOR.RED) ? this.red : this.blue;
+  }
+
+  isOccupied(position: number): boolean {
+    return this.red.index == position || this.blue.index == position;
   }
 }
 
@@ -50,6 +63,15 @@ export class Board {
     var sorted_fields = json.fields.sort((a, b) => a.$.index - b.$.index);
     b.fields = sorted_fields.map(f => f.$.type);
     return b;
+  }
+
+  getClosestPreviousHedgehogField(position: number): number {
+    for (let i = position; i <= 0; i++) {
+      if (this.fields[i] == Board.Fieldtype.hedgehog) {
+        return i;
+      }
+    }
+    return -1;
   }
 }
 
@@ -135,5 +157,18 @@ export class GameResult {
     gr.winner = Player.fromJSON(json.winner[0]);
 
     return gr;
+  }
+}
+
+export class Action {
+  type: "ADVANCE" | "CARD" | "EAT_SALAD";
+  distance: number;
+  card: Card;
+
+  static getAdvanceAction(distance: number): Action {
+    let a = new Action();
+    a.type = "ADVANCE";
+    a.distance = distance;
+    return a;
   }
 }
