@@ -1,4 +1,4 @@
-import { GameState, Player, Board, Action, CardAction, Card } from './HaseUndIgel';
+import { Action, Board, Card, FIELDTYPE, GameState, Player } from './HaseUndIgel';
 
 //Port from https://github.com/CAU-Kiel-Tech-Inf/socha/blob/hase_und_igel_development/game_plugins/hase_und_igel_new/shared/sc/plugin2018/util/GameRuleLogic.java
 
@@ -7,7 +7,7 @@ export class GameRuleLogic {
 
   /**
 	 * Berechnet wie viele Karotten für einen Zug der Länge moveCount benötigt werden.
-	 * 
+	 *
 	 * @param moveCount Anzahl der Felder, um die bewegt wird
 	 * @return Anzahl der benötigten Karotten
 	 */
@@ -17,7 +17,7 @@ export class GameRuleLogic {
 
   /**
 	 * Berechnet, wie viele Züge mit carrots Karotten möglich sind.
-	 * 
+	 *
 	 * @param carrots maximal ausgegebene Karotten
 	 * @return Felder um die maximal bewegt werden kann
 	 */
@@ -34,13 +34,13 @@ export class GameRuleLogic {
   /**
 	 * Überprüft Advance Aktionen auf ihre Korrektheit. Folgende
 	 * Spielregeln werden beachtet:
-	 * 
+	 *
 	 * - Der Spieler muss genügend Karotten für den Zug besitzen
    * - Wenn das Ziel erreicht wird, darf der Spieler nach dem Zug maximal 10 Karotten übrig haben
    * - Man darf nicht auf Igelfelder ziehen
    * - Salatfelder dürfen nur betreten werden, wenn man noch Salate essen muss
    * - Hasenfelder dürfen nur betreten werden, wenn man noch Karte ausspielen kann
-	 * 
+	 *
 	 * @param state GameState
 	 * @param distance relativer Abstand zur aktuellen Position des Spielers
 	 * @return true, falls ein Vorwärtszug möglich ist
@@ -76,7 +76,7 @@ export class GameRuleLogic {
       state2.lastNonSkipAction = Action.getAdvanceAction(distance);
       state2.getCurrentPlayer().index = newPosition;
       state2.getCurrentPlayer().carrots -= requiredCarrots;
-      if (!canPlayAnyCard(state2)) {
+      if (!this.canPlayAnyCard(state2)) {
         return false; //Can't advance to a hare field if you can't play a card
       }
     }
@@ -94,22 +94,6 @@ export class GameRuleLogic {
     return true;
   }
 
-  public static mustEatSalad(state: GameState): boolean {
-    let player = state.getCurrentPlayer();
-    // check whether player just moved to salad field and must eat salad
-
-    if (state.board.fields[player.index] == Board.Fieldtype.salad) {
-      if (state.lastNonSkipAction.type == "ADVANCE") {
-        return true;
-      } else if (state.lastNonSkipAction.type == "CARD") {
-        return (
-          (state.lastNonSkipAction.card.value == Card.FALL_BACK) ||
-          (state.lastNonSkipAction.card.value == Card.HURRY_AHEAD));
-      }
-    }
-    return false;
-  }
-
   /**
   * Überprüft, ob ein Spieler aussetzen darf. Er darf dies, wenn kein anderer Zug möglich ist.
   * @param state GameState
@@ -125,10 +109,10 @@ export class GameRuleLogic {
    * @return true, falls ein Zug möglich ist.
    */
   private static canDoAnything(state: GameState): boolean {
-    return canPlayAnyCard(state) || isValidToFallBack(state)
-      || isValidToExchangeCarrots(state, 10)
-      || isValidToExchangeCarrots(state, -10)
-      || isValidToEat(state) || GameRuleLogic.canAdvanceToAnyField(state);
+    return this.canPlayAnyCard(state) || this.isValidToFallBack(state)
+      || this.isValidToExchangeCarrots(state, 10)
+      || this.isValidToExchangeCarrots(state, -10)
+      || this.isValidToEat(state) || this.canAdvanceToAnyField(state);
   }
 
   /**
@@ -150,11 +134,11 @@ export class GameRuleLogic {
   /**
      * Überprüft <code>EatSalad</code> Züge auf Korrektheit. Um einen Salat
      * zu verzehren muss der Spieler sich:
-     * 
+     *
      * - auf einem Salatfeld befinden
      * - noch mindestens einen Salat besitzen
      * - vorher kein Salat auf diesem Feld verzehrt wurde
-     * 
+     *
      * @param state GameState
      * @return true, falls ein Salat gegessen werden darf
      */
@@ -184,8 +168,8 @@ export class GameRuleLogic {
         return true;
       }
       if (state.lastNonSkipAction.type == "CARD") {
-        return state.lastNonSkipAction.card.value == Card.EAT_SALAD || state.lastNonSkipAction.card.value == Card.TAKE_OR_DROP_CARROTS;
-
+        let card = (<Card>state.lastNonSkipAction)
+        return card.cardType == Card.EAT_SALAD || card.cardType == Card.TAKE_OR_DROP_CARROTS;
       }
     }
 
@@ -209,7 +193,7 @@ export class GameRuleLogic {
 
   /**
 	 * Überprüft <code>FallBack</code> Züge auf Korrektheit
-	 * 
+	 *
 	 * @param state GameState
 	 * @return true, falls der currentPlayer einen Rückzug machen darf
 	 */
@@ -224,6 +208,227 @@ export class GameRuleLogic {
 
   }
 
+  /**
+   * Überprüft ob der derzeitige Spieler die <code>FALL_BACK</code> Karte spielen darf.
+   * @param state GameState
+   * @return true, falls die <code>FALL_BACK</code> Karte gespielt werden darf
+   */
+  public static isValidToPlayFallBack(state: GameState): boolean {
+    let player = state.getCurrentPlayer();
+    let valid = !GameRuleLogic.playerMustAdvance(state) && state.isOnHareField()
+      && state.isFirst(player);
+
+
+    valid = valid && player.ownsCardOfType(Card.FallBack());
+
+    let o = state.getOtherPlayer()
+    let nextPos = o.index - 1
+
+    let type: FIELDTYPE = state.getTypeAt(nextPos);
+    switch (type) {
+      case Board.Fieldtype.hedgehog:
+        valid = false;
+        break;
+      case Board.Fieldtype.start:
+        break;
+      case Board.Fieldtype.salad:
+        valid = valid && player.salads > 0;
+        break;
+      case Board.Fieldtype.hare:
+        let state2: GameState = null;
+        state2 = state.clone();
+        state2.setLastAction(Card.HurryAhead());
+        state2.getCurrentPlayer().removeCard(Card.FallBack())
+        valid = valid && this.canPlayAnyCard(state2);
+        break;
+      case Board.Fieldtype.carrot:
+      case Board.Fieldtype.position_1:
+      case Board.Fieldtype.position_2:
+        break;
+      default:
+        throw "Unknown Type " + type;
+    }
+
+    return valid;
+  }
+
+  /**
+   * Überprüft ob der derzeitige Spieler die <code>HURRY_AHEAD</code> Karte spielen darf.
+   * @param state GameState
+   * @return true, falls die <code>HURRY_AHEAD</code> Karte gespielt werden darf
+   */
+  public static isValidToPlayHurryAhead(state: GameState): boolean {
+    let player = state.getCurrentPlayer();
+    let valid = !this.playerMustAdvance(state) && state.isOnHareField()
+      && !state.isFirst(player);
+    valid = valid && player.ownsCardOfType(Card.HurryAhead());
+
+    let o = state.getOtherPlayer();
+    let nextPos = o.index + 1;
+
+    let type = state.getTypeAt(nextPos);
+    switch (type) {
+      case Board.Fieldtype.hedgehog:
+        valid = false;
+        break;
+      case Board.Fieldtype.salad:
+        valid = valid && player.salads > 0;
+        break;
+      case Board.Fieldtype.hare:
+        let state2 = null;
+        state2 = state.clone();
+        state2.setLastAction(Card.HurryAhead());
+        state2.getCurrentPlayer().cards = player.removeCard(Card.HurryAhead());
+        valid = valid && this.canPlayAnyCard(state2);
+        break;
+      case Board.Fieldtype.goal:
+        valid = valid && this.canEnterGoal(state);
+        break;
+      case Board.Fieldtype.carrot:
+      case Board.Fieldtype.position_1:
+      case Board.Fieldtype.position_2:
+      case Board.Fieldtype.start:
+        break;
+      default:
+        throw "Unknown Type " + type;
+    }
+
+    return valid;
+  }
+
+  /**
+   * Überprüft ob der derzeitige Spieler die <code>TAKE_OR_DROP_CARROTS</code> Karte spielen darf.
+   * @param state GameState
+   * @param n 20 für nehmen, -20 für abgeben, 0 für nichts tun
+   * @return true, falls die <code>TAKE_OR_DROP_CARROTS</code> Karte gespielt werden darf
+   */
+  public static isValidToPlayTakeOrDropCarrots(state: GameState, n: number): boolean {
+    let player = state.getCurrentPlayer();
+    let valid = !this.playerMustAdvance(state) && state.isOnHareField()
+      && player.ownsCardOfType(Card.TakeOrDropCarrots());
+
+    valid = valid && (n == 20 || n == -20 || n == 0);
+    if (n < 0) {
+      valid = valid && ((player.carrots + n) >= 0);
+    }
+    return valid;
+  }
+
+  /**
+   * Überprüft ob der derzeitige Spieler die <code>EAT_SALAD</code> Karte spielen darf.
+   * @param state GameState
+   * @return true, falls die <code>EAT_SALAD</code> Karte gespielt werden darf
+   */
+  public static isValidToPlayEatSalad(state: GameState): boolean {
+    let player = state.getCurrentPlayer();
+    return !this.playerMustAdvance(state) && state.isOnHareField()
+      && player.ownsCardOfType(Card.EatSalat()) && player.salads > 0;
+  }
+
+  /**
+   * Überprüft ob der derzeitige Spieler irgendeine Karte spielen kann.
+   * TAKE_OR_DROP_CARROTS wird nur mit 20 überprüft
+   * @param state GameState
+   * @return true, falls das Spielen einer Karte möglich ist
+   */
+  private static canPlayAnyCard(state: GameState): boolean {
+    let valid = false;
+    let player = state.getCurrentPlayer();
+
+    for (let card of player.cards) {
+      switch (card.cardType) {
+        case Card.EAT_SALAD:
+          valid = valid || this.isValidToPlayEatSalad(state);
+          break;
+        case Card.FALL_BACK:
+          valid = valid || this.isValidToPlayFallBack(state);
+          break;
+        case Card.HURRY_AHEAD:
+          valid = valid || this.isValidToPlayHurryAhead(state);
+          break;
+        case Card.TAKE_OR_DROP_CARROTS:
+          valid = valid || this.isValidToPlayTakeOrDropCarrots(state, 20);
+          break;
+        default:
+          throw "Unknown CardType " + card.cardType;
+      }
+    }
+
+    return valid;
+  }
+
+  /**
+   * Überprüft ob der derzeitige Spieler die Karte spielen kann.
+   * @param state derzeitiger GameState
+   * @param c Karte die gespielt werden soll
+   * @param n Parameter mit dem TAKE_OR_DROP_CARROTS überprüft wird
+   * @return true, falls das Spielen der entsprechenden Karte möglich ist
+   */
+  public static isValidToPlayCard(state: GameState, c: Card, n: number): boolean {
+    switch (c.cardType) {
+      case Card.EAT_SALAD:
+        return this.isValidToPlayEatSalad(state);
+      case Card.FALL_BACK:
+        return this.isValidToPlayFallBack(state);
+      case Card.HURRY_AHEAD:
+        return this.isValidToPlayHurryAhead(state);
+      case Card.TAKE_OR_DROP_CARROTS:
+        return this.isValidToPlayTakeOrDropCarrots(state, n);
+      default:
+        throw "Unknown CardType " + c.cardType;
+    }
+  }
+
+  public static mustEatSalad(state: GameState): boolean {
+    let player = state.getCurrentPlayer();
+    // check whether player just moved to salad field and must eat salad
+    let field = state.getTypeAt(player.index);
+    if (field == Board.Fieldtype.salad) {
+      if (player.lastNonSkipAction.type == "ADVANCE") {
+        return true;
+      } else if (player.lastNonSkipAction.type == "CARD") {
+        if ((<Card>player.lastNonSkipAction).cardType == Card.FALL_BACK ||
+          ((<Card>player.lastNonSkipAction).cardType == Card.HURRY_AHEAD)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Gibt zurück, ob der derzeitige Spieler eine Karte spielen kann.
+   * @param state derzeitiger GameState
+   * @return true, falls eine Karte gespielt werden kann
+   */
+  public static canPlayCard(state: GameState): boolean {
+    let player = state.getCurrentPlayer();
+    let canPlayCard = state.getTypeAt(player.index) == Board.Fieldtype.hare;
+    for (let a of player.cards) {
+      canPlayCard = canPlayCard || this.isValidToPlayCard(state, a, 0);
+    }
+    return canPlayCard;
+  }
+
+	/**
+	 * Überprüft ob eine Karte gespielt werden muss. Sollte nach einem
+	 * Zug eines Spielers immer false sein, ansonsten ist Zug ungültig.
+	 * @param state derzeitiger GameState
+	 */
+  public static mustPlayCard(state: GameState): boolean {
+    return state.getCurrentPlayer().mustPlayCard;
+  }
+
+
+	/**
+	 * Überprüft ob ein der derzeitige Spieler das Ziel betreten darf
+	 * @param state GameState
+	 * @return Gibt zurück, ob ein Spieler das Ziel betreten darf
+	 */
+  public static canEnterGoal(state: GameState): boolean {
+    let player = state.getCurrentPlayer();
+    return player.carrots <= 10 && player.salads == 0;
+  }
 
 
 }

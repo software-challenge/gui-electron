@@ -4,7 +4,7 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha --compilers ts:ts-node/register,tsx:ts-node/register 'test/**/*.spec.@(ts|tsx)'",
     "start": "node_modules/.bin/electron .",
     "getserver": "git clone git@github.com:CAU-Kiel-Tech-Inf/socha.git; cd socha; git pull; git checkout hase_und_igel_development; git pull; ant; cd ..; rm -r server; rm -r client; cp -r socha/deploy/server server; echo \"password = examplepassword\" > server/server.properties; cp -r socha/deploy/simple_client/hase_und_igel_player_new/jar client; return 0;"
   },
@@ -24,6 +24,11 @@
     "xml2js": "^0.4.17"
   },
   "devDependencies": {
+    "@types/chai": "^4.0.4",
+    "@types/mocha": "^2.2.42",
+    "chai": "^4.1.1",
+    "chai-immutable": "^1.6.0",
+    "ts-node": "^3.3.0",
     "tslint": "^5.5.0",
     "typescript": "^2.4.2"
   }

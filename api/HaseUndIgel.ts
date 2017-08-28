@@ -1,3 +1,4 @@
+import { watch } from 'fs';
 
 
 export class GameState {
@@ -25,11 +26,41 @@ export class GameState {
   }
 
   getCurrentPlayer(): Player {
-    return (this.currentPlayer == Player.COLOR.RED) ? this.red : this.blue;
+    return this.getPlayerByColor(this.currentPlayer)
+  }
+
+  getOtherPlayer(): Player {
+    return this.getPlayerByColor(Player.OtherColor(this.currentPlayer));
+  }
+
+  getPlayerByColor(color: PLAYERCOLOR) {
+    if (color == Player.COLOR.RED) {
+      return this.red;
+    } else {
+      return this.blue;
+    }
   }
 
   isOccupied(position: number): boolean {
     return this.red.index == position || this.blue.index == position;
+  }
+
+  isOnHareField(): boolean {
+    return this.board.fields[this.getCurrentPlayer().index] == "HARE"
+  }
+
+  isFirst(player: Player): boolean {
+    return player.index > this.getPlayerByColor(Player.OtherColor(player.color)).index
+  }
+
+  getTypeAt(index: number): FIELDTYPE {
+    return this.board.fields[index]
+  }
+
+  setLastAction(action: Action) {
+    if (action.type != "SKIP") {
+      this.lastNonSkipAction = action;
+    }
   }
 }
 
@@ -87,11 +118,17 @@ export class Player {
   carrots: number;
   salads: number;
   cards: Card[]
+  lastNonSkipAction: Action;
+  mustPlayCard: boolean;
 
   static COLOR: { RED: PLAYERCOLOR, BLUE: PLAYERCOLOR } = { RED: 0, BLUE: 1 };
 
   static ColorFromString(s: string): PLAYERCOLOR {
     return s == 'RED' ? Player.COLOR.RED : Player.COLOR.BLUE;
+  }
+
+  static OtherColor(c: PLAYERCOLOR): PLAYERCOLOR {
+    return c == Player.COLOR.RED ? Player.COLOR.BLUE : Player.COLOR.RED;
   }
 
   static fromJSON(json: any): Player {
@@ -104,38 +141,79 @@ export class Player {
     p.cards = json.cards[0].type ? json.cards[0].type.map(t => Card.fromString(t)) : [];
     return p;
   }
+
+  ownsCardOfType(card: Card): boolean {
+    return this.cards.find((c) => { return c.cardType == card.cardType }) != undefined
+  }
+
+  cardsWithout(card: Card): Card[] {
+    return this.cards.filter((c) => { c.type != card.cardType });
+  }
+
+  removeCard(card: Card) {
+    this.cards = this.cardsWithout(card)
+  }
 }
 
+export class Action {
+  type: "ADVANCE" | "CARD" | "EAT_SALAD" | "SKIP";
+  distance: number;
 
-export class Card {
+  static getAdvanceAction(distance: number): Action {
+    let a = new Action();
+    a.type = "ADVANCE";
+    a.distance = distance;
+    return a;
+  }
+}
+
+export class Card extends Action {
   static TAKE_OR_DROP_CARROTS = 'TAKE_OR_DROP_CARROTS';
   static EAT_SALAD = 'EAT_SALAD';
   static HURRY_AHEAD = 'HURRY_AHEAD';
   static FALL_BACK = 'FALL_BACK';
 
-  value: string;
+  cardType: string;
+  value: number; // for take or drop carrots, may be -10, 0 or 10
 
   static fromString(s: string): Card {
     var c = new Card();
+    c.type = "CARD"
 
     switch (s) {
       case Card.TAKE_OR_DROP_CARROTS:
-        c.value = Card.TAKE_OR_DROP_CARROTS;
+        c.cardType = Card.TAKE_OR_DROP_CARROTS;
         break;
       case Card.EAT_SALAD:
-        c.value = Card.EAT_SALAD;
+        c.cardType = Card.EAT_SALAD;
         break;
       case Card.HURRY_AHEAD:
-        c.value = Card.HURRY_AHEAD;
+        c.cardType = Card.HURRY_AHEAD;
         break;
       case Card.FALL_BACK:
-        c.value = Card.FALL_BACK;
+        c.cardType = Card.FALL_BACK;
         break;
       default:
         throw `Unknown card type: ${s}`;
     }
 
     return c;
+  }
+
+  static TakeOrDropCarrots(): Card {
+    return Card.fromString(Card.TAKE_OR_DROP_CARROTS)
+  }
+
+  static EatSalat(): Card {
+    return Card.fromString(Card.EAT_SALAD)
+  }
+
+  static HurryAhead(): Card {
+    return Card.fromString(Card.HURRY_AHEAD)
+  }
+
+  static FallBack(): Card {
+    return Card.fromString(Card.FALL_BACK)
   }
 
 }
@@ -157,18 +235,5 @@ export class GameResult {
     gr.winner = Player.fromJSON(json.winner[0]);
 
     return gr;
-  }
-}
-
-export class Action {
-  type: "ADVANCE" | "CARD" | "EAT_SALAD";
-  distance: number;
-  card: Card;
-
-  static getAdvanceAction(distance: number): Action {
-    let a = new Action();
-    a.type = "ADVANCE";
-    a.distance = distance;
-    return a;
   }
 }
