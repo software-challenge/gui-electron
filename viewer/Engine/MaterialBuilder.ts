@@ -12,7 +12,10 @@ export class MaterialBuilder {
   private blueMaterial: BABYLON.StandardMaterial;
   private redMaterial: BABYLON.StandardMaterial;
 
-  private fieldMaterial: BABYLON.StandardMaterial;
+  private highlightMaterialRed: BABYLON.StandardMaterial;
+  private highlightMaterialBlue: BABYLON.StandardMaterial;
+
+  private transparentMaterial: BABYLON.StandardMaterial;
 
   private texturedFieldMaterials: Map<string, BABYLON.StandardMaterial>;
 
@@ -28,9 +31,18 @@ export class MaterialBuilder {
     this.blueMaterial = new BABYLON.StandardMaterial("blueMaterial", engine.scene);
     this.blueMaterial.diffuseColor = new BABYLON.Color3(0, 0, 1);
 
-    this.fieldMaterial = new BABYLON.StandardMaterial("groundmaterial", engine.scene);
-    this.fieldMaterial.diffuseColor = new BABYLON.Color3(1, 1, 1);
-    this.fieldMaterial.alpha = 0.7;
+    this.highlightMaterialRed = new BABYLON.StandardMaterial("highlightmaterialred", engine.scene);
+    this.highlightMaterialRed.diffuseColor = new BABYLON.Color3(1, 0.5, 0.5);
+    this.highlightMaterialRed.alpha = 0.5;
+
+
+    this.highlightMaterialBlue = new BABYLON.StandardMaterial("highlightmaterialredblue", engine.scene);
+    this.highlightMaterialBlue.diffuseColor = new BABYLON.Color3(0.5, 0.5, 1);
+    this.highlightMaterialBlue.alpha = 0.5;
+
+    this.transparentMaterial = new BABYLON.StandardMaterial("transparentmaterial", engine.scene);
+    this.transparentMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+    this.transparentMaterial.alpha = 0;
 
     this.texturedFieldMaterials = new Map<string, BABYLON.StandardMaterial>();
 
@@ -55,13 +67,18 @@ export class MaterialBuilder {
     return this.blueMaterial;
   }
 
-  getFieldMaterial(): BABYLON.StandardMaterial {
-    return this.fieldMaterial;
+  getHighlightMaterial(color: "red" | "blue"): BABYLON.StandardMaterial {
+    if (color == "red") {
+      return this.highlightMaterialRed;
+    } else {
+      return this.highlightMaterialRed;
+    }
   }
 
-  getHighlightAlpha(): number {
-    return this.fieldMaterial.alpha;
+  getTransparentMaterial(): BABYLON.StandardMaterial {
+    return this.transparentMaterial;
   }
+
 
   getTexturedFieldMaterial(fieldtype: FIELDTYPE) {
     if (!this.texturedFieldMaterials.get(fieldtype)) {

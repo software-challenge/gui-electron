@@ -61,7 +61,7 @@ export class GameRuleLogic {
 
     let requiredCarrots: number = GameRuleLogic.calculateCarrots(distance);
 
-    if (requiredCarrots <= player.carrots) return false; //Can't go to a new place if you don't have the juice for it
+    if (requiredCarrots > player.carrots) return false; //Can't go to a new place if you don't have the juice for it
 
     let newPosition = player.index + distance;
 

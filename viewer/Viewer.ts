@@ -1,9 +1,10 @@
 ///  <reference path="..//babylon.d.ts" />
 import { Helpers } from "./Helpers";
-import { Board } from './Components/Board.js';
+import { Board } from './Components/Board';
 import { Player } from './Components/Player';
 import { Engine } from './Engine/Engine';
-import { GameState, GameResult, Player as SC_Player, Card } from '../api/HaseUndIgel';
+import { UI } from './Engine/UI';
+import { GameState, PLAYERCOLOR } from '../api/HaseUndIgel';
 export class Viewer {
   //Path constants
   static PATH_PREFIX: string = "";
@@ -16,33 +17,10 @@ export class Viewer {
 
   canvas: HTMLCanvasElement;
   debug: HTMLDivElement;
-  display: {
-    root: HTMLDivElement,
-    red: {
-      root: HTMLDivElement,
-      carrots: HTMLDivElement,
-      salads: HTMLDivElement,
-      cards: HTMLDivElement
-    },
-    blue: {
-      root: HTMLDivElement,
-      carrots: HTMLDivElement,
-      salads: HTMLDivElement,
-      cards: HTMLDivElement
-    },
-    round: HTMLDivElement,
-    progress: {
-      box: HTMLDivElement,
-      bar: HTMLDivElement
-    }
-  };
 
-  endscreen: {
-    root: HTMLDivElement,
-    picture: HTMLImageElement,
-    winner: HTMLDivElement,
-    reason: HTMLDivElement
-  }
+  //UI
+  ui: UI;
+
   //Engine
   engine: Engine;
   board: Board;
@@ -78,56 +56,7 @@ export class Viewer {
     }
     window['printDebug'] = () => console.log(this);
 
-    //Display
 
-    var cdiv = (classnames: string[], parent: any): HTMLDivElement => {
-      var div = document.createElement('div');
-      classnames.forEach(name => {
-        div.classList.add(name);
-      });
-      parent.appendChild(div);
-      return div;
-    }
-
-
-    var root = cdiv(['display'], element);
-    var redroot = cdiv(['red'], root);
-    var blueroot = cdiv(['blue'], root);
-
-    var progressbox = cdiv(['progressbox'], element);
-
-    this.display = {
-      root: root,
-      red: {
-        root: redroot,
-        carrots: cdiv(['carrots'], redroot),
-        salads: cdiv(['salads'], redroot),
-        cards: cdiv(['cards'], redroot)
-      },
-      blue: {
-        root: blueroot,
-        carrots: cdiv(['carrots'], blueroot),
-        salads: cdiv(['salads'], blueroot),
-        cards: cdiv(['cards'], blueroot)
-      },
-      round: cdiv(['round'], root),
-      progress: {
-        box: progressbox,
-        bar: cdiv(['progressbar'], progressbox)
-      }
-    };
-
-    var endscreen_root = cdiv(['endscreen'], element);
-    var endscreen_picture = document.createElement('img');
-    endscreen_picture.src = "assets/pokal.svg";
-    endscreen_picture.classList.add('winPicture');
-    endscreen_root.appendChild(endscreen_picture);
-    this.endscreen = {
-      root: endscreen_root,
-      picture: endscreen_picture,
-      winner: cdiv(['winName'], endscreen_root),
-      reason: cdiv(['winReason'], endscreen_root)
-    };
 
     //
     //Rerender-control
@@ -138,18 +67,12 @@ export class Viewer {
     window.addEventListener('focus', () => {
       this.needsRerender = 1;
     });
-    //
 
-
+    //Debug
     element.appendChild(this.debug);
-
-
-
 
     this.engine = new Engine(this.canvas);
     this.engine.rerenderControlActive = rerenderControl;
-
-
 
     if (element.hasAttribute('fxaa')) {
       var fxaa_level: number = parseInt(element.getAttribute('fxaa'));
@@ -164,6 +87,9 @@ export class Viewer {
     this.blue = new Player(1, 0, this.board.grid);
     this.red.init(this.engine);
     this.blue.init(this.engine);
+
+    //Display
+    this.ui = new UI(this.engine, this.board, this.canvas, element, window);
 
     //
     //Attempt startup
@@ -182,9 +108,15 @@ export class Viewer {
     this.board.update(state.board, animated);
     this.red.update(state.red.index, animated);
     this.blue.update(state.blue.index, animated);
-    this.updateDisplay(state);
+    this.ui.updateDisplay(state);
     setTimeout(() => this.engine.needsRerender = false, 2000);
-    this.endscreen.root.style.opacity = "0";
+    this.ui.setEndscreenVisible(false);
+    if (state.currentPlayer == 0) {
+      this.ui.setInteractive("red");
+      this.ui.highlightPossibleFieldsForGamestate(state);
+    } else {
+      this.ui.setInteractive("off");
+    }
   }
 
   stop() {
@@ -192,40 +124,5 @@ export class Viewer {
     this.engine.needsRerender = false;
   }
 
-  private updateDisplay(state: GameState) {
 
-    var cardFactory = (cards: Card[]) => {
-      var cardToTex = (name) => {
-        switch (name) {
-          case Card.EAT_SALAD: return "hasenjoker_salad.png";
-          case Card.FALL_BACK: return "hasenjoker_backward.png";
-          case Card.HURRY_AHEAD: return "hasenjoker_forward.png";
-          case Card.TAKE_OR_DROP_CARROTS: return "hasenjoker_carrots.png";
-        }
-      }
-      return cards.map(card => `<img src="assets/${cardToTex(card.value)}" class="card ${card.value}" />`).join(" ");
-    }
-
-    this.display.round.innerText = state.turn.toString();
-    this.display.red.salads.innerText = state.red.salads.toString();
-    this.display.red.carrots.innerText = state.red.carrots.toString();
-    this.display.red.cards.innerHTML = cardFactory(state.red.cards);
-    this.display.blue.salads.innerText = state.blue.salads.toString();
-    this.display.blue.carrots.innerText = state.blue.carrots.toString();
-    this.display.blue.cards.innerHTML = cardFactory(state.blue.cards);
-    this.display.progress.bar.style.width = ((state.turn / 60) * 100) + "%";
-  }
-
-  updateEndscreen(result: GameResult) {
-    this.endscreen.winner.innerHTML = result.winner.displayName;
-    if (result.winner.color == SC_Player.COLOR.BLUE) {
-      this.endscreen.winner.classList.remove("winRed");
-      this.endscreen.winner.classList.add("winBlue");
-    } else {
-      this.endscreen.winner.classList.remove("winBlue");
-      this.endscreen.winner.classList.add("winRed");
-    }
-    this.endscreen.reason.innerHTML = result.reason;
-    this.endscreen.root.style.opacity = "1";
-  }
 }

@@ -80,8 +80,38 @@
   content: "Salate: ";
 }
 
+.display .cardbox{
+  position: relative;
+  height: 4vh;
+  width: 4vh;
+  padding: 0;  
+  display: inline-block;
+}
+
 .display .card{
   height: 4vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+
+.display .highlight-card{
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 4vh;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.display .highlight-card.interactive:hover{
+  opacity: 0.4;
+}
+
+.display .highlight-card.interactive:active{
+  opacity: 1;
 }
 
 .display .round{
