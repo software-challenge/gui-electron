@@ -108,15 +108,16 @@ export class Viewer {
     this.board.update(state.board, animated);
     this.red.update(state.red.index, animated);
     this.blue.update(state.blue.index, animated);
-    this.ui.updateDisplay(state);
-    setTimeout(() => this.engine.needsRerender = false, 2000);
-    this.ui.setEndscreenVisible(false);
     if (state.currentPlayer == 0) {
       this.ui.setInteractive("red");
       this.ui.highlightPossibleFieldsForGamestate(state);
     } else {
       this.ui.setInteractive("off");
     }
+    this.ui.updateDisplay(state);
+    setTimeout(() => this.engine.needsRerender = false, 2000);
+    this.ui.setEndscreenVisible(false);
+
   }
 
   stop() {
