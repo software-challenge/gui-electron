@@ -202,7 +202,7 @@ export class GameRuleLogic {
       return false;
     }
 
-    let newPosition = state.board.getClosestPreviousHedgehogField(state.getCurrentPlayer().index);
+    let newPosition = state.board.getPreviousFieldByType(Board.Fieldtype.hedgehog, state.getCurrentPlayer().index);
 
     return (newPosition != -1) && (!state.isOccupied(newPosition));
 

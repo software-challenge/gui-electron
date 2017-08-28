@@ -10,6 +10,15 @@ export class GameState {
   board: Board;
   lastNonSkipAction: Action;
 
+  constructor() {
+    this.red = new Player(Player.COLOR.RED);
+    this.blue = new Player(Player.COLOR.BLUE);
+    this.startPlayer = Player.COLOR.RED;
+    this.currentPlayer = Player.COLOR.RED;
+    this.turn = 0;
+    this.board = new Board();
+  }
+
   static fromJSON(json: any): GameState {
     var gs = new GameState();
     gs.startPlayer = Player.ColorFromString(json.$.startPlayer);
@@ -62,6 +71,10 @@ export class GameState {
       this.lastNonSkipAction = action;
     }
   }
+
+  getStartPlayer() {
+    return this.getPlayerByColor(this.startPlayer);
+  }
 }
 
 
@@ -96,9 +109,89 @@ export class Board {
     return b;
   }
 
-  getClosestPreviousHedgehogField(position: number): number {
-    for (let i = position; i <= 0; i++) {
-      if (this.fields[i] == Board.Fieldtype.hedgehog) {
+  constructor() {
+    let segment: FIELDTYPE[];
+    let F = Board.Fieldtype;
+    this.fields = [];
+    let addFields = (array: FIELDTYPE[]) => {
+      Array.prototype.push.apply(this.fields, array);
+    }
+    let shuffle = (array: Array<any>): Array<any> => {
+      var currentIndex = array.length, temporaryValue, randomIndex;
+
+      // While there remain elements to shuffle...
+      while (0 !== currentIndex) {
+
+        // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+
+        // And swap it with the current element.
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
+      }
+
+      return array;
+    }
+
+    segment = [F.hare, F.carrot, F.hare, F.carrot, F.carrot, F.hare, F.position_1, F.position_2, F.carrot]
+    shuffle(segment)
+    addFields(segment)
+    addFields([F.salad, F.hedgehog])
+    segment = [F.carrot, F.carrot, F.hare]
+    shuffle(segment)
+    addFields(segment)
+    addFields([F.hedgehog])
+    segment = [F.position_1, F.position_2, F.carrot]
+    shuffle(segment)
+    addFields(segment)
+    addFields([F.hedgehog])
+    segment = [F.carrot, F.carrot, F.position_2]
+    shuffle(segment)
+    addFields([segment.shift()])
+    addFields([segment.shift()])
+    addFields([F.salad])
+    addFields([segment.shift()])
+    addFields([F.hedgehog])
+    segment = [F.hare, F.carrot, F.carrot, F.carrot, F.position_2]
+    shuffle(segment)
+    addFields(segment)
+    addFields([F.hedgehog])
+    segment = [F.hare, F.position_1, F.carrot, F.hare, F.position_2, F.carrot]
+    shuffle(segment)
+    addFields(segment)
+    addFields([F.hedgehog])
+    segment = [F.carrot, F.hare, F.carrot, F.position_2]
+    shuffle(segment)
+    addFields(segment)
+    addFields([F.salad, F.hedgehog])
+    segment = [F.carrot, F.carrot, F.hare, F.position_2, F.position_1, F.carrot]
+    shuffle(segment)
+    addFields(segment)
+    addFields([F.hedgehog])
+    segment = [F.hare, F.carrot, F.position_2, F.carrot, F.carrot]
+    shuffle(segment)
+    addFields(segment)
+    addFields([F.salad, F.hedgehog])
+    segment = [F.hare, F.carrot, F.position_1, F.carrot, F.hare, F.carrot]
+    shuffle(segment)
+    addFields(segment)
+    addFields([F.goal])
+  }
+
+  getNextFieldByType(type: FIELDTYPE, startIndex: number = 0): number {
+    for (let i = startIndex + 1; i <= this.fields.length; i++) {
+      if (this.fields[i] == type) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  getPreviousFieldByType(type: FIELDTYPE, startIndex: number): number {
+    for (let i = startIndex - 1; i >= 0; i--) {
+      if (this.fields[i] == type) {
         return i;
       }
     }
@@ -132,14 +225,21 @@ export class Player {
   }
 
   static fromJSON(json: any): Player {
-    var p = new Player();
+    var p = new Player(Player.ColorFromString(json.$.color));
     p.displayName = json.$.displayName;
-    p.color = Player.ColorFromString(json.$.color);
     p.index = json.$.index;
     p.carrots = json.$.carrots;
     p.salads = json.$.salads;
     p.cards = json.cards[0].type ? json.cards[0].type.map(t => Card.fromString(t)) : [];
     return p;
+  }
+
+  constructor(color: PLAYERCOLOR) {
+    this.color = color;
+    this.index = 0;
+    this.carrots = 68;
+    this.salads = 5;
+    this.cards = [Card.TakeOrDropCarrots(), Card.EatSalat(), Card.HurryAhead(), Card.FallBack()];
   }
 
   ownsCardOfType(card: Card): boolean {
