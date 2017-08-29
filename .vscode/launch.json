@@ -5,6 +5,31 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Tests",
+      "program": "${workspaceRoot}/node_modules/.bin/_mocha",
+      "runtimeExecutable": null,
+      "cwd": "${workspaceRoot}",
+      "stopOnEntry": false,
+      "args": [
+        "-u",
+        "tdd",
+        "--no-timeouts",
+        "-r",
+        "ts-node/register",
+        "--colors",
+        "${workspaceRoot}/test/**/*.spec.ts*"
+      ],
+      "sourceMaps": true,
+      "env": {
+        "NODE_ENV": "testing"
+      },
+      "outFiles": [
+        "${workspaceRoot}/build"
+      ]
+    },
+    {
       // NOTE: You should not have a chromium instance already open, as this
       // command launches chromium with debugging functionaliy.
       "name": "Launch localhost",

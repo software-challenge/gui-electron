@@ -42,7 +42,7 @@ describe('HaseUndIgelGameRules', () => {
       expect(GameRuleLogic.isValidToPlayEatSalad(state)).to.equal(false)
     })
     it('is possible to advance', () => {
-      expect(GameRuleLogic.isValidToAdvance(state, state.board.getNextFieldByType(Board.Fieldtype.carrot))).to.equal(false)
+      expect(GameRuleLogic.isValidToAdvance(state, state.board.getNextFieldByType(Board.Fieldtype.carrot))).to.equal(true)
     })
   })
 })
