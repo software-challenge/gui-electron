@@ -102,12 +102,16 @@ export class UI {
 
   highlightPossibleFieldsForGamestate(gamestate: GameState) {
     if ((gamestate.currentPlayer == SC_Player.COLOR.RED && this.interactive == "red") || (gamestate.currentPlayer == SC_Player.COLOR.BLUE && this.interactive == "blue")) {
-      let fields = GameRuleLogic.calculateMoveableFields(gamestate.getCurrentPlayer().carrots);
-      console.log("can advance " + fields + " fields");
-      for (let i: number = 0; i <= fields; i++) {
+      let fieldsBeforePlayer = gamestate.board.fields.length - 1 - gamestate.getCurrentPlayer().index
+      let distance = Math.min(
+        GameRuleLogic.calculateMoveableFields(gamestate.getCurrentPlayer().carrots),
+        fieldsBeforePlayer
+      );
+      console.log("can advance " + distance + " fields");
+      for (let i: number = 0; i <= distance; i++) {
         if (GameRuleLogic.isValidToAdvance(gamestate, i)) {
           let fieldIndex: number = (gamestate.getCurrentPlayer().index | 0) + (i | 0); //No idea why, but without the asmjs-integer-annotations it does a string-concat instead of an add
-          console.log("can advance to <" + fieldIndex + ">");
+          console.log("can advance to <" + fieldIndex + ">" + " " + gamestate.board.fields[fieldIndex]);
           this.board.fields[fieldIndex].setHighlight(true, this.interactive);
         }
       }

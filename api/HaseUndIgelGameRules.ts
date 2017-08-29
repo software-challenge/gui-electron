@@ -63,7 +63,7 @@ export class GameRuleLogic {
 
     if (requiredCarrots > player.carrots) return false; //Can't go to a new place if you don't have the juice for it
 
-    let newPosition = player.index + distance;
+    let newPosition: number = (player.index | 0) + (distance | 0); //No idea why, but without the asmjs-integer-annotations it does a string-concat instead of an add
 
     if (state.isOccupied(newPosition)) return false; //Can't go to occupied fields
 

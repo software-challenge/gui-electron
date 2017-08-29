@@ -46,6 +46,14 @@ describe('HaseUndIgelGameRules', () => {
     it('is possible to advance', () => {
       expect(GameRuleLogic.isValidToAdvance(state, state.board.getNextFieldByType(Board.Fieldtype.carrot))).to.be.true
     })
+
+    it('is not possible to advance onto a hedgehog field', () => {
+      let hedgehogDistance = state.board.getNextFieldByType(Board.Fieldtype.hedgehog)
+      expect(hedgehogDistance).to.be.at.most(
+        GameRuleLogic.calculateMoveableFields(state.getCurrentPlayer().carrots)
+      )
+      expect(GameRuleLogic.isValidToAdvance(state, hedgehogDistance)).to.be.false
+    })
   })
 
   describe('take or drop carrots', () => {
