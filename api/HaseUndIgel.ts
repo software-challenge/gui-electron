@@ -249,9 +249,9 @@ export class Player {
   static fromJSON(json: any): Player {
     var p = new Player(Player.ColorFromString(json.$.color));
     p.displayName = json.$.displayName;
-    p.index = json.$.index;
-    p.carrots = json.$.carrots;
-    p.salads = json.$.salads;
+    p.index = Number(json.$.index);
+    p.carrots = Number(json.$.carrots);
+    p.salads = Number(json.$.salads);
     p.cards = json.cards[0].type ? json.cards[0].type.map(t => Card.fromString(t)) : [];
     if (json.lastNonSkipAction != undefined) {
       p.lastNonSkipAction = Action.fromJSON(json.lastNonSkipAction[0]);
