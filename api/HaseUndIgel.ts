@@ -10,7 +10,7 @@ export class GameState {
   startPlayer: PLAYERCOLOR;
   currentPlayer: PLAYERCOLOR;
   board: Board;
-  lastNonSkipAction: Action;
+  //  lastMove: TODO
 
   constructor() {
     this.red = new Player(Player.COLOR.RED);
@@ -37,9 +37,6 @@ export class GameState {
     clone.turn = this.turn;
     clone.startPlayer = this.startPlayer;
     clone.currentPlayer = this.currentPlayer;
-    if (this.lastNonSkipAction != undefined) {
-      clone.lastNonSkipAction = this.lastNonSkipAction.clone();
-    }
     clone.red = this.red.clone();
     clone.blue = this.blue.clone();
     clone.board = this.board.clone();
@@ -80,7 +77,7 @@ export class GameState {
 
   setLastAction(action: Action) {
     if (action.type != "SKIP") {
-      this.lastNonSkipAction = action;
+      this.getCurrentPlayer().lastNonSkipAction = action;
     }
   }
 
@@ -256,6 +253,9 @@ export class Player {
     p.carrots = json.$.carrots;
     p.salads = json.$.salads;
     p.cards = json.cards[0].type ? json.cards[0].type.map(t => Card.fromString(t)) : [];
+    if (json.lastNonSkipAction != undefined) {
+      p.lastNonSkipAction = Action.fromJSON(json.lastNonSkipAction[0]);
+    }
     return p;
   }
 
@@ -372,6 +372,23 @@ export class Action {
         throw "Unknown action " + this.type;
     }
     state.setLastAction(this);
+  }
+
+  static fromJSON(json: any) {
+    switch (json.$.class) {
+      case "card":
+        return new Card(json.$.type, json.$.value)
+      case "advance":
+        return new Action(json.$.class, json.$.distance)
+      case "exchangeCarrots":
+        return new Action(json.$.class, json.$.value)
+      case "eatSalad":
+      case "fallBack":
+      case "skip":
+        return new Action(json.$.class)
+      default:
+        throw "unknown action type " + json.$.class
+    }
   }
 
   clone(): Action {

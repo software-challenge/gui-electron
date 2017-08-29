@@ -73,7 +73,7 @@ export class GameRuleLogic {
 
     if (state.board.fields[newPosition] == Board.Fieldtype.hare) {
       let state2: GameState = state.clone(); //Copy state for check from new field
-      state2.lastNonSkipAction = new Action("ADVANCE", distance);
+      state2.setLastAction(new Action("ADVANCE", distance));
       state2.getCurrentPlayer().index = newPosition;
       state2.getCurrentPlayer().carrots -= requiredCarrots;
       if (!this.canPlayAnyCard(state2)) {
@@ -163,12 +163,12 @@ export class GameRuleLogic {
       return true;
     }
 
-    if (state.lastNonSkipAction) {
-      if (state.lastNonSkipAction.type == "EAT_SALAD") {
+    if (player.lastNonSkipAction) {
+      if (player.lastNonSkipAction.type == "EAT_SALAD") {
         return true;
       }
-      if (state.lastNonSkipAction.type == "CARD") {
-        let card = (<Card>state.lastNonSkipAction)
+      if (player.lastNonSkipAction.type == "CARD") {
+        let card = (<Card>player.lastNonSkipAction)
         return card.cardType == Card.EAT_SALAD || card.cardType == Card.TAKE_OR_DROP_CARROTS;
       }
     }
