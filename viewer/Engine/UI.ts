@@ -16,13 +16,25 @@ export class UI {
       root: HTMLDivElement,
       carrots: HTMLDivElement,
       salads: HTMLDivElement,
-      cards: HTMLDivElement
+      cards: {
+        root: HTMLDivElement,
+        take_or_drop_carrots: HTMLSpanElement,
+        eat_salad: HTMLSpanElement,
+        hurry_ahead: HTMLSpanElement,
+        fall_back: HTMLSpanElement
+      }
     },
     blue: {
       root: HTMLDivElement,
       carrots: HTMLDivElement,
       salads: HTMLDivElement,
-      cards: HTMLDivElement
+      cards: {
+        root: HTMLDivElement,
+        take_or_drop_carrots: HTMLSpanElement,
+        eat_salad: HTMLSpanElement,
+        hurry_ahead: HTMLSpanElement,
+        fall_back: HTMLSpanElement
+      }
     },
     round: HTMLDivElement,
     progress: {
@@ -48,25 +60,69 @@ export class UI {
 
     var progressbox = cdiv(['progressbox'], element);
 
+
+
     this.display = {
       root: root,
       red: {
         root: redroot,
         carrots: cdiv(['carrots'], redroot),
         salads: cdiv(['salads'], redroot),
-        cards: cdiv(['cards'], redroot)
+        cards: null
       },
       blue: {
         root: blueroot,
         carrots: cdiv(['carrots'], blueroot),
         salads: cdiv(['salads'], blueroot),
-        cards: cdiv(['cards'], blueroot)
+        cards: null
       },
       round: cdiv(['round'], root),
       progress: {
         box: progressbox,
         bar: cdiv(['progressbar'], progressbox)
       }
+    };
+
+
+    var redcardroot = cdiv(['cards'], redroot);
+    var bluecardroot = cdiv(['cards'], blueroot);
+
+    //Card creation helper function
+    var ccard = (name, root) => {
+      var cardToTex = (name) => {
+        switch (name) {
+          case Card.EAT_SALAD: return "hasenjoker_salad.png";
+          case Card.FALL_BACK: return "hasenjoker_backward.png";
+          case Card.HURRY_AHEAD: return "hasenjoker_forward.png";
+          case Card.TAKE_OR_DROP_CARROTS: return "hasenjoker_carrots.png";
+        }
+      }
+
+      var cardbox = document.createElement('span');
+      cardbox.addEventListener('click', () => {
+        this.interactCard(name);
+      })
+      cardbox.classList.add('cardbox');
+      var card_image = cimg('assets/' + cardToTex(name), ['card', name], cardbox);
+      var highlight_image = cimg('assets/highlight_' + cardToTex(name), ['highlight-card', name], cardbox);
+      root.appendChild(cardbox);
+      return cardbox;
+    }
+
+    this.display.red.cards = {
+      root: redcardroot,
+      eat_salad: ccard(Card.EAT_SALAD, redcardroot),
+      fall_back: ccard(Card.FALL_BACK, redcardroot),
+      hurry_ahead: ccard(Card.HURRY_AHEAD, redcardroot),
+      take_or_drop_carrots: ccard(Card.TAKE_OR_DROP_CARROTS, redcardroot)
+    };
+
+    this.display.blue.cards = {
+      root: bluecardroot,
+      eat_salad: ccard(Card.EAT_SALAD, bluecardroot),
+      fall_back: ccard(Card.FALL_BACK, bluecardroot),
+      hurry_ahead: ccard(Card.HURRY_AHEAD, bluecardroot),
+      take_or_drop_carrots: ccard(Card.TAKE_OR_DROP_CARROTS, bluecardroot)
     };
 
     var endscreen_root = cdiv(['endscreen'], element);
@@ -87,6 +143,10 @@ export class UI {
     this.setInteractive("red");
   }
 
+  private interactCard(name: string) {
+    console.log("interaction with card " + name);
+  }
+
   setInteractive(interactive: "off" | "red" | "blue") {
     this.interactive = interactive;
     console.log("INTERACTIVE MODE: " + interactive);
@@ -98,6 +158,10 @@ export class UI {
   setEndscreenVisible(visible: boolean) {
     this.endscreen.root.style.opacity = visible ? "1" : "0";
 
+  }
+
+  highlightPossibleCardsForGameState(gamestate: GameState) {
+    //TODO: Tomorrow morning :)
   }
 
   highlightPossibleFieldsForGamestate(gamestate: GameState) {
@@ -119,27 +183,31 @@ export class UI {
   }
 
   updateDisplay(state: GameState) {
-    var cardFactory = (cards: Card[], isActivePlayer: boolean) => {
-      var cardToTex = (name) => {
-        switch (name) {
-          case Card.EAT_SALAD: return "hasenjoker_salad.png";
-          case Card.FALL_BACK: return "hasenjoker_backward.png";
-          case Card.HURRY_AHEAD: return "hasenjoker_forward.png";
-          case Card.TAKE_OR_DROP_CARROTS: return "hasenjoker_carrots.png";
-        }
-      }
-      let interactive_class = this.interactive ? "interactive" : "";
-      return cards.map(card => `<span class="cardbox" ${this.interactive && isActivePlayer ? 'onclick="window.ui.handleCard(\'' + card.cardType + '\');"' : ""}><img src="assets/${cardToTex(card.cardType)}" class="card ${card.cardType}"/><img src="assets/highlight_${cardToTex(card.cardType)}" class="highlight-card ${interactive_class} ${card.cardType}"/></span>`).join(" ");
-    }
-
     this.display.round.innerText = state.turn.toString();
     this.display.red.salads.innerText = state.red.salads.toString();
     this.display.red.carrots.innerText = state.red.carrots.toString();
-    this.display.red.cards.innerHTML = cardFactory(state.red.cards, this.interactive == "red");
     this.display.blue.salads.innerText = state.blue.salads.toString();
     this.display.blue.carrots.innerText = state.blue.carrots.toString();
-    this.display.blue.cards.innerHTML = cardFactory(state.blue.cards, this.interactive == "blue");
     this.display.progress.bar.style.width = ((state.turn / 60) * 100) + "%";
+
+
+    //Update cards
+    //TODO: There HAS to be a cleverer way to do this
+    ['red', 'blue'].forEach(color => {
+      var cards = [];
+      state[color].cards.forEach(c => {
+        cards.push(c.cardType);
+      });
+
+      [Card.EAT_SALAD, Card.FALL_BACK, Card.HURRY_AHEAD, Card.TAKE_OR_DROP_CARROTS].forEach(card => {
+        if (cards.indexOf(card) != -1) {
+          this.display[color].cards[card.toLowerCase()].classList.remove('invisible');
+        } else {
+          this.display[color].cards[card.toLowerCase()].classList.add('invisible');
+        }
+      });
+    });
+
   }
 
   updateEndscreen(result: GameResult) {

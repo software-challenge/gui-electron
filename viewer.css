@@ -95,6 +95,9 @@
   left: 0;
 }
 
+.display .cardbox.invisible{
+  display: none;
+}
 
 .display .highlight-card{
   position: absolute;
