@@ -1,7 +1,9 @@
+import { GameRuleLogic } from './HaseUndIgelGameRules';
 import { watch } from 'fs';
 
 
 export class GameState {
+  // REMEMBER to extend clone method when adding attributes here!
   red: Player;
   blue: Player;
   turn: number;
@@ -31,7 +33,17 @@ export class GameState {
   }
 
   clone(): GameState {
-    return GameState.fromJSON(JSON.parse(JSON.stringify(this))); //Ugly, slow, horrible
+    let clone = new GameState();
+    clone.turn = this.turn;
+    clone.startPlayer = this.startPlayer;
+    clone.currentPlayer = this.currentPlayer;
+    if (this.lastNonSkipAction != undefined) {
+      clone.lastNonSkipAction = this.lastNonSkipAction.clone();
+    }
+    clone.red = this.red.clone();
+    clone.blue = this.blue.clone();
+    clone.board = this.board.clone();
+    return clone;
   }
 
   getCurrentPlayer(): Player {
@@ -101,6 +113,7 @@ export class Board {
     start: "START",
     goal: "GOAL"
   }
+  // REMEMBER to extend clone method when adding attributes here!
   fields: FIELDTYPE[];
   static fromJSON(json: any): Board {
     var b = new Board();
@@ -135,6 +148,7 @@ export class Board {
       return array;
     }
 
+    addFields([F.start])
     segment = [F.hare, F.carrot, F.hare, F.carrot, F.carrot, F.hare, F.position_1, F.position_2, F.carrot]
     shuffle(segment)
     addFields(segment)
@@ -197,6 +211,16 @@ export class Board {
     }
     return -1;
   }
+
+  clone(): Board {
+    let clone = new Board()
+    let clonedFields = []
+    for (let f of this.fields) {
+      clonedFields.push(f)
+    }
+    clone.fields = clonedFields;
+    return clone;
+  }
 }
 
 
@@ -205,6 +229,7 @@ export type PLAYERCOLOR = 0 | 1;
 
 
 export class Player {
+  // REMEMBER to extend clone method when adding attributes here!
   displayName: string;
   color: PLAYERCOLOR;
   index: number;
@@ -253,17 +278,104 @@ export class Player {
   removeCard(card: Card) {
     this.cards = this.cardsWithout(card)
   }
+
+  eatSalad(): void {
+    if (this.salads > 0) {
+      this.salads -= 1;
+    } else {
+      throw "Can't eat salad. No salads left!"
+    }
+  }
+
+  changeCarrotsBy(value: number) {
+    if (this.carrots + value >= 0) {
+      this.carrots += value;
+    } else {
+      throw "Can't change carrots by " + value + ". Current carrots: " + this.carrots;
+    }
+  }
+
+  clone(): Player {
+    let clone = new Player(this.color);
+    clone.displayName = this.displayName;
+    clone.index = this.index;
+    clone.carrots = this.carrots;
+    clone.salads = this.salads;
+    let clonedCards = [];
+    for (let c of this.cards) {
+      clonedCards.push(new Card(c.cardType, c.value))
+    }
+    clone.cards = clonedCards;
+    if (this.lastNonSkipAction != undefined) {
+      clone.lastNonSkipAction = this.lastNonSkipAction.clone();
+    }
+    clone.mustPlayCard = this.mustPlayCard;
+    return clone;
+  }
 }
 
+export type ActionType = "ADVANCE" | "CARD" | "EAT_SALAD" | "EXCHANGE_CARROTS" | "FALL_BACK" | "SKIP";
 export class Action {
-  type: "ADVANCE" | "CARD" | "EAT_SALAD" | "SKIP";
-  distance: number;
+  // REMEMBER to extend clone method when adding attributes here!
+  type: ActionType;
+  value: number; // distance for ADVANCE, number of carrots for EXCHANGE_CARROTS
 
-  static getAdvanceAction(distance: number): Action {
-    let a = new Action();
-    a.type = "ADVANCE";
-    a.distance = distance;
-    return a;
+  constructor(type: ActionType, value: number = 0) {
+    this.type = type;
+    this.value = value;
+  }
+
+  perform(state: GameState): void {
+    switch (this.type) {
+      case "ADVANCE":
+        if (GameRuleLogic.isValidToAdvance(state, this.value)) {
+          state.getCurrentPlayer().changeCarrotsBy(-GameRuleLogic.calculateCarrots(this.value));
+          state.getCurrentPlayer().index = state.getCurrentPlayer().index + this.value
+          if (state.board.fields[state.getCurrentPlayer().index] == Board.Fieldtype.hare) {
+            state.getCurrentPlayer().mustPlayCard = true
+          }
+        } else {
+          throw "Vorwaertszug um " + this.value + " Felder nicht moeglich!"
+        }
+        break;
+      case "EAT_SALAD":
+        if (GameRuleLogic.isValidToEat(state)) {
+          state.getCurrentPlayer().eatSalad();
+          // when eating salad the carrots are increased
+          if (state.getCurrentPlayer().index > state.getOtherPlayer().index) {
+            state.getCurrentPlayer().changeCarrotsBy(10);
+          } else {
+            state.getCurrentPlayer().changeCarrotsBy(30);
+          }
+        } else {
+          throw "Es kann gerade kein Salat (mehr) gegessen werden.";
+        }
+      case "EXCHANGE_CARROTS":
+        if (GameRuleLogic.isValidToExchangeCarrots(state, this.value)) {
+          state.getCurrentPlayer().changeCarrotsBy(this.value);
+          state.setLastAction(this);
+        } else {
+          throw "Es können nicht " + this.value + " Karotten aufgenommen werden.";
+        }
+      case "FALL_BACK":
+        if (GameRuleLogic.isValidToFallBack(state)) {
+          let previousFieldIndex = state.getCurrentPlayer().index;
+          state.getCurrentPlayer().index = state.board.getPreviousFieldByType(Board.Fieldtype.hedgehog, state.getCurrentPlayer().index);
+          state.getCurrentPlayer().changeCarrotsBy(10 * (previousFieldIndex - state.getCurrentPlayer().index));
+        } else {
+          throw "Es kann gerade kein Rückzug gemacht werden.";
+        }
+      case "SKIP":
+        // do nothing
+        break;
+      default:
+        throw "Unknown action " + this.type;
+    }
+    state.setLastAction(this);
+  }
+
+  clone(): Action {
+    return new Action(this.type, this.value);
   }
 }
 
@@ -273,31 +385,18 @@ export class Card extends Action {
   static HURRY_AHEAD = 'HURRY_AHEAD';
   static FALL_BACK = 'FALL_BACK';
 
+  // REMEMBER to extend clone method when adding attributes here!
   cardType: string;
   value: number; // for take or drop carrots, may be -10, 0 or 10
 
+  constructor(cardType: string, value: number = 0) {
+    super("CARD")
+    this.cardType = cardType;
+    this.value = value;
+  }
+
   static fromString(s: string): Card {
-    var c = new Card();
-    c.type = "CARD"
-
-    switch (s) {
-      case Card.TAKE_OR_DROP_CARROTS:
-        c.cardType = Card.TAKE_OR_DROP_CARROTS;
-        break;
-      case Card.EAT_SALAD:
-        c.cardType = Card.EAT_SALAD;
-        break;
-      case Card.HURRY_AHEAD:
-        c.cardType = Card.HURRY_AHEAD;
-        break;
-      case Card.FALL_BACK:
-        c.cardType = Card.FALL_BACK;
-        break;
-      default:
-        throw `Unknown card type: ${s}`;
-    }
-
-    return c;
+    return new Card(s);
   }
 
   static TakeOrDropCarrots(): Card {
@@ -316,6 +415,58 @@ export class Card extends Action {
     return Card.fromString(Card.FALL_BACK)
   }
 
+  clone(): Card {
+    return new Card(this.cardType, this.value);
+  }
+
+  perform(state: GameState): void {
+    state.getCurrentPlayer().mustPlayCard = false;
+    switch (this.cardType) {
+      case Card.EAT_SALAD:
+        if (GameRuleLogic.isValidToPlayEatSalad(state)) {
+          state.getCurrentPlayer().eatSalad();
+          if (state.isFirst(state.getCurrentPlayer())) {
+            state.getCurrentPlayer().changeCarrotsBy(10);
+          } else {
+            state.getCurrentPlayer().changeCarrotsBy(30);
+          }
+        } else {
+          throw "Das Ausspielen der EAT_SALAD Karte ist nicht möglich.";
+        }
+        break;
+      case Card.FALL_BACK:
+        if (GameRuleLogic.isValidToPlayFallBack(state)) {
+          state.getCurrentPlayer().index = state.getOtherPlayer().index - 1;
+          if (state.getTypeAt(state.getCurrentPlayer().index) == Board.Fieldtype.hare) {
+            state.getCurrentPlayer().mustPlayCard = true;
+          }
+        } else {
+          throw "Das Ausspielen der FALL_BACK Karte ist nicht möglich.";
+        }
+        break;
+      case Card.HURRY_AHEAD:
+        if (GameRuleLogic.isValidToPlayHurryAhead(state)) {
+          state.getCurrentPlayer().index = state.getOtherPlayer().index + 1;
+          if (state.getTypeAt(state.getCurrentPlayer().index) == Board.Fieldtype.hare) {
+            state.getCurrentPlayer().mustPlayCard = true;
+          }
+        } else {
+          throw "Das Ausspielen der FALL_BACK Karte ist nicht möglich.";
+        }
+        break;
+      case Card.TAKE_OR_DROP_CARROTS:
+        if (GameRuleLogic.isValidToPlayTakeOrDropCarrots(state, this.value)) {
+          state.getCurrentPlayer().changeCarrotsBy(this.value);
+        } else {
+          throw "Das Ausspielen der TAKE_OR_DROP_CARROTS Karte ist nicht möglich.";
+        }
+        break;
+      default:
+        throw "Unknown card type " + this.cardType;
+    }
+    state.setLastAction(this);
+    state.getCurrentPlayer().removeCard(this);
+  }
 }
 
 export class GameResult {

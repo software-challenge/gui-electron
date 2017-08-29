@@ -73,7 +73,7 @@ export class GameRuleLogic {
 
     if (state.board.fields[newPosition] == Board.Fieldtype.hare) {
       let state2: GameState = state.clone(); //Copy state for check from new field
-      state2.lastNonSkipAction = Action.getAdvanceAction(distance);
+      state2.lastNonSkipAction = new Action("ADVANCE", distance);
       state2.getCurrentPlayer().index = newPosition;
       state2.getCurrentPlayer().carrots -= requiredCarrots;
       if (!this.canPlayAnyCard(state2)) {

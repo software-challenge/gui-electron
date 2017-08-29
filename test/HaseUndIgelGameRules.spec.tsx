@@ -1,4 +1,4 @@
-import { GameState, PLAYERCOLOR, Player, Board } from '../api/HaseUndIgel';
+import { GameState, PLAYERCOLOR, Player, Board, Action, Card } from '../api/HaseUndIgel';
 import { expect } from 'chai';
 import { GameRuleLogic } from '../api/HaseUndIgelGameRules';
 
@@ -30,19 +30,67 @@ describe('HaseUndIgelGameRules', () => {
       expect(state.blue.salads).to.equal(5)
       expect(state.red.cards.length).to.equal(4)
       expect(state.blue.cards.length).to.equal(4)
+      expect(state.board.fields[0]).to.equal(Board.Fieldtype.start)
+      expect(state.board.fields[64]).to.equal(Board.Fieldtype.goal)
     })
 
     it('is not possible to fall back', () => {
-      expect(GameRuleLogic.isValidToFallBack(state)).to.equal(false)
+      expect(GameRuleLogic.isValidToFallBack(state)).to.be.false
     })
     it('is not possible to exchange carrots', () => {
-      expect(GameRuleLogic.isValidToExchangeCarrots(state, 0)).to.equal(false)
+      expect(GameRuleLogic.isValidToExchangeCarrots(state, 0)).to.be.false
     })
     it('is not possible to play a eat salad card', () => {
-      expect(GameRuleLogic.isValidToPlayEatSalad(state)).to.equal(false)
+      expect(GameRuleLogic.isValidToPlayEatSalad(state)).to.be.false
     })
     it('is possible to advance', () => {
-      expect(GameRuleLogic.isValidToAdvance(state, state.board.getNextFieldByType(Board.Fieldtype.carrot))).to.equal(true)
+      expect(GameRuleLogic.isValidToAdvance(state, state.board.getNextFieldByType(Board.Fieldtype.carrot))).to.be.true
+    })
+  })
+
+  describe('take or drop carrots', () => {
+    it('is not possible on start field', () => {
+      expect(GameRuleLogic.isValidToExchangeCarrots(state, 10)).to.be.false
+    })
+    it('is not possible on hare field', () => {
+      state.red.index = state.board.getNextFieldByType(Board.Fieldtype.hare)
+      expect(GameRuleLogic.isValidToExchangeCarrots(state, 10)).to.be.false
+    })
+    it('is not possible on salad field', () => {
+      state.red.index = state.board.getNextFieldByType(Board.Fieldtype.salad)
+      expect(GameRuleLogic.isValidToExchangeCarrots(state, 10)).to.be.false
+    })
+    it('is not possible on position 1 field', () => {
+      state.red.index = state.board.getNextFieldByType(Board.Fieldtype.position_1)
+      expect(GameRuleLogic.isValidToExchangeCarrots(state, 10)).to.be.false
+    })
+    it('is not possible on position 2 field', () => {
+      state.red.index = state.board.getNextFieldByType(Board.Fieldtype.position_2)
+      expect(GameRuleLogic.isValidToExchangeCarrots(state, 10)).to.be.false
+    })
+    it('is possible on carrot field', () => {
+      state.red.index = state.board.getNextFieldByType(Board.Fieldtype.carrot)
+      expect(GameRuleLogic.isValidToExchangeCarrots(state, 10)).to.be.true
+    })
+  })
+
+  describe('must play card', () => {
+    it('is updated when entering a hare field', () => {
+      let advanceToHare = new Action("ADVANCE", state.board.getNextFieldByType(Board.Fieldtype.hare))
+      let playCard = new Card(Card.TAKE_OR_DROP_CARROTS)
+      advanceToHare.perform(state)
+      playCard.perform(state)
+      expect(state.red.mustPlayCard).to.be.false
+    })
+  })
+
+  describe('cloning a gamestate', () => {
+    it('performs a deep clone', () => {
+      let gamestate = new GameState();
+      let clone = gamestate.clone()
+      clone.board.fields[2] = Board.Fieldtype.start
+      expect(gamestate.board.fields[2]).to.not.equal(Board.Fieldtype.start)
+      // TODO: add more expects
     })
   })
 })
