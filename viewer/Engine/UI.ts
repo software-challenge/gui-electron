@@ -110,7 +110,7 @@ export class UI {
       console.log("can advance " + distance + " fields");
       for (let i: number = 0; i <= distance; i++) {
         if (GameRuleLogic.isValidToAdvance(gamestate, i)) {
-          let fieldIndex: number = (gamestate.getCurrentPlayer().index | 0) + (i | 0); //No idea why, but without the asmjs-integer-annotations it does a string-concat instead of an add
+          let fieldIndex: number = gamestate.getCurrentPlayer().index + i;
           console.log("can advance to <" + fieldIndex + ">" + " " + gamestate.board.fields[fieldIndex]);
           this.board.fields[fieldIndex].setHighlight(true, this.interactive);
         }
