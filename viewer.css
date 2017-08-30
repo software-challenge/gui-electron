@@ -156,9 +156,11 @@
 .replay-viewer .carrotPickup.root{
   position: absolute;
   top: 0;
-  left: 0;
+  left: 0 !important;
   background-color: rgba(0,0,0,0.6);
   width: 100%;
+  height: 100%;
+  padding-top: 10vh;
   left: 100%;
   text-align: center;
 }
@@ -169,6 +171,8 @@
   padding: 2px 12px;
   font-size: 8vh;
   width: 33%;
+  margin: auto;
+  margin-bottom: 2vh;
 }
 
 

@@ -176,7 +176,7 @@ export class UI {
       reason: cdiv(['winReason'], endscreen_root)
     };
 
-    var carrotPickupRoot = cdiv(['carrotPickup', 'root'], element);
+    var carrotPickupRoot = cdiv(['carrotPickup', 'root', 'invisible'], element);
     this.carrotPickupDialogue = {
       root: carrotPickupRoot,
       takeTen: cdiv(['carrotPickup', 'takeTen', 'clickable'], carrotPickupRoot, "+10"),
