@@ -27,7 +27,7 @@ export class HumanClient extends GenericPlayer {
     let actionState = this.state;
 
     while (interaction_type != "send") {
-      interaction_type = await this.ui.interact(actionState);
+      interaction_type = await this.ui.interact(actionState, this.color);
       switch (interaction_type) {
         case "action":
           move.push(this.ui.chosenAction);

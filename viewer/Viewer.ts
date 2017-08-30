@@ -89,7 +89,7 @@ export class Viewer {
     this.blue.init(this.engine);
 
     //Display
-    this.ui = new UI(this.engine, this.board, this.canvas, element, window);
+    this.ui = new UI(this, this.engine, this.board, this.canvas, element, window);
 
     //
     //Attempt startup
@@ -103,17 +103,11 @@ export class Viewer {
 
 
 
-  render(state: GameState, animated: boolean) {
+  render(state: GameState, animated: boolean = true) {
     this.engine.needsRerender = true;
     this.board.update(state.board, animated);
     this.red.update(state.red.index, animated);
     this.blue.update(state.blue.index, animated);
-    if (state.currentPlayer == 0) {
-      this.ui.setInteractive("red");
-      this.ui.highlightPossibleFieldsForGamestate(state);
-    } else {
-      this.ui.setInteractive("off");
-    }
     this.ui.updateDisplay(state);
     setTimeout(() => this.engine.needsRerender = false, 2000);
     this.ui.setEndscreenVisible(false);

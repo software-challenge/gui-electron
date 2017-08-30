@@ -2,14 +2,19 @@
 import { Engine } from './Engine';
 import { Board } from '../Components/Board';
 import { Field } from '../Components/Field';
+import * as events from "events"
 
-import { GameState, GameResult, Player as SC_Player, Card, Action } from '../../api/HaseUndIgel';
+import { GameState, GameResult, Player as SC_Player, PLAYERCOLOR, Card, Action } from '../../api/HaseUndIgel';
 import { GameRuleLogic } from '../../api/HaseUndIgelGameRules';
+import { Viewer } from '../Viewer';
 
 export class UI {
   interactive: "off" | "red" | "blue";
   private engine: Engine;
   private board: Board;
+  private viewer: Viewer;
+
+  private eventProxy = new class extends events.EventEmitter { }();
 
   chosenAction: Action = null;
 
@@ -54,9 +59,22 @@ export class UI {
   }
 
 
-  constructor(engine: Engine, board: Board, canvas: HTMLCanvasElement, element: Element, window: Window) {
+  constructor(viewer: Viewer, engine: Engine, board: Board, canvas: HTMLCanvasElement, element: Element, window: Window) {
     this.engine = engine;
     this.board = board;
+    this.viewer = viewer;
+
+
+    canvas.addEventListener('click', () => {
+      var pickResult = engine.scene.pick(engine.scene.pointerX, engine.scene.pointerY);
+      if (pickResult.hit) {
+        let pickedID = pickResult.pickedMesh.id;
+        if (pickedID.startsWith('highlight-field')) {
+          pickedID = pickedID.split('-')[2];
+          this.eventProxy.emit('field', Number(pickedID));
+        }
+      }
+    });
     var root = cdiv(['display'], element);
     var redroot = cdiv(['red'], root);
     var blueroot = cdiv(['blue'], root);
@@ -163,7 +181,9 @@ export class UI {
 
   }
 
-  interact(state: GameState): Promise<"action" | "cancel" | "send"> {
+  interact(state: GameState, color: PLAYERCOLOR): Promise<"action" | "cancel" | "send"> {
+    this.viewer.render(state);
+
     return new Promise((res, rej) => {
       res("send");
     });
