@@ -163,7 +163,7 @@ export class UI {
 
   }
 
-  interact(): Promise<"action" | "cancel" | "send"> {
+  interact(state: GameState): Promise<"action" | "cancel" | "send"> {
     return new Promise((res, rej) => {
       res("send");
     });
