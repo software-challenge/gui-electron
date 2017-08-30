@@ -72,9 +72,11 @@ export class Game extends EventEmitter {
 
       Logger.log("Observer ready");
 
+      // TODO: logic for other games than computer vs. computer
+
       //Create room
-      var p1 = new PlayerClientOptions(gco.player1path, false, true);
-      var p2 = new PlayerClientOptions(gco.player2path, false, true);
+      var p1 = new PlayerClientOptions(gco.firstPlayerPath, false, true);
+      var p2 = new PlayerClientOptions(gco.secondPlayerPath, false, true);
 
       var reservation: RoomReservation = await this.observer.prepareRoom(p1, p2);
       this.roomId = reservation.roomId;
@@ -86,8 +88,8 @@ export class Game extends EventEmitter {
       Logger.log("Observing room with id " + this.roomId);
 
       //Create players
-      this.client1 = new ExecutableClient('java', ['-jar'], gco.player1path, '127.0.0.1', 13050, reservation.reservation1);
-      this.client2 = new ExecutableClient('java', ['-jar'], gco.player2path, '127.0.0.1', 13050, reservation.reservation2);
+      this.client1 = new ExecutableClient('java', ['-jar'], gco.firstPlayerPath, '127.0.0.1', 13050, reservation.reservation1);
+      this.client2 = new ExecutableClient('java', ['-jar'], gco.secondPlayerPath, '127.0.0.1', 13050, reservation.reservation2);
 
       this.client1.on('stdout', msg => {
         let m: ConsoleMessage = {
