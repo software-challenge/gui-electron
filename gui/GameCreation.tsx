@@ -1,15 +1,17 @@
 import * as electron from 'electron';
 import { remote } from 'electron';
 import * as React from 'react';
-import { SelectBox, Button } from './photon-fix/Components';
+import { Input, SelectBox, Button } from './photon-fix/Components';
 import { GameCreationOptions, PlayerType } from '../api/GameCreationOptions';
 
 const dialog = remote.dialog;
 
 interface State {
   firstPlayerType: PlayerType
+  firstPlayerName: string,
   firstPlayerProgramPath: string // TODO use a Maybe type
   secondPlayerType: PlayerType
+  secondPlayerName: string,
   secondPlayerProgramPath: string // TODO use a Maybe type
 }
 
@@ -20,8 +22,10 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
     var defaultClient = window.localStorage['defaultProgramPath'];
     this.state = {
       firstPlayerType: "Computer",
+      firstPlayerName: "Spieler 1",
       firstPlayerProgramPath: defaultClient,
       secondPlayerType: "Computer",
+      secondPlayerName: "Spieler 2",
       secondPlayerProgramPath: defaultClient
     }
   }
@@ -85,8 +89,10 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
     this.gameCreationCallback(
       new GameCreationOptions(
         this.state.firstPlayerType,
+        this.state.firstPlayerName,
         this.state.firstPlayerProgramPath,
-        this.state.firstPlayerType,
+        this.state.secondPlayerType,
+        this.state.secondPlayerName,
         this.state.secondPlayerProgramPath
       )
     );
@@ -94,6 +100,13 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
 
   // checks if the current configuration is valid for starting a game
   private validConfiguration() {
+    // only non-empty player names
+    if (this.state.firstPlayerName.trim() == "") {
+      return false;
+    }
+    if (this.state.secondPlayerName.trim() == "") {
+      return false;
+    }
     // the configuration is only invalid if the user selected "Computer" but didn't select a program
     if (this.state.firstPlayerType == "Computer" && this.state.firstPlayerProgramPath == undefined) {
       return false;
@@ -128,13 +141,15 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
         startControl = <p>Aktuell sind nur Spiele Computer gegen Computer moeglich!</p>
       }
     } else {
-      startControl = <p>Bitte wähle ein Programm aus.</p>
+      startControl = <p>Ungueltige Einstellungen!</p>
     }
     return (
       <div className="game-creation">
+        <Input value={this.state.firstPlayerName} onChange={(event) => this.handlePlayerChange((p, v) => p.firstPlayerName = v)(event)} />
         <SelectBox value={this.state.firstPlayerType} items={items} onChange={(event) => this.handlePlayerChange((p, v) => p.firstPlayerType = v)(event)} />
         {firstPlayerControl}
         gegen
+        <Input value={this.state.secondPlayerName} onChange={(event) => this.handlePlayerChange((p, v) => p.secondPlayerName = v)(event)} />
         <SelectBox value={this.state.secondPlayerType} items={items} onChange={(event) => this.handlePlayerChange((p, v) => p.secondPlayerType = v)(event)} />
         {secondPlayerControl}
         {startControl}

@@ -30,6 +30,7 @@ export class UI {
     root: HTMLDivElement,
     red: {
       root: HTMLDivElement,
+      name: HTMLDivElement,
       carrots: HTMLDivElement,
       salads: HTMLDivElement,
       cards: {
@@ -42,6 +43,7 @@ export class UI {
     },
     blue: {
       root: HTMLDivElement,
+      name: HTMLDivElement,
       carrots: HTMLDivElement,
       salads: HTMLDivElement,
       cards: {
@@ -103,12 +105,14 @@ export class UI {
       root: root,
       red: {
         root: redroot,
+        name: cdiv(['name'], redroot),
         carrots: cdiv(['carrots'], redroot),
         salads: cdiv(['salads'], redroot),
         cards: null
       },
       blue: {
         root: blueroot,
+        name: cdiv(['name'], blueroot),
         carrots: cdiv(['carrots'], blueroot),
         salads: cdiv(['salads'], blueroot),
         cards: null
@@ -246,8 +250,10 @@ export class UI {
 
   updateDisplay(state: GameState) {
     this.display.round.innerText = state.turn.toString();
+    this.display.red.name.innerText = state.red.displayName;
     this.display.red.salads.innerText = state.red.salads.toString();
     this.display.red.carrots.innerText = state.red.carrots.toString();
+    this.display.blue.name.innerText = state.blue.displayName;
     this.display.blue.salads.innerText = state.blue.salads.toString();
     this.display.blue.carrots.innerText = state.blue.carrots.toString();
     this.display.progress.bar.style.width = ((state.turn / 60) * 100) + "%";

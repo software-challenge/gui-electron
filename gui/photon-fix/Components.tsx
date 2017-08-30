@@ -161,3 +161,11 @@ export class SelectBox extends React.Component<{ value: string, items: SelectIte
     )
   }
 }
+
+export class Input extends React.Component<{ value: string, onChange?: (e: any) => void }>{
+  render() {
+    return (
+      <input className="form-control" value={this.props.value} onChange={this.props.onChange} />
+    )
+  }
+}

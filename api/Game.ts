@@ -75,8 +75,8 @@ export class Game extends EventEmitter {
       // TODO: logic for other games than computer vs. computer
 
       //Create room
-      var p1 = new PlayerClientOptions(gco.firstPlayerPath, false, true);
-      var p2 = new PlayerClientOptions(gco.secondPlayerPath, false, true);
+      var p1 = new PlayerClientOptions(gco.firstPlayerName, false, true);
+      var p2 = new PlayerClientOptions(gco.secondPlayerName, false, true);
 
       var reservation: RoomReservation = await this.observer.prepareRoom(p1, p2);
       this.roomId = reservation.roomId;
