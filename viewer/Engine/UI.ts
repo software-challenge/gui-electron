@@ -182,7 +182,7 @@ export class UI {
       takeTen: cdiv(['carrotPickup', 'takeTen', 'clickable'], carrotPickupRoot, "+10"),
       takeZero: cdiv(['carrotPickup', 'takeZero', 'clickable'], carrotPickupRoot, '0'),
       giveTen: cdiv(['carrotPickup', 'giveTen', 'clickable'], carrotPickupRoot, '-10'),
-      cancel: cdiv(['carrotPickup', 'cancel', 'clickable'], carrotPickupRoot, 'Cancel')
+      cancel: cdiv(['carrotPickup', 'carrot-cancel', 'clickable'], carrotPickupRoot, 'Cancel')
     }
     this.carrotPickupDialogue.takeTen.addEventListener('click', () => this.eventProxy.emit('carrotPickup', 10));
     this.carrotPickupDialogue.takeZero.addEventListener('click', () => this.eventProxy.emit('carrotPickup', 0));
