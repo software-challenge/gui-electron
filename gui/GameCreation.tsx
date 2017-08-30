@@ -136,7 +136,7 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
     var startControl;
     if (this.validConfiguration()) {
       if (this.state.firstPlayerType == "Computer" && this.state.secondPlayerType == "Computer") {
-        startControl = <Button text="Start!" onClick={() => this.handleStartGame()} />;
+        startControl = <Button text="Start!" pullRight={true} onClick={() => this.handleStartGame()} />;
       } else {
         startControl = <p>Aktuell sind nur Spiele Computer gegen Computer moeglich!</p>
       }
@@ -148,11 +148,13 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
         <Input value={this.state.firstPlayerName} onChange={(event) => this.handlePlayerChange((p, v) => p.firstPlayerName = v)(event)} />
         <SelectBox value={this.state.firstPlayerType} items={items} onChange={(event) => this.handlePlayerChange((p, v) => p.firstPlayerType = v)(event)} />
         {firstPlayerControl}
-        gegen
+        <div id="vs">gegen</div>
         <Input value={this.state.secondPlayerName} onChange={(event) => this.handlePlayerChange((p, v) => p.secondPlayerName = v)(event)} />
         <SelectBox value={this.state.secondPlayerType} items={items} onChange={(event) => this.handlePlayerChange((p, v) => p.secondPlayerType = v)(event)} />
         {secondPlayerControl}
-        {startControl}
+        <div id="start">
+          {startControl}
+        </div>
       </div>
     );
   }

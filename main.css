@@ -35,11 +35,33 @@
 
 .game-creation{
   padding: 0.2em;
+  max-width: 30rem;
+  margin: 0 auto;
 }
 
 .game-creation select{
   padding: 0;
   margin-bottom: 0.5em;
+}
+
+.game-creation input {
+  font-size: 200%;
+  margin-bottom: 0.5em;
+}
+
+.game-creation code {
+  display: block;
+  overflow: auto;
+}
+
+.game-creation div#vs {
+  font-size: 150%;
+  text-align: center;
+  margin: 1em auto;
+}
+
+.game-creation div#start button {
+  font-size: 200%;
 }
 
 .replay-viewer{
