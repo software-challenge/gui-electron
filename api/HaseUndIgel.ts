@@ -391,6 +391,11 @@ export class Action {
     }
   }
 
+  static toJSON(): string {
+    //TODO: implement
+    throw "Not implemented!";
+  }
+
   clone(): Action {
     return new Action(this.type, this.value);
   }

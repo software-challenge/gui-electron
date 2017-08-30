@@ -3,13 +3,16 @@ import { Engine } from './Engine';
 import { Board } from '../Components/Board';
 import { Field } from '../Components/Field';
 
-import { GameState, GameResult, Player as SC_Player, Card } from '../../api/HaseUndIgel';
+import { GameState, GameResult, Player as SC_Player, Card, Action } from '../../api/HaseUndIgel';
 import { GameRuleLogic } from '../../api/HaseUndIgelGameRules';
 
 export class UI {
   interactive: "off" | "red" | "blue";
   private engine: Engine;
   private board: Board;
+
+  chosenAction: Action = null;
+
   private display: {
     root: HTMLDivElement,
     red: {
@@ -160,8 +163,18 @@ export class UI {
 
   }
 
+  interact(state: GameState): Promise<"action" | "cancel" | "send"> {
+    return new Promise((res, rej) => {
+      res("send");
+    });
+  }
+
   highlightPossibleCardsForGameState(gamestate: GameState) {
     //TODO: Tomorrow morning :)
+  }
+
+  showCarrotPickupDialogue() {
+
   }
 
   highlightPossibleFieldsForGamestate(gamestate: GameState) {
