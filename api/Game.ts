@@ -118,8 +118,8 @@ export class Game extends EventEmitter {
             });
             return executableClient;
           case "Human":
-            throw "TODO";
-          //let humanClient = new HumanClient("Karl", )
+            let humanClient = new HumanClient("Karl", Api.getCurrentViewer().ui)
+            return humanClient;
           case "External":
             throw "TODO";
         }

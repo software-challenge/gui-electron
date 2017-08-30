@@ -21,6 +21,7 @@ export class Game extends React.Component<{ options: GameCreationOptions, nameCa
   startViewer(e) {
     if (!this.viewer) {
       this.viewer = new Viewer(e, document, window, true);
+      Api.setCurrentViewer(this.viewer);
     }
 
     if (!this.game) {

@@ -1,10 +1,11 @@
+import { GameClient } from './Game';
 import { GenericPlayer } from './PlayerClient';
 
 import { PLAYERCOLOR, Player, GameState, Action } from './HaseUndIgel';
 
 import { UI } from '../viewer/Engine/UI';
 
-export class HumanClient extends GenericPlayer {
+export class HumanClient extends GenericPlayer implements GameClient {
   color: PLAYERCOLOR;
   private ui: UI;
   private state: GameState;
@@ -42,5 +43,20 @@ export class HumanClient extends GenericPlayer {
     //2. Send move
     //Build xml and this.writeData it out
     throw "Not implemented!";
+  }
+
+  start(): Promise<void> {
+    var start = async function () {
+      console.log("Human player started")
+      throw "TODO: connect to server"
+    }.bind(this);
+    return start();
+  }
+
+  stop() {
+    var stop = async function () {
+      console.log("Human player stopped")
+    }.bind(this);
+    return stop();
   }
 }

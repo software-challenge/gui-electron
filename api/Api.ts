@@ -3,11 +3,13 @@ import { Server } from './Server';
 import { GameManager } from './GameManager';
 
 import { Logger } from './Logger';
+import { Viewer } from '../viewer/Viewer';
 
 export class Api {
   private static server: Server;
   private static gameManager: GameManager;
   private static logger: Logger;
+  private static currentViewer: Viewer;
 
   static getServer(autostart: boolean = true): Server {
     if (!this.server) {
@@ -29,6 +31,14 @@ export class Api {
       this.logger = new Logger(false, /*`sgc_log_${d.getFullYear()}.${d.getMonth()}.${d.getDay()}_${d.getHours()}.${d.getMinutes()}.${d.getSeconds()}.log`*/ 'sgc.log');
     }
     return this.logger;
+  }
+
+  static setCurrentViewer(viewer: Viewer): void {
+    this.currentViewer = viewer;
+  }
+
+  static getCurrentViewer(): Viewer {
+    return this.currentViewer;
   }
 
 
