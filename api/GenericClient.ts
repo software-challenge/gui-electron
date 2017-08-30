@@ -29,7 +29,7 @@ export class GenericClient extends events.EventEmitter {
     this.clientSocket = net.createConnection({ port: SERVER_PORT }, () => {
       if (sendProtocol) {
         this.writeData('<protocol>', () => {
-          setTimeout(() => this.setStatus(ClientStatus.Status.CONNECTED), 1500); //NodeJS Sockets don't have flush, so this will have to do
+          this.setStatus(ClientStatus.Status.CONNECTED); //NodeJS Sockets don't have flush, so this will have to do
         });
       } else {
         this.setStatus(ClientStatus.Status.CONNECTED);
