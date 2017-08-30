@@ -2,14 +2,9 @@ import * as electron from 'electron';
 import { remote } from 'electron';
 import * as React from 'react';
 import { SelectBox, Button } from './photon-fix/Components';
-import { GameCreationOptions } from '../api/GameCreationOptions';
+import { GameCreationOptions, PlayerType } from '../api/GameCreationOptions';
 
 const dialog = remote.dialog;
-
-type PlayerType =
-  "Human" |
-  "Computer" |
-  "External";
 
 interface State {
   firstPlayerType: PlayerType
@@ -22,13 +17,11 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
   private gameCreationCallback: (GameCreationOptions) => void;
   constructor() {
     super();
-    var defaultClient = window.localStorage['defaultProgramPath'] || "/home/sven/development/sc/client_server/deploy/simple_client/hase_und_igel_player_new/jar/hase_und_igel_player_new.jar"
+    var defaultClient = window.localStorage['defaultProgramPath'];
     this.state = {
       firstPlayerType: "Computer",
-      // XXX
       firstPlayerProgramPath: defaultClient,
       secondPlayerType: "Computer",
-      // XXX
       secondPlayerProgramPath: defaultClient
     }
   }
@@ -60,6 +53,7 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
       function (filenames) {
         // dialog returns undefined when user clicks cancel or an array of strings (paths) if user selected a file
         if (filenames && filenames.length > 0) {
+          window.localStorage['defaultProgramPath'] = filenames[0];
           this.setState((prev, _props) => {
             setter(prev, filenames[0])
           });
@@ -88,9 +82,14 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
 
   // is called when the user wants to start a game with a valid configuration
   private handleStartGame() {
-    //TODO: this is not enough, we need to handle human players as well
-    window.localStorage['defaultProgramPath'] = this.state.firstPlayerProgramPath;
-    this.gameCreationCallback(new GameCreationOptions(this.state.firstPlayerProgramPath, this.state.secondPlayerProgramPath));
+    this.gameCreationCallback(
+      new GameCreationOptions(
+        this.state.firstPlayerType,
+        this.state.firstPlayerProgramPath,
+        this.state.firstPlayerType,
+        this.state.secondPlayerProgramPath
+      )
+    );
   }
 
   // checks if the current configuration is valid for starting a game
