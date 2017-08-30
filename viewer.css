@@ -162,6 +162,7 @@
     opacity: 0;
     text-align: center;
     color: white;
+    pointer-events: none;
 }
 
 .winPicture{
