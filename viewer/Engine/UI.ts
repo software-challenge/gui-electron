@@ -18,6 +18,7 @@ export class UI {
 
   chosenAction: Action = null;
 
+
   private display: {
     root: HTMLDivElement,
     red: {
@@ -44,6 +45,8 @@ export class UI {
         fall_back: HTMLSpanElement
       }
     },
+    cancel: HTMLDivElement,
+    send: HTMLDivElement,
     round: HTMLDivElement,
     progress: {
       box: HTMLDivElement,
@@ -65,16 +68,22 @@ export class UI {
     this.viewer = viewer;
 
 
-    canvas.addEventListener('click', () => {
+    engine.scene.onPointerObservable.add((ed, es) => {
+      console.log("clicked!", engine.scene.pointerX, engine.scene.pointerY);
       var pickResult = engine.scene.pick(engine.scene.pointerX, engine.scene.pointerY);
       if (pickResult.hit) {
         let pickedID = pickResult.pickedMesh.id;
         if (pickedID.startsWith('highlight-field')) {
           pickedID = pickedID.split('-')[2];
-          this.eventProxy.emit('field', Number(pickedID));
+          let pickedIndex = Number(pickedID);
+          if (this.board.fields[pickedIndex].highlight) {
+            this.eventProxy.emit('field', Number(pickedIndex));
+          }
         }
       }
-    });
+      console.log("pointer event", engine.scene.pointerX, engine.scene.pointerY);
+    }, BABYLON.PointerEventTypes.POINTERPICK);
+
     var root = cdiv(['display'], element);
     var redroot = cdiv(['red'], root);
     var blueroot = cdiv(['blue'], root);
@@ -101,8 +110,15 @@ export class UI {
       progress: {
         box: progressbox,
         bar: cdiv(['progressbar'], progressbox)
-      }
+      },
+      cancel: cdiv(['cancel', 'button', 'invisible'], element),
+      send: cdiv(['send', 'button', 'invisible'], element)
     };
+    //TODO: Make Cancel and Send actual button elements for UI consistency (add cbtn method)
+    this.display.cancel.innerText = "Cancel";
+    this.display.cancel.addEventListener('click', () => this.eventProxy.emit('cancel'));
+    this.display.send.innerText = "Send";
+    this.display.send.addEventListener('click', () => this.eventProxy.emit('send'));
 
 
     var redcardroot = cdiv(['cards'], redroot);
@@ -121,7 +137,7 @@ export class UI {
 
       var cardbox = document.createElement('span');
       cardbox.addEventListener('click', () => {
-        this.interactCard(name);
+        this.eventProxy.emit('card', name);
       })
       cardbox.classList.add('cardbox');
       var card_image = cimg('assets/' + cardToTex(name), ['card', name], cardbox);
@@ -164,15 +180,17 @@ export class UI {
     this.setInteractive("red");
   }
 
-  private interactCard(name: string) {
-    console.log("interaction with card " + name);
-  }
-
   setInteractive(interactive: "off" | "red" | "blue") {
     this.interactive = interactive;
     console.log("INTERACTIVE MODE: " + interactive);
     if (this.interactive == "off") {
       this.board.fields.forEach(f => f.setHighlight(false));
+      this.display.send.classList.remove('invisble');
+      this.display.cancel.classList.remove('invisble');
+    } else {
+      this.display.send.classList.add('invisble');
+      this.display.cancel.classList.add('invisble');
+
     }
   }
 

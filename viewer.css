@@ -22,7 +22,7 @@
 .replay-viewer>.replay-controls{
     position: absolute;
     right: 10;
-    bottom: 10;
+    bottom: 15;
     font-size: 3em;
 }
 
@@ -34,7 +34,7 @@
 }
 
 .replay-controls>button:hover{
-    background-color:#ddd;
+    background-color:#ccc;
 }
 
 .replay-controls>button:active{
@@ -95,7 +95,7 @@
   left: 0;
 }
 
-.display .cardbox.invisible{
+.invisible{
   display: none;
 }
 
@@ -125,6 +125,40 @@
   left: 0;
   font-weight: bold;
   font-size: 5vh;
+}
+
+.replay-viewer .cancel{
+  position: absolute;
+  bottom: 8vh;
+  left: 10;
+  font-size: 3vh;
+  color: red;
+  background: white;
+  margin: 2px;
+  border: 1px solid black;
+  padding: 1px 6px;
+  font-weight: bold;
+}
+
+.replay-viewer .send{
+  position: absolute;
+  bottom: 8vh;
+  right: 10;
+  margin: 2px;
+  font-size: 3vh;
+  color:#007800;
+  background: white;
+  border: 1px solid black; 
+  padding: 1px 6px;  
+  font-weight: bold;
+}
+
+.replay-viewer .button:hover{
+  background-color:#ccc;
+}
+
+.replay-viewer .button:active{
+color: red;
 }
 
 

@@ -117,15 +117,6 @@ export class Engine {
       this.engine.resize();
     });
 
-    this.scene.onPointerObservable.add((ed, es) => {
-      console.log("clicked!", this.scene.pointerX, this.scene.pointerY);
-      var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
-      if (pickResult.hit) {
-        console.log(pickResult.pickedMesh.id);
-      }
-      console.log("pointer event", this.scene.pointerX, this.scene.pointerY);
-    }, BABYLON.PointerEventTypes.POINTERPICK)
-
   }
 
 
