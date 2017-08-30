@@ -9,15 +9,19 @@ export class HumanClient extends GenericPlayer implements GameClient {
   color: PLAYERCOLOR;
   private ui: UI;
   private state: GameState;
-  constructor(name: string, ui: UI) {
+  private reservation: string;
+  constructor(name: string, ui: UI, reservation: string) {
     super(name);
     this.ui = ui;
+    this.reservation = reservation;
     this.on('welcome', welcomeMessage => this.color = welcomeMessage.mycolor);
     this.on('moverequest', this.handleMoveRequest);
-    this.on('state', s => this.state = s)
+    this.on('state', s => this.state = s);
+    this.on('message', m => console.log("human: " + m));
   }
 
   handleMoveRequest = async function () {
+    console.log("handling move request");
     //1. Build move
     let move: Action[] = [];
 
@@ -46,11 +50,8 @@ export class HumanClient extends GenericPlayer implements GameClient {
   }
 
   start(): Promise<void> {
-    var start = async function () {
-      console.log("Human player started")
-      throw "TODO: connect to server"
-    }.bind(this);
-    return start();
+    console.log("Human player starting");
+    return this.joinPrepared(this.reservation)
   }
 
   stop() {

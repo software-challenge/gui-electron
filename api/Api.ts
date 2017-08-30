@@ -28,7 +28,7 @@ export class Api {
   static getLogger(): Logger {
     if (!this.logger) {
       var d = new Date();
-      this.logger = new Logger(false, /*`sgc_log_${d.getFullYear()}.${d.getMonth()}.${d.getDay()}_${d.getHours()}.${d.getMinutes()}.${d.getSeconds()}.log`*/ 'sgc.log');
+      this.logger = new Logger(true, /*`sgc_log_${d.getFullYear()}.${d.getMonth()}.${d.getDay()}_${d.getHours()}.${d.getMinutes()}.${d.getSeconds()}.log`*/ 'sgc.log');
     }
     return this.logger;
   }
