@@ -18,6 +18,13 @@ export class UI {
 
   chosenAction: Action = null;
 
+  private carrotPickupDialogue: {
+    root: HTMLDivElement,
+    takeTen: HTMLDivElement,
+    takeZero: HTMLDivElement,
+    giveTen: HTMLDivElement,
+    cancel: HTMLDivElement
+  }
 
   private display: {
     root: HTMLDivElement,
@@ -111,13 +118,11 @@ export class UI {
         box: progressbox,
         bar: cdiv(['progressbar'], progressbox)
       },
-      cancel: cdiv(['cancel', 'button', 'invisible'], element),
-      send: cdiv(['send', 'button', 'invisible'], element)
+      cancel: cdiv(['cancel', 'button', 'invisible'], element, 'Cancel'),
+      send: cdiv(['send', 'button', 'invisible'], element, 'Send')
     };
     //TODO: Make Cancel and Send actual button elements for UI consistency (add cbtn method)
-    this.display.cancel.innerText = "Cancel";
     this.display.cancel.addEventListener('click', () => this.eventProxy.emit('cancel'));
-    this.display.send.innerText = "Send";
     this.display.send.addEventListener('click', () => this.eventProxy.emit('send'));
 
 
@@ -171,12 +176,18 @@ export class UI {
       reason: cdiv(['winReason'], endscreen_root)
     };
 
-    window['ui'] = {
-      handleCard: (card) => {
-        console.log(card);
-      }
+    var carrotPickupRoot = cdiv(['carrotPickup', 'root'], element);
+    this.carrotPickupDialogue = {
+      root: carrotPickupRoot,
+      takeTen: cdiv(['carrotPickup', 'takeTen', 'clickable'], carrotPickupRoot, "+10"),
+      takeZero: cdiv(['carrotPickup', 'takeZero', 'clickable'], carrotPickupRoot, '0'),
+      giveTen: cdiv(['carrotPickup', 'giveTen', 'clickable'], carrotPickupRoot, '-10'),
+      cancel: cdiv(['carrotPickup', 'cancel', 'clickable'], carrotPickupRoot, 'Cancel')
     }
-
+    this.carrotPickupDialogue.takeTen.addEventListener('click', () => this.eventProxy.emit('carrotPickup', 10));
+    this.carrotPickupDialogue.takeZero.addEventListener('click', () => this.eventProxy.emit('carrotPickup', 0));
+    this.carrotPickupDialogue.giveTen.addEventListener('click', () => this.eventProxy.emit('carrotPickup', -10));
+    this.carrotPickupDialogue.cancel.addEventListener('click', () => this.carrotPickupDialogue.root.classList.add('invisible'));
     this.setInteractive("red");
   }
 
@@ -275,8 +286,9 @@ export class UI {
   }
 }
 
-export let cdiv = (classnames: string[], parent: any): HTMLDivElement => {
+export let cdiv = (classnames: string[], parent: any, innerText: string = ""): HTMLDivElement => {
   var div = document.createElement('div');
+  div.innerText = innerText;
   classnames.forEach(name => {
     div.classList.add(name);
   });

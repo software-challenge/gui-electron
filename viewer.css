@@ -153,6 +153,25 @@
   font-weight: bold;
 }
 
+.replay-viewer .carrotPickup.root{
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(0,0,0,0.6);
+  width: 100%;
+  left: 100%;
+  text-align: center;
+}
+
+.replay-viewer div.carrotPickup.clickable{
+  border: 1px solid black;
+  background: white;
+  padding: 2px 12px;
+  font-size: 8vh;
+  width: 33%;
+}
+
+
 .replay-viewer .button:hover{
   background-color:#ccc;
 }
