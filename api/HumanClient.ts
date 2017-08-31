@@ -29,14 +29,6 @@ export class HumanClient extends GenericPlayer implements GameClient {
   handleMoveRequest = async function () {
     console.log("handling move request");
 
-    let gameReady = new Promise((res, rej) => {
-      this.ui.eventProxy.once("state", () => { res() })
-    })
-    if (this.state == undefined) {
-      console.log("HumanClient waiting for first gamestate")
-      await gameReady;
-    }
-
     //1. Build move
     let move: Action[] = [];
 
@@ -55,7 +47,12 @@ export class HumanClient extends GenericPlayer implements GameClient {
           this.ui.enableSend();
           // maybe end move selection if last possible action
           // TODO: check if any more actions are possible
-          //this.ui.setInteractive("off")
+          /*
+          if (!GameRuleLogic.canDoAnything(actionState)) {
+            this.ui.setInteractive("off");
+            interaction_type = "send";
+          }
+          */
           break;
         case "cancel":
           move = [];

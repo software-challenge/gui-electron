@@ -9,6 +9,7 @@ import { GameRuleLogic } from '../../api/HaseUndIgelGameRules';
 import { Viewer } from '../Viewer';
 
 const INVISIBLE = 'invisible';
+const HIGHLIGHT_CARD = 'highlight-card';
 
 export class UI {
   interactive: "off" | "red" | "blue";
@@ -201,8 +202,6 @@ export class UI {
     this.interactive = interactive;
     console.log("INTERACTIVE MODE: " + interactive);
     if (this.interactive == "off") {
-      this.board.fields.forEach(f => f.setHighlight(false));
-      this.engine.needsRerender = true;
       this.disableSend();
       this.disableCancel();
     }
@@ -248,7 +247,22 @@ export class UI {
   }
 
   highlightPossibleCardsForGameState(gamestate: GameState) {
-    //TODO: Tomorrow morning :)
+    let color = gamestate.getCurrentPlayer().color == SC_Player.COLOR.RED ? "red" : "blue";
+    let cards = this.display[color].cards
+    if (cards != null && cards != undefined) {
+      if (GameRuleLogic.isValidToPlayEatSalad(gamestate)) {
+        cards['eat_salad'].classList.add(HIGHLIGHT_CARD)
+      }
+      if (GameRuleLogic.isValidToPlayHurryAhead(gamestate)) {
+        cards['hurry_ahead'].classList.add(HIGHLIGHT_CARD)
+      }
+      if (GameRuleLogic.isValidToPlayFallBack(gamestate)) {
+        cards['fall_back'].classList.add(HIGHLIGHT_CARD)
+      }
+      if (GameRuleLogic.isValidToPlayTakeOrDropCarrots(gamestate, 0)) {
+        cards['take_or_drop_carrots'].classList.add(HIGHLIGHT_CARD)
+      }
+    }
   }
 
   showCarrotPickupDialogue() {
@@ -256,7 +270,10 @@ export class UI {
   }
 
   highlightPossibleFieldsForGamestate(gamestate: GameState) {
-    if ((gamestate.currentPlayer == SC_Player.COLOR.RED && this.interactive == "red") || (gamestate.currentPlayer == SC_Player.COLOR.BLUE && this.interactive == "blue")) {
+    this.board.fields.forEach(f => f.setHighlight(false));
+    if (GameRuleLogic.canAdvanceToAnyField(gamestate) &&
+      (gamestate.currentPlayer == SC_Player.COLOR.RED && this.interactive == "red") ||
+      (gamestate.currentPlayer == SC_Player.COLOR.BLUE && this.interactive == "blue")) {
       let fieldsBeforePlayer = gamestate.board.fields.length - 1 - gamestate.getCurrentPlayer().index
       let distance = Math.min(
         GameRuleLogic.calculateMoveableFields(gamestate.getCurrentPlayer().carrots),
@@ -283,8 +300,9 @@ export class UI {
     this.display.blue.carrots.innerText = state.blue.carrots.toString();
     this.display.progress.bar.style.width = ((state.turn / 60) * 100) + "%";
 
-    if (this.interactive != "off") {
+    if (this.interactive != "off" && state != null) {
       this.highlightPossibleFieldsForGamestate(state);
+      this.highlightPossibleCardsForGameState(state);
     }
 
     //Update cards

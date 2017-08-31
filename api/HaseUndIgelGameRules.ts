@@ -108,7 +108,7 @@ export class GameRuleLogic {
    * @param state GameState
    * @return true, falls ein Zug möglich ist.
    */
-  private static canDoAnything(state: GameState): boolean {
+  public static canDoAnything(state: GameState): boolean {
     return this.canPlayAnyCard(state) || this.isValidToFallBack(state)
       || this.isValidToExchangeCarrots(state, 10)
       || this.isValidToExchangeCarrots(state, -10)
@@ -120,7 +120,7 @@ export class GameRuleLogic {
   * @param state GameState
   * @return true, falls der Spieler irgendeinen Vorwärtszug machen kann
   */
-  private static canAdvanceToAnyField(state: GameState): boolean {
+  public static canAdvanceToAnyField(state: GameState): boolean {
     let fields = GameRuleLogic.calculateMoveableFields(state.getCurrentPlayer().carrots);
     for (let i = 0; i <= fields; i++) {
       if (GameRuleLogic.isValidToAdvance(state, i)) {
@@ -331,7 +331,7 @@ export class GameRuleLogic {
    * @param state GameState
    * @return true, falls das Spielen einer Karte möglich ist
    */
-  private static canPlayAnyCard(state: GameState): boolean {
+  static canPlayAnyCard(state: GameState): boolean {
     let valid = false;
     let player = state.getCurrentPlayer();
 
