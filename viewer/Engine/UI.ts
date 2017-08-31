@@ -8,6 +8,8 @@ import { GameState, GameResult, Player as SC_Player, PLAYERCOLOR, Card, Action }
 import { GameRuleLogic } from '../../api/HaseUndIgelGameRules';
 import { Viewer } from '../Viewer';
 
+const INVISIBLE = 'invisible';
+
 export class UI {
   interactive: "off" | "red" | "blue";
   private engine: Engine;
@@ -192,25 +194,38 @@ export class UI {
     this.carrotPickupDialogue.takeZero.addEventListener('click', () => this.eventProxy.emit('carrotPickup', 0));
     this.carrotPickupDialogue.giveTen.addEventListener('click', () => this.eventProxy.emit('carrotPickup', -10));
     this.carrotPickupDialogue.cancel.addEventListener('click', () => this.carrotPickupDialogue.root.classList.add('invisible'));
+
   }
 
   setInteractive(interactive: "off" | "red" | "blue") {
-    let invisible = 'invisible';
     this.interactive = interactive;
     console.log("INTERACTIVE MODE: " + interactive);
     if (this.interactive == "off") {
       this.board.fields.forEach(f => f.setHighlight(false));
       this.engine.needsRerender = true;
-      this.display.send.classList.remove(invisible);
-      this.display.cancel.classList.remove(invisible);
-    } else {
-      if (!this.display.send.classList.contains(invisible)) {
-        this.display.send.classList.add(invisible);
-      }
-      if (!this.display.cancel.classList.contains(invisible)) {
-        this.display.cancel.classList.add(invisible);
-      }
+      this.disableSend();
+      this.disableCancel();
     }
+  }
+
+  disableSend() {
+    if (!this.display.send.classList.contains(INVISIBLE)) {
+      this.display.send.classList.add(INVISIBLE);
+    }
+  }
+
+  enableSend() {
+    this.display.send.classList.remove(INVISIBLE);
+  }
+
+  disableCancel() {
+    if (!this.display.cancel.classList.contains(INVISIBLE)) {
+      this.display.cancel.classList.add(INVISIBLE);
+    }
+  }
+
+  enableCancel() {
+    this.display.cancel.classList.remove(INVISIBLE);
   }
 
   setEndscreenVisible(visible: boolean) {

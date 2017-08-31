@@ -28,6 +28,15 @@ export class HumanClient extends GenericPlayer implements GameClient {
 
   handleMoveRequest = async function () {
     console.log("handling move request");
+
+    let gameReady = new Promise((res, rej) => {
+      this.ui.eventProxy.once("state", () => { res() })
+    })
+    if (this.state == undefined) {
+      console.log("HumanClient waiting for first gamestate")
+      await gameReady;
+    }
+
     //1. Build move
     let move: Action[] = [];
 
@@ -35,7 +44,7 @@ export class HumanClient extends GenericPlayer implements GameClient {
 
     let interaction_type = "none";
 
-    let actionState = this.state;
+    let actionState = this.state.clone();
 
     while (interaction_type != "send") {
       interaction_type = await this.ui.interact(actionState, this.color);
@@ -43,17 +52,26 @@ export class HumanClient extends GenericPlayer implements GameClient {
         case "action":
           move.push(this.ui.chosenAction);
           this.ui.chosenAction.perform(actionState);
+          this.ui.enableSend();
           // maybe end move selection if last possible action
           // TODO: check if any more actions are possible
-          this.ui.setInteractive("off")
+          //this.ui.setInteractive("off")
           break;
         case "cancel":
-          move.pop();
+          move = [];
+          actionState = this.state.clone();
+          this.ui.disableCancel();
           break;
+      }
+      if (move.length > 0) {
+        this.ui.enableCancel();
+      } else {
+        this.ui.disableSend();
       }
     }
 
     //2. Send move
+    this.ui.setInteractive("off")
     console.log("would send move ", move)
     let index = 0;
     let xml: string = '<room roomId="' + this.roomId + '">' +

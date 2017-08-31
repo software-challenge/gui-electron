@@ -74,13 +74,18 @@ export class Game extends EventEmitter {
 
       Logger.log("Observer ready");
 
-      // TODO: logic for other games than computer vs. computer
+      /* 
+       * Only activate pause (stepping required) if both players are automated, because not pausing
+       * in this situation would just playback the game very fast. Pausing in other cases is not
+       * necessary because the GUI waits for input when the human player is the current player.
+       */
+      let pause = gco.firstPlayerType != "Human" && gco.secondPlayerType != "Human";
 
       //Create room
       let firstCanTimeout = gco.firstPlayerType != "Human";
-      let firstShouldBePaused = gco.firstPlayerType != "Human";
+      let firstShouldBePaused = pause;
       let secondCanTimeout = gco.secondPlayerType != "Human";
-      let secondShouldBePaused = gco.secondPlayerType != "Human";
+      let secondShouldBePaused = pause;
       var p1 = new PlayerClientOptions(gco.firstPlayerName, firstCanTimeout, firstShouldBePaused);
       var p2 = new PlayerClientOptions(gco.secondPlayerName, secondCanTimeout, secondShouldBePaused);
 
