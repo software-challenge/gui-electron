@@ -241,13 +241,21 @@ export class UI {
     }
     this.viewer.render(state);
     let p = new Promise<"action" | "cancel" | "send">((res, rej) => {
+      var clear_events = () => {//Prevent memory leak
+        this.eventProxy.removeAllListeners("send");
+        this.eventProxy.removeAllListeners("cancel");
+        this.eventProxy.removeAllListeners("field");
+        this.eventProxy.removeAllListeners("carrotPickup");
+        this.eventProxy.removeAllListeners("card");
+      }
       this.eventProxy.once("send", () => res("send"))
       this.eventProxy.once("cancel", () => res("cancel"))
-      this.eventProxy.on("field", (fieldNumber) => {
+      this.eventProxy.once("field", (fieldNumber) => {
         console.log("got field event!", fieldNumber)
         this.chosenAction = new Action("ADVANCE", fieldNumber - state.getPlayerByColor(color).index);
+        clear_events();
         res("action");
-      })
+      });
     });
 
     return p;

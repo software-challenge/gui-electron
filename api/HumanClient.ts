@@ -24,7 +24,7 @@ export class HumanClient extends GenericPlayer implements GameClient {
     this.on('moverequest', this.handleMoveRequest);
     this.on('state', s => this.state = s);
     this.on('message', m => console.log("human: " + m));
-    this.on('error', error => alert(error));
+    this.on('error', error => alert("Error: " + error));
   }
 
   handleMoveRequest = async function () {
@@ -48,7 +48,7 @@ export class HumanClient extends GenericPlayer implements GameClient {
           try {
             this.ui.chosenAction.perform(actionState);
           } catch (error) {
-            console.log(error);
+            console.log("ERROR: " + error);
             alert(error);
             move.pop();
             continue;
