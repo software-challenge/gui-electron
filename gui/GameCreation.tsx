@@ -21,11 +21,11 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
     super();
     var defaultClient = window.localStorage['defaultProgramPath'];
     this.state = {
-      firstPlayerType: "Computer",
-      firstPlayerName: "Spieler 1",
+      firstPlayerType: "Human",
+      firstPlayerName: "Mensch Spieler 1",
       firstPlayerProgramPath: defaultClient,
       secondPlayerType: "Computer",
-      secondPlayerName: "Spieler 2",
+      secondPlayerName: "Computer Spieler 2",
       secondPlayerProgramPath: defaultClient
     }
   }

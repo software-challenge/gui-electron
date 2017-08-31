@@ -1,3 +1,4 @@
+import { GameRuleLogic } from './HaseUndIgelGameRules';
 import { GameClient } from './Game';
 import { GenericPlayer } from './PlayerClient';
 
@@ -10,11 +11,16 @@ export class HumanClient extends GenericPlayer implements GameClient {
   private ui: UI;
   private state: GameState;
   private reservation: string;
+  private roomId: string;
   constructor(name: string, ui: UI, reservation: string) {
     super(name);
     this.ui = ui;
     this.reservation = reservation;
-    this.on('welcome', welcomeMessage => this.color = welcomeMessage.mycolor);
+    this.on('welcome', welcomeMessage => {
+      console.log(name + " got welcome message: ", welcomeMessage)
+      this.color = welcomeMessage.mycolor;
+      this.roomId = welcomeMessage.roomId;
+    });
     this.on('moverequest', this.handleMoveRequest);
     this.on('state', s => this.state = s);
     this.on('message', m => console.log("human: " + m));
@@ -37,6 +43,9 @@ export class HumanClient extends GenericPlayer implements GameClient {
         case "action":
           move.push(this.ui.chosenAction);
           this.ui.chosenAction.perform(actionState);
+          // maybe end move selection if last possible action
+          // TODO: check if any more actions are possible
+          this.ui.setInteractive("off")
           break;
         case "cancel":
           move.pop();
@@ -45,8 +54,19 @@ export class HumanClient extends GenericPlayer implements GameClient {
     }
 
     //2. Send move
-    //Build xml and this.writeData it out
-    throw "Not implemented!";
+    console.log("would send move ", move)
+    let index = 0;
+    let xml: string = '<room roomId="' + this.roomId + '">' +
+      '<data class="move">' +
+      move.map((action) => {
+        switch (action.type) {
+          case "ADVANCE":
+            return '<advance order="' + index + '" distance="' + action.value + '"/>'
+        }
+        index += 1; // TODO: mutable state in map is ugly
+      }) +
+      '</data></room>';
+    this.writeData(xml);
   }
 
   start(): Promise<void> {

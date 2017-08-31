@@ -239,7 +239,13 @@ export class Player {
   static COLOR: { RED: PLAYERCOLOR, BLUE: PLAYERCOLOR } = { RED: 0, BLUE: 1 };
 
   static ColorFromString(s: string): PLAYERCOLOR {
-    return s == 'RED' ? Player.COLOR.RED : Player.COLOR.BLUE;
+    if (s.match(/RED/i)) {
+      return Player.COLOR.RED;
+    }
+    if (s.match(/BLUE/i)) {
+      return Player.COLOR.BLUE;
+    }
+    throw "Unknown color value: " + s;
   }
 
   static OtherColor(c: PLAYERCOLOR): PLAYERCOLOR {

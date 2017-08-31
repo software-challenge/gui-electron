@@ -42,7 +42,7 @@ export class GenericPlayer extends GenericClient {
         this.emit('moverequest');
         break;
       case 'welcomeMessage':
-        this.emit('welcome', { mycolor: Player.ColorFromString(decoded.room.data[0].color) });
+        this.emit('welcome', { mycolor: Player.ColorFromString(decoded.room.data[0]['$'].color), roomId: decoded.room['$'].roomId });
         break;
       default:
         throw `Unknown data class: ${decoded.room.data[0]['$'].class}\n\n${JSON.stringify(decoded)}`;

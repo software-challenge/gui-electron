@@ -192,34 +192,44 @@ export class UI {
     this.carrotPickupDialogue.takeZero.addEventListener('click', () => this.eventProxy.emit('carrotPickup', 0));
     this.carrotPickupDialogue.giveTen.addEventListener('click', () => this.eventProxy.emit('carrotPickup', -10));
     this.carrotPickupDialogue.cancel.addEventListener('click', () => this.carrotPickupDialogue.root.classList.add('invisible'));
-    this.setInteractive("red");
   }
 
   setInteractive(interactive: "off" | "red" | "blue") {
+    let invisible = 'invisible';
     this.interactive = interactive;
     console.log("INTERACTIVE MODE: " + interactive);
     if (this.interactive == "off") {
       this.board.fields.forEach(f => f.setHighlight(false));
-      this.display.send.classList.remove('invisble');
-      this.display.cancel.classList.remove('invisble');
+      this.engine.needsRerender = true;
+      this.display.send.classList.remove(invisible);
+      this.display.cancel.classList.remove(invisible);
     } else {
-      this.display.send.classList.add('invisble');
-      this.display.cancel.classList.add('invisble');
-
+      if (!this.display.send.classList.contains(invisible)) {
+        this.display.send.classList.add(invisible);
+      }
+      if (!this.display.cancel.classList.contains(invisible)) {
+        this.display.cancel.classList.add(invisible);
+      }
     }
   }
 
   setEndscreenVisible(visible: boolean) {
     this.endscreen.root.style.opacity = visible ? "1" : "0";
-
   }
 
   interact(state: GameState, color: PLAYERCOLOR): Promise<"action" | "cancel" | "send"> {
     this.viewer.render(state);
-
-    return new Promise((res, rej) => {
-      res("send");
+    let p = new Promise<"action" | "cancel" | "send">((res, rej) => {
+      this.eventProxy.once("send", () => res("send"))
+      this.eventProxy.once("cancel", () => res("cancel"))
+      this.eventProxy.on("field", (fieldNumber) => {
+        console.log("got field event!", fieldNumber)
+        this.chosenAction = new Action("ADVANCE", fieldNumber - state.getPlayerByColor(color).index);
+        res("action");
+      })
     });
+
+    return p;
   }
 
   highlightPossibleCardsForGameState(gamestate: GameState) {
@@ -258,6 +268,9 @@ export class UI {
     this.display.blue.carrots.innerText = state.blue.carrots.toString();
     this.display.progress.bar.style.width = ((state.turn / 60) * 100) + "%";
 
+    if (this.interactive != "off") {
+      this.highlightPossibleFieldsForGamestate(state);
+    }
 
     //Update cards
     //TODO: There HAS to be a cleverer way to do this

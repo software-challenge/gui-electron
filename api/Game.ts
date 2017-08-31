@@ -78,9 +78,9 @@ export class Game extends EventEmitter {
 
       //Create room
       let firstCanTimeout = gco.firstPlayerType != "Human";
-      let firstShouldBePaused = true;
+      let firstShouldBePaused = gco.firstPlayerType != "Human";
       let secondCanTimeout = gco.secondPlayerType != "Human";
-      let secondShouldBePaused = true;
+      let secondShouldBePaused = gco.secondPlayerType != "Human";
       var p1 = new PlayerClientOptions(gco.firstPlayerName, firstCanTimeout, firstShouldBePaused);
       var p2 = new PlayerClientOptions(gco.secondPlayerName, secondCanTimeout, secondShouldBePaused);
 
@@ -93,7 +93,7 @@ export class Game extends EventEmitter {
       await this.observer.observeRoom(reservation.roomId);
       Logger.log("Observing room with id " + this.roomId);
 
-      let configureClient = (type: PlayerType, path: string, reservation: string): GameClient => {
+      let configureClient = (type: PlayerType, name: string, path: string, reservation: string): GameClient => {
         switch (type) {
           case "Computer":
             let executableClient = new ExecutableClient('java', ['-jar'], path, '127.0.0.1', 13050, reservation);
@@ -118,15 +118,15 @@ export class Game extends EventEmitter {
             });
             return executableClient;
           case "Human":
-            let humanClient = new HumanClient("Karl", Api.getCurrentViewer().ui, reservation)
+            let humanClient = new HumanClient(name, Api.getCurrentViewer().ui, reservation)
             return humanClient;
           case "External":
             throw "TODO";
         }
       }
 
-      this.client1 = configureClient(gco.firstPlayerType, gco.firstPlayerPath, reservation.reservation1)
-      this.client2 = configureClient(gco.secondPlayerType, gco.secondPlayerPath, reservation.reservation2)
+      this.client1 = configureClient(gco.firstPlayerType, gco.firstPlayerName, gco.firstPlayerPath, reservation.reservation1)
+      this.client2 = configureClient(gco.secondPlayerType, gco.secondPlayerName, gco.secondPlayerPath, reservation.reservation2)
 
       await this.client1.start();
       await Helpers.awaitEventOnce(Api.getServer(), 'newclient');
