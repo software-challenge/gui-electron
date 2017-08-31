@@ -70,15 +70,13 @@ export class HumanClient extends GenericPlayer implements GameClient {
     //2. Send move
     this.ui.setInteractive("off")
     console.log("would send move ", move)
-    let index = 0;
     let xml: string = '<room roomId="' + this.roomId + '">' +
       '<data class="move">' +
-      move.map((action) => {
+      move.map((action, index) => {
         switch (action.type) {
           case "ADVANCE":
             return '<advance order="' + index + '" distance="' + action.value + '"/>'
         }
-        index += 1; // TODO: mutable state in map is ugly
       }) +
       '</data></room>';
     this.writeData(xml);
