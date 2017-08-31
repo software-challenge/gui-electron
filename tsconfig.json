@@ -12,7 +12,8 @@
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "target": "es2016",
-    "watch": true
+    "watch": true,
+    "skipLibCheck": true
   },
   "include": [
     "gui/**/*",
