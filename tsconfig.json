@@ -11,11 +11,7 @@
     "checkJs": true,
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "lib": [
-      "es2015",
-      "dom",
-      "es6"
-    ],
+    "target": "es2016",
     "watch": true
   },
   "include": [
