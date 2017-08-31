@@ -198,7 +198,7 @@ export class UI {
 
   }
 
-  setInteractive(interactive: "off" | "red" | "blue") {
+  private setInteractive(interactive: "off" | "red" | "blue") {
     this.interactive = interactive;
     console.log("INTERACTIVE MODE: " + interactive);
     if (this.interactive == "off") {
@@ -231,7 +231,14 @@ export class UI {
     this.endscreen.root.style.opacity = visible ? "1" : "0";
   }
 
-  interact(state: GameState, color: PLAYERCOLOR): Promise<"action" | "cancel" | "send"> {
+  interact(state: GameState, color: PLAYERCOLOR, is_first_action: boolean): Promise<"action" | "cancel" | "send"> {
+    this.setInteractive(color == SC_Player.COLOR.RED ? "red" : "blue");
+    if (this.interactive != "off" && state != null) {
+      if (is_first_action) {
+        this.highlightPossibleFieldsForGamestate(state);
+      }
+      this.highlightPossibleCardsForGameState(state);
+    }
     this.viewer.render(state);
     let p = new Promise<"action" | "cancel" | "send">((res, rej) => {
       this.eventProxy.once("send", () => res("send"))
@@ -299,11 +306,6 @@ export class UI {
     this.display.blue.salads.innerText = state.blue.salads.toString();
     this.display.blue.carrots.innerText = state.blue.carrots.toString();
     this.display.progress.bar.style.width = ((state.turn / 60) * 100) + "%";
-
-    if (this.interactive != "off" && state != null) {
-      this.highlightPossibleFieldsForGamestate(state);
-      this.highlightPossibleCardsForGameState(state);
-    }
 
     //Update cards
     //TODO: There HAS to be a cleverer way to do this

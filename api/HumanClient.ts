@@ -33,18 +33,26 @@ export class HumanClient extends GenericPlayer implements GameClient {
     //1. Build move
     let move: Action[] = [];
 
-    this.ui.setInteractive(this.color == Player.COLOR.RED ? "red" : "blue");
-
     let interaction_type = "none";
 
     let actionState = this.state.clone();
 
     while (interaction_type != "send") {
-      interaction_type = await this.ui.interact(actionState, this.color);
+
+      interaction_type = await this.ui.interact(actionState, this.color, move.length == 0);
+
+
       switch (interaction_type) {
         case "action":
           move.push(this.ui.chosenAction);
-          this.ui.chosenAction.perform(actionState);
+          try {
+            this.ui.chosenAction.perform(actionState);
+          } catch (error) {
+            console.log(error);
+            alert(error);
+            move.pop();
+            continue;
+          }
           this.ui.enableSend();
           // maybe end move selection if last possible action
           // TODO: check if any more actions are possible
