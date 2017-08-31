@@ -24,6 +24,7 @@ export class HumanClient extends GenericPlayer implements GameClient {
     this.on('moverequest', this.handleMoveRequest);
     this.on('state', s => this.state = s);
     this.on('message', m => console.log("human: " + m));
+    this.on('error', error => alert(error));
   }
 
   handleMoveRequest = async function () {
