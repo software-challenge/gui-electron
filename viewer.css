@@ -144,10 +144,10 @@
   font-weight: bold;
 }
 
-.replay-viewer .cancel{
+.replay-viewer .skip{
   position: absolute;
-  bottom: 12vh;
-  left: 10;
+  bottom: 8vh;
+  left: 10vw;
   font-size: 3vh;
   color: yellow;
   background: white;
