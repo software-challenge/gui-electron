@@ -59,6 +59,7 @@ export class UI {
     },
     cancel: HTMLDivElement,
     send: HTMLDivElement,
+    skip: HTMLDivElement,
     round: HTMLDivElement,
     progress: {
       box: HTMLDivElement,
@@ -126,11 +127,13 @@ export class UI {
         bar: cdiv(['progressbar'], progressbox)
       },
       cancel: cdiv(['cancel', 'button', 'invisible'], element, 'Cancel'),
-      send: cdiv(['send', 'button', 'invisible'], element, 'Send')
+      send: cdiv(['send', 'button', 'invisible'], element, 'Send'),
+      skip: cdiv(['skip', 'button', 'invisible'], element, 'Skip')
     };
     //TODO: Make Cancel and Send actual button elements for UI consistency (add cbtn method)
     this.display.cancel.addEventListener('click', () => this.eventProxy.emit('cancel'));
     this.display.send.addEventListener('click', () => this.eventProxy.emit('send'));
+    this.display.skip.addEventListener('click', () => this.eventProxy.emit('skip'));
 
 
     var redcardroot = cdiv(['cards'], redroot);
@@ -191,10 +194,10 @@ export class UI {
       giveTen: cdiv(['carrotPickup', 'giveTen', 'clickable'], carrotPickupRoot, '-10'),
       cancel: cdiv(['carrotPickup', 'carrot-cancel', 'clickable'], carrotPickupRoot, 'Cancel')
     }
-    this.carrotPickupDialogue.takeTen.addEventListener('click', () => this.eventProxy.emit('carrotPickup', 10));
-    this.carrotPickupDialogue.takeZero.addEventListener('click', () => this.eventProxy.emit('carrotPickup', 0));
-    this.carrotPickupDialogue.giveTen.addEventListener('click', () => this.eventProxy.emit('carrotPickup', -10));
-    this.carrotPickupDialogue.cancel.addEventListener('click', () => this.carrotPickupDialogue.root.classList.add('invisible'));
+    this.carrotPickupDialogue.takeTen.addEventListener('click', () => { this.carrotPickupDialogue.root.classList.add('invisible'); this.eventProxy.emit('carrotPickup', 10) });
+    this.carrotPickupDialogue.takeZero.addEventListener('click', () => { this.carrotPickupDialogue.root.classList.add('invisible'); this.eventProxy.emit('carrotPickup', 0) });
+    this.carrotPickupDialogue.giveTen.addEventListener('click', () => { this.carrotPickupDialogue.root.classList.add('invisible'); this.eventProxy.emit('carrotPickup', -10) });
+    this.carrotPickupDialogue.cancel.addEventListener('click', () => { this.carrotPickupDialogue.root.classList.add('invisible'); this.eventProxy.emit('cancel'); });
 
   }
 
@@ -204,6 +207,7 @@ export class UI {
     if (this.interactive == "off") {
       this.disableSend();
       this.disableCancel();
+      this.disableSkip();
     }
   }
 
@@ -215,6 +219,15 @@ export class UI {
 
   enableSend() {
     this.display.send.classList.remove(INVISIBLE);
+  }
+
+
+  enableSkip() {
+    this.display.skip.classList.remove(INVISIBLE);
+  }
+
+  disableSkip() {
+    this.display.skip.classList.add(INVISIBLE);
   }
 
   disableCancel() {
@@ -233,13 +246,23 @@ export class UI {
 
   interact(state: GameState, color: PLAYERCOLOR, is_first_action: boolean): Promise<"action" | "cancel" | "send"> {
     this.setInteractive(color == SC_Player.COLOR.RED ? "red" : "blue");
-    if (this.interactive != "off" && state != null) {
-      if (is_first_action) {
-        this.highlightPossibleFieldsForGamestate(state);
-      }
-      this.highlightPossibleCardsForGameState(state);
-    }
     this.viewer.render(state);
+
+    if (GameRuleLogic.isValidToSkip(state)) {
+      this.enableSkip();
+    }
+
+    if (is_first_action) { //Advance actions have to be the first action in the move
+      this.highlightPossibleFieldsForGamestate(state);
+    }
+
+    this.highlightPossibleCardsForGameState(state);
+
+    if (GameRuleLogic.isValidToPlayTakeOrDropCarrots(state, 0)) {
+      this.showCarrotPickupDialogue();
+    }
+
+
     let p = new Promise<"action" | "cancel" | "send">((res, rej) => {
       var clear_events = () => {//Prevent memory leak
         this.eventProxy.removeAllListeners("send");
@@ -247,14 +270,40 @@ export class UI {
         this.eventProxy.removeAllListeners("field");
         this.eventProxy.removeAllListeners("carrotPickup");
         this.eventProxy.removeAllListeners("card");
+        this.eventProxy.removeAllListeners("skip");
       }
-      this.eventProxy.once("send", () => res("send"))
-      this.eventProxy.once("cancel", () => res("cancel"))
+
+
+      this.eventProxy.once("send", () => { clear_events(); res("send"); })
+
+      this.eventProxy.once("cancel", () => { clear_events(); res("cancel"); })
+
       this.eventProxy.once("field", (fieldNumber) => {
         console.log("got field event!", fieldNumber)
         this.chosenAction = new Action("ADVANCE", fieldNumber - state.getPlayerByColor(color).index);
         clear_events();
         res("action");
+      });
+
+      this.eventProxy.once("skip", () => {
+        clear_events();
+        this.chosenAction = new Action("SKIP");
+        res("action");
+      })
+
+      this.eventProxy.once("card", card => {
+        console.log("card played: " + card);
+        if (card == Card.TAKE_OR_DROP_CARROTS) {
+          this.eventProxy.once('carrotPickup', value => {
+            this.chosenAction = new Card(Card.TAKE_OR_DROP_CARROTS, value);
+            clear_events();
+            res("action");
+          })
+        } else {
+          this.chosenAction = new Card(card);
+          clear_events();
+          res("action");
+        }
       });
     });
 
@@ -263,25 +312,31 @@ export class UI {
 
   highlightPossibleCardsForGameState(gamestate: GameState) {
     let color = gamestate.getCurrentPlayer().color == SC_Player.COLOR.RED ? "red" : "blue";
-    let cards = this.display[color].cards
+    let cards = this.display[color].cards;
     if (cards != null && cards != undefined) {
+      console.log("highlighting cards");
       if (GameRuleLogic.isValidToPlayEatSalad(gamestate)) {
-        cards['eat_salad'].classList.add(HIGHLIGHT_CARD)
+        cards['eat_salad'].classList.add('highlight');
+        console.log("highlighting eat salad");
       }
       if (GameRuleLogic.isValidToPlayHurryAhead(gamestate)) {
-        cards['hurry_ahead'].classList.add(HIGHLIGHT_CARD)
+        cards['hurry_ahead'].classList.add('highlight')
+        console.log("highlighting hurry ahead");
+
       }
       if (GameRuleLogic.isValidToPlayFallBack(gamestate)) {
-        cards['fall_back'].classList.add(HIGHLIGHT_CARD)
+        cards['fall_back'].classList.add('highlight')
+        console.log("highlighting fall back");
       }
       if (GameRuleLogic.isValidToPlayTakeOrDropCarrots(gamestate, 0)) {
-        cards['take_or_drop_carrots'].classList.add(HIGHLIGHT_CARD)
+        cards['take_or_drop_carrots'].classList.add('highlight')
+        console.log("highlighting take or drop carrots");
       }
     }
   }
 
   showCarrotPickupDialogue() {
-
+    this.carrotPickupDialogue.root.classList.remove('invisble');
   }
 
   highlightPossibleFieldsForGamestate(gamestate: GameState) {
@@ -324,6 +379,7 @@ export class UI {
       });
 
       [Card.EAT_SALAD, Card.FALL_BACK, Card.HURRY_AHEAD, Card.TAKE_OR_DROP_CARROTS].forEach(card => {
+        this.display[color].cards[card.toLowerCase()].classList.remove('highlight');
         if (cards.indexOf(card) != -1) {
           this.display[color].cards[card.toLowerCase()].classList.remove('invisible');
         } else {

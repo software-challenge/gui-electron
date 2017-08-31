@@ -99,6 +99,10 @@
   display: none;
 }
 
+.display .cardbox.highlight .highlight-card{
+  opacity: 0.6;
+}
+
 .display .highlight-card{
   position: absolute;
   top: 0;
@@ -109,11 +113,11 @@
   transition: opacity 0.2s;
 }
 
-.display .highlight-card.interactive:hover{
-  opacity: 0.4;
+.display .cardbox.highlight .highlight-card:hover{
+  opacity: 0.8;
 }
 
-.display .highlight-card.interactive:active{
+.display .cardbox.highlight .highlight-card:active{
   opacity: 1;
 }
 
@@ -133,6 +137,19 @@
   left: 10;
   font-size: 3vh;
   color: red;
+  background: white;
+  margin: 2px;
+  border: 1px solid black;
+  padding: 1px 6px;
+  font-weight: bold;
+}
+
+.replay-viewer .cancel{
+  position: absolute;
+  bottom: 12vh;
+  left: 10;
+  font-size: 3vh;
+  color: yellow;
   background: white;
   margin: 2px;
   border: 1px solid black;

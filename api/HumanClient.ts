@@ -86,7 +86,12 @@ export class HumanClient extends GenericPlayer implements GameClient {
       move.map((action, index) => {
         switch (action.type) {
           case "ADVANCE":
-            return '<advance order="' + index + '" distance="' + action.value + '"/>'
+            return '<advance order="' + index + '" distance="' + action.value + '"/>';
+          case "CARD":
+            let value = action.value ? `value="${action.value}"` : ""
+            return `<card order="${index}" type="${action['cardType']}" ${value}/>`;
+          case "EXCHANGE_CARROTS":
+            return `<exchangeCarrots order="${index}" value="${action.value}"/>`;
         }
       }) +
       '</data></room>';
