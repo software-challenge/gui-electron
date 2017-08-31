@@ -30,7 +30,7 @@ export class GenericPlayer extends GenericClient {
     //var decoded = await Parser.getJSONFromXML(msg);
     Parser.getJSONFromXML(msg).then(decoded => {
       Api.getLogger().log("GenericPlayer", "handleMessage", JSON.stringify(decoded));
-      if (decoded.joined) {
+      if (decoded.joined || !decoded.room || !decoded.room.data) {
         return; //Forgot that this happens
       }
       switch (decoded.room.data[0]['$'].class.trim()) {//Sometimes, extra linebreaks end up here
@@ -46,12 +46,14 @@ export class GenericPlayer extends GenericClient {
           this.emit('welcome', { mycolor: Player.ColorFromString(decoded.room.data[0]['$'].color), roomId: decoded.room['$'].roomId });
           break;
         case 'error':
-          this.emit('error', decoded.room.data[0]['$'].error);
+          var error = decoded.room.data[0].$.error;
+          console.log(decoded.room);
+          this.emit('error', error);
           break;
         default:
           throw `Unknown data class: ${decoded.room.data[0]['$'].class}\n\n${JSON.stringify(decoded)}`;
       }
-    }).catch(error => console.log(error));
+    }).catch(error => console.log("Error in Parser.getJSONFromXML: " + error));
   }
 
   joinPrepared(reservation: string): Promise<void> {

@@ -53,7 +53,9 @@ export class HumanClient extends GenericPlayer implements GameClient {
             move.pop();
             continue;
           }
-          this.ui.enableSend();
+          if (!GameRuleLogic.mustPlayCard(actionState)) {
+            this.ui.enableSend();
+          }
           // maybe end move selection if last possible action
           // TODO: check if any more actions are possible
           /*
