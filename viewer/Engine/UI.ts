@@ -294,11 +294,13 @@ export class UI {
       this.eventProxy.once("card", card => {
         console.log("card played: " + card);
         if (card == Card.TAKE_OR_DROP_CARROTS) {
+          console.log("Getting carrot value");
+          this.showCarrotPickupDialogue();
           this.eventProxy.once('carrotPickup', value => {
             this.chosenAction = new Card(Card.TAKE_OR_DROP_CARROTS, value);
             clear_events();
             res("action");
-          })
+          });
         } else {
           this.chosenAction = new Card(card);
           clear_events();
@@ -336,7 +338,7 @@ export class UI {
   }
 
   showCarrotPickupDialogue() {
-    this.carrotPickupDialogue.root.classList.remove('invisble');
+    this.carrotPickupDialogue.root.classList.remove(INVISIBLE);
   }
 
   highlightPossibleFieldsForGamestate(gamestate: GameState) {
