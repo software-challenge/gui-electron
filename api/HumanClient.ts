@@ -56,14 +56,6 @@ export class HumanClient extends GenericPlayer implements GameClient {
           if (!GameRuleLogic.mustPlayCard(actionState)) {
             this.ui.enableSend();
           }
-          // maybe end move selection if last possible action
-          // TODO: check if any more actions are possible
-          /*
-          if (!GameRuleLogic.canDoAnything(actionState)) {
-            this.ui.setInteractive("off");
-            interaction_type = "send";
-          }
-          */
           break;
         case "cancel":
           move = [];

@@ -21,11 +21,17 @@ export class UI {
 
   chosenAction: Action = null;
 
-  private carrotPickupDialogue: {
+  private exchangeCarrotsDialogue: {
     root: HTMLDivElement,
     takeTen: HTMLDivElement,
-    takeZero: HTMLDivElement,
     giveTen: HTMLDivElement,
+  }
+
+  private takeOrDropCarrotsCardDialogue: {
+    root: HTMLDivElement,
+    takeTwenty: HTMLDivElement,
+    takeZero: HTMLDivElement,
+    giveTwenty: HTMLDivElement,
     cancel: HTMLDivElement
   }
 
@@ -186,19 +192,44 @@ export class UI {
       reason: cdiv(['winReason'], endscreen_root)
     };
 
-    var carrotPickupRoot = cdiv(['carrotPickup', 'root', 'invisible'], element);
-    this.carrotPickupDialogue = {
-      root: carrotPickupRoot,
-      takeTen: cdiv(['carrotPickup', 'takeTen', 'clickable'], carrotPickupRoot, "+10"),
-      takeZero: cdiv(['carrotPickup', 'takeZero', 'clickable'], carrotPickupRoot, '0'),
-      giveTen: cdiv(['carrotPickup', 'giveTen', 'clickable'], carrotPickupRoot, '-10'),
-      cancel: cdiv(['carrotPickup', 'carrot-cancel', 'clickable'], carrotPickupRoot, 'Cancel')
+    // Dialogue for selecting carrots when executing action "exchange carrots"
+    var exchangeCarrotsRoot = cdiv(['exchangeCarrots', 'root', 'invisible'], element);
+    this.exchangeCarrotsDialogue = {
+      root: exchangeCarrotsRoot,
+      takeTen: cdiv(['exchangeCarrots', 'takeTen', 'clickable'], exchangeCarrotsRoot, "+10"),
+      giveTen: cdiv(['exchangeCarrots', 'giveTen', 'clickable'], exchangeCarrotsRoot, '-10'),
     }
-    this.carrotPickupDialogue.takeTen.addEventListener('click', () => { this.carrotPickupDialogue.root.classList.add('invisible'); this.eventProxy.emit('carrotPickup', 10) });
-    this.carrotPickupDialogue.takeZero.addEventListener('click', () => { this.carrotPickupDialogue.root.classList.add('invisible'); this.eventProxy.emit('carrotPickup', 0) });
-    this.carrotPickupDialogue.giveTen.addEventListener('click', () => { this.carrotPickupDialogue.root.classList.add('invisible'); this.eventProxy.emit('carrotPickup', -10) });
-    this.carrotPickupDialogue.cancel.addEventListener('click', () => { this.carrotPickupDialogue.root.classList.add('invisible'); this.eventProxy.emit('cancel'); });
+    let addCarrotExchangeEvent = (element, value) => {
+      element.addEventListener('click', () => {
+        this.hide(this.exchangeCarrotsDialogue.root);
+        this.eventProxy.emit('carrotPickup', value)
+      });
+    }
+    addCarrotExchangeEvent(this.exchangeCarrotsDialogue.takeTen, 10);
+    addCarrotExchangeEvent(this.exchangeCarrotsDialogue.giveTen, -10);
 
+    // Dialogue for selecting carrots when playing card "take or drop carrots"
+    var takeOrDropCarrotsCardRoot = cdiv(['takeOrDropCarrotsCard', 'root', 'invisible'], element);
+    this.takeOrDropCarrotsCardDialogue = {
+      root: takeOrDropCarrotsCardRoot,
+      takeTwenty: cdiv(['takeOrDropCarrotsCard', 'takeTwenty', 'clickable'], takeOrDropCarrotsCardRoot, "+20"),
+      takeZero: cdiv(['takeOrDropCarrotsCard', 'takeZero', 'clickable'], takeOrDropCarrotsCardRoot, '0'),
+      giveTwenty: cdiv(['takeOrDropCarrotsCard', 'giveTwenty', 'clickable'], takeOrDropCarrotsCardRoot, '-20'),
+      cancel: cdiv(['takeOrDropCarrotsCard', 'carrot-cancel', 'clickable'], takeOrDropCarrotsCardRoot, 'Cancel')
+    }
+    let addCarrotCardEvent = (element, value) => {
+      element.addEventListener('click', () => {
+        this.hide(this.takeOrDropCarrotsCardDialogue.root);
+        this.eventProxy.emit('carrotValue', value)
+      });
+    }
+    addCarrotCardEvent(this.takeOrDropCarrotsCardDialogue.takeTwenty, 20);
+    addCarrotCardEvent(this.takeOrDropCarrotsCardDialogue.takeZero, 0);
+    addCarrotCardEvent(this.takeOrDropCarrotsCardDialogue.giveTwenty, -20);
+    this.takeOrDropCarrotsCardDialogue.cancel.addEventListener('click', () => {
+      this.hide(this.takeOrDropCarrotsCardDialogue.root);
+      this.eventProxy.emit('cancel');
+    });
   }
 
   private setInteractive(interactive: "off" | "red" | "blue") {
@@ -209,6 +240,15 @@ export class UI {
       this.disableCancel();
       this.disableSkip();
     }
+  }
+
+  private hide(element: HTMLElement) {
+    if (!element.classList.contains(INVISIBLE)) {
+      element.classList.add(INVISIBLE);
+    }
+  }
+  private show(element: HTMLElement) {
+    element.classList.remove(INVISIBLE);
   }
 
   disableSend() {
@@ -244,7 +284,7 @@ export class UI {
     this.endscreen.root.style.opacity = visible ? "1" : "0";
   }
 
-  interact(state: GameState, color: PLAYERCOLOR, is_first_action: boolean): Promise<"action" | "cancel" | "send"> {
+  interact(state: GameState, color: PLAYERCOLOR, isFirstAction: boolean): Promise<"action" | "cancel" | "send"> {
     this.setInteractive(color == SC_Player.COLOR.RED ? "red" : "blue");
     this.viewer.render(state);
 
@@ -252,14 +292,16 @@ export class UI {
       this.enableSkip();
     }
 
-    if (is_first_action) { //Advance actions have to be the first action in the move
+    if (isFirstAction) { //Advance actions have to be the first action in the move
       this.highlightPossibleFieldsForGamestate(state);
     }
 
     this.highlightPossibleCardsForGameState(state);
 
-    if (GameRuleLogic.isValidToPlayTakeOrDropCarrots(state, 0)) {
-      this.showCarrotPickupDialogue();
+    if (GameRuleLogic.isValidToExchangeCarrots(state, 10) && isFirstAction) {
+      this.showCarrotPickupDialogue(false);
+    } else {
+      this.hideCarrotPickupDialogue();
     }
 
 
@@ -268,7 +310,8 @@ export class UI {
         this.eventProxy.removeAllListeners("send");
         this.eventProxy.removeAllListeners("cancel");
         this.eventProxy.removeAllListeners("field");
-        this.eventProxy.removeAllListeners("carrotPickup");
+        this.eventProxy.removeAllListeners("carrotPickup"); // for exchange action
+        this.eventProxy.removeAllListeners("carrotValue"); // for card
         this.eventProxy.removeAllListeners("card");
         this.eventProxy.removeAllListeners("skip");
       }
@@ -291,12 +334,18 @@ export class UI {
         res("action");
       })
 
+      this.eventProxy.once('carrotPickup', value => {
+        this.chosenAction = new Action("EXCHANGE_CARROTS", value);
+        clear_events();
+        res("action");
+      });
+
       this.eventProxy.once("card", card => {
         console.log("card played: " + card);
         if (card == Card.TAKE_OR_DROP_CARROTS) {
           console.log("Getting carrot value");
-          this.showCarrotPickupDialogue();
-          this.eventProxy.once('carrotPickup', value => {
+          this.showCarrotPickupDialogue(true);
+          this.eventProxy.once('carrotValue', value => {
             this.chosenAction = new Card(Card.TAKE_OR_DROP_CARROTS, value);
             clear_events();
             res("action");
@@ -337,8 +386,22 @@ export class UI {
     }
   }
 
-  showCarrotPickupDialogue() {
-    this.carrotPickupDialogue.root.classList.remove(INVISIBLE);
+  /*
+   * show the dialog to exchange carrots. Is used for the exchange carrots action and
+   * for the take or drop carrots card. For playing the card, possible values are
+   * -20, 0 and 20, in the case of the exchange carrots action, possible values are -10
+   * and 10.
+   */
+  showCarrotPickupDialogue(forCard = false) {
+    if (forCard) {
+      this.show(this.takeOrDropCarrotsCardDialogue.root);
+    } else {
+      this.show(this.exchangeCarrotsDialogue.root);
+    }
+  }
+
+  hideCarrotPickupDialogue() {
+    this.hide(this.exchangeCarrotsDialogue.root);
   }
 
   highlightPossibleFieldsForGamestate(gamestate: GameState) {

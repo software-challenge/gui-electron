@@ -356,6 +356,7 @@ export class Action {
         } else {
           throw "Es kann gerade kein Salat (mehr) gegessen werden.";
         }
+        break;
       case "EXCHANGE_CARROTS":
         if (GameRuleLogic.isValidToExchangeCarrots(state, this.value)) {
           state.getCurrentPlayer().changeCarrotsBy(this.value);
@@ -363,6 +364,7 @@ export class Action {
         } else {
           throw "Es können nicht " + this.value + " Karotten aufgenommen werden.";
         }
+        break;
       case "FALL_BACK":
         if (GameRuleLogic.isValidToFallBack(state)) {
           let previousFieldIndex = state.getCurrentPlayer().index;
@@ -371,6 +373,7 @@ export class Action {
         } else {
           throw "Es kann gerade kein Rückzug gemacht werden.";
         }
+        break;
       case "SKIP":
         // do nothing
         break;

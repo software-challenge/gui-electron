@@ -170,7 +170,26 @@
   font-weight: bold;
 }
 
-.replay-viewer .carrotPickup.root{
+.replay-viewer .exchangeCarrots.root {
+  position: absolute;
+  bottom: 8vh;
+  right: 20%;
+  width: 30%;
+  margin: 2px;
+}
+
+.replay-viewer div.exchangeCarrots.clickable {
+  display: inline-block;
+  border: 1px solid black;
+  background: white;
+  padding: 2px 12px;
+  font-size: 3vh;
+  width: 33%;
+  margin: auto;
+  margin-bottom: 2vh;
+}
+
+.replay-viewer .takeOrDropCarrotsCard.root {
   position: absolute;
   top: 0;
   left: 0 !important;
@@ -182,7 +201,7 @@
   text-align: center;
 }
 
-.replay-viewer div.carrotPickup.clickable{
+.replay-viewer div.takeOrDropCarrotsCard.clickable {
   border: 1px solid black;
   background: white;
   padding: 2px 12px;
