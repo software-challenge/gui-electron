@@ -462,9 +462,9 @@ export class UI {
       [Card.EAT_SALAD, Card.FALL_BACK, Card.HURRY_AHEAD, Card.TAKE_OR_DROP_CARROTS].forEach(card => {
         this.display[color].cards[card.toLowerCase()].classList.remove('highlight');
         if (cards.indexOf(card) != -1) {
-          this.display[color].cards[card.toLowerCase()].classList.remove('invisible');
+          this.show(this.display[color].cards[card.toLowerCase()]);
         } else {
-          this.display[color].cards[card.toLowerCase()].classList.add('invisible');
+          this.hide(this.display[color].cards[card.toLowerCase()]);
         }
       });
     });
