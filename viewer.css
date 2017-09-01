@@ -170,6 +170,24 @@
   font-weight: bold;
 }
 
+.replay-viewer .eatSalad {
+  position: absolute;
+  bottom: 8vh;
+  right: 13vw;
+  margin: 2px;
+  font-size: 3vh;
+  background: white;
+  border: 1px solid black; 
+  padding: 1px 6px;  
+  font-weight: bold;
+}
+
+.replay-viewer .eatSalad:after {
+  color: green;
+  content: "🥗";
+}
+
+
 .replay-viewer .exchangeCarrots.root {
   position: absolute;
   bottom: 8vh;

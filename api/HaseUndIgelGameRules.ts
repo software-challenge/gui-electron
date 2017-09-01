@@ -223,31 +223,33 @@ export class GameRuleLogic {
 
     let o = state.getOtherPlayer()
     let nextPos = o.index - 1
-    if (nextPos >= 0) { //TODO: Check if this doesn't allow for wrong moves
-      let type: FIELDTYPE = state.getTypeAt(nextPos);
-      switch (type) {
-        case Board.Fieldtype.hedgehog:
-          valid = false;
-          break;
-        case Board.Fieldtype.start:
-          break;
-        case Board.Fieldtype.salad:
-          valid = valid && player.salads > 0;
-          break;
-        case Board.Fieldtype.hare:
-          let state2: GameState = null;
-          state2 = state.clone();
-          state2.setLastAction(Card.HurryAhead());
-          state2.getCurrentPlayer().removeCard(Card.FallBack())
-          valid = valid && this.canPlayAnyCard(state2);
-          break;
-        case Board.Fieldtype.carrot:
-        case Board.Fieldtype.position_1:
-        case Board.Fieldtype.position_2:
-          break;
-        default:
-          throw "Unknown Type " + type;
-      }
+    if (nextPos < 0) {
+      // if other player is on start field, falling back is not valid
+      return false;
+    }
+    let type: FIELDTYPE = state.getTypeAt(nextPos);
+    switch (type) {
+      case Board.Fieldtype.hedgehog:
+        valid = false;
+        break;
+      case Board.Fieldtype.start:
+        break;
+      case Board.Fieldtype.salad:
+        valid = valid && player.salads > 0;
+        break;
+      case Board.Fieldtype.hare:
+        let state2: GameState = null;
+        state2 = state.clone();
+        state2.setLastAction(Card.HurryAhead());
+        state2.getCurrentPlayer().removeCard(Card.FallBack())
+        valid = valid && this.canPlayAnyCard(state2);
+        break;
+      case Board.Fieldtype.carrot:
+      case Board.Fieldtype.position_1:
+      case Board.Fieldtype.position_2:
+        break;
+      default:
+        throw "Unknown Type " + type;
     }
     return valid;
   }

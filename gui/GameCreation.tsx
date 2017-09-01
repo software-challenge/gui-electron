@@ -71,7 +71,7 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
   private playerControl(playerType: PlayerType, playerProgramPath: string, pathMutator: (State, string) => string) {
     switch (playerType) {
       case "Human":
-        return <p>Menschen sind schwach.</p>;
+        return <p>menschlicher Spieler</p>;
       case "Computer":
         return (<div>
           Wähle ein Programm zum starten<span> </span>

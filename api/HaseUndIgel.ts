@@ -386,15 +386,17 @@ export class Action {
   static fromJSON(json: any) {
     switch (json.$.class) {
       case "card":
-        return new Card(json.$.type, json.$.value)
+        return new Card(json.$.type, Number(json.$.value))
       case "advance":
-        return new Action(json.$.class, json.$.distance)
+        return new Action("ADVANCE", Number(json.$.distance))
       case "exchangeCarrots":
-        return new Action(json.$.class, json.$.value)
+        return new Action("EXCHANGE_CARROTS", Number(json.$.value))
       case "eatSalad":
+        return new Action("EAT_SALAD")
       case "fallBack":
+        return new Action("FALL_BACK")
       case "skip":
-        return new Action(json.$.class)
+        return new Action("SKIP")
       default:
         throw "unknown action type " + json.$.class
     }

@@ -66,6 +66,7 @@ export class UI {
     cancel: HTMLDivElement,
     send: HTMLDivElement,
     skip: HTMLDivElement,
+    eatSalad: HTMLDivElement,
     round: HTMLDivElement,
     progress: {
       box: HTMLDivElement,
@@ -134,12 +135,14 @@ export class UI {
       },
       cancel: cdiv(['cancel', 'button', 'invisible'], element, 'Cancel'),
       send: cdiv(['send', 'button', 'invisible'], element, 'Send'),
-      skip: cdiv(['skip', 'button', 'invisible'], element, 'Skip')
+      skip: cdiv(['skip', 'button', 'invisible'], element, 'Skip'),
+      eatSalad: cdiv(['eatSalad', 'button', 'invisible'], element, 'Eat')
     };
     //TODO: Make Cancel and Send actual button elements for UI consistency (add cbtn method)
     this.display.cancel.addEventListener('click', () => this.eventProxy.emit('cancel'));
     this.display.send.addEventListener('click', () => this.eventProxy.emit('send'));
     this.display.skip.addEventListener('click', () => this.eventProxy.emit('skip'));
+    this.display.eatSalad.addEventListener('click', () => this.eventProxy.emit('eatSalad'));
 
 
     var redcardroot = cdiv(['cards'], redroot);
@@ -252,32 +255,27 @@ export class UI {
   }
 
   disableSend() {
-    if (!this.display.send.classList.contains(INVISIBLE)) {
-      this.display.send.classList.add(INVISIBLE);
-    }
+    this.hide(this.display.send);
   }
 
   enableSend() {
-    this.display.send.classList.remove(INVISIBLE);
+    this.show(this.display.send);
   }
 
-
   enableSkip() {
-    this.display.skip.classList.remove(INVISIBLE);
+    this.show(this.display.skip);
   }
 
   disableSkip() {
-    this.display.skip.classList.add(INVISIBLE);
+    this.hide(this.display.skip);
   }
 
   disableCancel() {
-    if (!this.display.cancel.classList.contains(INVISIBLE)) {
-      this.display.cancel.classList.add(INVISIBLE);
-    }
+    this.hide(this.display.cancel);
   }
 
   enableCancel() {
-    this.display.cancel.classList.remove(INVISIBLE);
+    this.show(this.display.cancel);
   }
 
   setEndscreenVisible(visible: boolean) {
@@ -285,25 +283,32 @@ export class UI {
   }
 
   interact(state: GameState, color: PLAYERCOLOR, isFirstAction: boolean): Promise<"action" | "cancel" | "send"> {
-    this.setInteractive(color == SC_Player.COLOR.RED ? "red" : "blue");
+    let interactColor: "red" | "blue" = color == SC_Player.COLOR.RED ? "red" : "blue";
+    this.setInteractive(interactColor);
     this.viewer.render(state);
 
     if (GameRuleLogic.isValidToSkip(state)) {
       this.enableSkip();
     }
 
-    if (isFirstAction) { //Advance actions have to be the first action in the move
+    if (isFirstAction) { // Advance, exchange carrots, fall back and eat salad have to be first action
       this.highlightPossibleFieldsForGamestate(state);
+      if (GameRuleLogic.isValidToExchangeCarrots(state, 10)) {
+        this.showCarrotPickupDialogue(false);
+      }
+      if (GameRuleLogic.isValidToFallBack(state)) {
+        let fieldIndex: number = state.board.getPreviousFieldByType("HEDGEHOG", state.getCurrentPlayer().index);
+        this.board.fields[fieldIndex].setHighlight(true, interactColor);
+      }
+      if (GameRuleLogic.isValidToEat(state)) {
+        this.show(this.display.eatSalad);
+      }
+    } else {
+      this.hideCarrotPickupDialogue();
+      this.hide(this.display.eatSalad);
     }
 
     this.highlightPossibleCardsForGameState(state);
-
-    if (GameRuleLogic.isValidToExchangeCarrots(state, 10) && isFirstAction) {
-      this.showCarrotPickupDialogue(false);
-    } else {
-      this.hideCarrotPickupDialogue();
-    }
-
 
     let p = new Promise<"action" | "cancel" | "send">((res, rej) => {
       var clear_events = () => {//Prevent memory leak
@@ -314,6 +319,7 @@ export class UI {
         this.eventProxy.removeAllListeners("carrotValue"); // for card
         this.eventProxy.removeAllListeners("card");
         this.eventProxy.removeAllListeners("skip");
+        this.eventProxy.removeAllListeners("eatSalad");
       }
 
 
@@ -323,7 +329,11 @@ export class UI {
 
       this.eventProxy.once("field", (fieldNumber) => {
         console.log("got field event!", fieldNumber)
-        this.chosenAction = new Action("ADVANCE", fieldNumber - state.getPlayerByColor(color).index);
+        if (fieldNumber < state.getPlayerByColor(color).index) {
+          this.chosenAction = new Action("FALL_BACK");
+        } else {
+          this.chosenAction = new Action("ADVANCE", fieldNumber - state.getPlayerByColor(color).index);
+        }
         clear_events();
         res("action");
       });
@@ -336,6 +346,12 @@ export class UI {
 
       this.eventProxy.once('carrotPickup', value => {
         this.chosenAction = new Action("EXCHANGE_CARROTS", value);
+        clear_events();
+        res("action");
+      });
+
+      this.eventProxy.once('eatSalad', () => {
+        this.chosenAction = new Action("EAT_SALAD");
         clear_events();
         res("action");
       });
