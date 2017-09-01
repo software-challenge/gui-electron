@@ -173,9 +173,13 @@
 .replay-viewer .exchangeCarrots.root {
   position: absolute;
   bottom: 8vh;
-  right: 20%;
-  width: 30%;
+  right: 10vw;
   margin: 2px;
+}
+
+.replay-viewer div.exchangeCarrots.clickable:after {
+  color: #EB8921;
+  content: "🥕";
 }
 
 .replay-viewer div.exchangeCarrots.clickable {
@@ -184,9 +188,7 @@
   background: white;
   padding: 2px 12px;
   font-size: 3vh;
-  width: 33%;
-  margin: auto;
-  margin-bottom: 2vh;
+  margin: 0 2px;
 }
 
 .replay-viewer .takeOrDropCarrotsCard.root {
