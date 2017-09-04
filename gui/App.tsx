@@ -98,7 +98,13 @@ export class App extends React.Component<any, State> {
         mainPaneContent = <Game options={this.gameCreationOptions} nameCallback={n => /*this.setActiveGameName(n)*/ console.log(n)} />
         break;
       default:
-        mainPaneContent = <span></span>
+        mainPaneContent =
+          <div className="main-container">
+            <h1>Willkommen bei der Software-Challenge!</h1>
+            <p>Klicken Sie links auf "Neues Spiel" um zu beginnen.</p>
+            <p>Diese frühe Version hat noch einige Fehler. Bitte melden Sie Fehler, die Sie finden, im Forum. Bei Problemen hilft oft ein Neustart des Programms.</p>
+            <p><a href="https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che" target="_blank">Bedienungsanleitung (aus der allgemeinen Dokumentation)</a></p>
+          </div>
         break;
     }
 
@@ -124,6 +130,7 @@ export class App extends React.Component<any, State> {
                 <NavItem onClick={() => this.switchToAdministration()} active={this.state.contentState == AppContent.Administration}>
                   <UnicodeIcon icon="⚙" />Einstellungen
                 </NavItem>
+                <NavItem><a href="https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che" target="_blank">Hilfe</a></NavItem>
               </NavGroup>
             </RetractableSidebar>
             <Pane>

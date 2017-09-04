@@ -17,7 +17,9 @@ export class ExecutableClient extends EventEmitter implements GameClient {
     super();
     this.program = program;
     this.options = options;
-    this.options.push(path);
+    if (path) {
+      this.options.push(path);
+    }
     this.options.push('--host', host);
     this.options.push('--port', port.toString());
     if (reservation) {
@@ -28,6 +30,7 @@ export class ExecutableClient extends EventEmitter implements GameClient {
 
   start(): Promise<void> {
     var start = async function () {
+      console.log("Starting", this.program, this.options)
       this.process = spawn(this.program, this.options);
       this.setStatus(ExecutableStatus.Status.RUNNING);
       this.process.stdout.on('data', (data) => {

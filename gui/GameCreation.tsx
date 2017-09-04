@@ -1,7 +1,7 @@
 import * as electron from 'electron';
 import { remote } from 'electron';
 import * as React from 'react';
-import { Input, SelectBox, Button } from './photon-fix/Components';
+import { Input, SelectBox, Button, CheckBox } from './photon-fix/Components';
 import { GameCreationOptions, PlayerType } from '../api/GameCreationOptions';
 
 const dialog = remote.dialog;
@@ -10,9 +10,11 @@ interface State {
   firstPlayerType: PlayerType
   firstPlayerName: string,
   firstPlayerProgramPath: string // TODO use a Maybe type
+  firstPlayerDirectStart: boolean,
   secondPlayerType: PlayerType
   secondPlayerName: string,
-  secondPlayerProgramPath: string // TODO use a Maybe type
+  secondPlayerProgramPath: string, // TODO use a Maybe type
+  secondPlayerDirectStart: boolean
 }
 
 export class GameCreation extends React.Component<{ gameCreationCallback: (GameCreationOptions) => void }, State> {
@@ -24,9 +26,11 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
       firstPlayerType: "Human",
       firstPlayerName: "Mensch Spieler 1",
       firstPlayerProgramPath: defaultClient,
+      firstPlayerDirectStart: false,
       secondPlayerType: "Computer",
       secondPlayerName: "Computer Spieler 2",
-      secondPlayerProgramPath: defaultClient
+      secondPlayerProgramPath: defaultClient,
+      secondPlayerDirectStart: false
     }
   }
 
@@ -35,9 +39,8 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
     this.gameCreationCallback = this.props.gameCreationCallback;
   }
 
-  // To be called as onChange handler on player type select boxes,
-  // takes a function to set the first or second player type.
-  private handlePlayerChange(setter) {
+  // To be called as onChange handler on form controls
+  private handleControlChange(setter) {
     return function (event) {
       var val = event.target.value;
       this.setState((prev, _props) => {
@@ -68,7 +71,7 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
 
   // returns UI to make further configurations for a player of playerType, takes a
   // mutator function which is used to set the clientFilePath
-  private playerControl(playerType: PlayerType, playerProgramPath: string, pathMutator: (State, string) => string) {
+  private playerControl(playerType: PlayerType, playerProgramPath: string, pathMutator: (State, string) => string, directStart: boolean, directStartSetter: (State, boolean) => boolean) {
     switch (playerType) {
       case "Human":
         return <p>menschlicher Spieler</p>;
@@ -78,6 +81,7 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
           <Button text="Computerspieler wählen"
             onClick={() => this.clientFileSelectDialog(pathMutator)} />
           <code>{playerProgramPath}</code>
+          <CheckBox label="direkt aufrufen (kein Java Client)" value={directStart} onChange={(e) => this.handleControlChange(directStartSetter)(e)} />
         </div>);
       case "External":
         return <p>Das Programm muss nach Erstellung des Spiels gestartet werden. Es sollte sich dann auf localhost, Port 13050 verbinden.</p>;
@@ -91,9 +95,11 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
         this.state.firstPlayerType,
         this.state.firstPlayerName,
         this.state.firstPlayerProgramPath,
+        this.state.firstPlayerDirectStart ? "Direct" : "Java",
         this.state.secondPlayerType,
         this.state.secondPlayerName,
-        this.state.secondPlayerProgramPath
+        this.state.secondPlayerProgramPath,
+        this.state.secondPlayerDirectStart ? "Direct" : "Java",
       )
     );
   }
@@ -126,12 +132,16 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
     var firstPlayerControl = this.playerControl(
       this.state.firstPlayerType,
       this.state.firstPlayerProgramPath,
-      (p, v) => p.firstPlayerProgramPath = v
+      (s, v) => s.firstPlayerProgramPath = v,
+      this.state.firstPlayerDirectStart,
+      (s, v) => s.firstPlayerDirectStart = Boolean(v)
     );
     var secondPlayerControl = this.playerControl(
       this.state.secondPlayerType,
       this.state.secondPlayerProgramPath,
-      (p, v) => p.secondPlayerProgramPath = v
+      (s, v) => s.secondPlayerProgramPath = v,
+      this.state.secondPlayerDirectStart,
+      (s, v) => s.secondPlayerDirectStart = Boolean(v)
     );
     var startControl;
     if (this.validConfiguration()) {
@@ -144,13 +154,13 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
       startControl = <p>Ungueltige Einstellungen!</p>
     }
     return (
-      <div className="game-creation">
-        <Input value={this.state.firstPlayerName} onChange={(event) => this.handlePlayerChange((p, v) => p.firstPlayerName = v)(event)} />
-        <SelectBox value={this.state.firstPlayerType} items={items} onChange={(event) => this.handlePlayerChange((p, v) => p.firstPlayerType = v)(event)} />
+      <div className="game-creation main-container">
+        <Input value={this.state.firstPlayerName} onChange={(event) => this.handleControlChange((p, v) => p.firstPlayerName = v)(event)} />
+        <SelectBox value={this.state.firstPlayerType} items={items} onChange={(event) => this.handleControlChange((p, v) => p.firstPlayerType = v)(event)} />
         {firstPlayerControl}
         <div id="vs">gegen</div>
-        <Input value={this.state.secondPlayerName} onChange={(event) => this.handlePlayerChange((p, v) => p.secondPlayerName = v)(event)} />
-        <SelectBox value={this.state.secondPlayerType} items={items} onChange={(event) => this.handlePlayerChange((p, v) => p.secondPlayerType = v)(event)} />
+        <Input value={this.state.secondPlayerName} onChange={(event) => this.handleControlChange((p, v) => p.secondPlayerName = v)(event)} />
+        <SelectBox value={this.state.secondPlayerType} items={items} onChange={(event) => this.handleControlChange((p, v) => p.secondPlayerType = v)(event)} />
         {secondPlayerControl}
         <div id="start">
           {startControl}

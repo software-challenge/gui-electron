@@ -60,8 +60,8 @@ export class Game extends React.Component<{ options: GameCreationOptions, nameCa
   }
 
   render() {
-    var b = <button onClick={this.next.bind(this)}>NEXT</button>;
-    var b_prev = <button onClick={this.previous.bind(this)}>PREV</button>;
+    var b = <button onClick={this.next.bind(this)}>Vor</button>;
+    var b_prev = <button onClick={this.previous.bind(this)}>Zurück</button>;
     return (
       <div className="replay-viewer" ref={elem => { this.startViewer(elem) }}>
         <div className="replay-controls">

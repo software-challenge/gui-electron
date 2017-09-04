@@ -169,3 +169,16 @@ export class Input extends React.Component<{ value: string, onChange?: (e: any) 
     )
   }
 }
+
+export class CheckBox extends React.Component<{ label: string, value: boolean, onChange?: (e: any) => void }>{
+  render() {
+    return (
+      <div className="checkbox">
+        <label>
+          <input type="checkbox" value={this.props.value ? "1" : "0"} onChange={this.props.onChange} />
+          {this.props.label}
+        </label>
+      </div>
+    )
+  }
+}

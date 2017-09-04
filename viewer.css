@@ -182,7 +182,7 @@
   font-weight: bold;
 }
 
-.replay-viewer .eatSalad:after {
+.replay-viewer .eatSalad:before {
   color: green;
   content: "🥗";
 }

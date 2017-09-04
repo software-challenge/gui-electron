@@ -133,10 +133,10 @@ export class UI {
         box: progressbox,
         bar: cdiv(['progressbar'], progressbox)
       },
-      cancel: cdiv(['cancel', 'button', 'invisible'], element, 'Cancel'),
-      send: cdiv(['send', 'button', 'invisible'], element, 'Send'),
-      skip: cdiv(['skip', 'button', 'invisible'], element, 'Skip'),
-      eatSalad: cdiv(['eatSalad', 'button', 'invisible'], element, 'Eat')
+      cancel: cdiv(['cancel', 'button', 'invisible'], element, 'Abbrechen'),
+      send: cdiv(['send', 'button', 'invisible'], element, 'Senden'),
+      skip: cdiv(['skip', 'button', 'invisible'], element, 'Aussetzen'),
+      eatSalad: cdiv(['eatSalad', 'button', 'invisible'], element, 'Salat essen')
     };
     //TODO: Make Cancel and Send actual button elements for UI consistency (add cbtn method)
     this.display.cancel.addEventListener('click', () => this.eventProxy.emit('cancel'));

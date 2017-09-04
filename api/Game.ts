@@ -1,7 +1,7 @@
 import { GenericClient } from './GenericClient';
 import { ObserverClient, RoomReservation } from './ObserverClient';
 import { GameState, GameResult } from './HaseUndIgel';
-import { GameCreationOptions, PlayerType } from './GameCreationOptions';
+import { GameCreationOptions, PlayerType, StartType } from './GameCreationOptions';
 import { Api, ExecutableStatus, ConsoleMessage } from './Api';
 import { ExecutableClient } from './ExecutableClient';
 import { PlayerClientOptions } from './PlayerClient';
@@ -98,10 +98,19 @@ export class Game extends EventEmitter {
       await this.observer.observeRoom(reservation.roomId);
       Logger.log("Observing room with id " + this.roomId);
 
-      let configureClient = (type: PlayerType, name: string, path: string, reservation: string): GameClient => {
+      let configureClient = (type: PlayerType, startType: StartType, name: string, path: string, reservation: string): GameClient => {
         switch (type) {
           case "Computer":
-            let executableClient = new ExecutableClient('java', ['-jar'], path, '127.0.0.1', 13050, reservation);
+            let executableClient;
+            switch (startType) {
+              case "Java":
+                executableClient = new ExecutableClient('java', ['-jar'], path, '127.0.0.1', 13050, reservation);
+                break;
+              case "Direct":
+                executableClient = new ExecutableClient(path, [], null, '127.0.0.1', 13050, reservation);
+                break;
+            }
+
             executableClient.on('stdout', msg => {
               let m: ConsoleMessage = {
                 sender: "red",
@@ -130,8 +139,8 @@ export class Game extends EventEmitter {
         }
       }
 
-      this.client1 = configureClient(gco.firstPlayerType, gco.firstPlayerName, gco.firstPlayerPath, reservation.reservation1)
-      this.client2 = configureClient(gco.secondPlayerType, gco.secondPlayerName, gco.secondPlayerPath, reservation.reservation2)
+      this.client1 = configureClient(gco.firstPlayerType, gco.firstPlayerStartType, gco.firstPlayerName, gco.firstPlayerPath, reservation.reservation1)
+      this.client2 = configureClient(gco.secondPlayerType, gco.secondPlayerStartType, gco.secondPlayerName, gco.secondPlayerPath, reservation.reservation2)
 
       await this.client1.start();
       await Helpers.awaitEventOnce(Api.getServer(), 'newclient');

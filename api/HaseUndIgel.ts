@@ -510,6 +510,7 @@ export class GameResult {
   static fromJSON(json: any): GameResult {
     console.log("Result:");
     var util = require('util');
+    console.log(json);
     console.log(util.inspect(json));
 
     var gr = new GameResult();

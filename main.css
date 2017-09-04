@@ -33,9 +33,9 @@
   content: ' '; /* Hotfix for button padding with React*/
 }
 
-.game-creation{
+.main-container{
   padding: 0.2em;
-  max-width: 30rem;
+  max-width: 50rem;
   margin: 0 auto;
 }
 
