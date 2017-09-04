@@ -1,22 +1,42 @@
 {
   "name": "software-challenge-gui",
   "version": "1.0.0",
-  "description": "",
+  "description": "GUI der Software-Challenge",
+  "repository": "https://github.com/CAU-Kiel-Tech-Inf/socha_graphical_client",
   "main": "main.js",
   "scripts": {
     "test": "mocha --compilers ts:ts-node/register,tsx:ts-node/register 'test/**/*.spec.@(ts|tsx)'",
-    "start": "node_modules/.bin/electron .",
-    "getserver": "git clone git@github.com:CAU-Kiel-Tech-Inf/socha.git; cd socha; git pull; git checkout hase_und_igel_development; git pull; ant; cd ..; rm -r server; rm -r client; cp -r socha/deploy/server server; echo \"password = examplepassword\" > server/server.properties; cp -r socha/deploy/simple_client/hase_und_igel_player_new/jar client; return 0;"
+    "start": "yarn install && yarn compile && electron .",
+    "getserver": "git clone git@github.com:CAU-Kiel-Tech-Inf/socha.git; cd socha; git pull; git checkout hase_und_igel_development; git pull; ant; cd ..; rm -r server; rm -r client; cp -r socha/deploy/server server; echo \"password = examplepassword\" > server/server.properties; cp -r socha/deploy/simple_client/hase_und_igel_player_new/jar client; return 0;",
+    "dist": "yarn install && yarn compile && electron-builder",
+    "compile": "rimraf out && tsc"
   },
-  "author": "",
+  "author": "Software-Challenge Team",
   "license": "ISC",
+  "build": {
+    "appId": "de.software-challenge.gui",
+    "files": [
+      "*",
+      "*/**",
+      "out"
+    ],
+    "asar": true,
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "win": {
+      "target": ["nsis", "portable"]
+    },
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": ["dmg"]
+    },
+    "linux": {
+      "target": ["AppImage", "tar.xz"]
+    }
+  },
   "dependencies": {
-    "@types/es6-promise": "0.0.32",
-    "@types/react": "^15.0.35",
-    "@types/react-dom": "^15.5.1",
-    "@types/sax": "^1.0.0",
-    "electron": "^1.6.11",
-    "electron-prebuilt": "^1.4.13",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-photonkit": "^0.4.1",
@@ -25,10 +45,18 @@
   },
   "devDependencies": {
     "@types/chai": "^4.0.4",
+    "@types/es6-promise": "0.0.32",
     "@types/mocha": "^2.2.42",
+    "@types/react": "^15.0.35",
+    "@types/react-dom": "^15.5.1",
+    "@types/sax": "^1.0.0",
     "chai": "^4.1.1",
     "chai-immutable": "^1.6.0",
+    "electron": "^1.7.5",
+    "electron-builder": "^19.27.3",
+    "electron-packager": "^9.0.1",
     "mocha": "^3.5.0",
+    "rimraf": "^2.6.1",
     "ts-node": "^3.3.0",
     "tslint": "^5.5.0",
     "typescript": "^2.4.2"

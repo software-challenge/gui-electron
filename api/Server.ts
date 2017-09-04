@@ -4,10 +4,12 @@ import { Helpers } from './Helpers';
 
 //import * as events from "events"
 import { EventEmitter } from "events";
+import { remote } from "electron";
+import path = require("path");
 
 //const EventEmitter: NodeJS.EventEmitter = require('events');
 
-const SERVER_CWD = "./server";
+const SERVER_CWD = "server"; // naked directory name
 const SERVER_NAME = "softwarechallenge-server.jar"
 
 import { spawn } from 'child_process';
@@ -71,7 +73,7 @@ export class Server extends EventEmitter {
     this.events = [];
     this.stop();
     console.log("Starting server (server should reside in ./server directory)");
-    this.process = spawn('java', ['-jar', SERVER_NAME], { cwd: SERVER_CWD });
+    this.process = spawn('java', ['-jar', SERVER_NAME], { cwd: path.join(remote.app.getAppPath(), SERVER_CWD) });
     this.setStatus(ExecutableStatus.Status.RUNNING);
     this.process.stdout.on('data', (data) => {
       // XXX

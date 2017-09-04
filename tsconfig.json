@@ -6,13 +6,13 @@
     "moduleResolution": "node",
     "preserveConstEnums": true,
     "sourceMap": true,
-    "outDir": "build/",
+    "outDir": "out",
     "listFiles": true,
     "checkJs": true,
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "target": "es2016",
-    "watch": true,
+    "watch": false,
     "skipLibCheck": true
   },
   "include": [
