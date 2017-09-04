@@ -8,7 +8,7 @@
     "test": "mocha --compilers ts:ts-node/register,tsx:ts-node/register 'test/**/*.spec.@(ts|tsx)'",
     "start": "yarn install && yarn compile && electron .",
     "getserver": "git clone git@github.com:CAU-Kiel-Tech-Inf/socha.git; cd socha; git pull; git checkout hase_und_igel_development; git pull; ant; cd ..; rm -r server; rm -r client; cp -r socha/deploy/server server; echo \"password = examplepassword\" > server/server.properties; cp -r socha/deploy/simple_client/hase_und_igel_player_new/jar client; return 0;",
-    "dist": "yarn install && yarn compile && electron-builder",
+    "dist": "yarn install && yarn compile && electron-builder --win --linux",
     "compile": "rimraf out && tsc"
   },
   "author": "Software-Challenge Team",
@@ -18,25 +18,35 @@
     "files": [
       "*",
       "*/**",
-      "out"
+      "out",
+      "!dist"
     ],
     "asar": true,
+    "asarUnpack": "server",
     "directories": {
       "output": "dist",
       "buildResources": "build"
     },
     "win": {
-      "target": ["nsis", "portable"]
+      "target": [
+        "Squirrel"
+      ]
     },
     "mac": {
       "category": "public.app-category.developer-tools",
-      "target": ["dmg"]
+      "target": [
+        "dmg"
+      ]
     },
     "linux": {
-      "target": ["AppImage", "tar.xz"]
+      "target": [
+        "AppImage",
+        "tar.xz"
+      ]
     }
   },
   "dependencies": {
+    "hazardous": "^0.3.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-photonkit": "^0.4.1",
@@ -54,6 +64,7 @@
     "chai-immutable": "^1.6.0",
     "electron": "^1.7.5",
     "electron-builder": "^19.27.3",
+    "electron-builder-squirrel-windows": "^19.27.3",
     "electron-packager": "^9.0.1",
     "mocha": "^3.5.0",
     "rimraf": "^2.6.1",

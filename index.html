@@ -8,6 +8,7 @@
 <body>
   <div id="root">
     <script>
+      require('hazardous');
       remote = require('electron').remote
       const path = require('path')
       var index = require(path.join(remote.app.getAppPath(), 'out', 'gui', 'index.js'));

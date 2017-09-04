@@ -73,3 +73,7 @@
   width: 100%;
   height: 100%;
 }
+
+.replay-controls button {
+  font-size: 3vh;
+}
