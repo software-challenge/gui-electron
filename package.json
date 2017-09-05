@@ -8,13 +8,14 @@
     "test": "mocha --compilers ts:ts-node/register,tsx:ts-node/register 'test/**/*.spec.@(ts|tsx)'",
     "start": "yarn install && yarn compile && electron .",
     "getserver": "git clone git@github.com:CAU-Kiel-Tech-Inf/socha.git; cd socha; git pull; git checkout hase_und_igel_development; git pull; ant; cd ..; rm -r server; rm -r client; cp -r socha/deploy/server server; echo \"password = examplepassword\" > server/server.properties; cp -r socha/deploy/simple_client/hase_und_igel_player_new/jar client; return 0;",
-    "dist": "yarn install && yarn compile && electron-builder --win --linux",
+    "dist": "yarn install && yarn compile && electron-builder --win --linux --mac",
     "compile": "rimraf out && tsc"
   },
   "author": "Software-Challenge Team",
   "license": "ISC",
   "build": {
     "appId": "de.software-challenge.gui",
+    "productName": "Software-Challenge GUI",
     "files": [
       "*",
       "*/**",
@@ -35,14 +36,15 @@
     "mac": {
       "category": "public.app-category.developer-tools",
       "target": [
-        "dmg"
+        "zip"
       ]
     },
     "linux": {
       "target": [
         "AppImage",
         "tar.xz"
-      ]
+      ],
+      "icon": "build-resources"
     }
   },
   "dependencies": {
