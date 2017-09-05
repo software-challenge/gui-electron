@@ -115,6 +115,7 @@ export class Engine {
 
     window.addEventListener('resize', () => {
       this.engine.resize();
+      this.needsRerender = true;
     });
 
   }

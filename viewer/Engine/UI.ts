@@ -10,6 +10,7 @@ import { Viewer } from '../Viewer';
 
 const INVISIBLE = 'invisible';
 const HIGHLIGHT_CARD = 'highlight-card';
+const CURRENT_PLAYER = 'current-player';
 
 export class UI {
   interactive: "off" | "red" | "blue";
@@ -199,8 +200,8 @@ export class UI {
     var exchangeCarrotsRoot = cdiv(['exchangeCarrots', 'root', 'invisible'], element);
     this.exchangeCarrotsDialogue = {
       root: exchangeCarrotsRoot,
-      takeTen: cdiv(['exchangeCarrots', 'takeTen', 'clickable'], exchangeCarrotsRoot, "+10"),
-      giveTen: cdiv(['exchangeCarrots', 'giveTen', 'clickable'], exchangeCarrotsRoot, '-10'),
+      takeTen: cdiv(['exchangeCarrots', 'takeTen', 'clickable'], exchangeCarrotsRoot, "+10 Karotten"),
+      giveTen: cdiv(['exchangeCarrots', 'giveTen', 'clickable'], exchangeCarrotsRoot, '-10 Karotten'),
     }
     let addCarrotExchangeEvent = (element, value) => {
       element.addEventListener('click', () => {
@@ -237,7 +238,14 @@ export class UI {
 
   private setInteractive(interactive: "off" | "red" | "blue") {
     this.interactive = interactive;
-    console.log("INTERACTIVE MODE: " + interactive);
+    this.display.red.root.classList.remove(CURRENT_PLAYER);
+    this.display.blue.root.classList.remove(CURRENT_PLAYER);
+    if (this.interactive == "red") {
+      this.display.red.root.classList.add(CURRENT_PLAYER);
+    }
+    if (this.interactive == "blue") {
+      this.display.blue.root.classList.add(CURRENT_PLAYER);
+    }
     if (this.interactive == "off") {
       this.disableSend();
       this.disableCancel();

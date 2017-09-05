@@ -25,11 +25,11 @@
     "asarUnpack": "server",
     "directories": {
       "output": "dist",
-      "buildResources": "build"
+      "buildResources": "build-resources"
     },
     "win": {
       "target": [
-        "Squirrel"
+        "nsis"
       ]
     },
     "mac": {

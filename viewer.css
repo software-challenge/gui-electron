@@ -72,6 +72,10 @@
   border-bottom-left-radius: 3vh;
 }
 
+.display>.current-player {
+  border: 3px solid green;
+}
+
 .carrots::before{
   content: "Karotten: ";
 }
@@ -183,6 +187,7 @@
 }
 
 .replay-viewer .eatSalad:before {
+  font-family: emoji;
   color: green;
   content: "🥗";
 }
@@ -195,7 +200,31 @@
   margin: 2px;
 }
 
+/* To make Emojis work, see https://coderwall.com/p/ruv9hq/display-emoji-glyphs-intermingled-with-arbitrary-text */
+@font-face {
+  font-family: emoji;
+
+  /* Fonts for text outside emoji blocks */
+  src: local('Droid Sans Mono'),
+       local('Lucida Console'),
+       local('Arial Monospaced'),
+       local(Arial);
+}
+@font-face {
+  font-family: emoji;
+
+  src: local('Apple Color Emoji'),
+       local('Android Emoji'),
+       local('Segoe UI'),
+       local(EmojiSymbols),
+       local(Symbola);
+
+  /* Emoji unicode blocks */
+  unicode-range: U+1F300-1F5FF, U+1F600-1F64F, U+1F680-1F6FF, U+2600-26FF;
+}
+
 .replay-viewer div.exchangeCarrots.clickable:after {
+  font-family: emoji;
   color: #EB8921;
   content: "🥕";
 }

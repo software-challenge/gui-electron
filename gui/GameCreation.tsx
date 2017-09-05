@@ -6,6 +6,9 @@ import { GameCreationOptions, PlayerType } from '../api/GameCreationOptions';
 
 const dialog = remote.dialog;
 
+const localStorageCreationOptions = 'creationOptions';
+const localStorageProgramPath = 'defaultProgramPath';
+
 interface State {
   firstPlayerType: PlayerType
   firstPlayerName: string,
@@ -21,16 +24,21 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
   private gameCreationCallback: (GameCreationOptions) => void;
   constructor() {
     super();
-    var defaultClient = window.localStorage['defaultProgramPath'];
-    this.state = {
-      firstPlayerType: "Human",
-      firstPlayerName: "Mensch Spieler 1",
-      firstPlayerProgramPath: defaultClient,
-      firstPlayerDirectStart: false,
-      secondPlayerType: "Computer",
-      secondPlayerName: "Computer Spieler 2",
-      secondPlayerProgramPath: defaultClient,
-      secondPlayerDirectStart: false
+    var lastCreationOptions = window.localStorage[localStorageCreationOptions];
+    if (lastCreationOptions == null) {
+      var defaultClient = window.localStorage[localStorageProgramPath];
+      this.state = {
+        firstPlayerType: "Human",
+        firstPlayerName: "Mensch Spieler 1",
+        firstPlayerProgramPath: defaultClient,
+        firstPlayerDirectStart: false,
+        secondPlayerType: "Computer",
+        secondPlayerName: "Computer Spieler 2",
+        secondPlayerProgramPath: defaultClient,
+        secondPlayerDirectStart: false
+      }
+    } else {
+      this.state = JSON.parse(lastCreationOptions);
     }
   }
 
@@ -60,7 +68,7 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
       function (filenames) {
         // dialog returns undefined when user clicks cancel or an array of strings (paths) if user selected a file
         if (filenames && filenames.length > 0) {
-          window.localStorage['defaultProgramPath'] = filenames[0];
+          window.localStorage[localStorageProgramPath] = filenames[0];
           this.setState((prev, _props) => {
             setter(prev, filenames[0])
           });
@@ -90,6 +98,7 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
 
   // is called when the user wants to start a game with a valid configuration
   private handleStartGame() {
+    window.localStorage[localStorageCreationOptions] = JSON.stringify(this.state);
     this.gameCreationCallback(
       new GameCreationOptions(
         this.state.firstPlayerType,
