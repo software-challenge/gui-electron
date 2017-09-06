@@ -81,12 +81,12 @@ export class Viewer {
 
 
     this.board = new Board();
-    this.board.init(this.engine);
+    this.board.init(this.engine.getScene(), this.engine.materialBuilder);
 
     this.red = new Player(0, 0, this.board.grid);
     this.blue = new Player(1, 0, this.board.grid);
-    this.red.init(this.engine);
-    this.blue.init(this.engine);
+    this.red.init(this.engine.getScene(), this.engine.materialBuilder);
+    this.blue.init(this.engine.getScene(), this.engine.materialBuilder);
 
     //Display
     this.ui = new UI(this, this.engine, this.board, this.canvas, element, window);
@@ -104,19 +104,19 @@ export class Viewer {
 
 
   render(state: GameState, animated: boolean = true) {
-    this.engine.needsRerender = true;
+    this.engine.startRerender();
     this.board.update(state.board, animated);
     this.red.update(state.red.index, animated);
     this.blue.update(state.blue.index, animated);
     this.ui.updateDisplay(state);
-    setTimeout(() => this.engine.needsRerender = false, 2000);
+    setTimeout(() => this.engine.stopRerender(), 2000);
     this.ui.setEndscreenVisible(false);
 
   }
 
   stop() {
     this.engine.rerenderControlActive = true;
-    this.engine.needsRerender = false;
+    this.engine.stopRerender();
   }
 
 

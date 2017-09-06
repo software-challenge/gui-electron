@@ -1,3 +1,4 @@
+import { MaterialBuilder } from '../Engine/MaterialBuilder';
 import { Component } from './Component.js';
 import { Engine } from '../Engine/Engine.js';
 import { Field } from './Field.js';
@@ -17,10 +18,10 @@ export class Board implements Component {
     this.grid = new Grid(4, -20.5, -20.5, 0.1);
   }
 
-  init(engine: Engine) {
+  init(scene: BABYLON.Scene, materialBuilder: MaterialBuilder) {
     //Create ground mesh
-    var ground: BABYLON.Mesh = BABYLON.Mesh.CreateGround("ground", 100, 100, 10, engine.scene, false);
-    ground.material = engine.materialBuilder.getGreenMaterial();
+    var ground: BABYLON.Mesh = BABYLON.Mesh.CreateGround("ground", 200, 200, 10, scene, false);
+    ground.material = materialBuilder.getGrassMaterial();
 
 
     this.fields = new Array(65).fill(0, 0, 65).map((o, i) => {
@@ -30,10 +31,7 @@ export class Board implements Component {
       return new Field(i, c.x, c.y);
     });
     //Init all fields
-    this.fields.forEach(f => f.init(engine));
-
-
-
+    this.fields.forEach(f => f.init(scene, materialBuilder));
   }
 
   update(board: SC_Board, animated: boolean) {

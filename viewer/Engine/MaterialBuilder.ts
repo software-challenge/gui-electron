@@ -6,9 +6,7 @@ import { FIELDTYPE, Board } from '../../api/HaseUndIgel';
 
 export class MaterialBuilder {
 
-  engine: Engine;
-
-  private greenMaterial: BABYLON.StandardMaterial;
+  private grassMaterial: BABYLON.StandardMaterial;
   private blueMaterial: BABYLON.StandardMaterial;
   private redMaterial: BABYLON.StandardMaterial;
 
@@ -19,36 +17,46 @@ export class MaterialBuilder {
 
   private texturedFieldMaterials: Map<string, BABYLON.StandardMaterial>;
 
-  constructor(engine: Engine) {
-    this.engine = engine;
+  private highlightedFields: BABYLON.HighlightLayer;
 
-    this.greenMaterial = new BABYLON.StandardMaterial("greenMaterial", engine.scene);
-    this.greenMaterial.diffuseColor = new BABYLON.Color3(0, 1, 0);
+  constructor(scene: BABYLON.Scene) {
 
-    this.redMaterial = new BABYLON.StandardMaterial("redMaterial", engine.scene);
+    this.grassMaterial = new BABYLON.StandardMaterial("grassPlane", scene);
+    let grassTexture = new BABYLON.Texture("assets/grass.jpg", scene);
+    grassTexture.uScale = 15.0;
+    grassTexture.vScale = 15.0;
+    this.grassMaterial.diffuseTexture = grassTexture;
+    this.grassMaterial.backFaceCulling = false;//Always show the front and the back of an element
+
+    this.redMaterial = new BABYLON.StandardMaterial("redMaterial", scene);
     this.redMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
 
-    this.blueMaterial = new BABYLON.StandardMaterial("blueMaterial", engine.scene);
+    this.blueMaterial = new BABYLON.StandardMaterial("blueMaterial", scene);
     this.blueMaterial.diffuseColor = new BABYLON.Color3(0, 0, 1);
 
-    this.highlightMaterialRed = new BABYLON.StandardMaterial("highlightmaterialred", engine.scene);
-    this.highlightMaterialRed.diffuseColor = new BABYLON.Color3(1, 0.5, 0.5);
-    this.highlightMaterialRed.alpha = 0.5;
+    this.highlightMaterialRed = new BABYLON.StandardMaterial("highlightmaterialred", scene);
+    let highlightTexture = new BABYLON.Texture("assets/highlight_field.png", scene);
+    highlightTexture.uScale = 1.0;
+    highlightTexture.vScale = 1.0;
+    highlightTexture.hasAlpha = true;
+    this.highlightMaterialRed.diffuseTexture = highlightTexture;
+    this.highlightMaterialRed.useAlphaFromDiffuseTexture = true;
 
+    this.highlightedFields = new BABYLON.HighlightLayer("field-highlight-layer", scene);
 
-    this.highlightMaterialBlue = new BABYLON.StandardMaterial("highlightmaterialredblue", engine.scene);
+    this.highlightMaterialBlue = new BABYLON.StandardMaterial("highlightmaterialredblue", scene);
     this.highlightMaterialBlue.diffuseColor = new BABYLON.Color3(0.5, 0.5, 1);
     this.highlightMaterialBlue.alpha = 0.5;
 
-    this.transparentMaterial = new BABYLON.StandardMaterial("transparentmaterial", engine.scene);
+    this.transparentMaterial = new BABYLON.StandardMaterial("transparentmaterial", scene);
     this.transparentMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
     this.transparentMaterial.alpha = 0;
 
     this.texturedFieldMaterials = new Map<string, BABYLON.StandardMaterial>();
 
     for (let fieldtype in Board.Fieldtype) {
-      let fm = new BABYLON.StandardMaterial(Board.Fieldtype[fieldtype] + "material", engine.scene);
-      fm.diffuseTexture = new BABYLON.Texture("assets/" + fieldtype + ".png", engine.scene);
+      let fm = new BABYLON.StandardMaterial(Board.Fieldtype[fieldtype] + "material", scene);
+      fm.diffuseTexture = new BABYLON.Texture("assets/" + fieldtype + ".png", scene);
       fm.specularTexture = fm.diffuseTexture;
       console.log("Loaded texture for " + Board.Fieldtype[fieldtype] + " (" + "assets/" + fieldtype + ".png" + ")");
       this.texturedFieldMaterials.set(Board.Fieldtype[fieldtype], fm);
@@ -57,8 +65,8 @@ export class MaterialBuilder {
   }
 
 
-  getGreenMaterial(): BABYLON.StandardMaterial {
-    return this.greenMaterial;
+  getGrassMaterial(): BABYLON.StandardMaterial {
+    return this.grassMaterial;
   }
   getRedMaterial(): BABYLON.StandardMaterial {
     return this.redMaterial;
@@ -79,6 +87,9 @@ export class MaterialBuilder {
     return this.transparentMaterial;
   }
 
+  getHighlightingLayer(): BABYLON.HighlightLayer {
+    return this.highlightedFields;
+  }
 
   getTexturedFieldMaterial(fieldtype: FIELDTYPE) {
     if (!this.texturedFieldMaterials.get(fieldtype)) {

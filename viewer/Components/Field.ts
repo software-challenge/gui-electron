@@ -4,8 +4,7 @@ import { MaterialBuilder } from '../Engine/MaterialBuilder';
 import { FIELDTYPE, Board } from '../../api/HaseUndIgel';
 
 export class Field implements Component {
-  highlight_mesh: BABYLON.Mesh;
-  mesh: BABYLON.Mesh;
+  private mesh: BABYLON.Mesh;
   id: number;
   position: { x: number, y: number };
   type: FIELDTYPE;
@@ -19,20 +18,14 @@ export class Field implements Component {
   }
 
 
-  init(engine: Engine) {
-    this.highlight_mesh = BABYLON.MeshBuilder.CreateBox("highlight-field-" + this.id, { 'width': 4, 'depth': 4, 'height': 0.05 }, engine.scene);
-    this.highlight_mesh.position.x = this.position.x;
-    this.highlight_mesh.position.z = this.position.y;
-    this.highlight_mesh.position.y = 0.01;
-    this.highlight_mesh.material = engine.materialBuilder.getTransparentMaterial();
-
-    this.mesh = BABYLON.MeshBuilder.CreateBox("field-" + this.id, { 'width': 4, 'depth': 4, 'height': 0.01 }, engine.scene);
+  init(scene: BABYLON.Scene, materialBuilder: MaterialBuilder) {
+    this.mesh = BABYLON.MeshBuilder.CreateBox("field-" + this.id, { 'width': 4, 'depth': 4, 'height': 0.01 }, scene);
     this.mesh.position.x = this.position.x;
     this.mesh.position.z = this.position.y;
     this.mesh.rotation.y = (Math.PI / 2) * 3;
-    this.mesh.material = engine.materialBuilder.getTransparentMaterial();
+    this.mesh.material = materialBuilder.getTransparentMaterial();
 
-    this.materialBuilder = engine.materialBuilder;
+    this.materialBuilder = materialBuilder;
     this.setHighlight(false);
   }
 
@@ -45,11 +38,12 @@ export class Field implements Component {
 
   setHighlight(active: boolean, color: "red" | "blue" = "red") {
     if (this.highlight != active) {
+      let highlightColor = color == "red" ? BABYLON.Color3.Red() : BABYLON.Color3.Blue();
       this.highlight = active;
       if (this.highlight == true) {
-        this.highlight_mesh.material = this.materialBuilder.getHighlightMaterial(color);
+        this.materialBuilder.getHighlightingLayer().addMesh(this.mesh, highlightColor);
       } else {
-        this.highlight_mesh.material = this.materialBuilder.getTransparentMaterial();
+        this.materialBuilder.getHighlightingLayer().removeMesh(this.mesh);
       }
     }
   }

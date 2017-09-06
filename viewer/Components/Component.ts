@@ -1,7 +1,7 @@
 ///  <reference path="../../babylon.d.ts" />
 
-import { Engine } from '../Engine/Engine.js';
+import { MaterialBuilder } from '../Engine/MaterialBuilder';
 
 export interface Component {
-  init(engine: Engine);
+  init(scene: BABYLON.Scene, materialBuilder: MaterialBuilder);
 }

@@ -4,19 +4,19 @@ import { Engine } from './Engine.js';
 
 export class ShaderBuilder {
 
-  engine: Engine;
+  scene: BABYLON.Scene;
 
   standardShaderMaterial: BABYLON.ShaderMaterial;
 
-  constructor(engine: Engine) {
-    this.engine = engine;
+  constructor(scene: BABYLON.Scene) {
+    this.scene = scene;
     this.standardShaderMaterial = this.createStandardShaderMaterial();
   }
 
   private createStandardShaderMaterial(): BABYLON.ShaderMaterial {
     this.appendShaderNode('vertexStandard', this.shaderTypes.vertex, this.standardVertexShaderString);
     this.appendShaderNode('fragmentStandard', this.shaderTypes.fragment, this.standardFragmentShaderString);
-    var s = new BABYLON.ShaderMaterial('standardShader', this.engine.scene, {
+    var s = new BABYLON.ShaderMaterial('standardShader', this.scene, {
       vertexElement: 'vertexStandard',
       fragmentElement: 'fragmentStandard'
     }, {

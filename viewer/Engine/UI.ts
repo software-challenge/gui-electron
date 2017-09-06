@@ -89,21 +89,24 @@ export class UI {
     this.viewer = viewer;
 
 
-    engine.scene.onPointerObservable.add((ed, es) => {
-      console.log("clicked!", engine.scene.pointerX, engine.scene.pointerY);
-      var pickResult = engine.scene.pick(engine.scene.pointerX, engine.scene.pointerY);
-      if (pickResult.hit) {
-        let pickedID = pickResult.pickedMesh.id;
-        if (pickedID.startsWith('highlight-field')) {
-          pickedID = pickedID.split('-')[2];
-          let pickedIndex = Number(pickedID);
-          if (this.board.fields[pickedIndex].highlight) {
-            this.eventProxy.emit('field', Number(pickedIndex));
-          }
+    this.engine.addClickListener((fieldName) => {
+      if (fieldName.startsWith('field')) {
+        fieldName = fieldName.split('-')[1];
+        let pickedIndex = Number(fieldName);
+        if (this.board.fields[pickedIndex].highlight) {
+          this.eventProxy.emit('field', Number(pickedIndex));
         }
       }
-      console.log("pointer event", engine.scene.pointerX, engine.scene.pointerY);
-    }, BABYLON.PointerEventTypes.POINTERPICK);
+    })
+
+    this.engine.addHoverListener((fieldName) => {
+      console.log("hovered over ", fieldName)
+      if (fieldName.startsWith('field')) {
+        fieldName = fieldName.split('-')[1];
+        let pickedIndex = Number(fieldName);
+        console.log("hovered over field ", pickedIndex);
+      }
+    })
 
     var root = cdiv(['display'], element);
     var redroot = cdiv(['red'], root);
@@ -166,7 +169,6 @@ export class UI {
       })
       cardbox.classList.add('cardbox');
       var card_image = cimg('assets/' + cardToTex(name), ['card', name], cardbox);
-      var highlight_image = cimg('assets/highlight_' + cardToTex(name), ['highlight-card', name], cardbox);
       root.appendChild(cardbox);
       return cardbox;
     }

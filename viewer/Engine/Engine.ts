@@ -6,8 +6,8 @@ import { MaterialBuilder } from './MaterialBuilder.js';
 import { ShaderBuilder } from './ShaderBuilder.js';
 
 export class Engine {
-  engine: BABYLON.Engine;
-  scene: BABYLON.Scene;
+  private engine: BABYLON.Engine;
+  private scene: BABYLON.Scene;
   canvas: HTMLCanvasElement;
   shadow: BABYLON.ShadowGenerator;
 
@@ -20,7 +20,7 @@ export class Engine {
   camera: Camera;
 
   rerenderControlActive: boolean;
-  needsRerender: boolean;
+  private needsRerender: boolean;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -28,9 +28,9 @@ export class Engine {
 
     this.scene = new BABYLON.Scene(this.engine);
 
-    this.materialBuilder = new MaterialBuilder(this);
+    this.materialBuilder = new MaterialBuilder(this.scene);
 
-    this.camera = new Camera(this);
+    this.camera = new Camera(this.scene, this.canvas);
 
     this.setupSky();
 
@@ -48,12 +48,12 @@ export class Engine {
   }
 
 
-  enableFXAA(FXAALevel: number) {
+  public enableFXAA(FXAALevel: number) {
     var postProcess = new BABYLON.FxaaPostProcess("fxaa", FXAALevel, this.camera.camera, null, this.engine, true);
     console.log("Activated " + FXAALevel + "x FXAA post-processing");
   }
 
-  setupPointers() {
+  private setupPointers() {
     var width: number = 1;
     var x_line = BABYLON.Mesh.CreateCylinder('x_line', 20, width, width, 50, 10, this.scene);
     x_line.position.x = 10;
@@ -62,7 +62,7 @@ export class Engine {
 
     var y_line = BABYLON.Mesh.CreateCylinder('y_line', 20, width, width, 50, 10, this.scene);
     y_line.position.y = 10;
-    y_line.material = this.materialBuilder.getGreenMaterial();
+    y_line.material = this.materialBuilder.getGrassMaterial();
 
 
     var z_line = BABYLON.Mesh.CreateCylinder('z_line', 20, width, width, 50, 10, this.scene);
@@ -72,7 +72,7 @@ export class Engine {
 
   }
 
-  setupSky() {
+  private setupSky() {
     //Set up sky
     var luminance = Math.abs(Math.sin((new Date().getHours() / 24 * Math.PI) + Math.PI));
     luminance = 0.2;
@@ -90,7 +90,7 @@ export class Engine {
     skybox.material = this.skyMaterial;
   }
 
-  setupLighting() {
+  private setupLighting() {
     //Set up scene lighting
     var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 100, 0), this.scene);
     //var light = new BABYLON.DirectionalLight('sun',new BABYLON.Vector3(0,-1,0),this.scene);
@@ -106,7 +106,7 @@ export class Engine {
      this.shadow.filter = 0.2;*/
   }
 
-  startEngine() {
+  public startEngine() {
     this.engine.runRenderLoop(() => {
       if (this.needsRerender || (!this.rerenderControlActive)) {
         this.scene.render();
@@ -115,10 +115,39 @@ export class Engine {
 
     window.addEventListener('resize', () => {
       this.engine.resize();
-      this.needsRerender = true;
+      this.startRerender();
     });
 
   }
 
+  public startRerender() {
+    this.needsRerender = true;
+  }
+
+  public stopRerender() {
+    this.needsRerender = false;
+  }
+
+  public getScene() {
+    return this.scene;
+  }
+
+  private addListener(listener: (pickedFieldName: string) => void, eventType: number) {
+    this.scene.onPointerObservable.add((ed, es) => {
+      var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+      if (pickResult.hit) {
+        let pickedID = pickResult.pickedMesh.id;
+        listener(pickedID);
+      }
+    }, eventType);
+  }
+
+  public addClickListener(listener: (pickedFieldName: string) => void) {
+    this.addListener(listener, BABYLON.PointerEventTypes.POINTERPICK)
+  }
+
+  public addHoverListener(listener: (pickedFieldName: string) => void) {
+    this.addListener(listener, BABYLON.PointerEventTypes.POINTERMOVE)
+  }
 
 }
