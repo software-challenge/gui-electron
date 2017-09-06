@@ -17,6 +17,7 @@ export class UI {
   private engine: Engine;
   private board: Board;
   private viewer: Viewer;
+  private replayViewerElement: HTMLElement;
 
   private eventProxy = new class extends events.EventEmitter { }();
 
@@ -72,7 +73,8 @@ export class UI {
     progress: {
       box: HTMLDivElement,
       bar: HTMLDivElement
-    }
+    },
+    info: HTMLDivElement
   };
 
   private endscreen: {
@@ -83,11 +85,13 @@ export class UI {
   }
 
 
-  constructor(viewer: Viewer, engine: Engine, board: Board, canvas: HTMLCanvasElement, element: Element, window: Window) {
+  constructor(viewer: Viewer, engine: Engine, board: Board, canvas: HTMLCanvasElement, element: HTMLElement, window: Window) {
     this.engine = engine;
     this.board = board;
     this.viewer = viewer;
 
+
+    this.replayViewerElement = element;
 
     this.engine.addClickListener((fieldName) => {
       if (fieldName.startsWith('field')) {
@@ -105,6 +109,10 @@ export class UI {
         fieldName = fieldName.split('-')[1];
         let pickedIndex = Number(fieldName);
         console.log("hovered over field ", pickedIndex);
+        this.display.info.classList.remove(INVISIBLE);
+        this.display.info.innerText = "Feld " + pickedIndex;
+      } else {
+        this.display.info.classList.add(INVISIBLE);
       }
     })
 
@@ -140,7 +148,8 @@ export class UI {
       cancel: cdiv(['cancel', 'button', 'invisible'], element, 'Abbrechen'),
       send: cdiv(['send', 'button', 'invisible'], element, 'Senden'),
       skip: cdiv(['skip', 'button', 'invisible'], element, 'Aussetzen'),
-      eatSalad: cdiv(['eatSalad', 'button', 'invisible'], element, 'Salat essen')
+      eatSalad: cdiv(['eatSalad', 'button', 'invisible'], element, 'Salat essen'),
+      info: cdiv(['info'], element, '')
     };
     //TODO: Make Cancel and Send actual button elements for UI consistency (add cbtn method)
     this.display.cancel.addEventListener('click', () => this.eventProxy.emit('cancel'));
@@ -202,8 +211,8 @@ export class UI {
     var exchangeCarrotsRoot = cdiv(['exchangeCarrots', 'root', 'invisible'], element);
     this.exchangeCarrotsDialogue = {
       root: exchangeCarrotsRoot,
-      takeTen: cdiv(['exchangeCarrots', 'takeTen', 'clickable'], exchangeCarrotsRoot, "+10 Karotten"),
-      giveTen: cdiv(['exchangeCarrots', 'giveTen', 'clickable'], exchangeCarrotsRoot, '-10 Karotten'),
+      takeTen: cdiv(['exchangeCarrots', 'takeTen', 'clickable', 'button'], exchangeCarrotsRoot, "+10 Karotten"),
+      giveTen: cdiv(['exchangeCarrots', 'giveTen', 'clickable', 'button'], exchangeCarrotsRoot, '-10 Karotten'),
     }
     let addCarrotExchangeEvent = (element, value) => {
       element.addEventListener('click', () => {
@@ -218,10 +227,10 @@ export class UI {
     var takeOrDropCarrotsCardRoot = cdiv(['takeOrDropCarrotsCard', 'root', 'invisible'], element);
     this.takeOrDropCarrotsCardDialogue = {
       root: takeOrDropCarrotsCardRoot,
-      takeTwenty: cdiv(['takeOrDropCarrotsCard', 'takeTwenty', 'clickable'], takeOrDropCarrotsCardRoot, "+20"),
-      takeZero: cdiv(['takeOrDropCarrotsCard', 'takeZero', 'clickable'], takeOrDropCarrotsCardRoot, '0'),
-      giveTwenty: cdiv(['takeOrDropCarrotsCard', 'giveTwenty', 'clickable'], takeOrDropCarrotsCardRoot, '-20'),
-      cancel: cdiv(['takeOrDropCarrotsCard', 'carrot-cancel', 'clickable'], takeOrDropCarrotsCardRoot, 'Cancel')
+      takeTwenty: cdiv(['takeOrDropCarrotsCard', 'takeTwenty', 'clickable', 'button'], takeOrDropCarrotsCardRoot, "+20"),
+      takeZero: cdiv(['takeOrDropCarrotsCard', 'takeZero', 'clickable', 'button'], takeOrDropCarrotsCardRoot, '0'),
+      giveTwenty: cdiv(['takeOrDropCarrotsCard', 'giveTwenty', 'clickable', 'button'], takeOrDropCarrotsCardRoot, '-20'),
+      cancel: cdiv(['takeOrDropCarrotsCard', 'carrot-cancel', 'clickable', 'button'], takeOrDropCarrotsCardRoot, 'Cancel')
     }
     let addCarrotCardEvent = (element, value) => {
       element.addEventListener('click', () => {
@@ -240,13 +249,19 @@ export class UI {
 
   private setInteractive(interactive: "off" | "red" | "blue") {
     this.interactive = interactive;
+
+    this.replayViewerElement.classList.remove("current-red")
+    this.replayViewerElement.classList.remove("current-blue")
+
     this.display.red.root.classList.remove(CURRENT_PLAYER);
     this.display.blue.root.classList.remove(CURRENT_PLAYER);
     if (this.interactive == "red") {
       this.display.red.root.classList.add(CURRENT_PLAYER);
+      this.replayViewerElement.classList.add("current-red")
     }
     if (this.interactive == "blue") {
       this.display.blue.root.classList.add(CURRENT_PLAYER);
+      this.replayViewerElement.classList.add("current-blue")
     }
     if (this.interactive == "off") {
       this.disableSend();
@@ -301,6 +316,8 @@ export class UI {
       this.enableSkip();
     }
 
+    // this also removes highlights if not first action
+
     if (isFirstAction) { // Advance, exchange carrots, fall back and eat salad have to be first action
       this.highlightPossibleFieldsForGamestate(state);
       if (GameRuleLogic.isValidToExchangeCarrots(state, 10)) {
@@ -316,6 +333,7 @@ export class UI {
     } else {
       this.hideCarrotPickupDialogue();
       this.hide(this.display.eatSalad);
+      this.unhighlightFields();
     }
 
     this.highlightPossibleCardsForGameState(state);
@@ -430,8 +448,12 @@ export class UI {
     this.hide(this.exchangeCarrotsDialogue.root);
   }
 
-  highlightPossibleFieldsForGamestate(gamestate: GameState) {
+  unhighlightFields() {
     this.board.fields.forEach(f => f.setHighlight(false));
+  }
+
+  highlightPossibleFieldsForGamestate(gamestate: GameState) {
+    this.unhighlightFields();
     if (GameRuleLogic.canAdvanceToAnyField(gamestate) &&
       (gamestate.currentPlayer == SC_Player.COLOR.RED && this.interactive == "red") ||
       (gamestate.currentPlayer == SC_Player.COLOR.BLUE && this.interactive == "blue")) {

@@ -120,63 +120,55 @@
   left: 0;
   font-weight: bold;
   font-size: 5vh;
+  color: #cccacc;
 }
 
 .replay-viewer .cancel{
-  position: absolute;
   bottom: 8vh;
   left: 10;
-  font-size: 3vh;
   color: red;
-  background: white;
-  margin: 2px;
-  border: 1px solid black;
-  padding: 1px 6px;
-  font-weight: bold;
 }
 
 .replay-viewer .skip{
-  position: absolute;
   bottom: 8vh;
   left: 10vw;
-  font-size: 3vh;
   color: yellow;
-  background: white;
+}
+
+.replay-viewer .button{
+  position: absolute;
   margin: 2px;
-  border: 1px solid black;
+  font-size: 3vh;
+  color: black;
+  border: 1px solid black; 
   padding: 1px 6px;
   font-weight: bold;
 }
 
 .replay-viewer .send{
-  position: absolute;
   bottom: 8vh;
   right: 10;
-  margin: 2px;
-  font-size: 3vh;
-  color:#007800;
-  background: white;
-  border: 1px solid black; 
-  padding: 1px 6px;  
-  font-weight: bold;
+}
+
+.replay-viewer.current-red .button {
+  color: white;
+  background: #d1524e;
+}
+
+.replay-viewer.current-blue .button {
+  color: white;
+  background: #1561b9;
 }
 
 .replay-viewer .eatSalad {
-  position: absolute;
   bottom: 8vh;
   right: 13vw;
-  margin: 2px;
-  font-size: 3vh;
-  background: white;
-  border: 1px solid black; 
-  padding: 1px 6px;  
-  font-weight: bold;
 }
 
 .replay-viewer .eatSalad:before {
   font-family: emoji;
   color: green;
-  content: "🥗";
+  content: "🥗 ";
 }
 
 
@@ -213,15 +205,13 @@
 .replay-viewer div.exchangeCarrots.clickable:after {
   font-family: emoji;
   color: #EB8921;
-  content: "🥕";
+  content: " 🥕";
 }
 
 .replay-viewer div.exchangeCarrots.clickable {
+  position: relative;
   display: inline-block;
-  border: 1px solid black;
-  background: white;
   padding: 2px 12px;
-  font-size: 3vh;
   margin: 0 2px;
 }
 
@@ -238,10 +228,7 @@
 }
 
 .replay-viewer div.takeOrDropCarrotsCard.clickable {
-  border: 1px solid black;
-  background: white;
-  padding: 2px 12px;
-  font-size: 8vh;
+  position: relative;
   width: 33%;
   margin: auto;
   margin-bottom: 2vh;
@@ -276,6 +263,13 @@ color: red;
   background-color: green;
 }
 
+.replay-viewer .info {
+  position: absolute;
+  bottom: 1em;
+  left: 2em;
+  color: white;
+  font-size: 2vh;
+}
 
 .endscreen{
     position: absolute;

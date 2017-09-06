@@ -38,7 +38,7 @@ export class Viewer {
   currentMove: number = 0;
 
   //
-  constructor(element: Element, document: Document, window: Window, rerenderControl: boolean = false, debug = false, framerateModifier = 1) {
+  constructor(element: HTMLElement, document: Document, window: Window, rerenderControl: boolean = false, debug = false, framerateModifier = 1) {
     //Take time measurement for later performance analysis
     this.startup_timestamp = performance.now();
 

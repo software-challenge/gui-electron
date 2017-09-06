@@ -17,6 +17,8 @@ export class Player implements Component {
 
 
   init(scene: BABYLON.Scene, materialBuilder: MaterialBuilder) {
+    //BABYLON.SceneLoader.ImportMesh("Suzanne", "assets", "hare.babylon", scene, (newMeshes, particleSystems) => {
+    // this.mesh = <BABYLON.Mesh>newMeshes[0];
     this.mesh = BABYLON.Mesh.CreateSphere('player-' + this.id, 16, 3, scene);
     var s = this.grid.getGridCoordsFromFieldId(this.position);
     var c = this.grid.getScreenCoordsFromGrid(s.x, s.y);
