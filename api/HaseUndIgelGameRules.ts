@@ -280,7 +280,7 @@ export class GameRuleLogic {
         let state2 = null;
         state2 = state.clone();
         state2.setLastAction(Card.HurryAhead());
-        state2.getCurrentPlayer().cards = player.removeCard(Card.HurryAhead());
+        state2.getCurrentPlayer().removeCard(Card.HurryAhead());
         valid = valid && this.canPlayAnyCard(state2);
         break;
       case Board.Fieldtype.goal:

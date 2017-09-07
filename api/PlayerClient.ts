@@ -26,7 +26,7 @@ export class GenericPlayer extends GenericClient {
   }
 
   private async handleMessage(msg: string) {
-    msg = msg.replace('<protocol>', ''); //Strip unmatched protocol tag //Really dirty hack
+    msg = msg.replace('<protocol>', ''); //Strip unmatched protocol tag. Really dirty hack, but a problem of the specification
     Api.getLogger().log("GenericPlayer", "handleMessage", msg);
     //var decoded = await Parser.getJSONFromXML(msg);
     Parser.getJSONFromXML(msg).then(decoded => {
