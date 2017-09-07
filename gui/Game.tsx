@@ -1,3 +1,4 @@
+import { GameState } from '../api/HaseUndIgel';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Viewer } from '../viewer/Viewer';
@@ -12,6 +13,7 @@ export class Game extends React.Component<{ options: GameCreationOptions, nameCa
   private elem: Element;
   private elemSet: boolean;
   private game: SC_Game;
+  private currentStateNumber: number = 0;
   constructor() {
     super();
     this.viewer = null;
@@ -20,7 +22,7 @@ export class Game extends React.Component<{ options: GameCreationOptions, nameCa
 
   startViewer(e) {
     if (!this.viewer) {
-      this.viewer = new Viewer(e, document, window, true);
+      this.viewer = new Viewer(e, document, window, this, true);
       Api.setCurrentViewer(this.viewer);
     }
 
@@ -48,18 +50,33 @@ export class Game extends React.Component<{ options: GameCreationOptions, nameCa
   }
 
   next() {
-    this.game.getNextState().then(s => {
+    let nextStateNumber = this.currentStateNumber + 1;
+    this.game.getState(nextStateNumber).then(s => {
+      this.currentStateNumber = nextStateNumber;
       this.viewer.render(s, false);
     })
   }
 
   previous() {
-    this.viewer.ui.hideEndscreen();
-    this.game.getPreviousState().catch(reason => { console.log("error!", reason) }).then(s => {
-      if (s) {
-        this.viewer.render(s, false);
-      }
-    })
+    if (this.currentStateNumber > 0) {
+      let previousStateNumber = this.currentStateNumber - 1;
+      this.viewer.ui.hideEndscreen();
+      this.game.getState(previousStateNumber).catch(reason => { console.log("error!", reason) }).then(s => {
+        if (s) {
+          this.currentStateNumber = previousStateNumber;
+          this.viewer.render(s, false);
+        }
+      })
+    }
+  }
+
+  setCurrentState(state: GameState) {
+    let n = this.game.getStateNumber(state);
+    if (n != -1) {
+      this.currentStateNumber = n;
+    } else {
+      console.log("did not find state ", state)
+    }
   }
 
   render() {

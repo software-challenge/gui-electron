@@ -16,7 +16,6 @@ export class Game extends EventEmitter {
   client2: GameClient;
   gameStates: GameState[];
   gameResult: GameResult;
-  private currentState: number;
   private is_live: boolean;
   ready: Promise<void>;
   private roomId: string;
@@ -29,7 +28,6 @@ export class Game extends EventEmitter {
     this.name = name;
     this.messages = [];
     this.gameStates = [];
-    this.currentState = 0;
     Logger.log("Creating game " + name);
     var construct = (async function () {
       //Register hook to go offline
@@ -172,6 +170,10 @@ export class Game extends EventEmitter {
   }
 
   getState(n: number): Promise<GameState> {
+    // FIXME: this should not be handled by the Game. The UI should check for last state and show endscreen
+    if (!this.is_live && this.gameResult && n >= this.gameStates.length - 1) {
+      this.emit('result', this.gameResult);
+    }
     if (this.gameStates[n]) { //If our next state is already buffered
       return Promise.resolve(this.gameStates[n]);
     } else {//Wait for new state to be emitted
@@ -183,34 +185,8 @@ export class Game extends EventEmitter {
     }
   }
 
-  getNextState(): Promise<GameState> {
-    if (this.is_live) {
-      this.currentState++;
-      this.requestNext();
-      return this.getState(this.currentState);
-    } else {
-      if (this.currentState < (this.gameStates.length - 1)) {
-        this.currentState++;
-      } else {
-        if (this.gameResult) {
-          this.emit('result', this.gameResult);
-        }
-      }
-      return this.getState(this.currentState);
-    }
-  }
-
-  getCurrentState(): Promise<GameState> {
-    return this.getState(this.currentState);
-  }
-
-  getPreviousState(): Promise<GameState> {
-    if (this.currentState == 0) {
-      return Promise.reject("Tried to request state from before the beginning of the game");
-    } else {
-      this.currentState--;
-      return this.getState(this.currentState);
-    }
+  getStateNumber(state: GameState): number {
+    return this.gameStates.findIndex((s: GameState) => { return s.turn == state.turn; })
   }
 
   requestNext() {

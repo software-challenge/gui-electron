@@ -1,8 +1,9 @@
+import { Game } from '../../gui/Game';
 
 import { Engine } from './Engine';
 import { Board } from '../Components/Board';
 import { Field } from '../Components/Field';
-import * as events from "events"
+import * as events from 'events';
 
 import { GameState, GameResult, Player as SC_Player, PLAYERCOLOR, Card, Action } from '../../api/HaseUndIgel';
 import { GameRuleLogic } from '../../api/HaseUndIgelGameRules';
@@ -18,6 +19,7 @@ export class UI {
   private board: Board;
   private viewer: Viewer;
   private replayViewerElement: HTMLElement;
+  private gameFrame: Game;
 
   private eventProxy = new class extends events.EventEmitter { }();
 
@@ -308,7 +310,7 @@ export class UI {
   interact(state: GameState, color: PLAYERCOLOR, isFirstAction: boolean): Promise<"action" | "cancel" | "send"> {
     let interactColor: "red" | "blue" = color == SC_Player.COLOR.RED ? "red" : "blue";
     this.setInteractive(interactColor);
-    this.viewer.render(state);
+    this.viewer.seekAndRender(state);
 
     if (GameRuleLogic.isValidToSkip(state)) {
       this.enableSkip();
@@ -491,7 +493,7 @@ export class UI {
 
   }
 
-  updateEndscreen(result: GameResult) {
+  showEndscreen(result: GameResult) {
     this.endscreen.winner.innerHTML = result.winner.displayName;
     if (result.winner.color == SC_Player.COLOR.BLUE) {
       this.endscreen.winner.classList.remove("winRed");
@@ -501,7 +503,11 @@ export class UI {
       this.endscreen.winner.classList.add("winRed");
     }
     this.endscreen.reason.innerHTML = result.reason;
-    this.endscreen.root.style.opacity = "1";
+    this.setEndscreenVisible(true);
+  }
+
+  hideEndscreen() {
+    this.setEndscreenVisible(false);
   }
 }
 

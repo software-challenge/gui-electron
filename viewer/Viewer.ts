@@ -1,3 +1,4 @@
+import { Game } from '../gui/Game';
 ///  <reference path="..//babylon.d.ts" />
 import { Helpers } from "./Helpers";
 import { Board } from './Components/Board';
@@ -20,6 +21,7 @@ export class Viewer {
 
   //UI
   ui: UI;
+  gameFrame: Game;
 
   //Engine
   engine: Engine;
@@ -38,9 +40,10 @@ export class Viewer {
   currentMove: number = 0;
 
   //
-  constructor(element: HTMLElement, document: Document, window: Window, rerenderControl: boolean = false, debug = false, framerateModifier = 1) {
+  constructor(element: HTMLElement, document: Document, window: Window, gameFrame: Game, rerenderControl: boolean = false, debug = false, framerateModifier = 1) {
     //Take time measurement for later performance analysis
     this.startup_timestamp = performance.now();
+    this.gameFrame = gameFrame;
 
     //Initialize engine
     this.canvas = document.createElement('canvas');
@@ -99,6 +102,10 @@ export class Viewer {
   }
 
 
+  seekAndRender(state: GameState, animated: boolean = true) {
+    this.gameFrame.setCurrentState(state);
+    this.render(state, animated);
+  }
 
 
 
@@ -110,8 +117,6 @@ export class Viewer {
     this.blue.update(state.blue.index, animated);
     this.ui.updateDisplay(state);
     setTimeout(() => this.engine.stopRerender(), 2000);
-    this.ui.setEndscreenVisible(false);
-
   }
 
   stop() {
