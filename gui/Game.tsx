@@ -28,7 +28,7 @@ export class Game extends React.Component<{ options: GameCreationOptions, nameCa
       let gameName = (new Date()).toDateString();
       //this.props.nameCallback(gameName);
       this.game = Api.getGameManager().createGame(this.props.options, gameName);
-      this.game.on('result', r => this.viewer.ui.updateEndscreen(r));
+      this.game.on('result', r => this.viewer.ui.showEndscreen(r));
       var init = async function () {
         console.log(this.game);
         await this.game.ready;
@@ -54,8 +54,11 @@ export class Game extends React.Component<{ options: GameCreationOptions, nameCa
   }
 
   previous() {
-    this.game.getPreviousState().then(s => {
-      this.viewer.render(s, false);
+    this.viewer.ui.hideEndscreen();
+    this.game.getPreviousState().catch(reason => { console.log("error!", reason) }).then(s => {
+      if (s) {
+        this.viewer.render(s, false);
+      }
     })
   }
 

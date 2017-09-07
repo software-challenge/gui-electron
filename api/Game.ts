@@ -56,7 +56,6 @@ export class Game extends EventEmitter {
 
       this.observer.on('result', r => {
         this.gameResult = r;
-        this.emit('result', r);
         this.is_live = false;
       })
 
@@ -79,7 +78,7 @@ export class Game extends EventEmitter {
        * in this situation would just playback the game very fast. Pausing in other cases is not
        * necessary because the GUI waits for input when the human player is the current player.
        */
-      let pause = gco.firstPlayerType != "Human" && gco.secondPlayerType != "Human";
+      let pause = false //gco.firstPlayerType != "Human" && gco.secondPlayerType != "Human";
 
       //Create room
       let firstCanTimeout = gco.firstPlayerType != "Human";
