@@ -57,7 +57,7 @@ export class GenericClient extends events.EventEmitter {
         this.emit('message', msg);
         var nextStart = this.parser.position - this.offset;
         this.offset = this.parser.position;
-        this.dataSoFar = this.dataSoFar.substring(nextStart + 1)
+        this.dataSoFar = this.dataSoFar.substring(nextStart)
         this.firstTagOfMessage = undefined;
       }
     }

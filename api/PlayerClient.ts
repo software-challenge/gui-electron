@@ -17,11 +17,12 @@ export class PlayerClientOptions {
 
 export class GenericPlayer extends GenericClient {
 
+  private joinRequest: Promise<Array<any>>;
+  private joined: () => void;
+
   constructor(name: string) {
     super(false, name);
-
     this.on('message', msg => this.handleMessage(msg));
-
   }
 
   private async handleMessage(msg: string) {
@@ -43,6 +44,9 @@ export class GenericPlayer extends GenericClient {
           this.emit('moverequest');
           break;
         case 'welcomeMessage':
+          if (this.joined) {
+            this.joined();
+          }
           this.emit('welcome', { mycolor: Player.ColorFromString(decoded.room.data[0]['$'].color), roomId: decoded.room['$'].roomId });
           break;
         case 'error':
@@ -56,10 +60,12 @@ export class GenericPlayer extends GenericClient {
     }).catch(error => console.log("Error in Parser.getJSONFromXML: " + error));
   }
 
-  joinPrepared(reservation: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this.writeData(`<protocol><joinPrepared reservationCode="${reservation}" />`, () => resolve());
+  joinPrepared(reservation: string): Promise<Array<any>> {
+    let requestJoin = new Promise((resolve, reject) => {
+      this.writeData(`<protocol><joinPrepared reservationCode="${reservation}" />`, resolve);
     });
+    this.joinRequest = Promise.all([requestJoin, new Promise((resolve, reject) => { this.joined = resolve; })]);
+    return this.joinRequest;
   }
 
 

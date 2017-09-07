@@ -43,7 +43,6 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
   }
 
   componentDidMount() {
-    console.log(this.props);
     this.gameCreationCallback = this.props.gameCreationCallback;
   }
 

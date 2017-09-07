@@ -142,13 +142,9 @@ export class Game extends EventEmitter {
       this.client1 = configureClient(gco.firstPlayerType, gco.firstPlayerStartType, gco.firstPlayerName, gco.firstPlayerPath, reservation.reservation1)
       this.client2 = configureClient(gco.secondPlayerType, gco.secondPlayerStartType, gco.secondPlayerName, gco.secondPlayerPath, reservation.reservation2)
 
-      await this.client1.start();
-      await Helpers.awaitEventOnce(Api.getServer(), 'newclient');
-      Logger.log("Client 1 ready (reservation: " + reservation.reservation1 + ")");
-
-      await this.client2.start();
-      await Helpers.awaitEventOnce(Api.getServer(), 'newclient');
-      Logger.log("Client 2 ready (reservation: " + reservation.reservation2 + ")");
+      // wait for clients to join the game
+      // NOTE that the order of resolution of the connect-promises is arbitrary
+      await Promise.all([this.client1.start(), this.client2.start()]);
 
       this.is_live = true;
 

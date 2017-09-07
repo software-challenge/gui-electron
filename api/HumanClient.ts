@@ -72,7 +72,6 @@ export class HumanClient extends GenericPlayer implements GameClient {
 
     //2. Send move
     this.ui.setInteractive("off")
-    console.log("would send move ", move)
     let xml: string = '<room roomId="' + this.roomId + '">' +
       '<data class="move">' +
       move.map((action, index) => {
@@ -98,7 +97,7 @@ export class HumanClient extends GenericPlayer implements GameClient {
     this.writeData(xml);
   }
 
-  start(): Promise<void> {
+  start(): Promise<any> {
     console.log("Human player starting");
     return this.joinPrepared(this.reservation)
   }

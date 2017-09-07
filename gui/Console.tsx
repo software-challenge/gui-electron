@@ -22,16 +22,6 @@ export default class Console extends React.Component<any, State> {
     };
   }
 
-  componentDidMount() {
-    console.log("MOUNTED");
-    //setTimeout(() => Api.getServer().registerListener(this.state.listener),1000);
-  }
-
-  componentWillUnmount() {
-    console.log("UNMOUNTED");
-    //Api.getServer().deregisterListener(this.state.listener);
-  }
-
   clearLog() {
     this.setState({ events: [] });
   }

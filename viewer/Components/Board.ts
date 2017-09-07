@@ -27,7 +27,6 @@ export class Board implements Component {
     this.fields = new Array(65).fill(0, 0, 65).map((o, i) => {
       let s = this.grid.getGridCoordsFromFieldId(i);
       let c = this.grid.getScreenCoordsFromGrid(s.x, s.y);
-      //console.log(`i: ${i}, s:(${s.x},${s.y}), c:(${c.x},${c.y})`);
       return new Field(i, c.x, c.y);
     });
     //Init all fields

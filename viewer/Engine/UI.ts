@@ -104,11 +104,9 @@ export class UI {
     })
 
     this.engine.addHoverListener((fieldName) => {
-      console.log("hovered over ", fieldName)
       if (fieldName.startsWith('field')) {
         fieldName = fieldName.split('-')[1];
         let pickedIndex = Number(fieldName);
-        console.log("hovered over field ", pickedIndex);
         this.display.info.classList.remove(INVISIBLE);
         this.display.info.innerText = "Feld " + pickedIndex;
       } else {
@@ -356,7 +354,6 @@ export class UI {
       this.eventProxy.once("cancel", () => { clear_events(); res("cancel"); })
 
       this.eventProxy.once("field", (fieldNumber) => {
-        console.log("got field event!", fieldNumber)
         if (fieldNumber < state.getPlayerByColor(color).index) {
           this.chosenAction = new Action("FALL_BACK");
         } else {
@@ -385,9 +382,7 @@ export class UI {
       });
 
       this.eventProxy.once("card", card => {
-        console.log("card played: " + card);
         if (card == Card.TAKE_OR_DROP_CARROTS) {
-          console.log("Getting carrot value");
           this.showCarrotPickupDialogue(true);
           this.eventProxy.once('carrotValue', value => {
             this.chosenAction = new Card(Card.TAKE_OR_DROP_CARROTS, value);
@@ -409,23 +404,18 @@ export class UI {
     let color = gamestate.getCurrentPlayer().color == SC_Player.COLOR.RED ? "red" : "blue";
     let cards = this.display[color].cards;
     if (cards != null && cards != undefined) {
-      console.log("highlighting cards");
       if (GameRuleLogic.isValidToPlayEatSalad(gamestate)) {
         cards['eat_salad'].classList.add('highlight');
-        console.log("highlighting eat salad");
       }
       if (GameRuleLogic.isValidToPlayHurryAhead(gamestate)) {
         cards['hurry_ahead'].classList.add('highlight')
-        console.log("highlighting hurry ahead");
 
       }
       if (GameRuleLogic.isValidToPlayFallBack(gamestate)) {
         cards['fall_back'].classList.add('highlight')
-        console.log("highlighting fall back");
       }
       if (GameRuleLogic.isValidToPlayTakeOrDropCarrots(gamestate, 0)) {
         cards['take_or_drop_carrots'].classList.add('highlight')
-        console.log("highlighting take or drop carrots");
       }
     }
   }
@@ -462,11 +452,9 @@ export class UI {
         GameRuleLogic.calculateMoveableFields(gamestate.getCurrentPlayer().carrots),
         fieldsBeforePlayer
       );
-      console.log("can advance " + distance + " fields");
       for (let i: number = 0; i <= distance; i++) {
         if (GameRuleLogic.isValidToAdvance(gamestate, i)) {
           let fieldIndex: number = gamestate.getCurrentPlayer().index + i;
-          console.log("can advance to <" + fieldIndex + ">" + " " + gamestate.board.fields[fieldIndex]);
           this.board.fields[fieldIndex].setHighlight(true, this.interactive);
         }
       }
