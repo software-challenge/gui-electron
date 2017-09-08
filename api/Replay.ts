@@ -7,7 +7,7 @@ export class Replay extends Game {
   constructor(replayFilePath: string, name: string) {
     super(name);
 
-    this.ready = new Promise((gameReady, gameError) => {
+    this.ready = new Promise<void>((gameReady, gameError) => {
       new Promise((res: (string) => void, rej) => {
         let fs = require('fs')
         fs.readFile(replayFilePath, 'utf8', function (err, data) {
@@ -21,7 +21,6 @@ export class Replay extends Game {
           if (decoded.protocol) {
             if (decoded.protocol.room) {
               for (let room of decoded.protocol.room) {
-                console.log(room)
                 if (room.data[0].state) {
                   var state = room.data[0].state[0];
                   this.gameStates.push(GameState.fromJSON(state));
@@ -30,6 +29,7 @@ export class Replay extends Game {
                   this.gameResult = GameResult.fromJSON(result);
                 }
               }
+              console.log(`loaded ${this.gameStates.length} states from ${replayFilePath}`);
             }
           }
           gameReady();
