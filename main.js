@@ -1,5 +1,6 @@
 require('hazardous');
 const { app, BrowserWindow } = require('electron')
+app.commandLine.appendSwitch('ignore-gpu-blacklist', 'true'); //Ignore warning about third-party AMD drivers on linux
 const path = require('path')
 const url = require('url')
 
@@ -16,7 +17,12 @@ function createWindow() {
     pathname: path.join(app.getAppPath(), 'index.html'),
     protocol: 'file:',
     slashes: true
-  }))
+  }), options = { //Make sure a few extra options are enabled
+    webgl: true, //WebGL needs to be forced on with older radeon cards
+    experimentalFeatures: true, //Some extra features to speed up canvas/GL operations
+    experimentalCanvasFeatures: true,
+    offscreen: true, //Enable offscreen rendering
+  });
 
   // Open the DevTools.
   //win.webContents.openDevTools()
