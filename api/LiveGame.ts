@@ -140,7 +140,7 @@ export class LiveGame extends Game {
       this.emit('ready');
     }).bind(this);
 
-    this.ready = new Promise((res, rej) => {
+    this.ready = new Promise<void>((res, rej) => {
       this.once('ready', () => {
         res();
       });
@@ -193,8 +193,8 @@ export class LiveGame extends Game {
     if (!data.endsWith(protocolTag)) {
       data = data + protocolTag;
     }
-    fs.writeFile("/tmp/test", data, function(err) {
-      if(err) {
+    fs.writeFile("/tmp/test", data, function (err) {
+      if (err) {
         return console.log(err);
       }
       console.log("The file was saved!");
