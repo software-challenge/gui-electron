@@ -1,4 +1,4 @@
-import { GameClient } from './Game';
+import { GameClient } from './LiveGame';
 import { ExecutableStatus } from './Api';
 import { spawn } from 'child_process';
 import { EventEmitter } from "events";

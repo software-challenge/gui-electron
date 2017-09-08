@@ -3,7 +3,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Viewer } from '../viewer/Viewer';
 import { GameCreationOptions } from '../api/GameCreationOptions';
-import { Game as SC_Game } from '../api/Game';
+import { LiveGame as SC_Game } from '../api/LiveGame';
 import { Api } from '../api/Api';
 import { ConsoleMessage } from '../api/Api';
 import { loadCSS } from './index';
@@ -30,7 +30,11 @@ export class Game extends React.Component<{ options: GameCreationOptions, nameCa
       let gameName = (new Date()).toDateString();
       //this.props.nameCallback(gameName);
       this.game = Api.getGameManager().createGame(this.props.options, gameName);
-      this.game.on('result', r => this.viewer.ui.showEndscreen(r));
+      this.game.on('result', result => {
+        this.viewer.ui.showEndscreen(result);
+        console.log("Got Result");
+        this.game.saveReplay();
+      });
       var init = async function () {
         console.log(this.game);
         await this.game.ready;

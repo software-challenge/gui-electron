@@ -83,7 +83,8 @@ export class UI {
     root: HTMLDivElement,
     picture: HTMLImageElement,
     winner: HTMLDivElement,
-    reason: HTMLDivElement
+    reason: HTMLDivElement,
+    saveButton: HTMLDivElement
   }
 
 
@@ -204,8 +205,10 @@ export class UI {
       root: endscreen_root,
       picture: cimg("assets/pokal.svg", ['winPicture'], endscreen_root),
       winner: cdiv(['winName'], endscreen_root),
-      reason: cdiv(['winReason'], endscreen_root)
+      reason: cdiv(['winReason'], endscreen_root),
+      saveButton: cdiv(['saveButton', 'clickable', 'button'], endscreen_root)
     };
+    this.endscreen.saveButton.addEventListener('click', () => this.eventProxy.emit('saveReplay'));
 
     // Dialogue for selecting carrots when executing action "exchange carrots"
     var exchangeCarrotsRoot = cdiv(['exchangeCarrots', 'root', 'invisible'], element);

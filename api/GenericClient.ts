@@ -14,6 +14,7 @@ export class GenericClient extends events.EventEmitter {
   private name: string;
   status: ClientStatus.Status = ClientStatus.Status.NOT_CONNECTED;
   ready: Promise<void>;
+  private allData: string = ""; // all data received (for saving to a replay file)
   private dataSoFar: string = ""; // all data received after the last completed message
   private currentData: string; // all data received at the current data-event
   private firstTagOfMessage: string = undefined; // the first opening tag of a message
@@ -63,6 +64,7 @@ export class GenericClient extends events.EventEmitter {
     }
     this.clientSocket.on('data', (data) => {
       var clientName = this.name ? this.name : "unnamed client";
+      this.allData += data;
       this.currentData = data;
       this.dataSoFar += data;
       this.parser.write(this.currentData);
@@ -93,6 +95,10 @@ export class GenericClient extends events.EventEmitter {
   private setStatus(s: ClientStatus.Status) {
     this.status = s;
     this.emit('status', s);
+  }
+
+  public getAllData() {
+    return this.allData;
   }
 }
 

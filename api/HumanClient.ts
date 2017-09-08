@@ -1,5 +1,5 @@
 import { GameRuleLogic } from './HaseUndIgelGameRules';
-import { GameClient } from './Game';
+import { GameClient } from './LiveGame';
 import { GenericPlayer } from './PlayerClient';
 
 import { PLAYERCOLOR, Player, GameState, Action } from './HaseUndIgel';
