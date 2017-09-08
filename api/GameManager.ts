@@ -1,12 +1,19 @@
 import { Game } from './Game';
 import { LiveGame } from './LiveGame';
+import { Replay } from './Replay';
 import { GameCreationOptions } from './GameCreationOptions';
 
 export class GameManager {
   private games: Game[] = [];
 
-  public createGame(gco: GameCreationOptions, name: string): LiveGame {
+  public createLiveGame(gco: GameCreationOptions, name: string): LiveGame {
     var g = new LiveGame(gco, name);
+    this.games.push(g);
+    return g;
+  }
+
+  public createReplayGame(replayPath: string, name: string): Replay {
+    var g = new Replay(replayPath, name);
     this.games.push(g);
     return g;
   }

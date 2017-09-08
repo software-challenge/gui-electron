@@ -1,4 +1,6 @@
 import * as React from 'react';
+import * as electron from 'electron';
+import { remote } from 'electron';
 import Server from './Server';
 import { Content } from "react-photonkit";
 import { Window, Toolbar, ToolbarActions, ButtonGroup, PaneGroup, Sidebar, RetractableSidebar, Pane, NavGroup, NavTitle, NavItem, Button } from './photon-fix/Components';
@@ -10,11 +12,14 @@ import { GameCreationOptions } from '../api/GameCreationOptions';
 import { Game } from './Game';
 import { LogConsole } from './LogConsole';
 
+const dialog = remote.dialog;
+
 enum AppContent {
   Empty,
   GameCreation,
   GameLive,
   GameEnded,
+  GameReplay,
   Administration
 }
 
@@ -27,6 +32,7 @@ interface State {
 
 export class App extends React.Component<any, State> {
   private gameCreationOptions;
+  private replayPath:string;
   constructor() {
     super();
     this.state = {
@@ -65,6 +71,26 @@ export class App extends React.Component<any, State> {
     });
   }
 
+  private loadReplay() {
+    dialog.showOpenDialog(
+      {
+        title: "Wähle ein Replay",
+        properties: ["openFile"]
+      },
+      (filenames) => {
+        // dialog returns undefined when user clicks cancel or an array of strings (paths) if user selected a file
+        if (filenames && filenames.length > 0) {
+          //window.localStorage[localStorageProgramPath] = filenames[0];
+          this.replayPath = filenames[0];
+          this.setState((prev, _props) => {
+            prev.contentState = AppContent.GameReplay;
+            return prev;
+          });
+        }
+      }
+    );
+  }
+
   private startGameWithOptions(o: GameCreationOptions) {
     console.log(this);
     this.gameCreationOptions = o;
@@ -97,6 +123,10 @@ export class App extends React.Component<any, State> {
         console.log("starting game");
         mainPaneContent = <Game options={this.gameCreationOptions} nameCallback={n => /*this.setActiveGameName(n)*/ console.log(n)} />
         break;
+      case AppContent.GameReplay:
+        console.log("starting replay");
+        mainPaneContent = <Game options={this.replayPath} nameCallback={n => console.log(n)} />
+        break;
       default:
         mainPaneContent =
           <div className="main-container">
@@ -125,6 +155,9 @@ export class App extends React.Component<any, State> {
                 <NavTitle title="Spiele" />
                 <NavItem onClick={() => this.switchToNewGame()} active={this.state.contentState == AppContent.GameCreation}>
                   <UnicodeIcon icon="+" />Neues Spiel
+                </NavItem>
+                <NavItem onClick={() => this.loadReplay()}>
+                  <UnicodeIcon icon="💾" />Replay laden
                 </NavItem>
                 <NavTitle title="Administration" />
                 <NavItem onClick={() => this.switchToAdministration()} active={this.state.contentState == AppContent.Administration}>

@@ -7,32 +7,33 @@ export class Replay extends Game {
   constructor(replayFilePath: string, name: string) {
     super(name);
 
-    this.ready = new Promise((res, rej) => {
-      let xml = "";
+    this.ready = new Promise((gameReady, gameError) => {
       new Promise((res: (string) => void, rej) => {
         let fs = require('fs')
-        fs.readFile('/etc/hosts', 'utf8', function (err, data) {
+        fs.readFile(replayFilePath, 'utf8', function (err, data) {
           if (err) {
             rej(err);
           }
           res(data);
         });
-      }).then(xml => {
-        Parser.getJSONFromXML(xml).then(decoded => {
-          if (decoded.room) {
-            switch (decoded.room.data[0]['$'].class) {
-              case 'memento':
-                var state = decoded.room.data[0].state[0];
-                this.gameStates.push(GameState.fromJSON(state));
-                break;
-              case 'result':
-                var result = decoded.room.data[0];
-                this.gameResult = GameResult.fromJSON(result);
-                break;
+      }).then(Parser.getJSONFromXML)
+        .then(decoded => {
+          if (decoded.protocol) {
+            if (decoded.protocol.room) {
+              for (let room of decoded.protocol.room) {
+                console.log(room)
+                if (room.data[0].state) {
+                  var state = room.data[0].state[0];
+                  this.gameStates.push(GameState.fromJSON(state));
+                } else if (room.data[0].score) {
+                  var result = room.data[0];
+                  this.gameResult = GameResult.fromJSON(result);
+                }
+              }
             }
           }
+          gameReady();
         });
-      });
     });
   }
 
@@ -40,7 +41,7 @@ export class Replay extends Game {
     if (n >= 0 && n < this.gameStates.length) {
       return Promise.resolve(this.gameStates[n]);
     } else {
-      throw "gamestate number out of range: " + n;
+      return Promise.resolve(this.gameStates[this.gameStates.length - 1]);
     }
   }
 }

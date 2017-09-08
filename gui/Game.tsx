@@ -3,12 +3,13 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Viewer } from '../viewer/Viewer';
 import { GameCreationOptions } from '../api/GameCreationOptions';
-import { LiveGame as SC_Game } from '../api/LiveGame';
+import { Game as SC_Game } from '../api/Game';
+import { LiveGame } from '../api/LiveGame';
 import { Api } from '../api/Api';
 import { ConsoleMessage } from '../api/Api';
 import { loadCSS } from './index';
 
-export class Game extends React.Component<{ options: GameCreationOptions, nameCallback: (string) => void }, any> {
+export class Game extends React.Component<{ options: (GameCreationOptions | string), nameCallback: (string) => void }, any> {
   private viewer: Viewer;
   private elem: Element;
   private elemSet: boolean;
@@ -26,15 +27,17 @@ export class Game extends React.Component<{ options: GameCreationOptions, nameCa
       Api.setCurrentViewer(this.viewer);
     }
 
+    let live = false;
     if (!this.game) {
       let gameName = (new Date()).toDateString();
-      //this.props.nameCallback(gameName);
-      this.game = Api.getGameManager().createGame(this.props.options, gameName);
-      this.game.on('result', result => {
-        this.viewer.ui.showEndscreen(result);
-        console.log("Got Result");
-        this.game.saveReplay();
-      });
+
+      if (this.props.options instanceof GameCreationOptions) {
+        this.props.nameCallback(gameName);
+        this.game = Api.getGameManager().createLiveGame(this.props.options, gameName);
+      } else {
+        // this.props.options is the path to the replay file
+        this.game = Api.getGameManager().createReplayGame(this.props.options, gameName);
+      }
       var init = async function () {
         console.log(this.game);
         await this.game.ready;
@@ -58,7 +61,13 @@ export class Game extends React.Component<{ options: GameCreationOptions, nameCa
     this.game.getState(nextStateNumber).then(s => {
       this.currentStateNumber = nextStateNumber;
       this.viewer.render(s, false);
-    })
+      if (this.game.stateHasResult(this.currentStateNumber)) {
+        this.viewer.ui.showEndscreen(this.game.getResult());
+        if (this.game instanceof LiveGame) {
+          this.game.saveReplay();
+        }
+      }
+    });
   }
 
   previous() {

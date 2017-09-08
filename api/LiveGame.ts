@@ -161,10 +161,6 @@ export class LiveGame extends Game {
   }
 
   getState(n: number): Promise<GameState> {
-    // FIXME: this should not be handled by the Game. The UI should check for last state and show endscreen
-    if (!this.is_live && this.gameResult && n >= this.gameStates.length - 1) {
-      this.emit('result', this.gameResult);
-    }
     if (this.gameStates[n]) { //If our next state is already buffered
       return Promise.resolve(this.gameStates[n]);
     } else {//Wait for new state to be emitted
@@ -192,7 +188,12 @@ export class LiveGame extends Game {
 
   saveReplay() {
     var fs = require('fs');
-    fs.writeFile("/tmp/test", this.observer.getAllData(), function(err) {
+    let data = this.observer.getAllData();
+    let protocolTag = "</protocol>";
+    if (!data.endsWith(protocolTag)) {
+      data = data + protocolTag;
+    }
+    fs.writeFile("/tmp/test", data, function(err) {
       if(err) {
         return console.log(err);
       }
