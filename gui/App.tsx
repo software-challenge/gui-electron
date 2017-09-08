@@ -28,18 +28,19 @@ interface State {
   consoleRetracted: boolean
   contentState: AppContent
   activeGame: string
+  replayFilePath: string
 }
 
 export class App extends React.Component<any, State> {
   private gameCreationOptions;
-  private replayPath:string;
   constructor() {
     super();
     this.state = {
       menuRetracted: false,
       consoleRetracted: true,
       contentState: AppContent.Empty,
-      activeGame: null
+      activeGame: null,
+      replayFilePath: null
     }
   }
 
@@ -79,13 +80,20 @@ export class App extends React.Component<any, State> {
       },
       (filenames) => {
         // dialog returns undefined when user clicks cancel or an array of strings (paths) if user selected a file
-        if (filenames && filenames.length > 0) {
+        if (filenames && filenames.length > 0 && filenames[0]) {
           //window.localStorage[localStorageProgramPath] = filenames[0];
-          this.replayPath = filenames[0];
+          console.log("Attempting to load " + filenames[0])
           this.setState((prev, _props) => {
-            prev.contentState = AppContent.GameReplay;
+            prev.contentState = AppContent.Empty;
             return prev;
           });
+          this.forceUpdate();
+          this.setState((prev, _props) => {
+            prev.contentState = AppContent.GameReplay;
+            prev.replayFilePath = filenames[0];
+            return prev;
+          });
+          this.forceUpdate();
         }
       }
     );
@@ -125,7 +133,7 @@ export class App extends React.Component<any, State> {
         break;
       case AppContent.GameReplay:
         console.log("starting replay");
-        mainPaneContent = <Game options={this.replayPath} nameCallback={n => console.log(n)} />
+        mainPaneContent = <Game options={this.state.replayFilePath} nameCallback={n => console.log(n)} />
         break;
       default:
         mainPaneContent =
