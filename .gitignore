@@ -8,3 +8,4 @@ server
 client
 socha
 *.log
+out
