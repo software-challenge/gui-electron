@@ -80,7 +80,7 @@
 
 .replay-viewer > .replay-controls {
     position: absolute;
-    height: 5vh;
+    height: 55px;
     bottom: 0;
     width: 100%;
     font-size: 3em;
