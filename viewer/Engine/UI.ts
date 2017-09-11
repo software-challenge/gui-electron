@@ -72,10 +72,6 @@ export class UI {
     skip: HTMLDivElement,
     eatSalad: HTMLDivElement,
     round: HTMLDivElement,
-    progress: {
-      box: HTMLDivElement,
-      bar: HTMLDivElement
-    },
     info: HTMLDivElement
   };
 
@@ -88,10 +84,11 @@ export class UI {
   }
 
 
-  constructor(viewer: Viewer, engine: Engine, board: Board, canvas: HTMLCanvasElement, element: HTMLElement, window: Window) {
+  constructor(viewer: Viewer, engine: Engine, board: Board, canvas: HTMLCanvasElement, element: HTMLElement, window: Window, gameFrame: Game) {
     this.engine = engine;
     this.board = board;
     this.viewer = viewer;
+    this.gameFrame = gameFrame;
 
 
     this.replayViewerElement = element;
@@ -121,10 +118,6 @@ export class UI {
     var redroot = cdiv(['red'], root);
     var blueroot = cdiv(['blue'], root);
 
-    var progressbox = cdiv(['progressbox'], element);
-
-
-
     this.display = {
       root: root,
       red: {
@@ -142,10 +135,6 @@ export class UI {
         cards: null
       },
       round: cdiv(['round'], root),
-      progress: {
-        box: progressbox,
-        bar: cdiv(['progressbar'], progressbox)
-      },
       cancel: cdiv(['cancel', 'button', 'invisible'], element, 'Abbrechen'),
       send: cdiv(['send', 'button', 'invisible'], element, 'Senden'),
       skip: cdiv(['skip', 'button', 'invisible'], element, 'Aussetzen'),
@@ -467,15 +456,15 @@ export class UI {
   }
 
   updateDisplay(state: GameState) {
-    this.display.round.innerText = state.turn.toString();
+    this.display.round.innerText = Math.floor((state.turn / 2) + 1).toString();
     this.display.red.name.innerText = state.red.displayName;
     this.display.red.salads.innerText = state.red.salads.toString();
     this.display.red.carrots.innerText = state.red.carrots.toString();
     this.display.blue.name.innerText = state.blue.displayName;
     this.display.blue.salads.innerText = state.blue.salads.toString();
     this.display.blue.carrots.innerText = state.blue.carrots.toString();
-    this.display.progress.bar.style.width = ((state.turn / 60) * 100) + "%";
 
+    this.gameFrame.updateProgress();
     //Update cards
     //TODO: There HAS to be a cleverer way to do this
     ['red', 'blue'].forEach(color => {

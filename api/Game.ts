@@ -17,6 +17,9 @@ export abstract class Game extends EventEmitter {
     this.name = name;
   }
 
+  getStateCount(): number {
+    return this.gameStates.length;
+  }
   getStateNumber(state: GameState): number {
     return this.gameStates.findIndex((s: GameState) => { return s.turn == state.turn; })
   }

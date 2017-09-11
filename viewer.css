@@ -19,28 +19,6 @@
     z-index: 100;
 }
 
-.replay-viewer>.replay-controls{
-    position: absolute;
-    right: 10;
-    bottom: 15;
-    font-size: 3em;
-}
-
-.replay-viewer>.replay-controls>button{
-    border: 1px solid black;
-    background-color: white;
-    transition: background-color 1s;
-    margin: 2px;
-}
-
-.replay-controls>button:hover{
-    background-color:#ccc;
-}
-
-.replay-controls>button:active{
-  color: red;
-}
-
 .replay-viewer>.display{
   position: absolute;
   top: 0;
@@ -88,7 +66,7 @@
   position: relative;
   height: 4vh;
   width: 4vh;
-  padding: 0;  
+  padding: 0;
   display: inline-block;
 }
 
@@ -140,7 +118,7 @@
   margin: 2px;
   font-size: 3vh;
   color: black;
-  border: 1px solid black; 
+  border: 1px solid black;
   padding: 1px 6px;
   font-weight: bold;
 }
@@ -243,29 +221,9 @@
 color: red;
 }
 
-
-.replay-viewer .progressbox{
-  width: 101%;
-  height: 1em;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  margin: 0;
-  padding: 0;
-  background-color: rgba(255,255,255,0.5);
-}
-.replay-viewer .progressbar{
-  width: 0%;
-  height: 1em;
-  transition: width 1s;
-  padding: 0;
-  margin: 0;
-  background-color: green;
-}
-
 .replay-viewer .info {
   position: absolute;
-  bottom: 1em;
+  bottom: 5vh;
   left: 2em;
   color: white;
   font-size: 2vh;

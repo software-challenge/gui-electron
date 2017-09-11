@@ -92,7 +92,7 @@ export class Viewer {
     this.blue.init(this.engine.getScene(), this.engine.materialBuilder);
 
     //Display
-    this.ui = new UI(this, this.engine, this.board, this.canvas, element, window);
+    this.ui = new UI(this, this.engine, this.board, this.canvas, element, window, this.gameFrame);
 
     //
     //Attempt startup

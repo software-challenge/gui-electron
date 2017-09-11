@@ -77,3 +77,67 @@
 .replay-controls button {
   font-size: 3vh;
 }
+
+.replay-viewer > .replay-controls {
+    position: absolute;
+    height: 5vh;
+    bottom: 0;
+    width: 100%;
+    font-size: 3em;
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 30%);
+}
+
+.replay-viewer > .replay-controls > .progress-bar {
+    position: relative;
+    height: 5px;
+    background-color: gray;
+    width: 80%;
+    margin: 7px auto;
+}
+
+.replay-viewer > .replay-controls > .progress-bar > .progress-position {
+    position: absolute;
+    height: 5px;
+    width: 5px;
+    background-color: red;
+}
+
+.replay-viewer > .replay-controls > .progress-bar > .progress-loaded {
+    position: absolute;
+    height: 5px;
+    background-color: white;
+}
+
+.replay-viewer > .replay-controls > .progress-bar > .round-text {
+    position: absolute;
+    right: 0;
+    top: 10px;
+    font-size: 20px;
+    color: white;
+}
+
+.replay-viewer > .replay-controls > .button-container {
+    width: 80%;
+    margin: 0 auto;
+}
+
+.replay-viewer > .replay-controls > .button-container > button {
+    margin: 2px;
+    background-color: transparent;
+    border: none;
+    color: white;
+}
+
+.replay-viewer > .replay-controls > .button-container > button > img {
+    width: 20px;
+    filter: invert(100%);
+}
+
+.replay-viewer > .replay-controls > .button-container > button:hover > img {
+    margin: -1px 1px 1px -1px;
+    filter: drop-shadow(1px);
+}
+
+.replay-viewer > .replay-controls > .button-container > button:active > img {
+    margin: 1px -1px -1px 1px;
+}
