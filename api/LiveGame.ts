@@ -22,6 +22,7 @@ export class LiveGame extends Game {
     super(name);
     let Logger = Api.getLogger().focus("Game", "constructor");
     Logger.log("Creating game " + name);
+    Logger.log("Options: " + JSON.stringify(gco));
     var construct = (async function () {
       //Register hook to go offline
       Api.getServer().on('status', s => {
@@ -43,6 +44,7 @@ export class LiveGame extends Game {
       this.observer.on('state', s => {
         this.gameStates.push(s);
         this.emit('state' + (this.gameStates.length - 1), s);
+        console.log("got state " + (this.gameStates.length - 1));
       });
 
       this.observer.on('result', r => {
@@ -108,6 +110,7 @@ export class LiveGame extends Game {
               };
               this.messages.push(m);
               this.emit('message', m);
+              Api.getLogger().log("Livegame", "executableClient.on('stdout')", msg);
             });
 
             executableClient.on('stderr', msg => {
@@ -118,6 +121,7 @@ export class LiveGame extends Game {
               };
               this.messages.push(m);
               this.emit('message', m);
+              Api.getLogger().log("Livegame", "executableClient.on('stderr')", msg);
             });
             return executableClient;
           case "Human":
