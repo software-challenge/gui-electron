@@ -116,7 +116,10 @@ export class Viewer {
     this.red.update(state.red.index, animated);
     this.blue.update(state.blue.index, animated);
     this.ui.updateDisplay(state);
-    setTimeout(() => this.engine.stopRerender(), 2000);
+    if (!this.gameFrame.isPlaying()) {
+      // FIXME: setting this rerender stopper breaks the auto-playback
+      setTimeout(() => this.engine.stopRerender(), 2000);
+    }
   }
 
   stop() {

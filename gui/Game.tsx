@@ -13,15 +13,18 @@ import { loadCSS } from './index';
 interface State {
   currentTurn: number,
   turnCount: number,
-  playPause: "pause" | "play"
+  playPause: "pause" | "play",
+  playIntervalID: number,
+  playbackSpeed: number
 }
+
+const MAX_INTERVAL = 3000; // max pause time between turns in playback mode
 
 export class Game extends React.Component<{ options: (GameCreationOptions | string), nameCallback: (string) => void }, State> {
   private viewer: Viewer;
   private elem: Element;
   private elemSet: boolean;
   private game: SC_Game;
-  private currentStateNumber: number = 0;
   constructor() {
     super();
     this.viewer = null;
@@ -29,7 +32,9 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
     this.state = {
       currentTurn: 0,
       turnCount: 0,
-      playPause: "pause"
+      playPause: "pause",
+      playIntervalID: null,
+      playbackSpeed: 800
     };
   }
 
@@ -69,12 +74,15 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
   }
 
   next() {
-    let nextStateNumber = this.currentStateNumber + 1;
+    let nextStateNumber = this.state.currentTurn + 1;
     this.game.getState(nextStateNumber).then(s => {
-      this.currentStateNumber = nextStateNumber;
+      this.setState((prev, _props) => {
+        prev.currentTurn = nextStateNumber;
+        return prev;
+      });
       this.updateProgress();
       this.viewer.render(s, false);
-      if (this.game.stateHasResult(this.currentStateNumber)) {
+      if (this.game.stateHasResult(this.state.currentTurn)) {
         this.viewer.ui.showEndscreen(this.game.getResult());
         if (this.game instanceof LiveGame) {
           this.game.saveReplay();
@@ -84,12 +92,15 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
   }
 
   previous() {
-    if (this.currentStateNumber > 0) {
-      let previousStateNumber = this.currentStateNumber - 1;
+    if (this.state.currentTurn > 0) {
+      let previousStateNumber = this.state.currentTurn - 1;
       this.viewer.ui.hideEndscreen();
       this.game.getState(previousStateNumber).catch(reason => { console.log("error!", reason) }).then(s => {
         if (s) {
-          this.currentStateNumber = previousStateNumber;
+          this.setState((prev, _props) => {
+            prev.currentTurn = previousStateNumber;
+            return prev;
+          });
           this.updateProgress();
           this.viewer.render(s, false);
         }
@@ -100,14 +111,38 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
   playPause() {
     this.setState((prev, _props) => {
       prev.playPause = (prev.playPause == "pause" ? "play" : "pause")
+      if (prev.playPause == "play") {
+        this.activatePlayback(prev)
+      } else {
+        // remove callback
+        clearInterval(prev.playIntervalID);
+        prev.playIntervalID = null;
+      }
       return prev;
     });
+  }
+
+  // has to be called inside a setState!
+  activatePlayback(state: State) {
+    if (state.playPause == "play") {
+      if (state.playIntervalID) {
+        clearInterval(state.playIntervalID);
+      }
+      state.playIntervalID = window.setInterval(() => this.next(), state.playbackSpeed);
+    }
+  }
+
+  isPlaying() {
+    return this.state.playPause == "play";
   }
 
   setCurrentState(state: GameState) {
     let n = this.game.getStateNumber(state);
     if (n != -1) {
-      this.currentStateNumber = n;
+      this.setState((prev, _props) => {
+        prev.currentTurn = n;
+        return prev;
+      });
       this.updateProgress();
     } else {
       console.log("did not find state ", state)
@@ -124,10 +159,18 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
 
   updateProgress() {
     this.setState((prev, _props) => {
-      prev.currentTurn = this.currentStateNumber;
       prev.turnCount = this.currentStateCount();
       return prev;
     });
+  }
+
+  handleSpeedChange(event) {
+    var newValue = MAX_INTERVAL - Number(event.target.value);
+    this.setState((prev, _props) => {
+      prev.playbackSpeed = newValue;
+      this.activatePlayback(prev);
+      return prev;
+    })
   }
 
 
@@ -138,15 +181,18 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
     } else {
       image = "assets/pause.svg";
     }
-    var playPause = <button onClick={this.playPause.bind(this)}><img src={image} /></button>;
-    var forward = <button onClick={this.next.bind(this)}><img src="assets/step-forward.svg" /></button>;
-    var back = <button onClick={this.previous.bind(this)}><img src="assets/step-backward.svg" /></button>;
+    var playPause = <button onClick={this.playPause.bind(this)}><img className="svg-icon" src={image} /></button>;
+    var forward = <button onClick={this.next.bind(this)}><img className="svg-icon" src="assets/step-forward.svg" /></button>;
+    var back = <button onClick={this.previous.bind(this)}><img className="svg-icon" src="assets/step-backward.svg" /></button>;
+    var speed = <input className="playbackSpeed" type="range" min="0" max={MAX_INTERVAL} step="100" onChange={(e) => this.handleSpeedChange(e)} value={MAX_INTERVAL - this.state.playbackSpeed} />
     return (
       <div className="replay-viewer" ref={elem => { this.startViewer(elem) }}>
         <div className="replay-controls">
-          <ProgressBar turnCount={this.currentStateCount()} currentTurn={this.currentStateNumber} />
+          <ProgressBar turnCount={this.currentStateCount()} currentTurn={this.state.currentTurn} />
           <div className="button-container">
             {playPause}{back}{forward}
+            <img className="speed-label svg-icon" src="assets/tachometer-alt.svg" />
+            {speed}
           </div>
         </div>
       </div >

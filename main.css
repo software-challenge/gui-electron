@@ -93,6 +93,7 @@
     background-color: gray;
     width: 80%;
     margin: 7px auto;
+    border-radius: 3px;
 }
 
 .replay-viewer > .replay-controls > .progress-bar > .progress-position {
@@ -100,12 +101,14 @@
     height: 5px;
     width: 5px;
     background-color: red;
+    border-radius: 3px;
 }
 
 .replay-viewer > .replay-controls > .progress-bar > .progress-loaded {
     position: absolute;
     height: 5px;
     background-color: white;
+    border-radius: 3px;
 }
 
 .replay-viewer > .replay-controls > .progress-bar > .round-text {
@@ -128,10 +131,53 @@
     color: white;
 }
 
-.replay-viewer > .replay-controls > .button-container > button > img {
+img.svg-icon {
     width: 20px;
     filter: invert(100%);
 }
+
+.replay-viewer > .replay-controls > .button-container > img.speed-label {
+    margin: auto 2px auto 10px;
+}
+
+.replay-viewer > .replay-controls > .button-container > .playbackSpeed {
+}
+
+/* Styling Range Input */
+input[type=range]{
+    -webkit-appearance: none;
+    width: 200px;
+    height: 16px;
+    background-color: transparent;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    margin-top: -8px;
+    width: 100%;
+    height: 5px;
+    background: #ccc;
+    border: none;
+    border-radius: 3px;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: none;
+    height: 16px;
+    width: 4px;
+    background: white;
+    margin-top: -5px;
+    border-radius: 3px;
+}
+
+input[type=range]:focus {
+    outline: none;
+}
+
+input[type=range]:focus::-webkit-slider-runnable-track {
+    background: #ccc;
+}
+/* Styling Range Input END */
 
 .replay-viewer > .replay-controls > .button-container > button:hover > img {
     margin: -1px 1px 1px -1px;
