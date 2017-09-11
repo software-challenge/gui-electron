@@ -1,7 +1,8 @@
 import { GameClient } from './LiveGame';
 import { ExecutableStatus } from './Api';
-import { spawn } from 'child_process';
+import * as child_process from 'child_process';
 import { EventEmitter } from "events";
+import { Api } from './Api';
 
 
 export class ExecutableClient extends EventEmitter implements GameClient {
@@ -29,27 +30,27 @@ export class ExecutableClient extends EventEmitter implements GameClient {
   }
 
   start(): Promise<void> {
-    var start = async function () {
-      console.log("Starting", this.program, this.options)
-      this.process = spawn(this.program, this.options);
-      this.setStatus(ExecutableStatus.Status.RUNNING);
-      this.process.stdout.on('data', (data) => {
-        this.stdout.push(data);
-        this.emit('stdout', data + '');
-      });
-      this.process.stderr.on('data', (data) => {
-        this.stderr.push(data);
-        this.emit('stderr', data + '');
-      });
-      this.process.on('error', () => {
-        this.setStatus(ExecutableStatus.Status.ERROR);
-      });
-      this.process.on('close', () => {
-        this.setStatus(ExecutableStatus.Status.EXITED);
-      });
-
-    }.bind(this);
-    return start();
+    console.log("Starting", this.program, this.options)
+    this.process = child_process.spawn(this.program, this.options);
+    Api.getLogger().log("ExecutableClient", "spawn", `${this.program} ${this.options.join(' ')}`);
+    this.setStatus(ExecutableStatus.Status.RUNNING);
+    this.process.stdout.on('data', (data) => {
+      this.stdout.push(data);
+      this.emit('stdout', data + '');
+    });
+    this.process.stderr.on('data', (data) => {
+      this.stderr.push(data);
+      this.emit('stderr', data + '');
+    });
+    this.process.on('error', () => {
+      this.setStatus(ExecutableStatus.Status.ERROR);
+    });
+    this.process.on('close', () => {
+      this.setStatus(ExecutableStatus.Status.EXITED);
+    });
+    this.emit('ready');
+    this.ready = Promise.resolve();
+    return Promise.resolve();
   }
 
   stop() {
