@@ -24,6 +24,7 @@ interface State {
 const MAX_INTERVAL = 3000; // max pause time between turns in playback mode
 
 export class Game extends React.Component<{ options: (GameCreationOptions | string), nameCallback: (string) => void }, State> {
+  private waiting_already = false;
   private viewer: Viewer;
   private elem: Element;
   private elemSet: boolean;
@@ -77,18 +78,32 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
   }
 
   next() {
-    let nextStateNumber = this.state.currentTurn + 1;
-    this.game.getState(nextStateNumber).then(s => {
-      this.setState((prev, _props) => {
-        prev.currentTurn = nextStateNumber;
-        return prev;
+    if (!this.waiting_already) {
+      this.waiting_already = true;
+      let nextStateNumber = this.state.currentTurn + 1;
+      this.game.getState(nextStateNumber).then(s => {
+        this.setState((prev, _props) => {
+          prev.currentTurn = nextStateNumber;
+          return prev;
+        });
+        this.updateProgress();
+        this.viewer.render(s, false);
+        if (this.game.stateHasResult(this.state.currentTurn)) {
+          this.viewer.ui.showEndscreen(this.game.getResult());
+        }
+        this.waiting_already = false;
       });
-      this.updateProgress();
-      this.viewer.render(s, false);
-      if (this.game.stateHasResult(this.state.currentTurn)) {
-        this.viewer.ui.showEndscreen(this.game.getResult());
+    } else {
+      if (this.state.currentTurn == (this.game.gameStates.length - 1)) {
+        if (this.isPlaying()) {
+          this.playPause();
+        } else {
+          console.log("End reached.");
+        }
+      } else {
+        console.log("Function next called, but already waiting on state. Skipping this request to stop flooding of the event listener in LiveGame");
       }
-    });
+    }
   }
 
   previous() {
@@ -178,7 +193,7 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
       dialog.showSaveDialog(
         {
           title: "Wähle einen Ort zum Speichern des Replays",
-          filters: [{name: "Replay-Dateien", extensions: ["xml"]}]
+          filters: [{ name: "Replay-Dateien", extensions: ["xml"] }]
         },
         (filename) => {
           // dialog returns undefined when user clicks cancel or an array of strings (paths) if user selected a file
