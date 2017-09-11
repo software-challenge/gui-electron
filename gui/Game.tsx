@@ -1,3 +1,4 @@
+import { remote } from 'electron';
 import { GameState } from '../api/HaseUndIgel';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -9,6 +10,8 @@ import { LiveGame } from '../api/LiveGame';
 import { Api } from '../api/Api';
 import { ConsoleMessage } from '../api/Api';
 import { loadCSS } from './index';
+
+const dialog = remote.dialog;
 
 interface State {
   currentTurn: number,
@@ -84,9 +87,6 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
       this.viewer.render(s, false);
       if (this.game.stateHasResult(this.state.currentTurn)) {
         this.viewer.ui.showEndscreen(this.game.getResult());
-        if (this.game instanceof LiveGame) {
-          this.game.saveReplay();
-        }
       }
     });
   }
@@ -173,6 +173,26 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
     })
   }
 
+  saveReplay() {
+    if (this.game instanceof LiveGame) {
+      dialog.showSaveDialog(
+        {
+          title: "Wähle einen Ort zum Speichern des Replays",
+          filters: [{name: "Replay-Dateien", extensions: ["xml"]}]
+        },
+        (filename) => {
+          // dialog returns undefined when user clicks cancel or an array of strings (paths) if user selected a file
+          if (filename) {
+            //window.localStorage[localStorageProgramPath] = filenames[0];
+            console.log("Attempting to save " + filename)
+            if (this.game instanceof LiveGame) {
+              this.game.saveReplay(filename);
+            }
+          }
+        }
+      );
+    }
+  }
 
   render() {
     var image = "";
@@ -181,10 +201,11 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
     } else {
       image = "assets/pause.svg";
     }
-    var playPause = <button onClick={this.playPause.bind(this)}><img className="svg-icon" src={image} /></button>;
-    var forward = <button onClick={this.next.bind(this)}><img className="svg-icon" src="assets/step-forward.svg" /></button>;
-    var back = <button onClick={this.previous.bind(this)}><img className="svg-icon" src="assets/step-backward.svg" /></button>;
-    var speed = <input className="playbackSpeed" type="range" min="0" max={MAX_INTERVAL} step="100" onChange={(e) => this.handleSpeedChange(e)} value={MAX_INTERVAL - this.state.playbackSpeed} />
+    var playPause = <button title="automatisches Abspielen" onClick={this.playPause.bind(this)}><img className="svg-icon" src={image} /></button>;
+    var forward = <button title="einen Zug vor" onClick={this.next.bind(this)}><img className="svg-icon" src="assets/step-forward.svg" /></button>;
+    var back = <button title="einen Zug zurück" onClick={this.previous.bind(this)}><img className="svg-icon" src="assets/step-backward.svg" /></button>;
+    var speed = <input title="Abspielgeschwindigkeit" className="playbackSpeed" type="range" min="0" max={MAX_INTERVAL} step="100" onChange={(e) => this.handleSpeedChange(e)} value={MAX_INTERVAL - this.state.playbackSpeed} />
+    var save = <button className="save" title="Replay speichern" onClick={this.saveReplay.bind(this)}><img className="svg-icon" src="assets/arrow-to-bottom.svg" /></button>;
     return (
       <div className="replay-viewer" ref={elem => { this.startViewer(elem) }}>
         <div className="replay-controls">
@@ -193,6 +214,7 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
             {playPause}{back}{forward}
             <img className="speed-label svg-icon" src="assets/tachometer-alt.svg" />
             {speed}
+            {save}
           </div>
         </div>
       </div >

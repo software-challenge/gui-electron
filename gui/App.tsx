@@ -165,7 +165,7 @@ export class App extends React.Component<any, State> {
                   <UnicodeIcon icon="+" />Neues Spiel
                 </NavItem>
                 <NavItem onClick={() => this.loadReplay()}>
-                  <UnicodeIcon icon="💾" />Replay laden
+                  <UnicodeIcon icon="↥" />Replay laden
                 </NavItem>
                 <NavTitle title="Administration" />
                 <NavItem onClick={() => this.switchToAdministration()} active={this.state.contentState == AppContent.Administration}>

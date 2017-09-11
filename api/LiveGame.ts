@@ -186,14 +186,14 @@ export class LiveGame extends Game {
     return this.observer.log;
   }
 
-  saveReplay() {
+  saveReplay(path) {
     var fs = require('fs');
     let data = this.observer.getAllData();
     let protocolTag = "</protocol>";
     if (!data.endsWith(protocolTag)) {
       data = data + protocolTag;
     }
-    fs.writeFile("/tmp/test", data, function (err) {
+    fs.writeFile(path, data, function (err) {
       if (err) {
         return console.log(err);
       }

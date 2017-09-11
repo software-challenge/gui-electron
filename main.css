@@ -131,6 +131,11 @@
     color: white;
 }
 
+.replay-viewer > .replay-controls > .button-container > button.save {
+    position: absolute;
+    right: 0;
+}
+
 img.svg-icon {
     width: 20px;
     filter: invert(100%);
