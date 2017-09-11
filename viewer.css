@@ -247,16 +247,16 @@ color: red;
 }
 
 .winPicture{
-    max-height: 12em;
-    margin-top: calc(25% - 12em);
+    max-height: 10vh;
+    margin-top: calc(25% - 10vh);
 }
 
 .winReason{
-    font-size: 4em;
+    font-size: 4vh;
 }
 
 .winName{
-  font-size: 4em;
+  font-size: 5vh;
 }
 
 .winBlue{
