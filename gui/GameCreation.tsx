@@ -47,7 +47,7 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
   }
 
   // To be called as onChange handler on form controls
-  private handleControlChange(setter) {
+  private handleControlChange(setter: (s: State, val: any) => void): (event: any) => void {
     return function (event) {
       var val = event.target.value;
       this.setState((prev, _props) => {
@@ -58,7 +58,7 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
   }
 
   // shows a file select dialog and calls the given setter with the selected file
-  private clientFileSelectDialog(setter) {
+  private clientFileSelectDialog(setter: (s: State, filenames: string[]) => void): void {
     dialog.showOpenDialog(
       {
         title: "Wähle einen Computerspieler",
@@ -70,6 +70,7 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
           window.localStorage[localStorageProgramPath] = filenames[0];
           this.setState((prev, _props) => {
             setter(prev, filenames[0])
+            return prev;
           });
         }
       }.bind(this)
@@ -88,7 +89,7 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
           <Button text="Computerspieler wählen"
             onClick={() => this.clientFileSelectDialog(pathMutator)} />
           <code>{playerProgramPath}</code>
-          <CheckBox label="direkt aufrufen (kein Java Client)" value={directStart} onChange={(e) => this.handleControlChange(directStartSetter)(e)} />
+          <CheckBox label="direkt aufrufen (kein Java Client)" value={directStart} onChange={(e) => this.handleControlChange(directStartSetter)({ target: { value: e.target.checked } })} />
         </div>);
       case "External":
         return <p>Das Programm muss nach Erstellung des Spiels gestartet werden. Es sollte sich dann auf localhost, Port 13050 verbinden.</p>;
@@ -132,6 +133,7 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
   }
 
   render() {
+    console.log(JSON.stringify(this.state));
     var items = [
       { label: "Mensch", value: "Human" },
       { label: "Computer", value: "Computer" },
