@@ -50,9 +50,12 @@ export class GenericPlayer extends GenericClient {
           this.emit('welcome', { mycolor: Player.ColorFromString(decoded.room.data[0]['$'].color), roomId: decoded.room['$'].roomId });
           break;
         case 'error':
-          var error = decoded.room.data[0].$.error;
+          var message = decoded.room.data[0].$.message;
           console.log(decoded.room);
-          this.emit('error', error);
+          this.emit('error', message);
+          break;
+        case 'result':
+          // ignore results
           break;
         default:
           throw `Unknown data class: ${decoded.room.data[0]['$'].class}\n\n${JSON.stringify(decoded)}`;
