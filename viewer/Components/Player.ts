@@ -40,7 +40,9 @@ export class Player implements Component {
         moves.push(position);
       }
     }
-    moves.push(end);
+    if (moves[moves.length - 1] != end) {
+      moves.push(end);
+    }
     return moves;
   }
 
@@ -123,7 +125,9 @@ export class Player implements Component {
             let cb = function () {
               movefn(moves, callback)
             }
-            BABYLON.Animation.CreateAndStartAnimation("move_player_" + this.id, this.mesh, "position", Settings.Animation_FPS, Settings.Animation_Frames, this.mesh.position, new BABYLON.Vector3(c.x, 1.5, c.y), BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, undefined, cb);
+            console.log(move, start);
+            BABYLON.Animation.CreateAndStartAnimation("move_player_" + this.id, this.mesh, "position", Settings.Animation_FPS, (move - start) * Settings.Animation_Frames_Per_Field, this.mesh.position, new BABYLON.Vector3(c.x, 1.5, c.y), BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, undefined, cb);
+            start = move;
           }
         };
         movefn(moves, animation_callback);
