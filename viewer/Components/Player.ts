@@ -30,7 +30,7 @@ export class Player implements Component {
     console.log("Created player " + this.id);
   }
 
-  private getSubmovesNew(start: number, end: number): number[] {
+  private getSubmoves(start: number, end: number): number[] {
     let corners = [0, 10, 20, 30, 38, 46, 52, 55, 59, 62];
     let moves = [];
     let position = start;
@@ -46,73 +46,34 @@ export class Player implements Component {
     return moves;
   }
 
-  private getSubmoves(start: number, end: number): ({ direction: "UP" | "LEFT" | "RIGHT" | "DOWN", from: number, to: number }[]) {
-    let moves = [];
-
-    let mc = (c, d) => ({ corner: c, direction: d });
-    let directions = [mc(0, "RIGHT"), mc(10, "UP"), mc(20, "LEFT"), mc(30, "DOWN"), mc(38, "RIGHT"), mc(46, "UP"), mc(52, "LEFT"), mc(55, "DOWN"), mc(59, "LEFT"), mc(62, "UP")];
-
-    //Find direction of field to start with
-    let start_index = 0;
-    while (start > directions[start_index].corner) {
-      start_index++;
-      if (start_index == directions.length - 1) {
-        break;
-      }
-    }
-
-    //Push first move
-    if (start != directions[start_index].corner) {
-      moves.push({
-        direction: directions[start_index].direction,
-        from: start,
-        to: directions[start_index].corner
-      });
-    };
-
-    //Find next corner and iterate
-    let current_position = directions[start_index].corner;
-    start_index++;
-    let next_corner = directions[start_index].corner;
-
-    while (next_corner < end) {
-      moves.push({
-        direction: directions[start_index].direction,
-        from: current_position,
-        to: directions[start_index].corner
-      });
-      current_position = directions[start_index].corner;
-      start_index++;
-      next_corner = directions[start_index].corner;
-    }
-
-    //Add last bit
-    moves.push({
-      direction: directions[start_index - 1].direction,
-      from: current_position,
-      to: end
-    });
-
-    return moves;
-  }
 
   update(position: number, animated: boolean, animation_callback?: () => void) {
     var start = this.position;
     this.position = position
+    if (this.position == start) {
+      if (animation_callback) {
+        animation_callback();
+      }
+      return;
+    }
     var s = this.grid.getGridCoordsFromFieldId(this.position);
     var c = this.grid.getScreenCoordsFromGrid(s.x, s.y);
     if (!animated) {//Not animated, set straight ahead
       this.mesh.position.x = c.x;
       this.mesh.position.z = c.y;
       this.mesh.position.y = 1.5;
+      if (animation_callback) {
+        animation_callback();
+      }
     } else {
       //Animated
       this.mesh.animations = [];
       if (this.position <= start) {//Jump backwards, go diagonally if necessary
-        let anim = BABYLON.Animation.CreateAndStartAnimation("move_player_" + this.id, this.mesh, "position", Settings.Animation_FPS, Settings.Animation_Frames, this.mesh.position, new BABYLON.Vector3(c.x, 1.5, c.y), BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, undefined, animation_callback);
+        console.log(`Jump backwards from ${start} to ${this.position}`);
+        let anim = BABYLON.Animation.CreateAndStartAnimation("move_player_" + this.id, this.mesh, "position", Settings.Animation_FPS, Math.abs((this.position - start)) * Settings.Animation_Frames_Per_Field, this.mesh.position, new BABYLON.Vector3(c.x, 1.5, c.y), BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, undefined, animation_callback);
       } else {
-        let moves = this.getSubmovesNew(start, this.position);
-        console.log(JSON.stringify(moves));
+        let moves = this.getSubmoves(start, this.position);
+        console.log(`Move forward from ${start} to ${this.position} has ${moves.length} submove${moves.length > 1 ? 's' : ''}`);
         let movefn = (moves, callback) => {
           if (moves.length == 0) {
             if (callback) {
@@ -125,8 +86,8 @@ export class Player implements Component {
             let cb = function () {
               movefn(moves, callback)
             }
-            console.log(move, start);
-            BABYLON.Animation.CreateAndStartAnimation("move_player_" + this.id, this.mesh, "position", Settings.Animation_FPS, (move - start) * Settings.Animation_Frames_Per_Field, this.mesh.position, new BABYLON.Vector3(c.x, 1.5, c.y), BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, undefined, cb);
+            console.log(`Submove from ${start} to ${move}`);
+            BABYLON.Animation.CreateAndStartAnimation("move_player_" + this.id + "_" + (new Date().getTime), this.mesh, "position", Settings.Animation_FPS, Math.abs((move - start)) * Settings.Animation_Frames_Per_Field, this.mesh.position, new BABYLON.Vector3(c.x, 1.5, c.y), BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT, undefined, cb);
             start = move;
           }
         };

@@ -25,6 +25,8 @@ const MAX_INTERVAL = 3000; // max pause time between turns in playback mode
 
 export class Game extends React.Component<{ options: (GameCreationOptions | string), nameCallback: (string) => void }, State> {
   private waiting_already = false;
+  private viewer_done = true;
+  private next_requested = false;
   private viewer: Viewer;
   private elem: Element;
   private elemSet: boolean;
@@ -44,7 +46,7 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
 
   startViewer(e) {
     if (!this.viewer) {
-      this.viewer = new Viewer(e, document, window, this, true);
+      this.viewer = new Viewer(e, document, window, this, false);
       Api.setCurrentViewer(this.viewer);
     }
 
@@ -78,30 +80,44 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
   }
 
   next() {
-    if (!this.waiting_already) {
-      this.waiting_already = true;
-      let nextStateNumber = this.state.currentTurn + 1;
-      this.game.getState(nextStateNumber).then(s => {
-        this.setState((prev, _props) => {
-          prev.currentTurn = nextStateNumber;
-          return prev;
-        });
-        this.updateProgress();
-        this.viewer.render(s, true);
-        if (this.game.stateHasResult(this.state.currentTurn)) {
-          this.viewer.ui.showEndscreen(this.game.getResult());
-        }
-        this.waiting_already = false;
-      });
-    } else {
-      if (this.state.currentTurn == (this.game.gameStates.length - 1)) {
-        if (this.isPlaying()) {
-          this.playPause();
-        } else {
-          console.log("End reached.");
-        }
-      } else {
+    if (!this.game.isLastState(this.state.currentTurn)) {
+      if (this.waiting_already) {//Already waiting for a turn, skip this
         console.log("Function next called, but already waiting on state. Skipping this request to stop flooding of the event listener in LiveGame");
+      } else {//We weren't already waiting for a state from the server
+        if (!this.viewer_done) {//If the viewer isn't done rendering, request a render of the next move after
+          this.next_requested = true;
+        } else {
+          //Request the next move
+          let nextStateNumber = this.state.currentTurn + 1;
+          this.waiting_already = true;
+          this.game.getState(nextStateNumber).then(s => {
+            this.setState((prev, _props) => {
+              prev.currentTurn = nextStateNumber;
+              return prev;
+            });
+            this.updateProgress();
+            this.viewer.render(s, true, () => {
+              if (this.next_requested) {
+                setTimeout(() => {
+                  this.viewer_done = true;
+                  this.next_requested = false;
+                  this.next();
+                }, this.state.playbackSpeed);
+              }
+            });
+            if (this.game.stateHasResult(this.state.currentTurn)) {
+              this.viewer.ui.showEndscreen(this.game.getResult());
+            }
+            this.waiting_already = false;
+          });
+
+        }
+      }
+    } else {
+      if (this.isPlaying()) {
+        this.playPause();
+      } else {
+        console.log("End reached.");
       }
     }
   }

@@ -28,11 +28,15 @@ export abstract class Game extends EventEmitter {
     return this.messages;
   }
 
-  stateHasResult(stateNumber: number):boolean {
+  stateHasResult(stateNumber: number): boolean {
     return this.gameResult && (stateNumber == this.gameStates.length - 1)
   }
   getResult() {
     return this.gameResult;
+  }
+
+  isLastState(turn: number) {
+    return turn == this.gameStates.length - 1;
   }
 
 }

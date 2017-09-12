@@ -33,7 +33,7 @@ export class Viewer {
 
   //Rendering
   rerenderControlActive: boolean;
-  animationsPlayed: number = 0;
+  animating = false;
   lastRoundRendered: boolean = false;
   endscreenRendered: boolean = false;
   needsRerender: number;
@@ -109,13 +109,26 @@ export class Viewer {
 
 
 
-
-  render(state: GameState, animated: boolean = true) {
-    this.engine.startRerender();
-    this.board.update(state.board, animated);
-    this.red.update(state.red.index, animated);
-    this.blue.update(state.blue.index, animated);
+  render(state: GameState, animated: boolean = true, animation_callback?: () => void) {
     this.ui.updateDisplay(state);
+    this.board.update(state.board, animated);
+    this.engine.startRerender();
+
+    let done = {
+      "red": false,
+      "blue": false
+    }
+
+    let cb = (c: "red" | "blue") => {
+      done[c] = true;
+      if (done.red && done.blue && animation_callback) {
+        animation_callback();
+      }
+    }
+
+    this.red.update(state.red.index, animated, () => cb("red"));
+    this.blue.update(state.blue.index, animated, () => cb("blue"));
+
     /*if (!this.gameFrame.isPlaying()) {
       // FIXME: setting this rerender stopper breaks the auto-playback
       setTimeout(() => this.engine.stopRerender(), 8000);
