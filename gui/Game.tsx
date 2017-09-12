@@ -87,7 +87,7 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
           return prev;
         });
         this.updateProgress();
-        this.viewer.render(s, false);
+        this.viewer.render(s, true);
         if (this.game.stateHasResult(this.state.currentTurn)) {
           this.viewer.ui.showEndscreen(this.game.getResult());
         }
