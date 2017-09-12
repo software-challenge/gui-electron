@@ -70,6 +70,8 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
         });
       }.bind(this);
       init();
+
+      this.game.on('state_update', () => this.updateProgress());
     }
   }
 

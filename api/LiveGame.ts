@@ -44,6 +44,7 @@ export class LiveGame extends Game {
       this.observer.on('state', s => {
         this.gameStates.push(s);
         this.emit('state' + (this.gameStates.length - 1), s);
+        this.emit('state_update');
         console.log("got state " + (this.gameStates.length - 1));
       });
 
