@@ -107,7 +107,9 @@ export class Viewer {
     this.render(state, animated);
   }
 
-
+  fatalGameError(message: string) {
+    this.ui.showFatalError(message);
+  }
 
   render(state: GameState, animated: boolean = true, animation_callback?: () => void) {
     this.ui.updateDisplay(state);

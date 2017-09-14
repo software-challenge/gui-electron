@@ -29,4 +29,16 @@ export class Logger {
     return { log: (message) => this.log(actor, focus, message) };
   }
 
+  public getLogFilePath(): string {
+    return this.logFile;
+  }
+
+  public getCompleteLog(): string {
+    if (this.logFile) {
+      return fs.readFileSync(this.logFile).toString();
+    } else {
+      return "";
+    }
+  }
+
 }

@@ -1,3 +1,4 @@
+import { Api } from '../api/Api';
 import * as React from 'react';
 import * as electron from 'electron';
 import { remote } from 'electron';
@@ -13,6 +14,7 @@ import { Game } from './Game';
 import { LogConsole } from './LogConsole';
 
 const dialog = remote.dialog;
+const shell = remote.shell;
 
 enum AppContent {
   Empty,
@@ -118,6 +120,19 @@ export class App extends React.Component<any, State> {
     });
   }
 
+  private openHelp() {
+    shell.openExternal("https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che");
+  }
+
+  private openLogFile() {
+    let path = Api.getLogger().getLogFilePath()
+    if (path) {
+      shell.openItem(path);
+    } else {
+      dialog.showErrorBox("Log", "Keine Log-Datei gefunden");
+    }
+  }
+
   render() {
     var mainPaneContent;
     switch (this.state.contentState) {
@@ -129,7 +144,7 @@ export class App extends React.Component<any, State> {
         break;
       case AppContent.GameLive:
         console.log("starting game");
-        mainPaneContent = <Game options={this.gameCreationOptions} nameCallback={n => /*this.setActiveGameName(n)*/ console.log(n)} />
+        mainPaneContent = <Game options={this.gameCreationOptions} nameCallback={n => this.setActiveGameName(n)} />
         break;
       case AppContent.GameReplay:
         console.log("starting replay");
@@ -140,7 +155,7 @@ export class App extends React.Component<any, State> {
           <div className="main-container">
             <h1>Willkommen bei der Software-Challenge!</h1>
             <p>Klicken Sie links auf "Neues Spiel" um zu beginnen.</p>
-            <p>Diese frühe Version hat noch einige Fehler. Bitte melden Sie Fehler, die Sie finden, im Forum. Bei Problemen hilft oft ein Neustart des Programms.</p>
+            <p>Diese frühe Version hat noch einige Fehler. Bitte melden Sie Fehler, die Sie finden, im Forum. Hinweise zur Ursache von Fehlern finden sich im Log, aufrufbar über "Log" auf der linken Seite. Bei Problemen hilft oft ein Neustart des Programms.</p>
             <p><a href="https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che" target="_blank">Bedienungsanleitung (aus der allgemeinen Dokumentation)</a></p>
           </div>
         break;
@@ -171,7 +186,12 @@ export class App extends React.Component<any, State> {
                 <NavItem onClick={() => this.switchToAdministration()} active={this.state.contentState == AppContent.Administration}>
                   <UnicodeIcon icon="⚙" />Einstellungen
                 </NavItem>
-                <NavItem><a href="https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che" target="_blank">Hilfe</a></NavItem>
+                <NavItem onClick={() => this.openHelp()}>
+                  <UnicodeIcon icon="❔" />Hilfe
+                </NavItem>
+                <NavItem onClick={() => this.openLogFile()}>
+                  <UnicodeIcon icon="📜" />Log
+                </NavItem>
               </NavGroup>
             </RetractableSidebar>
             <Pane>
@@ -181,7 +201,7 @@ export class App extends React.Component<any, State> {
               {this.state.activeGame ? <LogConsole game={this.state.activeGame} /> : <div />}
             </RetractableSidebar>
           </PaneGroup>
-        </Content>
+        </Content >
       </Window >
     );
   }

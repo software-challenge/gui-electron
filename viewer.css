@@ -268,3 +268,20 @@ color: red;
     font-weight: bold;
     color: #FF6961;
 }
+
+.overlay{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(100% - 6em);
+    height: calc(100% - 8em);
+    padding: 1em;
+    margin: 3em 3em;
+    border-radius: 3em;
+    background-color: rgba(0,0,0,0.6);
+    transition: opacity 0.5s;
+    font-size: 4vh;
+    text-align: center;
+    color: white;
+    overflow: auto;
+}

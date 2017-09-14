@@ -52,7 +52,7 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
 
     let live = false;
     if (!this.game) {
-      let gameName = (new Date()).toDateString();
+      let gameName = (new Date()).toISOString();
 
       if (this.props.options instanceof GameCreationOptions) {
         this.props.nameCallback(gameName);
@@ -63,8 +63,14 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
       }
       var init = async function () {
         console.log(this.game);
+        this.game.ready.then(() => console.log("game ready"));
+        this.game.ready.catch((msg) => {
+          console.log("error creating game!");
+          dialog.showErrorBox("Spielerstellung", "Fehler beim Erstellen des Spiels!");
+          this.viewer.fatalGameError("Es ist ein Fehler aufgetreten. Nähere Informationen im Log.");
+          Api.getLogger().log("Game", "init", msg || "no further details");
+        });
         await this.game.ready;
-        console.log("game ready");
         this.game.getState(0).then(s => {
           this.viewer.render(s, false);
         });
@@ -91,7 +97,10 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
         } else {
           //Request the next move
           let nextStateNumber = this.state.currentTurn + 1;
-          this.waiting_already = true;
+          // FIXME: not requesting the next state when we alreay wait for one results in not getting any states for a game with two computer clients. Might be a timing issue.
+          if (this.state.currentTurn != 0) { // FIXME: ugly hack: don't request a new state if we already got any state (currentTurn is not 0)
+            this.waiting_already = true;
+          }
           this.game.getState(nextStateNumber).then(s => {
             this.setState((prev, _props) => {
               prev.currentTurn = nextStateNumber;

@@ -4,6 +4,7 @@ import { GameManager } from './GameManager';
 
 import { Logger } from './Logger';
 import { Viewer } from '../viewer/Viewer';
+import { remote } from 'electron';
 
 export class Api {
   private static server: Server;
@@ -28,7 +29,9 @@ export class Api {
   static getLogger(): Logger {
     if (!this.logger) {
       var d = new Date();
-      this.logger = new Logger(false, /*`sgc_log_${d.getFullYear()}.${d.getMonth()}.${d.getDay()}_${d.getHours()}.${d.getMinutes()}.${d.getSeconds()}.log`*/ /*'sgc.log'*/null);
+      let path = remote.app.getPath('userData') + `/software-challenge-gui-${d.getFullYear()}.${d.getMonth()}.${d.getDay()}_${d.getHours()}.${d.getMinutes()}.${d.getSeconds()}.log`
+      console.log("creating log in ", path)
+      this.logger = new Logger(false, path);
     }
     return this.logger;
   }

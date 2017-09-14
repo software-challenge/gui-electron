@@ -83,6 +83,8 @@ export class UI {
     saveButton: HTMLDivElement
   }
 
+  private notificationOverlay: HTMLDivElement // shown before the first state is renderd
+
 
   constructor(viewer: Viewer, engine: Engine, board: Board, canvas: HTMLCanvasElement, element: HTMLElement, window: Window, gameFrame: Game) {
     this.engine = engine;
@@ -118,6 +120,7 @@ export class UI {
     var redroot = cdiv(['red'], root);
     var blueroot = cdiv(['blue'], root);
 
+    this.notificationOverlay = cdiv(['overlay'], element, "Warte auf Spielbeginn...");
     this.display = {
       root: root,
       red: {
@@ -455,7 +458,15 @@ export class UI {
     }
   }
 
+  showFatalError(message: string) {
+    this.notificationOverlay.innerText = message;
+    this.show(this.notificationOverlay);
+  }
+
   updateDisplay(state: GameState) {
+    // when receiving the first state, the game has begun
+    this.hide(this.notificationOverlay);
+
     this.display.round.innerText = Math.floor((state.turn / 2) + 1).toString();
     this.display.red.name.innerText = state.red.displayName;
     this.display.red.salads.innerText = state.red.salads.toString();

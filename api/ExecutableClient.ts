@@ -4,6 +4,8 @@ import * as child_process from 'child_process';
 import { EventEmitter } from "events";
 import { Api } from './Api';
 
+const pathLib = require('path');
+
 
 export class ExecutableClient extends EventEmitter implements GameClient {
   ready: Promise<void>;
@@ -11,46 +13,59 @@ export class ExecutableClient extends EventEmitter implements GameClient {
   private stdout: string[] = [];
   private stderr: string[] = [];
   private program: string;
-  private options: string[];
-  private process;
+  private arguments: string[];
+  private workingDirectory: string = "";
+  private process: child_process.ChildProcess;
 
   constructor(program: string = 'java', options: string[] = ['-jar'], path: string, host: string = '127.0.0.1', port: number = 13050, reservation: string = "") {
     super();
     this.program = program;
-    this.options = options;
+    this.workingDirectory = pathLib.dirname(program);
+    this.arguments = options;
     if (path) {
-      this.options.push(path);
+      this.arguments.push(path);
+      this.workingDirectory = pathLib.dirname(path);
     }
-    this.options.push('--host', host);
-    this.options.push('--port', port.toString());
+    this.arguments.push('--host', host);
+    this.arguments.push('--port', port.toString());
     if (reservation) {
-      this.options.push('--reservation', reservation);
+      this.arguments.push('--reservation', reservation);
     }
     this.setStatus(ExecutableStatus.Status.NOT_STARTED);
   }
 
   start(): Promise<void> {
-    console.log("Starting", this.program, this.options)
-    this.process = child_process.spawn(this.program, this.options);
-    Api.getLogger().log("ExecutableClient", "spawn", `${this.program} ${this.options.join(' ')}`);
-    this.setStatus(ExecutableStatus.Status.RUNNING);
-    this.process.stdout.on('data', (data) => {
-      this.stdout.push(data);
-      this.emit('stdout', data + '');
-    });
-    this.process.stderr.on('data', (data) => {
-      this.stderr.push(data);
-      this.emit('stderr', data + '');
-    });
-    this.process.on('error', () => {
-      this.setStatus(ExecutableStatus.Status.ERROR);
-    });
-    this.process.on('close', () => {
-      this.setStatus(ExecutableStatus.Status.EXITED);
-    });
-    this.emit('ready');
-    this.ready = Promise.resolve();
-    return Promise.resolve();
+    this.ready = new Promise((res, rej) => {
+      console.log("Starting", this.program, this.arguments)
+      Api.getLogger().log("ExecutableClient", "spawn", `${this.program} ${this.arguments.join(' ')} (cwd: ${this.workingDirectory})`);
+      let options = {
+        cwd: this.workingDirectory,
+        shell: false /* do not set to true, security risk! */
+      };
+      this.process = child_process.spawn(this.program, this.arguments, options);
+      this.setStatus(ExecutableStatus.Status.RUNNING);
+      this.process.stdout.on('data', (data) => {
+        this.stdout.push(data.toString());
+        this.emit('stdout', data + '');
+      });
+      this.process.stderr.on('data', (data) => {
+        this.stderr.push(data.toString());
+        this.emit('stderr', data + '');
+      });
+      this.process.on('error', () => {
+        this.setStatus(ExecutableStatus.Status.ERROR);
+      });
+      this.process.on('exit', () => {
+        this.setStatus(ExecutableStatus.Status.EXITED);
+      });
+      this.emit('ready');
+      if (this.status == ExecutableStatus.Status.RUNNING) {
+        res();
+      } else {
+        rej("Client did not start");
+      }
+    })
+    return this.ready;
   }
 
   stop() {
@@ -63,6 +78,7 @@ export class ExecutableClient extends EventEmitter implements GameClient {
   }
 
   private setStatus(s: ExecutableStatus.Status) {
+    console.log("Status change of " + this.program + ": " + ExecutableStatus.toString(s));
     this.status = s;
     this.emit('status', s);
   }

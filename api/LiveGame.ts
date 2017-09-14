@@ -1,3 +1,4 @@
+import { remote } from 'electron';
 import { GenericClient } from './GenericClient';
 import { ObserverClient, RoomReservation } from './ObserverClient';
 import { GameState, GameResult } from './HaseUndIgel';
@@ -9,6 +10,7 @@ import { HumanClient } from './HumanClient';
 import { EventEmitter } from "events";
 import { Helpers } from './Helpers';
 import { Game } from './Game';
+const dialog = remote.dialog;
 
 export class LiveGame extends Game {
   observer: ObserverClient;
@@ -23,6 +25,12 @@ export class LiveGame extends Game {
     let Logger = Api.getLogger().focus("Game", "constructor");
     Logger.log("Creating game " + name);
     Logger.log("Options: " + JSON.stringify(gco));
+    let gameStartSuccessful;
+    let gameStartError;
+    this.ready = new Promise((res, rej) => { gameStartSuccessful = res; gameStartError = rej; });
+    // if the game didn't start after 10 seconds, assume error
+    let timeout = 10000;
+    setTimeout(() => gameStartError(`game didn't start after ${timeout}ms`), timeout);
     var construct = (async function () {
       //Register hook to go offline
       Api.getServer().on('status', s => {
@@ -42,6 +50,7 @@ export class LiveGame extends Game {
       this.observer = new ObserverClient();
 
       this.observer.on('state', s => {
+        gameStartSuccessful();
         this.gameStates.push(s);
         this.emit('state' + (this.gameStates.length - 1), s);
         this.emit('state_update');
@@ -49,6 +58,7 @@ export class LiveGame extends Game {
       });
 
       this.observer.on('result', r => {
+        gameStartSuccessful();
         this.gameResult = r;
         this.is_live = false;
       })
@@ -124,6 +134,20 @@ export class LiveGame extends Game {
               this.emit('message', m);
               Api.getLogger().log("Livegame", "executableClient.on('stderr')", msg);
             });
+            executableClient.on('error', msg => {
+              Api.getLogger().log("Livegame", "executableClient.on('error')", "got error: " + msg);
+              gameStartError(`client "${name}" sent error: ${msg}`);
+            })
+
+            executableClient.on('status', s => {
+              Api.getLogger().log("Livegame", "executableClient.on('status')", "status changed to " + ExecutableStatus.toString(s));
+              if (s == ExecutableStatus.Status.EXITED) {
+                if (this.is_live) {
+                  dialog.showErrorBox("Spielerstellung", "Client " + name + " hat sich beendet.");
+                  gameStartError(`client "${name}" exited.`);
+                }
+              }
+            })
             return executableClient;
           case "Human":
             let humanClient = new HumanClient(name, Api.getCurrentViewer().ui, reservation)
@@ -136,20 +160,12 @@ export class LiveGame extends Game {
       this.client1 = configureClient(gco.firstPlayerType, gco.firstPlayerStartType, gco.firstPlayerName, gco.firstPlayerPath, reservation.reservation1)
       this.client2 = configureClient(gco.secondPlayerType, gco.secondPlayerStartType, gco.secondPlayerName, gco.secondPlayerPath, reservation.reservation2)
 
-      // wait for clients to join the game
+      // wait for clients to start
       // NOTE that the order of resolution of the connect-promises is arbitrary
-      await Promise.all([this.client1.start(), this.client2.start()]);
+      await Promise.all([this.client1.start(), this.client2.start()]).catch((reason) => gameStartError(reason));
 
       this.is_live = true;
-
-      this.emit('ready');
     }).bind(this);
-
-    this.ready = new Promise<void>((res, rej) => {
-      this.once('ready', () => {
-        res();
-      });
-    });
 
     construct();
   }

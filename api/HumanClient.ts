@@ -1,3 +1,4 @@
+import { remote } from 'electron';
 import { GameRuleLogic } from './HaseUndIgelGameRules';
 import { GameClient } from './LiveGame';
 import { GenericPlayer } from './PlayerClient';
@@ -5,6 +6,7 @@ import { GenericPlayer } from './PlayerClient';
 import { PLAYERCOLOR, Player, GameState, Action } from './HaseUndIgel';
 
 import { UI } from '../viewer/Engine/UI';
+const dialog = remote.dialog;
 
 export class HumanClient extends GenericPlayer implements GameClient {
   color: PLAYERCOLOR;
@@ -24,7 +26,7 @@ export class HumanClient extends GenericPlayer implements GameClient {
     this.on('moverequest', this.handleMoveRequest);
     this.on('state', s => this.state = s);
     this.on('message', m => console.log("human: " + m));
-    this.on('error', error => alert("Error: " + error));
+    this.on('error', error => dialog.showErrorBox("Fehler menschlicher Spieler", error));
   }
 
   handleMoveRequest = async function () {
