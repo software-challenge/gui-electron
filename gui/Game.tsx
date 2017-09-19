@@ -21,6 +21,12 @@ interface State {
   playbackSpeed: number
 }
 
+enum ViewerState {
+  idle,
+  waiting,
+  render
+}
+
 const MAX_INTERVAL = 3000; // max pause time between turns in playback mode
 
 export class Game extends React.Component<{ options: (GameCreationOptions | string), nameCallback: (string) => void }, State> {
@@ -31,6 +37,9 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
   private elem: Element;
   private elemSet: boolean;
   private game: SC_Game;
+
+  private viewerState: ViewerState;
+
   constructor() {
     super();
     this.viewer = null;
@@ -42,6 +51,7 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
       playIntervalID: null,
       playbackSpeed: 800
     };
+    this.viewerState = ViewerState.idle;
   }
 
   startViewer(e) {
@@ -71,9 +81,7 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
           Api.getLogger().log("Game", "init", msg || "no further details");
         });
         await this.game.ready;
-        this.game.getState(0).then(s => {
-          this.viewer.render(s, false);
-        });
+        this.displayTurn(0);
       }.bind(this);
       init();
 
@@ -87,43 +95,46 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
     }
   }
 
+  displayTurn(turn: number) {
+    console.log("Requested display of turn " + turn);
+    if (turn > 62) {
+      turn = 62;
+    }
+    if (turn < 0) {
+      turn = 0;
+    }
+    if (this.viewerState == ViewerState.idle) {//Can only display a turn if not currently playing
+      this.viewerState = ViewerState.waiting;//Set state to waiting to block other concurrent requests
+      this.game.getState(turn).then(s => {//Request turn, then when turn is there
+        //1. Find out if render should be animated
+        var animated: boolean = turn > this.state.currentTurn;
+        //2. Update global turn state and progress bar
+        this.setState((prev, _props) => {
+          prev.currentTurn = turn;
+          return prev;
+        });
+        this.updateProgress();
+        //3. Show end screen if possible
+        if (this.game.stateHasResult(turn)) {
+          console.log(`Turn ${turn} has endscreen`);
+          this.viewer.ui.showEndscreen(this.game.getResult());
+        } else {
+          this.viewer.ui.hideEndscreen();
+        }
+        //4. start render
+        this.viewerState = ViewerState.render;
+        this.viewer.render(s, animated, () => {
+          this.viewerState = ViewerState.idle; //When done rendering, the next turn may come in
+        });
+
+      });
+    }
+    console.log(turn);
+  }
+
   next() {
     if (!this.game.isLastState(this.state.currentTurn)) {
-      if (this.waiting_already) {//Already waiting for a turn, skip this
-        console.log("Function next called, but already waiting on state. Skipping this request to stop flooding of the event listener in LiveGame");
-      } else {//We weren't already waiting for a state from the server
-        if (!this.viewer_done) {//If the viewer isn't done rendering, request a render of the next move after
-          this.next_requested = true;
-        } else {
-          //Request the next move
-          let nextStateNumber = this.state.currentTurn + 1;
-          // FIXME: not requesting the next state when we alreay wait for one results in not getting any states for a game with two computer clients. Might be a timing issue.
-          if (this.state.currentTurn != 0) { // FIXME: ugly hack: don't request a new state if we already got any state (currentTurn is not 0)
-            this.waiting_already = true;
-          }
-          this.game.getState(nextStateNumber).then(s => {
-            this.setState((prev, _props) => {
-              prev.currentTurn = nextStateNumber;
-              return prev;
-            });
-            this.updateProgress();
-            this.viewer.render(s, true, () => {
-              if (this.next_requested) {
-                setTimeout(() => {
-                  this.viewer_done = true;
-                  this.next_requested = false;
-                  this.next();
-                }, this.state.playbackSpeed);
-              }
-            });
-            if (this.game.stateHasResult(this.state.currentTurn)) {
-              this.viewer.ui.showEndscreen(this.game.getResult());
-            }
-            this.waiting_already = false;
-          });
-
-        }
-      }
+      this.displayTurn(this.state.currentTurn + 1);
     } else {
       if (this.isPlaying()) {
         this.playPause();
@@ -135,18 +146,7 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
 
   previous() {
     if (this.state.currentTurn > 0) {
-      let previousStateNumber = this.state.currentTurn - 1;
-      this.viewer.ui.hideEndscreen();
-      this.game.getState(previousStateNumber).catch(reason => { console.log("error!", reason) }).then(s => {
-        if (s) {
-          this.setState((prev, _props) => {
-            prev.currentTurn = previousStateNumber;
-            return prev;
-          });
-          this.updateProgress();
-          this.viewer.render(s, false);
-        }
-      })
+      this.displayTurn(this.state.currentTurn - 1);
     }
   }
 
@@ -200,10 +200,12 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
   }
 
   updateProgress() {
-    this.setState((prev, _props) => {
-      prev.turnCount = this.currentStateCount();
-      return prev;
-    });
+    if (this.currentStateCount() != this.state.turnCount) {
+      this.setState((prev, _props) => {
+        prev.turnCount = this.currentStateCount();
+        return prev;
+      });
+    }
   }
 
   handleSpeedChange(event) {
@@ -236,6 +238,8 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
     }
   }
 
+
+
   render() {
     var image = "";
     if (this.state.playPause == "pause") {
@@ -251,7 +255,7 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
     return (
       <div className="replay-viewer" ref={elem => { this.startViewer(elem) }}>
         <div className="replay-controls">
-          <ProgressBar turnCount={this.currentStateCount()} currentTurn={this.state.currentTurn} />
+          <ProgressBar turnCount={this.currentStateCount()} currentTurn={this.state.currentTurn} turnCallback={t => { if (t <= this.currentStateCount.bind(this)()) { this.displayTurn.bind(this)(t) } }} />
           <div className="button-container">
             {playPause}{back}{forward}
             <img className="speed-label svg-icon" src="assets/tachometer-alt.svg" />
