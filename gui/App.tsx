@@ -29,7 +29,6 @@ interface State {
   consoleRetracted: boolean
   contentState: AppContent
   activeGame: string
-  replayFilePath: string
 }
 
 export class App extends React.Component<any, State> {
@@ -40,8 +39,7 @@ export class App extends React.Component<any, State> {
       menuRetracted: false,
       consoleRetracted: true,
       contentState: AppContent.Empty,
-      activeGame: null,
-      replayFilePath: null
+      activeGame: null
     }
   }
 
@@ -132,6 +130,18 @@ export class App extends React.Component<any, State> {
     }
   }
 
+  changeGameName(e) {
+    if (e.keyCode == 13) {
+      e.preventDefault();
+      var newGameName = document.getElementById('gameName').innerText.trim();
+      console.log(newGameName);
+      var game = Api.getGameManager().getGame(this.state.activeGame);
+      game.name = newGameName;
+      this.switchToKnownGame(newGameName);
+      document.getElementById('gameName').blur();
+    }
+  }
+
   render() {
     var mainPaneContent;
     switch (this.state.contentState) {
@@ -165,6 +175,7 @@ export class App extends React.Component<any, State> {
             <ButtonGroup>
               <Button icon="menu" onClick={() => { this.toggleMenu() }} active={!this.state.menuRetracted} />
             </ButtonGroup>
+            {this.state.contentState == AppContent.GameLive ? <span id="gameName" contentEditable={!Api.getGameManager().isReplay(this.state.activeGame)} onKeyDown={this.changeGameName.bind(this)}> {this.state.activeGame}</span> : null}
             <Button icon="doc-text" onClick={() => { this.toggleConsole() }} pullRight={true} />
           </ToolbarActions>
         </Toolbar>

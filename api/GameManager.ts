@@ -33,6 +33,11 @@ export class GameManager {
     return this.games.some(g => g.name == name);
   }
 
+  public isReplay(name: string) {
+    var g = this.getGame(name);
+    return g && g.isReplay;
+  }
+
   public getGameNameFromReplayPath(path: string): string {
     var game = this.games.filter(g => g.isReplay && g.replayPath == path);
     if (game.length > 0) {

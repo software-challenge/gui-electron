@@ -220,6 +220,7 @@ export class Game extends React.Component<{ name: string }, State> {
       dialog.showSaveDialog(
         {
           title: "Wähle einen Ort zum Speichern des Replays",
+          defaultPath: this.game.name + '.xml',
           filters: [{ name: "Replay-Dateien", extensions: ["xml"] }]
         },
         (filename) => {

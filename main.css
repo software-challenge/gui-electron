@@ -214,3 +214,12 @@ input[type=range]:focus::-webkit-slider-runnable-track {
   margin: 0;
   padding: 0;
 }
+
+#gameName{
+  width: 50%;
+  margin-left: 25%;
+  font-weight: bold;
+  font-size: 120%;
+  display: inline-block;
+  text-align: center;
+}
