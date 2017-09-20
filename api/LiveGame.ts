@@ -22,12 +22,13 @@ export class LiveGame extends Game {
 
   constructor(gco: GameCreationOptions, name: string) {
     super(name);
+    this.isReplay = false;
     let Logger = Api.getLogger().focus("Game", "constructor");
     Logger.log("Creating game " + name);
     Logger.log("Options: " + JSON.stringify(gco));
     let gameStartSuccessful;
     let gameStartError;
-    this.ready = new Promise((res, rej) => { gameStartSuccessful = res; gameStartError = rej; });
+    this.ready = new Promise<void>((res, rej) => { gameStartSuccessful = res; gameStartError = rej; });
     // if the game didn't start after 10 seconds, assume error
     let timeout = 10000;
     setTimeout(() => gameStartError(`game didn't start after ${timeout}ms`), timeout);

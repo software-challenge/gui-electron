@@ -10,7 +10,7 @@ export class Api {
   private static server: Server;
   private static gameManager: GameManager;
   private static logger: Logger;
-  private static currentViewer: Viewer;
+  private static viewer: Viewer;
 
   static getServer(autostart: boolean = true): Server {
     if (!this.server) {
@@ -36,12 +36,11 @@ export class Api {
     return this.logger;
   }
 
-  static setCurrentViewer(viewer: Viewer): void {
-    this.currentViewer = viewer;
-  }
-
-  static getCurrentViewer(): Viewer {
-    return this.currentViewer;
+  static getViewer() {
+    if (!this.viewer) {
+      this.viewer = new Viewer();
+    }
+    return this.viewer;
   }
 
 

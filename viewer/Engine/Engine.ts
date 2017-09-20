@@ -6,7 +6,7 @@ import { MaterialBuilder } from './MaterialBuilder.js';
 import { ShaderBuilder } from './ShaderBuilder.js';
 
 export class Engine {
-  private engine: BABYLON.Engine;
+  engine: BABYLON.Engine;
   private scene: BABYLON.Scene;
   canvas: HTMLCanvasElement;
   shadow: BABYLON.ShadowGenerator;
@@ -112,15 +112,14 @@ export class Engine {
         this.scene.render();
       }
     });
+  }
 
-    window.addEventListener('resize', () => {
-      this.engine.resize();
-      this.startRerender();
-    });
-
+  public stopEngine() {
+    this.engine.stopRenderLoop();
   }
 
   public startRerender() {
+    this.engine.resize();
     this.needsRerender = true;
   }
 

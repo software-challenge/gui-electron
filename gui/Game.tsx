@@ -29,10 +29,9 @@ enum ViewerState {
 
 const MAX_INTERVAL = 3000; // max pause time between turns in playback mode
 
-export class Game extends React.Component<{ options: (GameCreationOptions | string), nameCallback: (string) => void }, State> {
-  private waiting_already = false;
+export class Game extends React.Component<{ name: string }, State> {
   private viewer_done = true;
-  private next_requested = false;
+  private viewer_running = false;
   private viewer: Viewer;
   private elem: Element;
   private elemSet: boolean;
@@ -54,23 +53,18 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
     this.viewerState = ViewerState.idle;
   }
 
-  startViewer(e) {
+  private startViewer(e) {
+
     if (!this.viewer) {
-      this.viewer = new Viewer(e, document, window, this, false);
-      Api.setCurrentViewer(this.viewer);
+      console.log("starting viewer " + this.props.name);
+      this.viewer = Api.getViewer();
+      this.viewer.setGameFrame(this);
+      this.viewer.dock(e);
     }
-
-    let live = false;
     if (!this.game) {
-      let gameName = (new Date()).toISOString();
-
-      if (this.props.options instanceof GameCreationOptions) {
-        this.props.nameCallback(gameName);
-        this.game = Api.getGameManager().createLiveGame(this.props.options, gameName);
-      } else {
-        // this.props.options is the path to the replay file
-        this.game = Api.getGameManager().createReplayGame(this.props.options, gameName);
-      }
+      console.log("Game name: " + this.props.name);
+      this.game = Api.getGameManager().getGame(this.props.name);
+      console.log(this.game);
       var init = async function () {
         console.log(this.game);
         this.game.ready.then(() => console.log("game ready"));
@@ -81,8 +75,9 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
           Api.getLogger().log("Game", "init", msg || "no further details");
         });
         await this.game.ready;
-        this.displayTurn(0);
+        this.displayTurn(this.game.currentDisplayState, false);
       }.bind(this);
+
       init();
 
       this.game.on('state_update', () => this.updateProgress());
@@ -92,10 +87,11 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
   componentWillUnmount() {
     if (this.viewer) {
       this.viewer.stop();
+      this.viewer.undock();
     }
   }
 
-  displayTurn(turn: number) {
+  displayTurn(turn: number, animated = true) {
     console.log("Requested display of turn " + turn);
     if (turn > 62) {
       turn = 62;
@@ -107,7 +103,9 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
       this.viewerState = ViewerState.waiting;//Set state to waiting to block other concurrent requests
       this.game.getState(turn).then(s => {//Request turn, then when turn is there
         //1. Find out if render should be animated
-        var animated: boolean = turn > this.state.currentTurn;
+        if (animated) {
+          animated = turn > this.state.currentTurn;
+        }
         //2. Update global turn state and progress bar
         this.setState((prev, _props) => {
           prev.currentTurn = turn;
@@ -125,11 +123,11 @@ export class Game extends React.Component<{ options: (GameCreationOptions | stri
         this.viewerState = ViewerState.render;
         this.viewer.render(s, animated, () => {
           this.viewerState = ViewerState.idle; //When done rendering, the next turn may come in
+          this.game.currentDisplayState = turn;
         });
 
       });
     }
-    console.log(turn);
   }
 
   next() {

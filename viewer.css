@@ -4,12 +4,12 @@
   overflow: hidden;
 }
 
-.replay-viewer>canvas{
+.replay-viewer canvas{
     width: 100%;
     height: 100%;
 }
 
-.replay-viewer>.replay-debug{
+.replay-viewer .replay-debug{
     position: fixed;
     right: 10;
     top: 10;
@@ -19,7 +19,7 @@
     z-index: 100;
 }
 
-.replay-viewer>.display{
+.replay-viewer .display{
   position: absolute;
   top: 0;
   width: 100%;
@@ -27,7 +27,12 @@
   font-weight: bold;
 }
 
-.display>.red{
+.viewer-container{
+  width: 100%;
+  height: 100%;
+}
+
+.display .red{
   position: absolute;
   left: 0;
   top: 0;
@@ -38,7 +43,7 @@
   border-bottom-right-radius: 3vh;
 }
 
-.display>.blue{
+.display .blue{
   position: absolute;
   right: 0;
   top: 0;
@@ -50,7 +55,7 @@
   border-bottom-left-radius: 3vh;
 }
 
-.display>.current-player {
+.display .current-player {
   border: 3px solid green;
 }
 

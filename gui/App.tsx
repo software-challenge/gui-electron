@@ -18,10 +18,9 @@ const shell = remote.shell;
 
 enum AppContent {
   Empty,
+  Blank,
   GameCreation,
   GameLive,
-  GameEnded,
-  GameReplay,
   Administration
 }
 
@@ -75,17 +74,20 @@ export class App extends React.Component<any, State> {
   }
 
   private switchToKnownGame(gameName: string) {
+    console.log("switching to " + gameName);
     this.setState((prev, _props) => {
       prev.contentState = AppContent.Empty;
       return prev;
     });
     this.forceUpdate();
-    this.setState((prev, _props) => {
-      prev.contentState = AppContent.GameReplay;
-      prev.replayFilePath = filenames[0];
-      return prev;
+    setTimeout(() => { //Dirty hack to force react to actually update
+      this.setState((prev, _props) => {
+        prev.contentState = AppContent.GameLive;
+        prev.activeGame = gameName;
+        return prev;
+      });
+      this.forceUpdate();
     });
-    this.forceUpdate();
   }
 
   private loadReplay() {
@@ -99,39 +101,22 @@ export class App extends React.Component<any, State> {
         if (filenames && filenames.length > 0 && filenames[0]) {
           //window.localStorage[localStorageProgramPath] = filenames[0];
           console.log("Attempting to load " + filenames[0])
-          this.setState((prev, _props) => {
-            prev.contentState = AppContent.Empty;
-            return prev;
-          });
-          this.forceUpdate();
-          this.setState((prev, _props) => {
-            prev.contentState = AppContent.GameReplay;
-            prev.replayFilePath = filenames[0];
-            return prev;
-          });
-          this.forceUpdate();
+          this.switchToKnownGame(Api.getGameManager().getGameNameFromReplayPath(filenames[0]));
         }
       }
     );
   }
 
   private startGameWithOptions(o: GameCreationOptions) {
-    console.log(this);
-    this.gameCreationOptions = o;
-    console.log('starting game with options: ' + JSON.stringify(o));
-    this.setState((prev, props) => {
-      prev.contentState = AppContent.GameLive;
-      return prev;
-    });
-    this.forceUpdate();
-  }
-
-  private setActiveGameName(name: string) {
-    this.setState((prev, props) => {
-      prev.activeGame = name;
-      console.log("Active game: " + name);
-      return prev;
-    });
+    let baseName = o.firstPlayerName + " vs " + o.secondPlayerName;
+    let counter = 1;
+    let gameName = baseName;
+    while (Api.getGameManager().hasGame(gameName)) {
+      gameName = baseName + " " + counter;
+    }
+    Api.getLogger().log('App', 'startGameWithOptions', 'starting game with options: ' + JSON.stringify(o));
+    let game = Api.getGameManager().createLiveGame(o, gameName);
+    this.switchToKnownGame(gameName);
   }
 
   private openHelp() {
@@ -157,13 +142,11 @@ export class App extends React.Component<any, State> {
         mainPaneContent = <GameCreation gameCreationCallback={o => this.startGameWithOptions(o)} />;
         break;
       case AppContent.GameLive:
-        console.log("starting game");
-        mainPaneContent = <Game options={this.gameCreationOptions} nameCallback={n => this.setActiveGameName(n)} />
+        console.log("Active Game: " + this.state.activeGame);
+        mainPaneContent = <Game name={this.state.activeGame} />
         break;
-      case AppContent.GameReplay:
-        console.log("starting replay");
-        mainPaneContent = <Game options={this.state.replayFilePath} nameCallback={n => console.log(n)} />
-        break;
+      case AppContent.Blank:
+        mainPaneContent = <div id="blank"></div>
       default:
         mainPaneContent =
           <div className="main-container">

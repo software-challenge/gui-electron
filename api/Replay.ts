@@ -3,10 +3,10 @@ import { GameState, GameResult } from './HaseUndIgel';
 import { Parser } from './Parser';
 
 export class Replay extends Game {
-
   constructor(replayFilePath: string, name: string) {
     super(name);
-
+    this.isReplay = true;
+    this.replayPath = replayFilePath;
     this.ready = new Promise<void>((gameReady, gameError) => {
       new Promise((res: (string) => void, rej) => {
         let fs = require('fs')

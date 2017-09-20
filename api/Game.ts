@@ -3,18 +3,21 @@ import { GameState, GameResult } from './HaseUndIgel'
 import { ConsoleMessage } from './Api';
 
 export abstract class Game extends EventEmitter {
-
+  currentDisplayState: number;
   name: string;
   gameStates: GameState[] = [];
   gameResult: GameResult;
   messages: ConsoleMessage[] = [];
   ready: Promise<void>;
+  isReplay: boolean;
+  replayPath: string;
 
   abstract getState(n: number): Promise<GameState>;
 
   constructor(name: string) {
     super();
     this.name = name;
+    this.currentDisplayState = 0;
   }
 
   getStateCount(): number {

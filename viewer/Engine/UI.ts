@@ -475,7 +475,9 @@ export class UI {
     this.display.blue.salads.innerText = state.blue.salads.toString();
     this.display.blue.carrots.innerText = state.blue.carrots.toString();
 
-    this.gameFrame.updateProgress();
+    if (this.gameFrame) {
+      this.gameFrame.updateProgress();
+    }
     //Update cards
     //TODO: There HAS to be a cleverer way to do this
     ['red', 'blue'].forEach(color => {

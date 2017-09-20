@@ -15,7 +15,7 @@ export class Viewer {
   static ANIMATION_FRAMES: number = 30;
   debugActive: boolean;
   //DOM Elements
-
+  element: HTMLElement;
   canvas: HTMLCanvasElement;
   debug: HTMLDivElement;
 
@@ -40,18 +40,20 @@ export class Viewer {
   currentMove: number = 0;
 
   //
-  constructor(element: HTMLElement, document: Document, window: Window, gameFrame: Game, rerenderControl: boolean = false, debug = false, framerateModifier = 1) {
+  constructor(rerenderControl: boolean = false, debug = false, framerateModifier = 1) {
+    this.element = document.createElement('div');
+    this.element.classList.add('viewer-container');
+    window.addEventListener('resize', this.resize.bind(this));
     //Take time measurement for later performance analysis
     this.startup_timestamp = performance.now();
-    this.gameFrame = gameFrame;
 
     //Initialize engine
     this.canvas = document.createElement('canvas');
     this.canvas.classList.add('viewerCanvas');
-    element.appendChild(this.canvas);
+    this.element.appendChild(this.canvas);
     //
     //Debug-Display
-    this.debugActive = element.hasAttribute('debug');
+    this.debugActive = this.element.hasAttribute('debug');
     this.debug = document.createElement('div');
     this.debug.classList.add('replay-debug');
     if (!this.debugActive) {
@@ -72,13 +74,13 @@ export class Viewer {
     });
 
     //Debug
-    element.appendChild(this.debug);
+    this.element.appendChild(this.debug);
 
     this.engine = new Engine(this.canvas);
     this.engine.rerenderControlActive = rerenderControl;
 
-    if (element.hasAttribute('fxaa')) {
-      var fxaa_level: number = parseInt(element.getAttribute('fxaa'));
+    if (this.element.hasAttribute('fxaa')) {
+      var fxaa_level: number = parseInt(this.element.getAttribute('fxaa'));
       this.engine.enableFXAA(fxaa_level);
     }
 
@@ -92,15 +94,37 @@ export class Viewer {
     this.blue.init(this.engine.getScene(), this.engine.materialBuilder);
 
     //Display
-    this.ui = new UI(this, this.engine, this.board, this.canvas, element, window, this.gameFrame);
-
-    //
-    //Attempt startup
-    this.engine.startEngine();
+    this.ui = new UI(this, this.engine, this.board, this.canvas, this.element, window, this.gameFrame);
 
     console.log("initializing viewer took " + (performance.now() - this.startup_timestamp) + "ms");
   }
 
+  resize() {
+    this.canvas.setAttribute('width', this.element.clientWidth.toString());
+    this.canvas.setAttribute('height', this.element.clientHeight.toString());
+    this.engine.engine.resize();
+    this.engine.startRerender();
+  }
+
+  getElement() {
+    return this.element;
+  }
+
+  setGameFrame(gameFrame: Game) {
+    this.gameFrame = gameFrame;
+  }
+
+  dock(element: Element) {
+    element.appendChild(this.element);
+    window.requestAnimationFrame(this.resize.bind(this));
+    //Attempt startup
+    this.engine.startEngine();
+  }
+
+  undock() {
+    this.engine.stopEngine();
+    this.gameFrame = null;
+  }
 
   seekAndRender(state: GameState, animated: boolean = true) {
     this.gameFrame.setCurrentState(state);
