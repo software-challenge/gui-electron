@@ -223,3 +223,7 @@ input[type=range]:focus::-webkit-slider-runnable-track {
   display: inline-block;
   text-align: center;
 }
+
+#gameName[contenteditable="true"]{
+  cursor: text;
+}
