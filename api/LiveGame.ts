@@ -150,7 +150,7 @@ export class LiveGame extends Game {
             })
             return executableClient;
           case "Human":
-            let humanClient = new HumanClient(name, Api.getCurrentViewer().ui, reservation)
+            let humanClient = new HumanClient(name, Api.getViewer().ui, reservation)
             return humanClient;
           case "External":
             throw "TODO";
