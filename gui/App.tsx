@@ -74,6 +74,20 @@ export class App extends React.Component<any, State> {
     });
   }
 
+  private switchToKnownGame(gameName: string) {
+    this.setState((prev, _props) => {
+      prev.contentState = AppContent.Empty;
+      return prev;
+    });
+    this.forceUpdate();
+    this.setState((prev, _props) => {
+      prev.contentState = AppContent.GameReplay;
+      prev.replayFilePath = filenames[0];
+      return prev;
+    });
+    this.forceUpdate();
+  }
+
   private loadReplay() {
     dialog.showOpenDialog(
       {
@@ -182,6 +196,10 @@ export class App extends React.Component<any, State> {
                 <NavItem onClick={() => this.loadReplay()}>
                   <UnicodeIcon icon="↥" />Replay laden
                 </NavItem>
+                {Api.getGameManager().getGameTitles().map(
+                  t => (<NavItem onClick={() => this.switchToKnownGame(t)} active={this.state.activeGame == t}>
+                    <UnicodeIcon icon="🎳" />{t} </NavItem>
+                  ))}
                 <NavTitle title="Administration" />
                 <NavItem onClick={() => this.switchToAdministration()} active={this.state.contentState == AppContent.Administration}>
                   <UnicodeIcon icon="⚙" />Einstellungen

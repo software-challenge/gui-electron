@@ -25,4 +25,8 @@ export class GameManager {
     }
   }
 
+  public getGameTitles(): string[] {
+    return this.games.map(g => g.name);
+  }
+
 }
