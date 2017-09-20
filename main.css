@@ -96,7 +96,7 @@
     border-radius: 3px;
 }
 
-.replay-viewer > .replay-controls > .progress-bar > .progress-position {
+.replay-viewer > .replay-controls > .progress-bar > div.progress-position {
     position: absolute;
     height: 0.5vh;
     width: 0.5vh;
@@ -173,6 +173,16 @@ input[type=range]::-webkit-slider-thumb {
     background: white;
     margin-top: -0.5vh;
     border-radius: 3px;
+}
+
+input[type=range].progress-loaded::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: none;
+    height: 1.0vh;
+    width: 1.0vh;
+    background: red;
+    margin-top: -0.3vh;
+    border-radius: 5px;
 }
 
 input[type=range]:focus {
