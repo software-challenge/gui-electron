@@ -508,11 +508,6 @@ export class GameResult {
   winner: Player;
 
   static fromJSON(json: any): GameResult {
-    console.log("Result:");
-    var util = require('util');
-    console.log(json);
-    console.log(util.inspect(json));
-
     var gr = new GameResult();
     gr.cause = json.score[0].$.cause;
     gr.reason = json.score[0].$.reason;
