@@ -137,8 +137,11 @@ export class App extends React.Component<any, State> {
       console.log(newGameName);
       var game = Api.getGameManager().getGame(this.state.activeGame);
       game.name = newGameName;
-      this.switchToKnownGame(newGameName);
       document.getElementById('gameName').blur();
+      this.setState((prev, _props) => {
+        prev.activeGame = newGameName;
+        return prev;
+      });
     }
   }
 
