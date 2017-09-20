@@ -202,3 +202,7 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 .replay-viewer > .replay-controls > .button-container > button:active > img {
     margin: 1px -1px -1px 1px;
 }
+
+.logMessage .text{
+  font-size: 80%;
+}
