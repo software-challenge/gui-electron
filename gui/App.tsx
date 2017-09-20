@@ -85,6 +85,7 @@ export class App extends React.Component<any, State> {
         return prev;
       });
       this.forceUpdate();
+      document.getElementById('gameName').innerText = gameName;
     });
   }
 
@@ -107,10 +108,10 @@ export class App extends React.Component<any, State> {
 
   private startGameWithOptions(o: GameCreationOptions) {
     let baseName = o.firstPlayerName + " vs " + o.secondPlayerName;
-    let counter = 1;
+    let counter = 2;
     let gameName = baseName;
     while (Api.getGameManager().hasGame(gameName)) {
-      gameName = baseName + " " + counter;
+      gameName = baseName + " (" + counter + ")";
     }
     Api.getLogger().log('App', 'startGameWithOptions', 'starting game with options: ' + JSON.stringify(o));
     let game = Api.getGameManager().createLiveGame(o, gameName);
@@ -178,7 +179,7 @@ export class App extends React.Component<any, State> {
             <ButtonGroup>
               <Button icon="menu" onClick={() => { this.toggleMenu() }} active={!this.state.menuRetracted} />
             </ButtonGroup>
-            {this.state.contentState == AppContent.GameLive ? <span id="gameName" contentEditable={!Api.getGameManager().isReplay(this.state.activeGame)} onKeyDown={this.changeGameName.bind(this)}> {this.state.activeGame}</span> : null}
+            {this.state.contentState == AppContent.GameLive ? <span id="gameName" contentEditable={!Api.getGameManager().isReplay(this.state.activeGame)} onKeyDown={this.changeGameName.bind(this)}></span> : null}
             <Button icon="doc-text" onClick={() => { this.toggleConsole() }} pullRight={true} />
           </ToolbarActions>
         </Toolbar>
@@ -194,7 +195,7 @@ export class App extends React.Component<any, State> {
                   <UnicodeIcon icon="↥" />Replay laden
                 </NavItem>
                 {Api.getGameManager().getGameTitles().map(
-                  t => (<NavItem onClick={() => this.switchToKnownGame(t)} active={this.state.activeGame == t}>
+                  t => (<NavItem onClick={() => this.switchToKnownGame(t)} active={this.state.contentState == AppContent.GameLive && this.state.activeGame == t}>
                     <UnicodeIcon icon="🎳" />{t} </NavItem>
                   ))}
                 <NavTitle title="Administration" />

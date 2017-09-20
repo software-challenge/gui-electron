@@ -17,9 +17,15 @@ export default class Console extends React.Component<any, State> {
       events: Api.getServer().getEvents(),
       listener: ((e) => {
         this.setState((prev, props) => { prev.events.push(e); return prev; });
-        console.log(this.state.events);
       }).bind(this)
     };
+  }
+
+  componentDidMount() {
+    this.setState((prev, props) => {
+      prev.events = Api.getServer().getEvents();
+      return prev;
+    });
   }
 
   clearLog() {
@@ -36,8 +42,8 @@ export default class Console extends React.Component<any, State> {
 
   render() {
     let consoleStyle = {
-      backgroundColor: "black",
-      color: "#EEE",
+      backgroundColor: "#ccc",
+      color: "#000",
       height: "20em",
       padding: "0.5em",
     }

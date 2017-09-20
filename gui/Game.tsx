@@ -36,6 +36,7 @@ export class Game extends React.Component<{ name: string }, State> {
   private elem: Element;
   private elemSet: boolean;
   private game: SC_Game;
+  private mounted: boolean;
 
   private viewerState: ViewerState;
 
@@ -50,11 +51,12 @@ export class Game extends React.Component<{ name: string }, State> {
       playIntervalID: null,
       playbackSpeed: 800
     };
+    this.mounted = false;
     this.viewerState = ViewerState.idle;
   }
 
   private startViewer(e) {
-
+    this.mounted = true;
     if (!this.viewer) {
       console.log("starting viewer " + this.props.name);
       this.viewer = Api.getViewer();
@@ -80,11 +82,12 @@ export class Game extends React.Component<{ name: string }, State> {
 
       init();
 
-      this.game.on('state_update', () => this.updateProgress());
+      this.game.on('state_update', () => { if (this.mounted) { this.updateProgress() } });
     }
   }
 
   componentWillUnmount() {
+    this.mounted = false;
     if (this.viewer) {
       this.viewer.stop();
       this.viewer.undock();
