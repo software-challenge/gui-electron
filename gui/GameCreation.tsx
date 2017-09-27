@@ -2,7 +2,7 @@ import * as electron from 'electron';
 import { remote } from 'electron';
 import * as React from 'react';
 import { Input, SelectBox, Button, CheckBox } from './photon-fix/Components';
-import { GameCreationOptions, PlayerType } from '../api/GameCreationOptions';
+import { GameCreationOptions, PlayerType } from '../api/rules/GameCreationOptions';
 
 const dialog = remote.dialog;
 
@@ -109,6 +109,7 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
         this.state.secondPlayerName,
         this.state.secondPlayerProgramPath,
         this.state.secondPlayerDirectStart ? "Direct" : "Java",
+        "default name"
       )
     );
   }

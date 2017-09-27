@@ -3,9 +3,9 @@
 import { GenericClient } from './GenericClient';
 import { PlayerClientOptions } from './PlayerClient';
 import { Parser } from './Parser';
-import { Helpers } from './Helpers';
-import { GameState, GameResult } from './HaseUndIgel';
-import { Api } from './Api';
+import { Helpers } from '../Helpers';
+import { GameState, GameResult } from '../rules/HaseUndIgel';
+import { Logger } from '../Logger';
 
 const PASSPHRASE = "examplepassword"; // TODO read from server.properties file (in server directory)
 
@@ -83,7 +83,7 @@ export class ObserverClient extends GenericClient {
   }
 
   requestStep(roomId: string, forced: boolean = true): Promise<void> {
-    Api.getLogger().log("ObserverClient", "requestStep", "Requesting next step for room with id " + roomId + "(forced=" + forced + ")");
+    Logger.getLogger().log("ObserverClient", "requestStep", "Requesting next step for room with id " + roomId + "(forced=" + forced + ")");
     return new Promise((res, rej) => {
       this.writeData(`<step roomId="${roomId}" forced="${forced}" />`);//Send request
       this.once('state', () => res()); //Wait for state

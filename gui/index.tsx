@@ -17,7 +17,7 @@ export function loadCSS(filename: string) {
 
 export function main() {
   window.addEventListener("beforeunload", () => {
-    Api.getServer().stop();
+    Api.stop();
   })
   render(
     <App />,

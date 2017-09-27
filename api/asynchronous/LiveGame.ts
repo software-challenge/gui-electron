@@ -1,16 +1,19 @@
 import { remote } from 'electron';
 import { GenericClient } from './GenericClient';
 import { ObserverClient, RoomReservation } from './ObserverClient';
-import { GameState, GameResult } from './HaseUndIgel';
-import { GameCreationOptions, PlayerType, StartType } from './GameCreationOptions';
-import { Api, ExecutableStatus, ConsoleMessage } from './Api';
+import { GameState, GameResult } from '../rules/HaseUndIgel';
+import { GameCreationOptions, PlayerType, StartType } from '../rules/GameCreationOptions';
+import { AsyncApi } from './AsyncApi';
+import { Logger as SC_Logger } from '../Logger';
+import { ConsoleMessage } from '../rules/ConsoleMessage';
+import { ExecutableStatus } from '../rules/ExecutableStatus';
 import { ExecutableClient } from './ExecutableClient';
 import { PlayerClientOptions } from './PlayerClient';
 import { HumanClient } from './HumanClient';
 import { EventEmitter } from "events";
-import { Helpers } from './Helpers';
-import { Game } from './Game';
-const dialog = remote.dialog;
+import { Helpers } from '../Helpers';
+import { Game } from '../rules/Game';
+//const dialog = remote.dialog;
 
 export class LiveGame extends Game {
   observer: ObserverClient;
@@ -23,7 +26,7 @@ export class LiveGame extends Game {
   constructor(gco: GameCreationOptions, name: string) {
     super(name);
     this.isReplay = false;
-    let Logger = Api.getLogger().focus("Game", "constructor");
+    let Logger = SC_Logger.getLogger().focus("Game", "constructor");
     Logger.log("Creating game " + name);
     Logger.log("Options: " + JSON.stringify(gco));
     let gameStartSuccessful;
@@ -34,7 +37,7 @@ export class LiveGame extends Game {
     setTimeout(() => gameStartError(`game didn't start after ${timeout}ms`), timeout);
     var construct = (async function () {
       //Register hook to go offline
-      Api.getServer().on('status', s => {
+      AsyncApi.getServer().on('status', s => {
         if (s == ExecutableStatus.Status.EXITED) {
           //Server exited.
           //Stop client processes, set game to not live
@@ -42,7 +45,7 @@ export class LiveGame extends Game {
         }
       });
       //Wait for server to start
-      await Api.getServer().ready;
+      await AsyncApi.getServer().ready;
 
       Logger.log("API Server is ready");
 
@@ -121,7 +124,7 @@ export class LiveGame extends Game {
               };
               this.messages.push(m);
               this.emit('message', m);
-              Api.getLogger().log("Livegame", "executableClient.on('stdout')", msg);
+              SC_Logger.getLogger().log("Livegame", "executableClient.on('stdout')", msg);
             });
 
             executableClient.on('stderr', msg => {
@@ -132,25 +135,26 @@ export class LiveGame extends Game {
               };
               this.messages.push(m);
               this.emit('message', m);
-              Api.getLogger().log("Livegame", "executableClient.on('stderr')", msg);
+              SC_Logger.getLogger().log("Livegame", "executableClient.on('stderr')", msg);
             });
             executableClient.on('error', msg => {
-              Api.getLogger().log("Livegame", "executableClient.on('error')", "got error: " + msg);
+              SC_Logger.getLogger().log("Livegame", "executableClient.on('error')", "got error: " + msg);
               gameStartError(`client "${name}" sent error: ${msg}`);
             })
 
             executableClient.on('status', s => {
-              Api.getLogger().log("Livegame", "executableClient.on('status')", "status changed to " + ExecutableStatus.toString(s));
+              SC_Logger.getLogger().log("Livegame", "executableClient.on('status')", "status changed to " + ExecutableStatus.toString(s));
               if (s == ExecutableStatus.Status.EXITED) {
                 if (this.is_live) {
-                  dialog.showErrorBox("Spielerstellung", "Client " + name + " hat sich beendet.");
+                  console.log("ERROR!"); //TODO: FIXME
+                  //dialog.showErrorBox("Spielerstellung", "Client " + name + " hat sich beendet.");
                   gameStartError(`client "${name}" exited.`);
                 }
               }
             })
             return executableClient;
           case "Human":
-            let humanClient = new HumanClient(name, Api.getViewer().ui, reservation)
+            let humanClient = new HumanClient(name, reservation)
             return humanClient;
           case "External":
             throw "TODO";

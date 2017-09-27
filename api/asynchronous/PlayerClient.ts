@@ -1,7 +1,7 @@
 import { GenericClient } from './GenericClient';
 import { Parser } from './Parser';
-import { Player, GameState } from './HaseUndIgel';
-import { Api } from './Api';
+import { Player, GameState } from '../rules/HaseUndIgel';
+import { Logger } from '../Logger';
 
 
 export class PlayerClientOptions {
@@ -27,10 +27,10 @@ export class GenericPlayer extends GenericClient {
 
   private async handleMessage(msg: string) {
     msg = msg.replace('<protocol>', ''); //Strip unmatched protocol tag. Really dirty hack, but a problem of the specification
-    Api.getLogger().log("GenericPlayer", "handleMessage", msg);
+    Logger.getLogger().log("GenericPlayer", "handleMessage", msg);
     //var decoded = await Parser.getJSONFromXML(msg);
     Parser.getJSONFromXML(msg).then(decoded => {
-      Api.getLogger().log("GenericPlayer", "handleMessage", JSON.stringify(decoded));
+      Logger.getLogger().log("GenericPlayer", "handleMessage", JSON.stringify(decoded));
       if (decoded.joined || !decoded.room || !decoded.room.data) {
         return; //Forgot that this happens
       }

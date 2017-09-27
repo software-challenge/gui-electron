@@ -5,7 +5,7 @@ import { Board } from './Components/Board';
 import { Player } from './Components/Player';
 import { Engine } from './Engine/Engine';
 import { UI } from './Engine/UI';
-import { GameState, PLAYERCOLOR } from '../api/HaseUndIgel';
+import { GameState, PLAYERCOLOR } from '../api/rules/HaseUndIgel';
 export class Viewer {
   //Path constants
   static PATH_PREFIX: string = "";

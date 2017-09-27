@@ -5,7 +5,9 @@ export type PlayerType =
   "External";
 
 export type StartType =
-  "Java" | "Direct";
+  "Java" | "Direct" | "Replay";
+
+//Note: to start a replay, set the first player start type to "Replay" and the firstPlathPath to the path of the replay file
 
 export class GameCreationOptions {
   firstPlayerType: PlayerType;
@@ -16,7 +18,8 @@ export class GameCreationOptions {
   secondPlayerPath: string;
   firstPlayerStartType: StartType;
   secondPlayerStartType: StartType;
-  constructor(firstPlayerType: PlayerType, firstPlayerName: string, firstPlayerPath: string, firstPlayerStartType: StartType, secondPlayerType: PlayerType, secondPlayerName: string, secondPlayerPath: string, secondPlayerStartType: StartType) {
+  gameName: string;
+  constructor(firstPlayerType: PlayerType, firstPlayerName: string, firstPlayerPath: string, firstPlayerStartType: StartType, secondPlayerType: PlayerType, secondPlayerName: string, secondPlayerPath: string, secondPlayerStartType: StartType, gameName: string) {
     this.firstPlayerType = firstPlayerType;
     this.firstPlayerName = firstPlayerName;
     this.firstPlayerPath = firstPlayerPath;
@@ -25,5 +28,13 @@ export class GameCreationOptions {
     this.secondPlayerName = secondPlayerName;
     this.secondPlayerPath = secondPlayerPath;
     this.secondPlayerStartType = secondPlayerStartType;
+  }
+
+  isValid(): boolean {
+    if (this.firstPlayerStartType == "Replay") {
+      return this.firstPlayerPath != null;
+    } else {
+      return true; //TODO: extend this
+    }
   }
 }

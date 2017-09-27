@@ -1,4 +1,4 @@
-import * as React from 'react';
+/*import * as React from 'react';
 import { Toolbar, Actionbar, Button, ButtonGroup, Window, Content, PaneGroup, Pane } from "react-photonkit";
 import { Api, ExecutableStatus } from '../api/Api';
 import { Server as SCServer, ServerEvent as SCServerEvent } from '../api/Server';
@@ -69,4 +69,4 @@ export default class Server extends React.Component<any, State> {
       </div>
     );
   }
-}
+}*/

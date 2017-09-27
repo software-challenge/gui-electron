@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Api, ConsoleMessage } from '../api/Api';
+import { Api } from '../api/Api';
 
 
 interface State {
-  messages: ConsoleMessage[];
+  messages: any//ConsoleMessage[];
 }
 
 export class LogConsole extends React.Component<{ game: string }, State> {
@@ -17,9 +17,9 @@ export class LogConsole extends React.Component<{ game: string }, State> {
   }
 
   componentDidMount() {
-    Api.getGameManager().getGame(this.props.game).on('message', m => this.setState((prev: State, props) => { prev.messages.push(m); return prev; }));
+    //Api.getGameManager().getGame(this.props.game).on('message', m => this.setState((prev: State, props) => { prev.messages.push(m); return prev; }));
     this.setState((prev, props) => {
-      prev.messages = Api.getGameManager().getGame(this.props.game).getMessages();
+      //prev.messages = Api.getGameManager().getGame(this.props.game).getMessages();
       return prev;
     });
   }

@@ -1,22 +1,21 @@
 import { remote } from 'electron';
-import { GameRuleLogic } from './HaseUndIgelGameRules';
+import { GameRuleLogic } from '../rules/HaseUndIgelGameRules';
 import { GameClient } from './LiveGame';
 import { GenericPlayer } from './PlayerClient';
 
-import { PLAYERCOLOR, Player, GameState, Action } from './HaseUndIgel';
+import { PLAYERCOLOR, Player, GameState, Action } from '../rules/HaseUndIgel';
 
-import { UI } from '../viewer/Engine/UI';
-const dialog = remote.dialog;
+import { AsyncApi } from './AsyncApi';
+
+//const dialog = remote.dialog;
 
 export class HumanClient extends GenericPlayer implements GameClient {
   color: PLAYERCOLOR;
-  private ui: UI;
   private state: GameState;
   private reservation: string;
   private roomId: string;
-  constructor(name: string, ui: UI, reservation: string) {
+  constructor(name: string, reservation: string) {
     super(name);
-    this.ui = ui;
     this.reservation = reservation;
     this.on('welcome', welcomeMessage => {
       console.log(name + " got welcome message: ", welcomeMessage)
@@ -26,7 +25,7 @@ export class HumanClient extends GenericPlayer implements GameClient {
     this.on('moverequest', this.handleMoveRequest);
     this.on('state', s => this.state = s);
     this.on('message', m => console.log("human: " + m));
-    this.on('error', error => dialog.showErrorBox("Fehler menschlicher Spieler", error));
+    //${__dirname}this.on('error', error => dialog.showErrorBox("Fehler menschlicher Spieler", error));
   }
 
   handleMoveRequest = async function () {
@@ -41,35 +40,42 @@ export class HumanClient extends GenericPlayer implements GameClient {
 
     while (interaction_type != "send") {
 
-      interaction_type = await this.ui.interact(actionState, this.color, move.length == 0);
+      AsyncApi.getAction(actionState, this.color, move.length == 0, (status, action) => {
+        interaction_type = status;
+
+        switch (interaction_type) {
+          case "action":
+            move.push(this.ui.chosenAction);
+            try {
+              this.ui.chosenAction.perform(actionState);
+            } catch (error) {
+              console.log("ERROR: " + error);
+              alert(error);
+              move.pop();
+              return; //aka continue;
+            }
+            if (!GameRuleLogic.mustPlayCard(actionState)) {
+              this.ui.enableSend();
+            }
+            break;
+          case "cancel":
+            move = [];
+            actionState = this.state.clone();
+            this.ui.disableCancel();
+            break;
+        }
+        if (move.length > 0) {
+          this.ui.enableCancel();
+        } else {
+          this.ui.disableSend();
+        }
 
 
-      switch (interaction_type) {
-        case "action":
-          move.push(this.ui.chosenAction);
-          try {
-            this.ui.chosenAction.perform(actionState);
-          } catch (error) {
-            console.log("ERROR: " + error);
-            alert(error);
-            move.pop();
-            continue;
-          }
-          if (!GameRuleLogic.mustPlayCard(actionState)) {
-            this.ui.enableSend();
-          }
-          break;
-        case "cancel":
-          move = [];
-          actionState = this.state.clone();
-          this.ui.disableCancel();
-          break;
-      }
-      if (move.length > 0) {
-        this.ui.enableCancel();
-      } else {
-        this.ui.disableSend();
-      }
+      });
+
+
+
+
     }
 
     //2. Send move

@@ -5,8 +5,8 @@ import { Board } from '../Components/Board';
 import { Field } from '../Components/Field';
 import * as events from 'events';
 
-import { GameState, GameResult, Player as SC_Player, PLAYERCOLOR, Card, Action } from '../../api/HaseUndIgel';
-import { GameRuleLogic } from '../../api/HaseUndIgelGameRules';
+import { GameState, GameResult, Player as SC_Player, PLAYERCOLOR, Card, Action } from '../../api/rules/HaseUndIgel';
+import { GameRuleLogic } from '../../api/rules/HaseUndIgelGameRules';
 import { Viewer } from '../Viewer';
 
 const INVISIBLE = 'invisible';

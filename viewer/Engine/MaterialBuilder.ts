@@ -2,7 +2,7 @@
 ///  <reference path="../../babylon-sky-material.d.ts" />
 
 import { Engine } from './Engine';
-import { FIELDTYPE, Board } from '../../api/HaseUndIgel';
+import { FIELDTYPE, Board } from '../../api/rules/HaseUndIgel';
 
 export class MaterialBuilder {
 

@@ -2,16 +2,16 @@ import { Api } from '../api/Api';
 import * as React from 'react';
 import * as electron from 'electron';
 import { remote } from 'electron';
-import Server from './Server';
 import { Content } from "react-photonkit";
 import { Window, Toolbar, ToolbarActions, ButtonGroup, PaneGroup, Sidebar, RetractableSidebar, Pane, NavGroup, NavTitle, NavItem, Button } from './photon-fix/Components';
 import { UnicodeIcon } from './generic-components/Components';
 import { Administration } from './Administration';
 import { GameCreation } from './GameCreation';
 import * as cp from 'child_process';
-import { GameCreationOptions } from '../api/GameCreationOptions';
+import { GameCreationOptions } from '../api/rules/GameCreationOptions';
 import { Game } from './Game';
 import { LogConsole } from './LogConsole';
+import { Logger } from '../api/Logger';
 
 const dialog = remote.dialog;
 const shell = remote.shell;
@@ -100,7 +100,22 @@ export class App extends React.Component<any, State> {
         if (filenames && filenames.length > 0 && filenames[0]) {
           //window.localStorage[localStorageProgramPath] = filenames[0];
           console.log("Attempting to load " + filenames[0])
-          this.switchToKnownGame(Api.getGameManager().getGameNameFromReplayPath(filenames[0]));
+          var liofs = filenames[0].lastIndexOf('/');
+          if (liofs == -1) {
+            liofs = filenames[0].lastIndexOf('\\');
+          }
+          var replayName = filenames[0];
+          if (liofs != -1) {
+            replayName = replayName.substring(liofs + 1);
+          }
+          var liofp = replayName.lastIndexOf('.');
+          if (liofp != -1) {
+            replayName = replayName.substring(0, liofp);
+          }
+          let gco = new GameCreationOptions(null, null, filenames[0], "Replay", null, null, null, null, replayName);
+          Api.getGameManager().createGame(gco, name => {
+            this.switchToKnownGame(name);
+          });
         }
       }
     );
@@ -113,9 +128,10 @@ export class App extends React.Component<any, State> {
     while (Api.getGameManager().hasGame(gameName)) {
       gameName = baseName + " (" + counter + ")";
     }
-    Api.getLogger().log('App', 'startGameWithOptions', 'starting game with options: ' + JSON.stringify(o));
-    let game = Api.getGameManager().createLiveGame(o, gameName);
-    this.switchToKnownGame(gameName);
+    Logger.getLogger().log('App', 'startGameWithOptions', 'starting game with options: ' + JSON.stringify(o));
+    Api.getGameManager().createGame(o, name => {
+      this.switchToKnownGame(gameName);
+    });
   }
 
   private openHelp() {
@@ -123,7 +139,7 @@ export class App extends React.Component<any, State> {
   }
 
   private openLogFile() {
-    let path = Api.getLogger().getLogFilePath()
+    let path = Logger.getLogger().getLogFilePath()
     if (path) {
       shell.openItem(path);
     } else {

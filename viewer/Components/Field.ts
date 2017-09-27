@@ -1,7 +1,7 @@
 import { Component } from './Component';
 import { Engine } from '../Engine/Engine';
 import { MaterialBuilder } from '../Engine/MaterialBuilder';
-import { FIELDTYPE, Board } from '../../api/HaseUndIgel';
+import { FIELDTYPE, Board } from '../../api/rules/HaseUndIgel';
 
 export class Field implements Component {
   private mesh: BABYLON.Mesh;

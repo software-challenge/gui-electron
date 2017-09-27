@@ -1,6 +1,6 @@
 import { GenericPlayer } from './PlayerClient';
 
-import { GameState, Player, PLAYERCOLOR } from './HaseUndIgel';
+import { GameState, Player, PLAYERCOLOR } from '../rules/HaseUndIgel';
 
 export class SimpleClient extends GenericPlayer {
   state: GameState;

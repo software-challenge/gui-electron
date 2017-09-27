@@ -1,15 +1,15 @@
 import { remote } from 'electron';
-import { GameState } from '../api/HaseUndIgel';
+import { GameState } from '../api/rules/HaseUndIgel';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { ProgressBar } from './ProgressBar';
 import { Viewer } from '../viewer/Viewer';
-import { GameCreationOptions } from '../api/GameCreationOptions';
-import { Game as SC_Game } from '../api/Game';
-import { LiveGame } from '../api/LiveGame';
+import { GameCreationOptions } from '../api/rules/GameCreationOptions';
+import { GameInfo } from '../api/synchronous/GameInfo';
 import { Api } from '../api/Api';
-import { ConsoleMessage } from '../api/Api';
+import { ConsoleMessage } from '../api/rules/ConsoleMessage';
 import { loadCSS } from './index';
+import { Logger } from '../api/Logger';
 
 const dialog = remote.dialog;
 
@@ -35,7 +35,7 @@ export class Game extends React.Component<{ name: string }, State> {
   private viewer: Viewer;
   private elem: Element;
   private elemSet: boolean;
-  private game: SC_Game;
+  private game: GameInfo;
   private mounted: boolean;
 
   private viewerState: ViewerState;
@@ -74,7 +74,7 @@ export class Game extends React.Component<{ name: string }, State> {
           console.log("error creating game!");
           dialog.showErrorBox("Spielerstellung", "Fehler beim Erstellen des Spiels!");
           this.viewer.fatalGameError("Es ist ein Fehler aufgetreten. Nähere Informationen im Log.");
-          Api.getLogger().log("Game", "init", msg || "no further details");
+          Logger.getLogger().log("Game", "init", msg || "no further details");
         });
         await this.game.ready;
         this.displayTurn(this.game.currentDisplayState, false);
@@ -82,7 +82,7 @@ export class Game extends React.Component<{ name: string }, State> {
 
       init();
 
-      this.game.on('state_update', () => { if (this.mounted) { this.updateProgress() } });
+      //this.game.on('state_update', () => { if (this.mounted) { this.updateProgress() } }); DO DIFFERENTLY
     }
   }
 
@@ -104,7 +104,7 @@ export class Game extends React.Component<{ name: string }, State> {
     }
     if (this.viewerState == ViewerState.idle) {//Can only display a turn if not currently playing
       this.viewerState = ViewerState.waiting;//Set state to waiting to block other concurrent requests
-      this.game.getState(turn).then(s => {//Request turn, then when turn is there
+      /*this.game.getState(turn).then(s => {//Request turn, then when turn is there
         //1. Find out if render should be animated
         if (animated) {
           animated = turn > this.state.currentTurn;
@@ -126,15 +126,15 @@ export class Game extends React.Component<{ name: string }, State> {
         this.viewerState = ViewerState.render;
         this.viewer.render(s, animated, () => {
           this.viewerState = ViewerState.idle; //When done rendering, the next turn may come in
-          this.game.currentDisplayState = turn;
+          Api.getGameManager().setCurrentDisplayStateOnGame(this.game.name, turn);
         });
 
-      });
+      });*/
     }
   }
 
   next() {
-    if (!this.game.isLastState(this.state.currentTurn)) {
+    /*if (!this.game.isLastState(this.state.currentTurn)) {
       this.displayTurn(this.state.currentTurn + 1);
     } else {
       if (this.isPlaying()) {
@@ -142,7 +142,7 @@ export class Game extends React.Component<{ name: string }, State> {
       } else {
         console.log("End reached.");
       }
-    }
+    }*/
   }
 
   previous() {
@@ -180,7 +180,7 @@ export class Game extends React.Component<{ name: string }, State> {
   }
 
   setCurrentState(state: GameState) {
-    let n = this.game.getStateNumber(state);
+    /*let n = this.game.getStateNumber(state);
     if (n != -1) {
       this.setState((prev, _props) => {
         prev.currentTurn = n;
@@ -189,24 +189,25 @@ export class Game extends React.Component<{ name: string }, State> {
       this.updateProgress();
     } else {
       console.log("did not find state ", state)
-    }
+    }*/
   }
 
   currentStateCount() {
-    if (this.game) {
+    return 0;
+    /*if (this.game) {
       return this.game.getStateCount();
     } else {
       return 0
-    }
+    }*/
   }
 
   updateProgress() {
-    if (this.currentStateCount() != this.state.turnCount) {
+    /*if (this.currentStateCount() != this.state.turnCount) {
       this.setState((prev, _props) => {
         prev.turnCount = this.currentStateCount();
         return prev;
       });
-    }
+    }*/
   }
 
   handleSpeedChange(event) {
@@ -219,7 +220,7 @@ export class Game extends React.Component<{ name: string }, State> {
   }
 
   saveReplay() {
-    if (this.game instanceof LiveGame) {
+    /*if (this.game instanceof LiveGame) {
       dialog.showSaveDialog(
         {
           title: "Wähle einen Ort zum Speichern des Replays",
@@ -237,7 +238,7 @@ export class Game extends React.Component<{ name: string }, State> {
           }
         }
       );
-    }
+    }*/
   }
 
 

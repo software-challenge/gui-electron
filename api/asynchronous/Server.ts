@@ -1,6 +1,7 @@
 ///<references path="../../node_modules/@types/node/index.d.ts" />
-import { ExecutableStatus, Api } from './Api';
-import { Helpers } from './Helpers';
+import { ExecutableStatus } from '../rules/ExecutableStatus';
+import { Helpers } from '../Helpers';
+import { Logger } from '../Logger';
 
 //import * as events from "events"
 import { EventEmitter } from "events";
@@ -47,7 +48,7 @@ export class Server extends EventEmitter {
     this.ready = new Promise((resolve, reject) => {
       try {
         this.on("stdout", s => {
-          Api.getLogger().log("server", "stdout", s);
+          Logger.getLogger().log("server", "stdout", s);
           if (/ClientManager running/.test(s)) {
             Helpers.log("Server ready");
             resolve();
@@ -73,7 +74,7 @@ export class Server extends EventEmitter {
     this.events = [];
     this.stop();
     console.log("Starting server (server should reside in ./server directory)");
-    this.process = spawn('java', ['-jar', SERVER_NAME], { cwd: path.join(remote.app.getAppPath(), SERVER_CWD) });
+    this.process = spawn('java', ['-jar', SERVER_NAME], { cwd: path.join(__dirname, SERVER_CWD) });
     this.setStatus(ExecutableStatus.Status.RUNNING);
     this.process.stdout.on('data', (data) => {
       // XXX

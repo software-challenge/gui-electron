@@ -5,7 +5,7 @@ import { Field } from './Field.js';
 import { Grid } from './Grid.js';
 import { Player } from './Player.js';
 
-import { Board as SC_Board } from '../../api/HaseUndIgel';
+import { Board as SC_Board } from '../../api/rules/HaseUndIgel';
 
 export class Board implements Component {
   grid: Grid;

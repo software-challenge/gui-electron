@@ -1,5 +1,5 @@
-import { Game } from './Game';
-import { GameState, GameResult } from './HaseUndIgel';
+import { Game } from '../rules/Game';
+import { GameState, GameResult } from '../rules/HaseUndIgel';
 import { Parser } from './Parser';
 
 export class Replay extends Game {

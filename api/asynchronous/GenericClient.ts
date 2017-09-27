@@ -2,9 +2,9 @@
 ///<references path="../../node_modules/@types/sax/index.d.ts" />
 const net = require('net');
 import * as events from "events"
-import { Helpers } from './Helpers';
+import { Helpers } from '../Helpers';
 import { SAXParser } from 'sax';
-import { Api } from './Api';
+import { Logger } from '../Logger';
 
 const SERVER_PORT = 13050;
 
@@ -54,7 +54,7 @@ export class GenericClient extends events.EventEmitter {
       }
       if (this.messageComplete()) {
         var msg = this.dataSoFar.substring(this.firstTagPosition - this.offset, this.parser.position - this.offset);
-        Api.getLogger().log(this.name ? this.name : "GenericClient", "emitMessage", msg);
+        Logger.getLogger().log(this.name ? this.name : "GenericClient", "emitMessage", msg);
         this.emit('message', msg);
         var nextStart = this.parser.position - this.offset;
         this.offset = this.parser.position;
@@ -68,7 +68,7 @@ export class GenericClient extends events.EventEmitter {
       this.currentData = data;
       this.dataSoFar += data;
       this.parser.write(this.currentData);
-      Api.getLogger().log(this.name ? this.name : "GenericClient", "receiveData", data);
+      Logger.getLogger().log(this.name ? this.name : "GenericClient", "receiveData", data);
     });
     this.clientSocket.on('end', () => {
       this.setStatus(ClientStatus.Status.DISCONNECTED);
@@ -84,7 +84,7 @@ export class GenericClient extends events.EventEmitter {
   }
 
   writeData(data: string, callback?: () => void) {
-    Api.getLogger().log(this.name ? this.name : "GenericClient", "writeData", data);
+    Logger.getLogger().log(this.name ? this.name : "GenericClient", "writeData", data);
     this.clientSocket.write(data, callback);
   }
 

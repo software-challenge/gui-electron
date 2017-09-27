@@ -1,9 +1,8 @@
 import { EventEmitter } from 'events';
 import { GameState, GameResult } from './HaseUndIgel'
-import { ConsoleMessage } from './Api';
+import { ConsoleMessage } from './ConsoleMessage';
 
 export abstract class Game extends EventEmitter {
-  currentDisplayState: number;
   name: string;
   gameStates: GameState[] = [];
   gameResult: GameResult;
@@ -17,7 +16,6 @@ export abstract class Game extends EventEmitter {
   constructor(name: string) {
     super();
     this.name = name;
-    this.currentDisplayState = 0;
   }
 
   getStateCount(): number {

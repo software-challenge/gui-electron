@@ -1,8 +1,8 @@
 import { GameClient } from './LiveGame';
-import { ExecutableStatus } from './Api';
+import { ExecutableStatus } from '../rules/ExecutableStatus';
 import * as child_process from 'child_process';
 import { EventEmitter } from "events";
-import { Api } from './Api';
+import { Logger } from '../Logger';
 
 const pathLib = require('path');
 
@@ -37,7 +37,7 @@ export class ExecutableClient extends EventEmitter implements GameClient {
   start(): Promise<void> {
     this.ready = new Promise((res, rej) => {
       console.log("Starting", this.program, this.arguments)
-      Api.getLogger().log("ExecutableClient", "spawn", `${this.program} ${this.arguments.join(' ')} (cwd: ${this.workingDirectory})`);
+      Logger.getLogger().log("ExecutableClient", "spawn", `${this.program} ${this.arguments.join(' ')} (cwd: ${this.workingDirectory})`);
       let options = {
         cwd: this.workingDirectory,
         shell: false /* do not set to true, security risk! */

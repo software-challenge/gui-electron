@@ -10,6 +10,7 @@ export class GameState {
   startPlayer: PLAYERCOLOR;
   currentPlayer: PLAYERCOLOR;
   board: Board;
+  has_result: boolean;
   //  lastMove: TODO
 
   constructor() {
@@ -19,6 +20,7 @@ export class GameState {
     this.currentPlayer = Player.COLOR.RED;
     this.turn = 0;
     this.board = new Board();
+    this.has_result = false;
   }
 
   static fromJSON(json: any): GameState {
@@ -40,6 +42,7 @@ export class GameState {
     clone.red = this.red.clone();
     clone.blue = this.blue.clone();
     clone.board = this.board.clone();
+    clone.has_result = this.has_result;
     return clone;
   }
 
