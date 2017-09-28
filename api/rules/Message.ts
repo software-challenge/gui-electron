@@ -3,7 +3,7 @@ import { GameState, Action } from './HaseUndIgel';
 import { GameStatus } from './GameStatus';
 
 export class Message {
-  message_type: "start game" | "get state" | "report status" | "send move" | "game started" | "gamestate" | "status report" | "move sent" | "stop";
+  message_type: "start game" | "get state" | "report status" | "send move" | "game started" | "gamestate" | "status report" | "move sent" | "stop" | "stopped" | "error";
   gameName: string;
   message_content: any;
 }

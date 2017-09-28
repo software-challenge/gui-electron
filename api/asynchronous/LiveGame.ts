@@ -21,6 +21,7 @@ export class LiveGame extends Game {
   client2: GameClient;
   private is_live: boolean;
   private roomId: string;
+  needsInput: boolean;
 
 
   constructor(gco: GameCreationOptions, name: string) {
