@@ -84,10 +84,12 @@ export class AsyncGameManager {
                 report_status_response.message_content.actionRequest = tar;
               } else { //Game is live, but doesn't require input
                 report_status_response.message_content.gameStatus = "RUNNING";
+                report_status_response.message_content.numberOfStates = game.getStateCount();
               }
             } else {//Game has finished
               report_status_response.message_content.gameStatus = "FINISHED";
               report_status_response.message_content.gameResult = lg.getResult();
+              report_status_response.message_content.numberOfStates = game.getStateCount();
             }
           }
           process.send(report_status_response);

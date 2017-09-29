@@ -108,6 +108,9 @@ export class Game extends React.Component<{ name: string }, State> {
         console.log(this.props.name, state_number);
         //4. if current state == last state in game
         if (state_number == (status.numberOfStates - 1)) {
+          if ((status.gameStatus == "FINISHED" || status.gameStatus == "REPLAY") && status.gameResult) {
+            this.viewer.ui.showEndscreen(status.gameResult);
+          }
           //4.1. if needs_input, interact, until needs_input no more
           if (status.gameStatus == "REQUIRES INPUT") {
             console.log("Requires input");
@@ -139,60 +142,38 @@ export class Game extends React.Component<{ name: string }, State> {
     }
   }
 
-  displayTurn(turn: number, animated = true) {
-    console.log("Requested display of turn " + turn);
-    if (turn > 62) {
-      turn = 62;
-    }
-    if (turn < 0) {
-      turn = 0;
-    }
-    if (this.viewerState == ViewerState.idle) {//Can only display a turn if not currently playing
-      this.viewerState = ViewerState.waiting;//Set state to waiting to block other concurrent requests
-      /*this.game.getState(turn).then(s => {//Request turn, then when turn is there
-        //1. Find out if render should be animated
-        if (animated) {
-          animated = turn > this.state.currentTurn;
-        }
-        //2. Update global turn state and progress bar
-        this.setState((prev, _props) => {
-          prev.currentTurn = turn;
-          return prev;
-        });
-        this.updateProgress();
-        //3. Show end screen if possible
-        if (this.game.stateHasResult(turn)) {
-          console.log(`Turn ${turn} has endscreen`);
-          this.viewer.ui.showEndscreen(this.game.getResult());
-        } else {
-          this.viewer.ui.hideEndscreen();
-        }
-        //4. start render
-        this.viewerState = ViewerState.render;
-        this.viewer.render(s, animated, () => {
-          this.viewerState = ViewerState.idle; //When done rendering, the next turn may come in
-          Api.getGameManager().setCurrentDisplayStateOnGame(this.game.name, turn);
-        });
-
-      });*/
-    }
-  }
-
   next() {
-    /*if (!this.game.isLastState(this.state.currentTurn)) {
-      this.displayTurn(this.state.currentTurn + 1);
-    } else {
-      if (this.isPlaying()) {
-        this.playPause();
-      } else {
-        console.log("End reached.");
-      }
-    }*/
+    if (!this.update_running) {
+      //1. Get a Status report
+      Api.getGameManager().getGameStatus(this.props.name, (status) => {
+        //2. if current_state + 1 <= number of states in game
+        var current_state = Api.getGameManager().getCurrentDisplayStateOnGame(this.props.name);
+        if (current_state + 1 <= (status.numberOfStates - 1)) {
+          //2.1 set current state to current state + 1 in game manager
+          Api.getGameManager().setCurrentDisplayStateOnGame(this.props.name, current_state + 1);
+          //2.2 update progress
+          this.update_progress();
+        } else {
+          if (this.isPlaying()) {
+            this.playPause();
+          } else {
+            console.log("End reached.");
+          }
+        }
+      });
+    }
   }
 
   previous() {
-    if (this.state.currentTurn > 0) {
-      this.displayTurn(this.state.currentTurn - 1);
+    if (!this.update_running) {
+      //1. if current state > 0
+      var current_state = Api.getGameManager().getCurrentDisplayStateOnGame(this.props.name);
+      if (current_state > 0) {
+        //1.1 set current state to current state -1 in game manager
+        Api.getGameManager().setCurrentDisplayStateOnGame(this.props.name, current_state - 1);
+        //1.2 update progress
+        this.update_progress();
+      }
     }
   }
 
@@ -261,6 +242,10 @@ export class Game extends React.Component<{ name: string }, State> {
       this.activatePlayback(prev);
       return prev;
     })
+  }
+
+  displayTurn(turn: number) {
+    alert('not implemented yet');
   }
 
   saveReplay() {

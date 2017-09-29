@@ -10,7 +10,7 @@ import path = require("path");
 
 //const EventEmitter: NodeJS.EventEmitter = require('events');
 
-const SERVER_CWD = "server"; // naked directory name
+const SERVER_CWD = "../../../server"; // naked directory name
 const SERVER_NAME = "softwarechallenge-server.jar"
 
 import { spawn } from 'child_process';
@@ -43,6 +43,7 @@ export class Server extends EventEmitter {
 
   constructor(autostart: boolean = true) {
     super();
+    console.log('__dirname ' + __dirname);
     this.status = ExecutableStatus.Status.NOT_STARTED;
 
     this.ready = new Promise((resolve, reject) => {
