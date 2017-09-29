@@ -127,7 +127,7 @@ export class Viewer {
   }
 
   seekAndRender(state: GameState, animated: boolean = true) {
-    this.gameFrame.setCurrentState(state);
+    //this.gameFrame.setCurrentState(state); //TODO FIXME
     this.render(state, animated);
   }
 
