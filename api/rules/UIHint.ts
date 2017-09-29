@@ -1,0 +1,1 @@
+export type UIHint = "enable send" | "disable send" | "enable cancel" | "disable cancel";

@@ -20,8 +20,8 @@ export class LiveGame extends Game {
   client1: GameClient;
   client2: GameClient;
   private is_live: boolean;
+  private has_finished: boolean;
   private roomId: string;
-  needsInput: boolean;
 
 
   constructor(gco: GameCreationOptions, name: string) {
@@ -155,7 +155,7 @@ export class LiveGame extends Game {
             })
             return executableClient;
           case "Human":
-            let humanClient = new HumanClient(name, reservation)
+            let humanClient = new HumanClient(name, reservation, this)
             return humanClient;
           case "External":
             throw "TODO";
@@ -182,7 +182,7 @@ export class LiveGame extends Game {
   /**
    * Returns true, if the game is currently running
    */
-  getLive(): boolean {
+  isLive(): boolean {
     return this.is_live;
   }
 

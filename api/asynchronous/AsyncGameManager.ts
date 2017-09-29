@@ -5,6 +5,7 @@ import { LiveGame } from './LiveGame';
 import { Replay } from './Replay';
 import { AsyncApi } from './AsyncApi';
 import { GameStatus } from '../rules/GameStatus';
+import { TransferableActionRequest } from '../rules/TransferableActionRequest';
 
 export class AsyncGameManager {
   private games: Map<string, Game>;
@@ -48,20 +49,41 @@ export class AsyncGameManager {
         process.send(start_game_response_message);
         break;
 
-      case "report status":
-        if (this.games.has(m.gameName)) {
-          let game = this.games.get(m.gameName);
+      case "report status": //Get the current state of a game
+        if (this.games.has(m.gameName)) {//check if this game even exists
+          let game: any = this.games.get(m.gameName);//Fetch game, prepare answer
           let report_status_response = new Message();
           report_status_response.gameName = m.gameName;
           report_status_response.message_type = "status report";
           report_status_response.message_content = new MessageContent.StatusReportContent();
-          if (game.isReplay) {
-            report_status_response.message_content.gameStatus = "FINISHED";
-          } else {
-            //TODO
+          if (game.isReplay) {//Game is a replay, all states should be loaded, report so
+            report_status_response.message_content.gameStatus = "REPLAY";
+            report_status_response.message_content.gameResult = game.getResult();
+            report_status_response.message_content.numberOfStates = game.getStateCount();
+          } else {//Game is a live game and might or might not be finished, let's find out
+            let lg: LiveGame = game;
+            if (lg.isLive()) {
+              if (AsyncApi.hasActionRequest(m.gameName)) {//If there's an action request currently lodged with the API
+                report_status_response.message_content.gameStatus = "REQUIRES INPUT";
+                var [id, ar] = AsyncApi.getActionRequest(m.gameName);//Get the request and assemble the response. We can request this ActionRequest many times, but only redeem it once
+                var tar: TransferableActionRequest = {
+                  color: ar.color,
+                  isFirstAction: ar.isFirstAction,
+                  state: ar.state,
+                  uiHints: ar.uiHints,
+                  id: id
+                }
+                report_status_response.message_content.actionRequest = tar;
+              } else { //Game is live, but doesn't require input
+                report_status_response.message_content.gameStatus = "RUNNING";
+              }
+            } else {//Game has finished
+              report_status_response.message_content.gameStatus = "FINISHED";
+              report_status_response.message_content.gameResult = lg.getResult();
+            }
           }
           process.send(report_status_response);
-        } else {
+        } else {//We don't have this game
           let get_status_error_response = new Message();
           get_status_error_response.message_type = "error";
           get_status_error_response.message_content = "Tried to get status for game " + m.gameName + " but that game was not in memory";
@@ -85,6 +107,22 @@ export class AsyncGameManager {
           get_state_error_response.message_type = "error";
           get_state_error_response.message_content = "Tried to get state for game " + m.gameName + " but that game was not in memory";
           process.send(get_state_error_response);
+        }
+        break;
+
+      case "send action":
+        let action_content = MessageContent.SendActionContent = m.message_content;
+        if (this.games.has(m.gameName)) {
+          AsyncApi.redeemActionRequest(m.gameName, action_content.id, action_content.method, action_content.action);
+          let send_action_response = new Message();
+          send_action_response.gameName = m.gameName;
+          send_action_response.message_type = "action sent";
+          process.send(send_action_response);
+        } else {
+          let error_response = new Message();
+          error_response.message_type = "error";
+          error_response.message_content = "Tried to send action for game " + m.gameName + ", request id " + action_content.id + " but that game was not in memory";
+          process.send(error_response);
         }
         break;
     }

@@ -1,9 +1,15 @@
 import { GameCreationOptions } from './GameCreationOptions';
-import { GameState, Action } from './HaseUndIgel';
+import { GameState, Action, GameResult } from './HaseUndIgel';
 import { GameStatus } from './GameStatus';
+import { UIHint } from './UIHint';
+import { TransferableActionRequest } from './TransferableActionRequest';
+import { ActionMethod } from './ActionMethod';
+
+type request_type = "list games" | "start game" | "get state" | "report status" | "send action" | "stop";
+type response_type = "games list" | "game started" | "gamestate" | "status report" | "action sent" | "stopped" | "error";
 
 export class Message {
-  message_type: "start game" | "get state" | "report status" | "send move" | "game started" | "gamestate" | "status report" | "move sent" | "stop" | "stopped" | "error";
+  message_type: request_type | response_type;
   gameName: string;
   message_content: any;
 }
@@ -19,8 +25,10 @@ export module MessageContent {
     turn: number;
   }
 
-  export class SendMoveContent implements MessageContentInterface {
-    move: Action[];
+  export class SendActionContent implements MessageContentInterface {
+    action?: Action;
+    actionMethod: ActionMethod;
+    id: number;
   }
 
   export class GameStateContent implements MessageContentInterface {
@@ -29,5 +37,12 @@ export module MessageContent {
 
   export class StatusReportContent implements MessageContentInterface {
     gameStatus: GameStatus;
+    actionRequest?: TransferableActionRequest;
+    gameResult: GameResult;
+    numberOfStates: number;
+  }
+
+  export class GamesListContent implements MessageContentInterface {
+    gameNames: string[];
   }
 }
