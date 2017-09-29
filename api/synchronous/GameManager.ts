@@ -6,12 +6,20 @@ import { GameState } from '../rules/HaseUndIgel';
 
 export class GameManager {
   private gmwi: GameManagerWorkerInterface;
+
+  private bufferedGameTitles: string[] = [];
+
   private games: GameInfo[] = [];
 
   constructor() {
     this.gmwi = new GameManagerWorkerInterface();
   }
 
+  /**
+   * Creates a game with the given options, then calls the callback
+   * @param options 
+   * @param callback 
+   */
   public createGame(options: GameCreationOptions, callback: (gameName: string) => void) {
     this.gmwi.createGameWithOptions(options, name => {
       var gi = new GameInfo(name);
@@ -21,28 +29,48 @@ export class GameManager {
     });
   }
 
-  public getGame(name: string): GameInfo {
+  private getGame(name: string): GameInfo {
     let games = this.games.filter(game => game.name == name);
     if (games.length > 0) {
       return games[0];
     }
   }
 
-  public getState(gameName: string, turn: number, callback: (s: GameState) => void) {
+  private getState(gameName: string, turn: number, callback: (s: GameState) => void) {
     this.gmwi.getState(gameName, turn, state => {
       callback(state);
     });
   }
 
-  public getGameTitles(): string[] {
-    return this.games.map(g => g.name);
+  /**
+   * Requests a fresh list of games from the worker, updates the buffered list and calls the callback
+   * @param callback 
+   */
+  private getListOfGames(callback?: (games_list) => void) {
+    this.gmwi.getListOfGames(games_list => {
+      this.bufferedGameTitles = games_list;
+      if (callback) {
+        callback(games_list);
+      }
+    });
   }
 
-  public hasGame(name: string): boolean {
-    return this.games.some(g => g.name == name);
+  /**
+   * Returns a buffered list of game titles from the last time 
+   */
+  public getBufferedGameTitles(): string[] {
+    this.getListOfGames();
+    return this.bufferedGameTitles;
   }
 
-  public isReplay(name: string) {
+  public hasGame(name: string, callback: (has_game: boolean) => void) {
+    this.getListOfGames(games_list => {
+      this.bufferedGameTitles = games_list;
+      callback(games_list.includes(name));
+    })
+  }
+
+  private isReplay(name: string) {
     var g = this.getGame(name);
     return g && g.isReplay;
   }
@@ -57,14 +85,14 @@ export class GameManager {
     }
   }*/
 
-  public setCurrentDisplayStateOnGame(name: string, state: number) {
+  private setCurrentDisplayStateOnGame(name: string, state: number) {
     var g = this.getGame(name);
     if (g) {
       g.currentTurn = state;
     }
   }
 
-  public getCurrentDisplayStateOnGame(name: string) {
+  private getCurrentDisplayStateOnGame(name: string) {
     var g = this.getGame(name);
     if (g) {
       return g.currentTurn;

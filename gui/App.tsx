@@ -125,13 +125,24 @@ export class App extends React.Component<any, State> {
     let baseName = o.firstPlayerName + " vs " + o.secondPlayerName;
     let counter = 2;
     let gameName = baseName;
-    while (Api.getGameManager().hasGame(gameName)) {
-      gameName = baseName + " (" + counter + ")";
+
+    let tryStart = (options, basename, counter) => {
+      let name = counter < 2 ? basename : basename + ' (' + counter + ')';
+      Api.getGameManager().hasGame(name, (has_game) => {
+        if (!has_game) {
+          Api.getGameManager().createGame(o, name => {
+            this.switchToKnownGame(gameName);
+          });
+        } else {
+          tryStart(options, basename, counter + 1);
+        }
+      });
     }
+
+    tryStart(o, baseName, 1);
+
     Logger.getLogger().log('App', 'startGameWithOptions', 'starting game with options: ' + JSON.stringify(o));
-    Api.getGameManager().createGame(o, name => {
-      this.switchToKnownGame(gameName);
-    });
+
   }
 
   private openHelp() {
@@ -148,6 +159,8 @@ export class App extends React.Component<any, State> {
   }
 
   changeGameName(e) {
+    alert('Currently not implemented');
+    /*
     if (e.keyCode == 13) {
       e.preventDefault();
       var newGameName = document.getElementById('gameName').innerText.trim();
@@ -159,7 +172,7 @@ export class App extends React.Component<any, State> {
         prev.activeGame = newGameName;
         return prev;
       });
-    }
+    }*/
   }
 
   render() {
@@ -188,6 +201,7 @@ export class App extends React.Component<any, State> {
         break;
     }
 
+    //TODO: Fix renaming
     return (
       <Window>
         <Toolbar>
@@ -195,7 +209,7 @@ export class App extends React.Component<any, State> {
             <ButtonGroup>
               <Button icon="menu" onClick={() => { this.toggleMenu() }} active={!this.state.menuRetracted} />
             </ButtonGroup>
-            {this.state.contentState == AppContent.GameLive ? <span id="gameName" contentEditable={!Api.getGameManager().isReplay(this.state.activeGame)} onKeyDown={this.changeGameName.bind(this)}></span> : null}
+            {this.state.contentState == AppContent.GameLive ? <span id="gameName" contentEditable={/*!Api.getGameManager().isReplay(this.state.activeGame)*/ false} onKeyDown={this.changeGameName.bind(this)}></span> : null}
             <Button icon="doc-text" onClick={() => { this.toggleConsole() }} pullRight={true} />
           </ToolbarActions>
         </Toolbar>
@@ -210,7 +224,7 @@ export class App extends React.Component<any, State> {
                 <NavItem onClick={() => this.loadReplay()}>
                   <UnicodeIcon icon="↥" />Replay laden
                 </NavItem>
-                {Api.getGameManager().getGameTitles().map(
+                {Api.getGameManager().getBufferedGameTitles().map(
                   t => (<NavItem onClick={() => this.switchToKnownGame(t)} active={this.state.contentState == AppContent.GameLive && this.state.activeGame == t}>
                     <UnicodeIcon icon="🎳" />{t} </NavItem>
                   ))}
