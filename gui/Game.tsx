@@ -96,35 +96,39 @@ export class Game extends React.Component<{ name: string }, State> {
   }
 
   private update_progress() {
-    this.update_running = true;
+    if (!this.update_running) {
+      this.update_running = true;
 
-    //1. Get a Status report
-    Api.getGameManager().getGameStatus(this.props.name, (status) => {
-      //2. Update progress bar based on said report
-      this.setStateCount(status.numberOfStates);
-      //3. get current state from game manager
-      var state_number = Api.getGameManager().getCurrentDisplayStateOnGame(this.props.name);
-      //4. if current state == last state in game
-      if (state_number == (status.numberOfStates - 1)) {
-        //4.1. if needs_input, interact, until needs_input no more
-        if (status.gameStatus == "REQUIRES INPUT") {
-          this.viewer.ui.interact(status.actionRequest.state, status.actionRequest.color, status.actionRequest.isFirstAction, (method, action) => {
-            Api.getGameManager().sendAction(this.props.name, status.actionRequest.id, method, action, (() => {
-              this.update_progress();
-            }).bind(this));
-          });
+      //1. Get a Status report
+      Api.getGameManager().getGameStatus(this.props.name, (status) => {
+        //2. Update progress bar based on said report
+        this.setStateCount(status.numberOfStates);
+        //3. get current state from game manager
+        var state_number = Api.getGameManager().getCurrentDisplayStateOnGame(this.props.name);
+        console.log(this.props.name, state_number);
+        //4. if current state == last state in game
+        if (state_number == (status.numberOfStates - 1)) {
+          //4.1. if needs_input, interact, until needs_input no more
+          if (status.gameStatus == "REQUIRES INPUT") {
+            console.log("Requires input");
+            this.viewer.ui.interact(status.actionRequest.state, status.actionRequest.color, status.actionRequest.isFirstAction, (method, action) => {
+              Api.getGameManager().sendAction(this.props.name, status.actionRequest.id, method, action, (() => {
+                this.update_progress();
+              }).bind(this));
+            });
+          }
         }
-      }
-      //5. get_state for that state
-      Api.getGameManager().getGameState(this.props.name, state_number, (gameState) => {
-        //6. render state
-        this.viewer.render(gameState, true, () => {
-          this.update_running = false;
-        })
+        //5. get_state for that state
+        console.log("Requesting state " + state_number);
+        Api.getGameManager().getGameState(this.props.name, state_number, (gameState) => {
+          //6. render state
+          this.viewer.render(gameState, true, () => {
+            this.update_running = false;
+          })
+        });
       });
-    });
 
-
+    }
   }
 
   componentWillUnmount() {

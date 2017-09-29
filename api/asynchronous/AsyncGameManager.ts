@@ -36,6 +36,14 @@ export class AsyncGameManager {
         process.send(stopped_response);
         break;
 
+      case "list games":
+        let response = new Message();
+        response.message_type = "games list";
+        response.message_content = new MessageContent.GamesListContent();
+        response.message_content.gameNames = Array.from(this.games.keys());
+        process.send(response);
+        break;
+
       case "start game":
         let content: MessageContent.StartGameContent = m.message_content;
         if (content.options.firstPlayerStartType == "Replay") {
@@ -92,9 +100,12 @@ export class AsyncGameManager {
         break;
 
       case "get state":
+        console.log("get state");
         let state_content: MessageContent.GetStateContent = m.message_content;
         if (this.games.has(m.gameName)) {
+          console.log(m.gameName, state_content.turn);
           this.games.get(m.gameName).getState(state_content.turn).then(gs => {
+            console.log("got state");
             let get_state_response = new Message();
             get_state_response.gameName = m.gameName;
             get_state_response.message_type = "gamestate";

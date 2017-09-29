@@ -126,20 +126,23 @@ export class App extends React.Component<any, State> {
     let counter = 2;
     let gameName = baseName;
 
-    let tryStart = (options, basename, counter) => {
+    let tryStart = (basename, counter) => {
+      console.log("Trying to start game ");
       let name = counter < 2 ? basename : basename + ' (' + counter + ')';
       Api.getGameManager().hasGame(name, (has_game) => {
         if (!has_game) {
+          console.log("No such game known")
+          o.gameName = name;
           Api.getGameManager().createGame(o, name => {
             this.switchToKnownGame(gameName);
           });
         } else {
-          tryStart(options, basename, counter + 1);
+          tryStart(basename, counter + 1);
         }
       });
     }
 
-    tryStart(o, baseName, 1);
+    tryStart(baseName, 1);
 
     Logger.getLogger().log('App', 'startGameWithOptions', 'starting game with options: ' + JSON.stringify(o));
 

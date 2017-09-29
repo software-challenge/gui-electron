@@ -39,6 +39,7 @@ export class GameManagerWorkerInterface {
    * @param callback Callback to call with the name of the newly created game
    */
   createGameWithOptions(options: GameCreationOptions, callback: (gameName: string) => void) {
+    console.log("Creating game");
     let m = new Message();
     m.gameName = options.gameName;
     m.message_type = "start game";

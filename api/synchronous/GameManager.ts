@@ -8,12 +8,14 @@ import { ActionMethod } from '../rules/ActionMethod';
 export class GameManager {
   private gmwi: GameManagerWorkerInterface;
 
-  private bufferedGameTitles: string[] = [];
+  private bufferedGameTitles: string[];
 
-  private displayStates: Map<string, number> = new Map<string, number>();
+  private displayStates: Map<string, number>;
 
   constructor() {
     this.gmwi = new GameManagerWorkerInterface();
+    this.bufferedGameTitles = [];
+    this.displayStates = new Map<string, number>();
   }
 
   /**
@@ -62,6 +64,7 @@ export class GameManager {
   public hasGame(name: string, callback: (has_game: boolean) => void) {
     this.getListOfGames(games_list => {
       this.bufferedGameTitles = games_list;
+      console.log("has game " + name + " : " + games_list.includes(name));
       callback(games_list.includes(name));
     })
   }
@@ -71,7 +74,7 @@ export class GameManager {
   }
 
   public getCurrentDisplayStateOnGame(name: string) {
-    if (this.displayStates.has(name)) {
+    if (!this.displayStates.has(name)) {
       this.displayStates.set(name, 0);
     }
     return this.displayStates.get(name);

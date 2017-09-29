@@ -1,7 +1,7 @@
 
 import * as fs from "fs";
 
-import { remote } from 'electron';
+//import { remote } from 'electron';
 
 
 export class Logger {
@@ -10,7 +10,7 @@ export class Logger {
   public static getLogger() {
     if (!this.logger) {
       var d = new Date();
-      let path = remote.app.getPath('userData') + `/software-challenge-gui-${d.getFullYear()}.${d.getMonth()}.${d.getDay()}_${d.getHours()}.${d.getMinutes()}.${d.getSeconds()}.log`
+      let path = /*remote.app.getPath('userData') +*/ `./software-challenge-gui-${d.getFullYear()}.${d.getMonth()}.${d.getDay()}_${d.getHours()}.${d.getMinutes()}.${d.getSeconds()}.log` //TODO fixme
       console.log("creating log in ", path)
       this.logger = new Logger(false, path);
     }
