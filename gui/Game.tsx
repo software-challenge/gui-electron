@@ -29,14 +29,41 @@ enum ViewerState {
 
 const MAX_INTERVAL = 3000; // max pause time between turns in playback mode
 
+
+/*
+Construction progress:
+1. Get a viewer
+2. Update progress
+
+
+Update progress:
+1. Get a Status report
+2. Update progress bar based on said report
+3. get current state from game manager
+4. if current state == last state in game
+4.1. if needs_input, interact, until needs_input no more
+5. get_state for that state
+6. render state
+
+Next:
+1. Get a Status report
+2. if current_state + 1 <= number of states in game
+2.1 set current state to current state + 1 in game manager
+2.2 update progress
+
+Previous:
+1. if current state > 0
+1.1 set current state to current state -1 in game manager
+1.2 update progress
+*/
+
 export class Game extends React.Component<{ name: string }, State> {
-  private viewer_done = true;
-  private viewer_running = false;
+  private update_running = false;
   private viewer: Viewer;
+  private mounted: boolean;
+
   private elem: Element;
   private elemSet: boolean;
-  private game: GameInfo;
-  private mounted: boolean;
 
   private viewerState: ViewerState;
 
@@ -57,33 +84,47 @@ export class Game extends React.Component<{ name: string }, State> {
 
   private startViewer(e) {
     this.mounted = true;
+    //1. get a viewer
     if (!this.viewer) {
       console.log("starting viewer " + this.props.name);
       this.viewer = Api.getViewer();
       this.viewer.setGameFrame(this);
       this.viewer.dock(e);
     }
-    if (!this.game) {
-      console.log("Game name: " + this.props.name);
-      this.game = Api.getGameManager().getGame(this.props.name);
-      console.log(this.game);
-      var init = async function () {
-        console.log(this.game);
-        this.game.ready.then(() => console.log("game ready"));
-        this.game.ready.catch((msg) => {
-          console.log("error creating game!");
-          dialog.showErrorBox("Spielerstellung", "Fehler beim Erstellen des Spiels!");
-          this.viewer.fatalGameError("Es ist ein Fehler aufgetreten. Nähere Informationen im Log.");
-          Logger.getLogger().log("Game", "init", msg || "no further details");
-        });
-        await this.game.ready;
-        this.displayTurn(this.game.currentDisplayState, false);
-      }.bind(this);
+    //2. Update progress
+    this.update_progress();
+  }
 
-      init();
+  private update_progress() {
+    this.update_running = true;
 
-      //this.game.on('state_update', () => { if (this.mounted) { this.updateProgress() } }); DO DIFFERENTLY
-    }
+    //1. Get a Status report
+    Api.getGameManager().getGameStatus(this.props.name, (status) => {
+      //2. Update progress bar based on said report
+      this.setStateCount(status.numberOfStates);
+      //3. get current state from game manager
+      var state_number = Api.getGameManager().getCurrentDisplayStateOnGame(this.props.name);
+      //4. if current state == last state in game
+      if (state_number == (status.numberOfStates - 1)) {
+        //4.1. if needs_input, interact, until needs_input no more
+        if (status.gameStatus == "REQUIRES INPUT") {
+          this.viewer.ui.interact(status.actionRequest.state, status.actionRequest.color, status.actionRequest.isFirstAction, (method, action) => {
+            Api.getGameManager().sendAction(this.props.name, status.actionRequest.id, method, action, (() => {
+              this.update_progress();
+            }).bind(this));
+          });
+        }
+      }
+      //5. get_state for that state
+      Api.getGameManager().getGameState(this.props.name, state_number, (gameState) => {
+        //6. render state
+        this.viewer.render(gameState, true, () => {
+          this.update_running = false;
+        })
+      });
+    });
+
+
   }
 
   componentWillUnmount() {
@@ -179,17 +220,24 @@ export class Game extends React.Component<{ name: string }, State> {
     return this.state.playPause == "play";
   }
 
-  setCurrentState(state: GameState) {
-    /*let n = this.game.getStateNumber(state);
-    if (n != -1) {
+
+  private setStateCount(n: number) {
+    if (n > 0) {
+      this.setState((prev, _props) => {
+        prev.turnCount = n;
+        return prev;
+      });
+    }
+  }
+
+
+  private setCurrentStateNumber(n: number) {
+    if (n > -1) {
       this.setState((prev, _props) => {
         prev.currentTurn = n;
         return prev;
       });
-      this.updateProgress();
-    } else {
-      console.log("did not find state ", state)
-    }*/
+    }
   }
 
   currentStateCount() {
@@ -201,14 +249,6 @@ export class Game extends React.Component<{ name: string }, State> {
     }*/
   }
 
-  updateProgress() {
-    /*if (this.currentStateCount() != this.state.turnCount) {
-      this.setState((prev, _props) => {
-        prev.turnCount = this.currentStateCount();
-        return prev;
-      });
-    }*/
-  }
 
   handleSpeedChange(event) {
     var newValue = MAX_INTERVAL - Number(event.target.value);

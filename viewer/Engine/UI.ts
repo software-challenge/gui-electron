@@ -9,6 +9,8 @@ import { GameState, GameResult, Player as SC_Player, PLAYERCOLOR, Card, Action }
 import { GameRuleLogic } from '../../api/rules/HaseUndIgelGameRules';
 import { Viewer } from '../Viewer';
 
+import { ActionMethod } from '../../api/rules/ActionMethod';
+
 const INVISIBLE = 'invisible';
 const HIGHLIGHT_CARD = 'highlight-card';
 const CURRENT_PLAYER = 'current-player';
@@ -23,7 +25,7 @@ export class UI {
 
   private eventProxy = new class extends events.EventEmitter { }();
 
-  chosenAction: Action = null;
+  //chosenAction: Action = null;
 
   private exchangeCarrotsDialogue: {
     root: HTMLDivElement,
@@ -302,7 +304,7 @@ export class UI {
     this.endscreen.root.style.opacity = visible ? "1" : "0";
   }
 
-  interact(state: GameState, color: PLAYERCOLOR, isFirstAction: boolean): Promise<"action" | "cancel" | "send"> {
+  interact(state: GameState, color: PLAYERCOLOR, isFirstAction: boolean, callback: (method: ActionMethod, action: Action) => void) {
     let interactColor: "red" | "blue" = color == SC_Player.COLOR.RED ? "red" : "blue";
     this.setInteractive(interactColor);
     this.viewer.seekAndRender(state);
@@ -333,68 +335,61 @@ export class UI {
 
     this.highlightPossibleCardsForGameState(state);
 
-    let p = new Promise<"action" | "cancel" | "send">((res, rej) => {
-      var clear_events = () => {//Prevent memory leak
-        this.eventProxy.removeAllListeners("send");
-        this.eventProxy.removeAllListeners("cancel");
-        this.eventProxy.removeAllListeners("field");
-        this.eventProxy.removeAllListeners("carrotPickup"); // for exchange action
-        this.eventProxy.removeAllListeners("carrotValue"); // for card
-        this.eventProxy.removeAllListeners("card");
-        this.eventProxy.removeAllListeners("skip");
-        this.eventProxy.removeAllListeners("eatSalad");
+    var clear_events = () => {//Prevent memory leak
+      this.eventProxy.removeAllListeners("send");
+      this.eventProxy.removeAllListeners("cancel");
+      this.eventProxy.removeAllListeners("field");
+      this.eventProxy.removeAllListeners("carrotPickup"); // for exchange action
+      this.eventProxy.removeAllListeners("carrotValue"); // for card
+      this.eventProxy.removeAllListeners("card");
+      this.eventProxy.removeAllListeners("skip");
+      this.eventProxy.removeAllListeners("eatSalad");
+    }
+
+
+    this.eventProxy.once("send", () => { clear_events(); callback("send", null); })
+
+    this.eventProxy.once("cancel", () => { clear_events(); callback("cancel", null); })
+
+    this.eventProxy.once("field", (fieldNumber) => {
+      let chosenAction: Action;
+      if (fieldNumber < state.getPlayerByColor(color).index) {
+        chosenAction = new Action("FALL_BACK");
+      } else {
+        chosenAction = new Action("ADVANCE", fieldNumber - state.getPlayerByColor(color).index);
       }
-
-
-      this.eventProxy.once("send", () => { clear_events(); res("send"); })
-
-      this.eventProxy.once("cancel", () => { clear_events(); res("cancel"); })
-
-      this.eventProxy.once("field", (fieldNumber) => {
-        if (fieldNumber < state.getPlayerByColor(color).index) {
-          this.chosenAction = new Action("FALL_BACK");
-        } else {
-          this.chosenAction = new Action("ADVANCE", fieldNumber - state.getPlayerByColor(color).index);
-        }
-        clear_events();
-        res("action");
-      });
-
-      this.eventProxy.once("skip", () => {
-        clear_events();
-        this.chosenAction = new Action("SKIP");
-        res("action");
-      })
-
-      this.eventProxy.once('carrotPickup', value => {
-        this.chosenAction = new Action("EXCHANGE_CARROTS", value);
-        clear_events();
-        res("action");
-      });
-
-      this.eventProxy.once('eatSalad', () => {
-        this.chosenAction = new Action("EAT_SALAD");
-        clear_events();
-        res("action");
-      });
-
-      this.eventProxy.once("card", card => {
-        if (card == Card.TAKE_OR_DROP_CARROTS) {
-          this.showCarrotPickupDialogue(true);
-          this.eventProxy.once('carrotValue', value => {
-            this.chosenAction = new Card(Card.TAKE_OR_DROP_CARROTS, value);
-            clear_events();
-            res("action");
-          });
-        } else {
-          this.chosenAction = new Card(card);
-          clear_events();
-          res("action");
-        }
-      });
+      clear_events();
+      callback("action", chosenAction);
     });
 
-    return p;
+    this.eventProxy.once("skip", () => {
+      clear_events();
+      callback("action", new Action("SKIP"));
+    })
+
+    this.eventProxy.once('carrotPickup', value => {
+      clear_events();
+      callback("action", new Action("EXCHANGE_CARROTS", value));
+    });
+
+    this.eventProxy.once('eatSalad', () => {
+      clear_events();
+      callback("action", new Action("EAT_SALAD"));
+    });
+
+    this.eventProxy.once("card", card => {
+      if (card == Card.TAKE_OR_DROP_CARROTS) {
+        this.showCarrotPickupDialogue(true);
+        this.eventProxy.once('carrotValue', value => {
+          clear_events();
+          callback("action", new Card(Card.TAKE_OR_DROP_CARROTS, value));
+        });
+      } else {
+        clear_events();
+        callback("action", new Card(card));
+      }
+    });
+
   }
 
   highlightPossibleCardsForGameState(gamestate: GameState) {
@@ -475,9 +470,6 @@ export class UI {
     this.display.blue.salads.innerText = state.blue.salads.toString();
     this.display.blue.carrots.innerText = state.blue.carrots.toString();
 
-    if (this.gameFrame) {
-      this.gameFrame.updateProgress();
-    }
     //Update cards
     //TODO: There HAS to be a cleverer way to do this
     ['red', 'blue'].forEach(color => {

@@ -34,7 +34,8 @@ export class AsyncApi {
   }
 
   public static redeemActionRequest(gameName: string, id: number, method: ActionMethod, action?: Action) {
-    this.actionRequests.get(gameName).get(id).callback(method, action);
+    this.actionRequests.get(gameName).get(id).callback(method, action);//Handle things on the client side
+    this.actionRequests.get(gameName).delete(id);//Remove request from list
   }
 
   public static lodgeActionRequest(gameName: string, state: GameState, color: PLAYERCOLOR, isFirstAction: boolean, uiHints: UIHint[], callback: (method: ActionMethod, action?: Action) => void) {

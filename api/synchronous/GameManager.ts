@@ -1,15 +1,16 @@
 import { GameInfo } from './GameInfo';
 import { GameCreationOptions } from '../rules/GameCreationOptions';
 import { GameManagerWorkerInterface } from './GameManagerWorkerInterface';
-import { GameState } from '../rules/HaseUndIgel';
-
+import { GameState, Action } from '../rules/HaseUndIgel';
+import { MessageContent } from '../rules/Message';
+import { ActionMethod } from '../rules/ActionMethod';
 
 export class GameManager {
   private gmwi: GameManagerWorkerInterface;
 
   private bufferedGameTitles: string[] = [];
 
-  private games: GameInfo[] = [];
+  private displayStates: Map<string, number> = new Map<string, number>();
 
   constructor() {
     this.gmwi = new GameManagerWorkerInterface();
@@ -24,16 +25,11 @@ export class GameManager {
     this.gmwi.createGameWithOptions(options, name => {
       var gi = new GameInfo(name);
       gi.isReplay = options.firstPlayerStartType == "Replay";
-      this.games.push();
+      if (!this.bufferedGameTitles.includes(name)) {
+        this.bufferedGameTitles.push(name);
+      }
       callback(name);
     });
-  }
-
-  private getGame(name: string): GameInfo {
-    let games = this.games.filter(game => game.name == name);
-    if (games.length > 0) {
-      return games[0];
-    }
   }
 
   private getState(gameName: string, turn: number, callback: (s: GameState) => void) {
@@ -70,34 +66,29 @@ export class GameManager {
     })
   }
 
-  private isReplay(name: string) {
-    var g = this.getGame(name);
-    return g && g.isReplay;
+  public setCurrentDisplayStateOnGame(name: string, turn: number) {
+    this.displayStates.set(name, turn);
   }
 
-  /*private getGameNameFromReplayPath(path: string): string { //TODO: extract into more suitable place
-    var game = this.games.filter(g => g.isReplay && g.replayPath == path);
-    if (game.length > 0) {
-      return game[0].name;
-    } else {
-      
-      return this.createReplayGame(path, replayName).name;
+  public getCurrentDisplayStateOnGame(name: string) {
+    if (this.displayStates.has(name)) {
+      this.displayStates.set(name, 0);
     }
-  }*/
-
-  private setCurrentDisplayStateOnGame(name: string, state: number) {
-    var g = this.getGame(name);
-    if (g) {
-      g.currentTurn = state;
-    }
+    return this.displayStates.get(name);
   }
 
-  private getCurrentDisplayStateOnGame(name: string) {
-    var g = this.getGame(name);
-    if (g) {
-      return g.currentTurn;
-    }
+  public getGameStatus(name: string, callback: (status: MessageContent.StatusReportContent) => void) {
+    this.gmwi.getStatus(name, callback);
   }
+
+  public sendAction(gameName: string, id: number, method: ActionMethod, action: Action, callback: (gameName: string) => void) {
+    this.gmwi.sendAction(gameName, id, method, action, callback);
+  }
+
+  public getGameState(gameName: string, turn: number, callback: (state: GameState) => void) {
+    this.gmwi.getState(gameName, turn, callback);
+  }
+
 
   public stop() {
     this.gmwi.stop();
