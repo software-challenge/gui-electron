@@ -102,6 +102,7 @@
     width: 0.5vh;
     background-color: red;
     border-radius: 3px;
+    transition: width 0.5s;
 }
 
 .replay-viewer > .replay-controls > .progress-bar > .progress-loaded {
@@ -109,6 +110,7 @@
     height: 0.5vh;
     background-color: white;
     border-radius: 3px;
+    transition: width 0.5s;
 }
 
 .replay-viewer > .replay-controls > .progress-bar > .round-text {
@@ -145,8 +147,8 @@ img.svg-icon {
     margin: auto 2px auto 1vw;
 }
 
-.replay-viewer > .replay-controls > .button-container > .playbackSpeed {
-}
+/*.replay-viewer > .replay-controls > .button-container > .playbackSpeed {
+}*/
 
 /* Styling Range Input */
 input[type=range]{
