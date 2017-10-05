@@ -73,7 +73,7 @@ export class GameManagerWorkerInterface {
     var l = (m: Message) => {
       if (m.message_type == "gamestate" && m.gameName == gameName) {
         this.worker.removeListener('message', l);
-        callback(m.message_content.gameState);
+        callback(GameState.lift(m.message_content.gameState));
       }
     }
     this.worker.on('message', l);

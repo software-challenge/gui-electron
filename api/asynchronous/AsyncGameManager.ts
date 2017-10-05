@@ -64,10 +64,11 @@ export class AsyncGameManager {
           report_status_response.gameName = m.gameName;
           report_status_response.message_type = "status report";
           report_status_response.message_content = new MessageContent.StatusReportContent();
+          report_status_response.message_content.numberOfStates = game.getStateCount();
+
           if (game.isReplay) {//Game is a replay, all states should be loaded, report so
             report_status_response.message_content.gameStatus = "REPLAY";
             report_status_response.message_content.gameResult = game.getResult();
-            report_status_response.message_content.numberOfStates = game.getStateCount();
           } else {//Game is a live game and might or might not be finished, let's find out
             let lg: LiveGame = game;
             if (lg.isLive()) {
@@ -84,12 +85,10 @@ export class AsyncGameManager {
                 report_status_response.message_content.actionRequest = tar;
               } else { //Game is live, but doesn't require input
                 report_status_response.message_content.gameStatus = "RUNNING";
-                report_status_response.message_content.numberOfStates = game.getStateCount();
               }
             } else {//Game has finished
               report_status_response.message_content.gameStatus = "FINISHED";
               report_status_response.message_content.gameResult = lg.getResult();
-              report_status_response.message_content.numberOfStates = game.getStateCount();
             }
           }
           process.send(report_status_response);

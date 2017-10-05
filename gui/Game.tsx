@@ -114,6 +114,7 @@ export class Game extends React.Component<{ name: string }, State> {
           //4.1. if needs_input, interact, until needs_input no more
           if (status.gameStatus == "REQUIRES INPUT") {
             console.log("Requires input");
+            status.actionRequest.state = GameState.lift(status.actionRequest.state);
             this.viewer.ui.interact(status.actionRequest.state, status.actionRequest.color, status.actionRequest.isFirstAction, (method, action) => {
               Api.getGameManager().sendAction(this.props.name, status.actionRequest.id, method, action, (() => {
                 this.update_progress();

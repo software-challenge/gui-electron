@@ -104,7 +104,7 @@ export class HumanClient extends GenericPlayer implements GameClient {
       this.writeData(xml);
     };
 
-    interact("none", [], this.state.clone, [], send_move);
+    interact("none", [], this.state.clone(), [], send_move);
 
   }
 

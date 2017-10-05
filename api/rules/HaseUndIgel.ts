@@ -46,6 +46,16 @@ export class GameState {
     return clone;
   }
 
+  static lift(that: any): GameState {//Flat clone that adds methods to an object serialized to json
+    let clone = new GameState();
+    Object.assign<GameState, GameState>(clone, that);
+    clone.red = Player.lift(clone.red);
+    clone.blue = Player.lift(clone.blue);
+    clone.board = Board.lift(clone.board);
+
+    return clone;
+  }
+
   getCurrentPlayer(): Player {
     return this.getPlayerByColor(this.currentPlayer)
   }
@@ -221,6 +231,16 @@ export class Board {
     clone.fields = clonedFields;
     return clone;
   }
+
+  static lift(that: any) {
+    let clone = new Board();
+    let clonedFields = []
+    for (let f of that.fields) {
+      clonedFields.push(f)
+    }
+    clone.fields = clonedFields;
+    return clone;
+  }
 }
 
 
@@ -321,6 +341,19 @@ export class Player {
     clone.mustPlayCard = this.mustPlayCard;
     return clone;
   }
+
+  static lift(that: any) {
+    let clone = new Player(that.color);
+    Object.assign<Player, Player>(clone, that);
+    clone.cards = [];
+    for (let c of that.cards) {
+      clone.cards.push(Card.lift(c));
+    }
+    if (that.lastNonSkipAction != undefined) {
+      clone.lastNonSkipAction = Action.lift(that.lastNonSkipAction);
+    }
+    return clone;
+  }
 }
 
 export type ActionType = "ADVANCE" | "CARD" | "EAT_SALAD" | "EXCHANGE_CARROTS" | "FALL_BACK" | "SKIP";
@@ -413,6 +446,14 @@ export class Action {
   clone(): Action {
     return new Action(this.type, this.value);
   }
+
+  static lift(that: any) {
+    if (that.type == "CARD") {
+      return Card.lift(that);
+    } else {
+      return new Action(that.type, that.value);
+    }
+  }
 }
 
 export class Card extends Action {
@@ -453,6 +494,10 @@ export class Card extends Action {
 
   clone(): Card {
     return new Card(this.cardType, this.value);
+  }
+
+  static lift(that: Card) {
+    return new Card(that.cardType, that.value);
   }
 
   perform(state: GameState): void {
