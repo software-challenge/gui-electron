@@ -58,7 +58,11 @@ Previous:
 */
 
 export class Game extends React.Component<{ name: string }, State> {
+
+  // FIXME: I don't think that locking is needed in javascript
+  // see https://stackoverflow.com/questions/5346694/how-to-implement-a-lock-in-javascript
   private update_running = false;
+
   private viewer: Viewer;
   private mounted: boolean;
 
@@ -98,6 +102,7 @@ export class Game extends React.Component<{ name: string }, State> {
   private update_progress() {
     if (!this.update_running) {
       this.update_running = true;
+      console.log("update progress called")
 
       //1. Get a Status report
       Api.getGameManager().getGameStatus(this.props.name, (status) => {
@@ -116,6 +121,8 @@ export class Game extends React.Component<{ name: string }, State> {
             console.log("Requires input");
             status.actionRequest.state = GameState.lift(status.actionRequest.state);
             this.viewer.ui.interact(status.actionRequest.state, status.actionRequest.color, status.actionRequest.isFirstAction, (method, action) => {
+              // FIXME: gets called twice!
+              console.log("interact callback")
               Api.getGameManager().sendAction(this.props.name, status.actionRequest.id, method, action, (() => {
                 this.update_progress();
               }).bind(this));

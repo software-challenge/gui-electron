@@ -114,6 +114,7 @@ export class GameManagerWorkerInterface {
     let ct = new MessageContent.SendActionContent();
     ct.actionMethod = method;
     ct.action = action;
+    ct.id = id;
     m.message_content = ct;
     this.worker.send(m);
     var l = (m: Message) => {

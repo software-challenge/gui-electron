@@ -1,6 +1,6 @@
-import { GameState, PLAYERCOLOR, Player, Board, Action, Card } from '../api/HaseUndIgel';
+import { GameState, PLAYERCOLOR, Player, Board, Action, Card } from '../api/rules/HaseUndIgel';
 import { expect } from 'chai';
-import { GameRuleLogic } from '../api/HaseUndIgelGameRules';
+import { GameRuleLogic } from '../api/rules/HaseUndIgelGameRules';
 
 describe('HaseUndIgelGameRules', () => {
   let state: GameState;

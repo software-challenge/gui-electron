@@ -4,7 +4,7 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-    {
+    { // Start and debug tests. Results are displayed in the Debug console, you may set breakpoints in the test code and tested code.
       "type": "node",
       "request": "launch",
       "name": "Debug Tests",
@@ -26,18 +26,43 @@
         "NODE_ENV": "testing"
       },
       "outFiles": [
-        "${workspaceRoot}/build"
+        "${workspaceRoot}/out"
       ]
     },
-    {
-      // NOTE: You should not have a chromium instance already open, as this
-      // command launches chromium with debugging functionaliy.
-      "name": "Launch localhost",
-      "type": "chrome",
+    { // Start app and attach to node process. Breakpoints don't seem to work, though.
+      "name": "Debug Main Process",
+      "type": "node",
       "request": "launch",
-      "runtimeExecutable": "/usr/bin/chromium",
-      "url": "http://localhost:8000/viewer.html",
-      "webRoot": "${workspaceRoot}"
+      "cwd": "${workspaceRoot}",
+      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+      "windows": {
+        "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
+      },
+      "args": [
+        "."
+      ],
+      "outFiles": [
+        "${workspaceRoot}/out/**/*.js"
+      ],
+      "sourceMaps": true
+    },
+    { // Start app and attach to render process. JS Console output is diplayed in Debug Console, Breakpoints don't seem to work, though.
+      "name": "Debug Render Process",
+      "type": "chrome", // needs "Debugger for Chrome" extension
+      "request": "launch",
+      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+      "windows": {
+        "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
+      },
+      "runtimeArgs": [
+        "${workspaceRoot}",
+        "--enable-logging",
+        "--remote-debugging-port=9222"
+      ],
+      "outFiles": [
+        "${workspaceRoot}/out/**/*.js"
+      ],
+      "sourceMaps": true
     }
   ]
 }

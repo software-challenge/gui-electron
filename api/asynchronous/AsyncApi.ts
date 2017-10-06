@@ -1,3 +1,4 @@
+import { isUndefined } from 'util';
 import { Server } from './Server';
 import { GameState, PLAYERCOLOR, Action } from '../rules/HaseUndIgel';
 import { AsyncGameManager } from './AsyncGameManager';
@@ -34,7 +35,12 @@ export class AsyncApi {
   }
 
   public static redeemActionRequest(gameName: string, id: number, method: ActionMethod, action?: Action) {
-    this.actionRequests.get(gameName).get(id).callback(method, action);//Handle things on the client side
+    console.log(`redeemActionRequest for game ${gameName}, id ${id}, map: `, this.actionRequests.get(gameName))
+    let request = this.actionRequests.get(gameName).get(id)
+    if (isUndefined(request)) {
+      console.log(`found no request for id ${id}, map was`, this.actionRequests.get(gameName))
+    }
+    request.callback(method, action);//Handle things on the client side
     this.actionRequests.get(gameName).delete(id);//Remove request from list
   }
 

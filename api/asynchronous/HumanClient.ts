@@ -41,6 +41,7 @@ export class HumanClient extends GenericPlayer implements GameClient {
     let interact = (interaction_type, move: Action[], actionState: GameState, ui_hints: UIHint[], send_move) => {
       if (interaction_type != "send") {//TODO: Fix this
         AsyncApi.lodgeActionRequest(this.game.name, actionState, this.color, move.length == 0, ui_hints, (method, action) => {
+          action = Action.lift(action); // because the action will be marshalled, we have to add its methods here again
           interaction_type = method;
           ui_hints = [];
           switch (interaction_type) {

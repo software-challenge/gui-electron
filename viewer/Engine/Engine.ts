@@ -132,16 +132,23 @@ export class Engine {
   }
 
   private addListener(listener: (pickedFieldName: string) => void, eventType: number) {
-    this.scene.onPointerObservable.add((ed, es) => {
-      var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
-      if (pickResult.hit) {
-        let pickedID = pickResult.pickedMesh.id;
-        listener(pickedID);
-      }
-    }, eventType);
+    if (!this.scene.onPointerObservable.hasSpecificMask(eventType)) {
+      this.scene.onPointerObservable.add((ed, es) => {
+        var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+        if (pickResult.hit) {
+          let pickedID = pickResult.pickedMesh.id;
+          console.log("calling listener", pickedID)
+          listener(pickedID);
+        }
+      }, eventType);
+    } else {
+      // this seems not to be the problem
+      console.log(`listener for pointer event ${eventType} already registered, doing nothing`)
+    }
   }
 
   public addClickListener(listener: (pickedFieldName: string) => void) {
+    console.log("adding click listener")
     this.addListener(listener, BABYLON.PointerEventTypes.POINTERPICK)
   }
 

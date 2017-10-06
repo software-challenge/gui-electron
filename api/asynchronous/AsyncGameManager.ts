@@ -123,9 +123,9 @@ export class AsyncGameManager {
         break;
 
       case "send action":
-        let action_content = MessageContent.SendActionContent = m.message_content;
+        let action_content: MessageContent.SendActionContent = m.message_content;
         if (this.games.has(m.gameName)) {
-          AsyncApi.redeemActionRequest(m.gameName, action_content.id, action_content.method, action_content.action);
+          AsyncApi.redeemActionRequest(m.gameName, action_content.id, action_content.actionMethod, action_content.action);
           let send_action_response = new Message();
           send_action_response.gameName = m.gameName;
           send_action_response.message_type = "action sent";

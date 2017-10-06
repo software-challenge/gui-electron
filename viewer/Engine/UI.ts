@@ -305,6 +305,7 @@ export class UI {
   }
 
   interact(state: GameState, color: PLAYERCOLOR, isFirstAction: boolean, callback: (method: ActionMethod, action: Action) => void) {
+    console.log("interact called")
     let interactColor: "red" | "blue" = color == SC_Player.COLOR.RED ? "red" : "blue";
     this.setInteractive(interactColor);
     this.viewer.seekAndRender(state);
@@ -352,6 +353,8 @@ export class UI {
     this.eventProxy.once("cancel", () => { clear_events(); callback("cancel", null); })
 
     this.eventProxy.once("field", (fieldNumber) => {
+      // FIXME: gets called twice per click on field!
+      console.log("field event")
       let chosenAction: Action;
       if (fieldNumber < state.getPlayerByColor(color).index) {
         chosenAction = new Action("FALL_BACK");
