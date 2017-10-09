@@ -39,7 +39,7 @@ export class Engine {
     //this.setupPointers();
 
     /*this.shaderBuilder = new ShaderBuilder(this);
-    
+
     var test = BABYLON.Mesh.CreateSphere('test', 128, 56, this.scene, false);
     test.material = this.materialBuilder.getTexturedFieldMaterial("CARROT");
     console.log(test.material);
@@ -132,19 +132,13 @@ export class Engine {
   }
 
   private addListener(listener: (pickedFieldName: string) => void, eventType: number) {
-    if (!this.scene.onPointerObservable.hasSpecificMask(eventType)) {
-      this.scene.onPointerObservable.add((ed, es) => {
-        var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
-        if (pickResult.hit) {
-          let pickedID = pickResult.pickedMesh.id;
-          console.log("calling listener", pickedID)
-          listener(pickedID);
-        }
-      }, eventType);
-    } else {
-      // this seems not to be the problem
-      console.log(`listener for pointer event ${eventType} already registered, doing nothing`)
-    }
+    this.scene.onPointerObservable.add((ed, es) => {
+      var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+      if (pickResult.hit) {
+        let pickedID = pickResult.pickedMesh.id;
+        listener(pickedID);
+      }
+    }, eventType);
   }
 
   public addClickListener(listener: (pickedFieldName: string) => void) {

@@ -10,6 +10,8 @@ Der Viewer, zu finden im Verzeichnis viewer, ist der Teil des Benutzerinferfaces
 
 TODO: Wie ist der Ablauf, wenn man ein Spiel startet?
 
+Da die Anwendung in mehreren Prozessen laeuft (Render-Thread und mehrere Node.js Worker) werden nicht alle Fehler/Lognachrichten in der Chrome-Console ausgegeben, sondern auch einige im Terminal.
+
 = Compile on Save in VSCode
 
 siehe Issue https://github.com/Microsoft/vscode/issues/7015
