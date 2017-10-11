@@ -10,6 +10,7 @@ import { Api } from '../api/Api';
 import { ConsoleMessage } from '../api/rules/ConsoleMessage';
 import { loadCSS } from './index';
 import { Logger } from '../api/Logger';
+import { MessageContent } from '../api/rules/Message';
 
 const dialog = remote.dialog;
 
@@ -96,6 +97,8 @@ export class Game extends React.Component<{ name: string }, State> {
       this.viewer.dock(e);
     }
     //2. Update progress
+    this.viewer.ui.disableAll();
+    this.viewer.ui.hideEndscreen();
     this.update_progress();
   }
 
@@ -115,18 +118,6 @@ export class Game extends React.Component<{ name: string }, State> {
         if (state_number == (status.numberOfStates - 1)) {
           if ((status.gameStatus == "FINISHED" || status.gameStatus == "REPLAY") && status.gameResult) {
             this.viewer.ui.showEndscreen(status.gameResult);
-          }
-          //4.1. if needs_input, interact, until needs_input no more
-          if (status.gameStatus == "REQUIRES INPUT" && this.state.playPause == "play") {
-            console.log("Requires input");
-            status.actionRequest.state = GameState.lift(status.actionRequest.state);
-            this.viewer.ui.interact(status.actionRequest.state, status.actionRequest.color, status.actionRequest.isFirstAction, (method, action) => {
-              // FIXME: gets called twice!
-              console.log("interact callback")
-              Api.getGameManager().sendAction(this.props.name, status.actionRequest.id, method, action, (() => {
-                this.update_progress();
-              }).bind(this));
-            });
           }
         }
         //5. get_state for that state
@@ -148,28 +139,86 @@ export class Game extends React.Component<{ name: string }, State> {
       this.viewer.stop();
       this.viewer.undock();
     }
+    if (this.isPlaying()) {
+      this.playPause();
+    }
   }
 
   next() {
     if (!this.update_running) {
       //1. Get a Status report
       Api.getGameManager().getGameStatus(this.props.name, (status) => {
-        //2. if current_state + 1 <= number of states in game
-        var current_state = Api.getGameManager().getCurrentDisplayStateOnGame(this.props.name);
-        if (current_state + 1 <= (status.numberOfStates - 1)) {
-          //2.1 set current state to current state + 1 in game manager
-          Api.getGameManager().setCurrentDisplayStateOnGame(this.props.name, current_state + 1);
-          //2.2 update progress
-          this.update_progress();
+        if (status.gameStatus == "REQUIRES INPUT") {
+          this.interact(status);
         } else {
-          if (this.isPlaying()) {
-            this.playPause();
+          //2. if current_state + 1 <= number of states in game
+          var displayed_state = Api.getGameManager().getCurrentDisplayStateOnGame(this.props.name);
+          if (status.numberOfStates > (displayed_state + 1)) {
+            //2.1 set current state to current state + 1 in game manager
+            Api.getGameManager().setCurrentDisplayStateOnGame(this.props.name, displayed_state + 1);
+            //2.2 update progress
+            this.update_progress();
           } else {
-            console.log("End reached.");
+            if (this.isPlaying()) {
+              this.playPause();
+            } else {
+              console.log("End reached.");
+            }
           }
         }
       });
     }
+  }
+
+  interact(status: MessageContent.StatusReportContent) {
+    if (!this.update_running) {
+      this.update_running = true;
+      //4.1. if needs_input, interact, until needs_input no more
+      console.log("Requires input");
+      status.actionRequest.state = GameState.lift(status.actionRequest.state);
+      status.actionRequest.uiHints.forEach(hint => {
+        switch (hint) {
+          case "disable cancel":
+            this.viewer.ui.disableCancel();
+            break;
+          case "disable send":
+            console.log("disable send");
+            this.viewer.ui.disableSend();
+            break;
+          case "enable cancel":
+            this.viewer.ui.enableCancel();
+            break;
+          case "enable send":
+            this.viewer.ui.enableSend();
+            break;
+        }
+      })
+      this.viewer.ui.interact(status.actionRequest.state, status.actionRequest.color, status.actionRequest.isFirstAction, (method, action) => {
+        // FIXME: gets called twice!
+        console.log("interact callback")
+        Api.getGameManager().sendAction(this.props.name, status.actionRequest.id, method, action, (() => {
+          if (method != "send") {
+            this.update_running = false;
+            this.next();
+          } else {
+            this.waitForNextStatus(status.numberOfStates, () => {
+              this.update_running = false;
+              this.next();
+            });
+          }
+        }));
+      });
+    }
+  }
+
+  private waitForNextStatus(current_status_number: number, callback: () => void) {
+    Api.getGameManager().getGameStatus(this.props.name, (status) => {
+      if (status.numberOfStates > current_status_number) {
+        callback();
+      } else {
+        setTimeout(() => this.waitForNextStatus(current_status_number, callback), 100);
+      }
+    });
   }
 
   previous() {

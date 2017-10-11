@@ -118,7 +118,7 @@ export class GameManagerWorkerInterface {
     m.message_content = ct;
     this.worker.send(m);
     var l = (m: Message) => {
-      if (m.message_type == "game started" && m.gameName == gameName) {
+      if (m.message_type == "action sent" && m.gameName == gameName) {
         this.worker.removeListener('message', l);
         callback(gameName);
       }

@@ -133,12 +133,12 @@
   right: 10;
 }
 
-.replay-viewer.current-red .button {
+.replay-viewer .current-red .button {
   color: white;
   background: #d1524e;
 }
 
-.replay-viewer.current-blue .button {
+.replay-viewer .current-blue .button {
   color: white;
   background: #1561b9;
 }
@@ -178,6 +178,7 @@
   src: local('Apple Color Emoji'),
        local('Android Emoji'),
        local('Segoe UI'),
+       local('Twitter Color Emoji'),
        local(EmojiSymbols),
        local(Symbola);
 

@@ -125,6 +125,7 @@ export class AsyncGameManager {
       case "send action":
         let action_content: MessageContent.SendActionContent = m.message_content;
         if (this.games.has(m.gameName)) {
+          console.log("Message: \n" + JSON.stringify(m, null, '\t'));
           AsyncApi.redeemActionRequest(m.gameName, action_content.id, action_content.actionMethod, action_content.action);
           let send_action_response = new Message();
           send_action_response.gameName = m.gameName;

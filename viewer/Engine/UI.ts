@@ -264,6 +264,7 @@ export class UI {
       this.disableSend();
       this.disableCancel();
       this.disableSkip();
+      this.board.fields.forEach(f => f.setHighlight(false));
     }
   }
 
@@ -298,6 +299,10 @@ export class UI {
 
   enableCancel() {
     this.show(this.display.cancel);
+  }
+
+  disableAll() {
+    this.setInteractive("off");
   }
 
   setEndscreenVisible(visible: boolean) {

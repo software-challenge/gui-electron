@@ -27,6 +27,7 @@ export class AsyncApi {
   }
 
   public static hasActionRequest(gameName: string): boolean {
+    console.log(`${gameName} has Request ID ${[...this.actionRequests.get(gameName).keys()].join(',')}`);
     return this.actionRequests.has(gameName) && this.actionRequests.get(gameName).size > 0;
   }
 

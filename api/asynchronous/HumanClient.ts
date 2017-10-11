@@ -29,7 +29,6 @@ export class HumanClient extends GenericPlayer implements GameClient {
     });
     this.on('moverequest', this.handleMoveRequest);
     this.on('state', s => this.state = s);
-    this.on('message', m => console.log("human: " + m));
     //this.on('error', error => dialog.showErrorBox("Fehler menschlicher Spieler", error));
   }
 
@@ -41,11 +40,11 @@ export class HumanClient extends GenericPlayer implements GameClient {
     let interact = (interaction_type, move: Action[], actionState: GameState, ui_hints: UIHint[], send_move) => {
       if (interaction_type != "send") {//TODO: Fix this
         AsyncApi.lodgeActionRequest(this.game.name, actionState, this.color, move.length == 0, ui_hints, (method, action) => {
-          action = Action.lift(action); // because the action will be marshalled, we have to add its methods here again
           interaction_type = method;
           ui_hints = [];
           switch (interaction_type) {
             case "action":
+              action = Action.lift(action); // because the action will be marshalled, we have to add its methods here again            
               move.push(action);
               try {
                 action.perform(actionState);
@@ -54,7 +53,9 @@ export class HumanClient extends GenericPlayer implements GameClient {
                 move.pop();
                 return; //aka continue;
               }
-              if (!GameRuleLogic.mustPlayCard(actionState)) {
+              if (GameRuleLogic.mustPlayCard(actionState)) {
+                ui_hints.push('disable send');
+              } else {
                 ui_hints.push('enable send');
               }
               break;

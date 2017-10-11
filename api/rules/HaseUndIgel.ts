@@ -448,7 +448,7 @@ export class Action {
   }
 
   static lift(that: any) {
-    if (that.type == "CARD") {
+    if (that.type == "CARD" || that.cardType) {
       return Card.lift(that);
     } else {
       return new Action(that.type, that.value);
