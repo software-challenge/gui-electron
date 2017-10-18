@@ -14,6 +14,10 @@ import { LogConsole } from './LogConsole';
 import { Logger } from '../api/Logger';
 import { ErrorPage } from './ErrorPage';
 
+const d = new Date();
+process.env.SGC_LOG_PATH = `./software-challenge-gui-${d.getFullYear()}.${d.getUTCMonth() + 1}.${d.getUTCDate()}_${d.getHours()}.${d.getMinutes()}.${d.getSeconds()}.log` //TODO fixme
+
+
 const dialog = remote.dialog;
 const shell = remote.shell;
 

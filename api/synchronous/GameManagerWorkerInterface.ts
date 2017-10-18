@@ -3,14 +3,15 @@ import { GameStatus } from '../rules/GameStatus';
 import { GameState, Action } from '../rules/HaseUndIgel';
 import { Message, MessageContent } from '../rules/Message';
 import { ActionMethod } from '../rules/ActionMethod';
+import { Logger } from '../Logger';
 
 import * as child_process from "child_process";
 export class GameManagerWorkerInterface {
   worker: child_process.ChildProcess;
   constructor() {
-    console.log('starting worker');
+    Logger.getLogger().log("GameManagerWorkerInterface", "constructor", "Forking GameManagerWorker.");
     var fork: any = child_process.fork; //disable typechecking, one faulty line causes everything to fail
-    this.worker = fork(`${__dirname}/../asynchronous/GameManagerWorker.js`, { stdio: ['inherit', 'inherit', 'inherit', 'ipc'] });
+    this.worker = fork(`${__dirname}/../asynchronous/GameManagerWorker.js`, { stdio: ['inherit', 'inherit', 'inherit', 'ipc'], env: { "SGC_LOG_PATH": process.env.SGC_LOG_PATH } });
     this.worker.on('message', m => {
       if (m.message_type == "error") {
         console.error(m);
