@@ -27,7 +27,7 @@ export class Logger {
       clr += str.charCodeAt(i);
       clr %= colours;
     }
-    return 'hsl(' + (360 / 32 * clr) + ',60%,40%)';
+    return 'hsl(' + (360 / 32 * clr) + ',90%,25%)';
   }
 
 
@@ -89,10 +89,11 @@ export class Logger {
           background-color: #eee;
           top: 0px;
           padding: 8px;
-          width: calc(100vw - 16px);
           text-align: right;
           font-size: 12px;
           height: 52px;
+          right: 0px;
+          border-bottom-left-radius: 4px;
         }
         body {
           margin: 0px;

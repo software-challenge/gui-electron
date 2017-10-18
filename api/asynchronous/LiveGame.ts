@@ -63,8 +63,6 @@ export class LiveGame extends Game {
       });
 
       this.observer.on('state', s => {
-        Logger.log("got state");
-        console.log("got state " + (this.gameStates.length - 1));
         this.gameStates.push(s);
         this.emit('state' + (this.gameStates.length - 1), s);
         this.emit('state_update');
@@ -119,7 +117,7 @@ export class LiveGame extends Game {
               };
               this.messages.push(m);
               this.emit('message', m);
-              SC_Logger.getLogger().log("Livegame", "executableClient.on('stdout')", msg);
+              SC_Logger.getLogger().log("Game Client", `${name}:stdout`, msg);
             });
 
             executableClient.on('stderr', msg => {
@@ -130,15 +128,15 @@ export class LiveGame extends Game {
               };
               this.messages.push(m);
               this.emit('message', m);
-              SC_Logger.getLogger().log("Livegame", "executableClient.on('stderr')", msg);
+              SC_Logger.getLogger().log("Game Client", `${name}:stderr`, msg);
             });
             executableClient.on('error', msg => {
-              SC_Logger.getLogger().log("Livegame", "executableClient.on('error')", "got error: " + msg);
+              SC_Logger.getLogger().log("Game Client", `${name}:error`, msg);
               gameStartError(`client "${name}" sent error: ${msg}`);
             })
 
             executableClient.on('status', s => {
-              SC_Logger.getLogger().log("Livegame", "executableClient.on('status')", "status changed to " + ExecutableStatus.toString(s));
+              SC_Logger.getLogger().log("Game Client", `${name}:status`, "status changed to " + ExecutableStatus.toString(s));
               if (s == ExecutableStatus.Status.EXITED) {
                 if (this.is_live) {
                   console.log("ERROR!"); //TODO: FIXME
