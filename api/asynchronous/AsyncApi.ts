@@ -27,8 +27,12 @@ export class AsyncApi {
   }
 
   public static hasActionRequest(gameName: string): boolean {
-    console.log(`${gameName} has Request ID ${[...this.actionRequests.get(gameName).keys()].join(',')}`);
-    return this.actionRequests.has(gameName) && this.actionRequests.get(gameName).size > 0;
+    if (this.actionRequests.has(gameName)) {
+      console.log(`${gameName} has Request ID ${[...this.actionRequests.get(gameName).keys()].join(',')}`);
+      return this.actionRequests.has(gameName) && this.actionRequests.get(gameName).size > 0;
+    } else {
+      return false;
+    }
   }
 
   public static getActionRequest(gameName: string): [number, ActionRequest] {
@@ -40,9 +44,10 @@ export class AsyncApi {
     let request = this.actionRequests.get(gameName).get(id)
     if (isUndefined(request)) {
       console.log(`found no request for id ${id}, map was`, this.actionRequests.get(gameName))
+    } else {
+      request.callback(method, action);//Handle things on the client side
+      this.actionRequests.get(gameName).delete(id);//Remove request from list
     }
-    request.callback(method, action);//Handle things on the client side
-    this.actionRequests.get(gameName).delete(id);//Remove request from list
   }
 
   public static lodgeActionRequest(gameName: string, state: GameState, color: PLAYERCOLOR, isFirstAction: boolean, uiHints: UIHint[], callback: (method: ActionMethod, action?: Action) => void) {

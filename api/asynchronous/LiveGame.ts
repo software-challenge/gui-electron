@@ -37,8 +37,6 @@ export class LiveGame extends Game {
     let timeout = 10000;
     setTimeout(() => gameStartError(`game didn't start after ${timeout}ms`), timeout);
     var construct = (async function () {
-      let timeout = 10000;
-      setTimeout(() => gameStartError(`game didn't start after ${timeout}ms`), timeout);
 
       //Register hook to go offline
       AsyncApi.getServer().on('status', s => {
@@ -57,8 +55,13 @@ export class LiveGame extends Game {
       Logger.log("Creating Observer Client");
       this.observer = new ObserverClient();
 
-      this.observer.on('state', s => {
+      this.observer.once('state', s => {
+        Logger.log("First gamestate received, game successfully started");
         gameStartSuccessful();
+      });
+
+      this.observer.on('state', s => {
+        Logger.log("got state");
         this.gameStates.push(s);
         this.emit('state' + (this.gameStates.length - 1), s);
         this.emit('state_update');

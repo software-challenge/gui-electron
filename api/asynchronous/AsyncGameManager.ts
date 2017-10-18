@@ -6,6 +6,7 @@ import { Replay } from './Replay';
 import { AsyncApi } from './AsyncApi';
 import { GameStatus } from '../rules/GameStatus';
 import { TransferableActionRequest } from '../rules/TransferableActionRequest';
+import { Logger } from '../Logger';
 
 export class AsyncGameManager {
   private games: Map<string, Game>;
@@ -51,10 +52,19 @@ export class AsyncGameManager {
         } else {
           this.createLiveGame(content.options);
         }
-        let start_game_response_message = new Message();
-        start_game_response_message.gameName = content.options.gameName;
-        start_game_response_message.message_type = "game started";
-        process.send(start_game_response_message);
+        this.games.get(content.options.gameName).ready.then(() => {
+          Logger.getLogger().log("AsyncGameManager", "start_game", "promise resolved");
+          let start_game_response_message = new Message();
+          start_game_response_message.gameName = content.options.gameName;
+          start_game_response_message.message_type = "game started";
+          process.send(start_game_response_message);
+        }).catch((e) => {
+          let get_status_error_response = new Message();
+          get_status_error_response.message_type = "error";
+          get_status_error_response.message_content = "Tried to start game " + m.gameName + " but got error " + e;
+          process.send(get_status_error_response);
+        });
+
         break;
 
       case "report status": //Get the current state of a game
