@@ -12,6 +12,7 @@ import { GameCreationOptions } from '../api/rules/GameCreationOptions';
 import { Game } from './Game';
 import { LogConsole } from './LogConsole';
 import { Logger } from '../api/Logger';
+import { ErrorPage } from './ErrorPage';
 
 const dialog = remote.dialog;
 const shell = remote.shell;
@@ -21,7 +22,8 @@ enum AppContent {
   Blank,
   GameCreation,
   GameLive,
-  Administration
+  Administration,
+  Error
 }
 
 interface State {
@@ -193,6 +195,10 @@ export class App extends React.Component<any, State> {
         break;
       case AppContent.Blank:
         mainPaneContent = <div id="blank"></div>
+        break;
+      case AppContent.Error:
+        mainPaneContent = <ErrorPage Title="Schlimmer Fehler" Message="Das Programm ist kaputt." />;
+        break;
       default:
         mainPaneContent =
           <div className="main-container">

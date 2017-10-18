@@ -12,7 +12,11 @@ export class GameManagerWorkerInterface {
     var fork: any = child_process.fork; //disable typechecking, one faulty line causes everything to fail
     this.worker = fork(`${__dirname}/../asynchronous/GameManagerWorker.js`, { stdio: ['inherit', 'inherit', 'inherit', 'ipc'] });
     this.worker.on('message', m => {
-      console.log(m);
+      if (m.message_type == "error") {
+        console.error(m);
+      } else {
+        console.log(m);
+      }
     });
   }
 
