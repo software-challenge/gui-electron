@@ -11,7 +11,7 @@ export class Logger {
     if (!this.logger) {
       let path = process.env.SGC_LOG_PATH;
       console.log("creating log in ", path)
-      this.logger = new Logger(false, path);
+      this.logger = new Logger(true, path);
     }
     return this.logger;
   }

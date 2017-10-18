@@ -121,6 +121,11 @@ export class ObserverClient extends GenericClient {
       this.once('state', () => res()); //Wait for state
     });
   }
+
+  setPaused(roomId: string, pause: boolean) {
+    Logger.getLogger().log("ObserverClient", "setPaused", `Setting room ${roomId} to ${pause ? 'paused' : 'unpaused'}`);
+    this.writeData(`<pause roomId="${roomId}" pause="${pause}" />`);//Send request
+  }
 }
 
 export interface RoomReservation {

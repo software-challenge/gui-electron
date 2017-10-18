@@ -35,7 +35,7 @@ export class LiveGame extends Game {
     this.ready = new Promise<void>((res, rej) => { gameStartSuccessful = res; gameStartError = rej; });
     // if the game didn't start after 10 seconds, assume error
     let timeout = 10000;
-    setTimeout(() => gameStartError(`game didn't start after ${timeout}ms`), timeout);
+
 
     var construct = (async function () {
 
@@ -58,11 +58,13 @@ export class LiveGame extends Game {
 
       this.observer.once('state', s => {
         Logger.log("First gamestate received, game successfully started");
+        this.observer.setPaused(this.roomId, false);
         gameStartSuccessful();
       });
 
       this.observer.on('state', s => {
         Logger.log("got state");
+        console.log("got state " + (this.gameStates.length - 1));
         this.gameStates.push(s);
         this.emit('state' + (this.gameStates.length - 1), s);
         this.emit('state_update');
@@ -212,10 +214,12 @@ export class LiveGame extends Game {
 
     }).bind(this);
 
-
-
-
     construct();
+
+    if (gco.firstPlayerType != "External" && gco.secondPlayerType != "External") {//Only time out if no external client
+      setTimeout(() => gameStartError(`game didn't start after ${timeout}ms`), timeout);
+    }
+
   }
 
 
