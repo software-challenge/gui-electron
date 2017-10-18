@@ -63,7 +63,7 @@ export class Logger {
         .message-content{
           overflow: scroll;
           font-size: 12px;
-          max-heigh: 20vh;
+          max-height: 25vh;
         }
         .header{
           font-size: 12px;
