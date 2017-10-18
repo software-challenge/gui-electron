@@ -168,8 +168,15 @@ export class App extends React.Component<any, State> {
       dialog.showErrorBox("Log", "Keine Log-Datei gefunden");
     }*/
     this.setState((prev, _props) => {
-      prev.contentState = AppContent.Log;
+      prev.contentState = AppContent.Empty;
       return prev;
+    });
+    this.forceUpdate();
+    setTimeout(() => { //Dirty hack to force react to actually update
+      this.setState((prev, _props) => {
+        prev.contentState = AppContent.Log;
+        return prev;
+      });
     });
   }
 
