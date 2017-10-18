@@ -191,7 +191,6 @@ export class LiveGame extends Game {
           this.observer.observeRoom(roomId).then(() => {
             Logger.log("Observing room with id " + this.roomId);
           });
-          gameStartSuccessful();
         })
 
         //Start one client
