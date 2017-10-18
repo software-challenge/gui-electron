@@ -11,7 +11,7 @@ export class Logger {
     if (!this.logger) {
       let path = process.env.SGC_LOG_PATH;
       console.log("creating log in ", path)
-      this.logger = new Logger(true, true, path);
+      this.logger = new Logger(false, true, path);
     }
     return this.logger;
   }
@@ -143,7 +143,8 @@ export class Logger {
   }
 
   public log(actor: string, focus: string, message: string) {
-    this.__log(new Date().toLocaleString(), actor, focus, message);
+    let d = new Date();
+    this.__log(d.toLocaleString() + '.' + ('000' + d.getMilliseconds()).slice(-3), actor, focus, message);
   }
 
   public focus(actor: string, focus: string) {
