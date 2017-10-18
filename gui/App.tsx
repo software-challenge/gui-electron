@@ -27,7 +27,8 @@ enum AppContent {
   GameCreation,
   GameLive,
   Administration,
-  Error
+  Error,
+  Log
 }
 
 interface State {
@@ -159,12 +160,17 @@ export class App extends React.Component<any, State> {
   }
 
   private openLogFile() {
+    /*
     let path = Logger.getLogger().getLogFilePath()
     if (path) {
       shell.openItem(path);
     } else {
       dialog.showErrorBox("Log", "Keine Log-Datei gefunden");
-    }
+    }*/
+    this.setState((prev, _props) => {
+      prev.contentState = AppContent.Log;
+      return prev;
+    });
   }
 
   changeGameName(e) {
@@ -201,6 +207,9 @@ export class App extends React.Component<any, State> {
         break;
       case AppContent.Error:
         mainPaneContent = <ErrorPage Title="Schlimmer Fehler" Message="Das Programm ist kaputt." />;
+        break;
+      case AppContent.Log:
+        mainPaneContent = <iframe src={Logger.getLogger().getLogFilePath()} seamless={true} />;
         break;
       default:
         mainPaneContent =
