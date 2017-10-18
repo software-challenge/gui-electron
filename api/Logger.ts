@@ -36,7 +36,7 @@ export class Logger {
   }
 
   public log(actor: string, focus: string, message: string) {
-    this.__log(`${actor}:${focus}:\n${message}\n\n`);
+    this.__log(`[${new Date().toLocaleString()}] ${actor}:${focus}:\n${message}\n\n`);
   }
 
   public focus(actor: string, focus: string) {
