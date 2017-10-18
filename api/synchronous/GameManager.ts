@@ -1,4 +1,3 @@
-import { GameInfo } from './GameInfo';
 import { GameCreationOptions } from '../rules/GameCreationOptions';
 import { GameManagerWorkerInterface } from './GameManagerWorkerInterface';
 import { GameState, Action } from '../rules/HaseUndIgel';
@@ -12,10 +11,18 @@ export class GameManager {
 
   private displayStates: Map<string, number>;
 
+  private gameNamesToIDs: Map<string, string>;
+  private gameIDsToNames: Map<string, string>;
+
+  private nextID: number;
+
   constructor() {
     this.gmwi = new GameManagerWorkerInterface();
     this.bufferedGameTitles = [];
     this.displayStates = new Map<string, number>();
+    this.gameNamesToIDs = new Map<string, string>();
+    this.gameIDsToNames = new Map<string, string>();
+    this.nextID = 0;
   }
 
   /**
@@ -24,18 +31,21 @@ export class GameManager {
    * @param callback 
    */
   public createGame(options: GameCreationOptions, callback: (gameName: string) => void) {
-    this.gmwi.createGameWithOptions(options, name => {
-      var gi = new GameInfo(name);
-      gi.isReplay = options.firstPlayerStartType == "Replay";
-      if (!this.bufferedGameTitles.includes(name)) {
-        this.bufferedGameTitles.push(name);
+    let currentGameID = this.nextID.toString();
+    this.nextID++;
+    this.gameNamesToIDs.set(options.gameName, currentGameID);
+    this.gameIDsToNames.set(currentGameID, options.gameName);
+    options.gameName = currentGameID;
+    this.gmwi.createGameWithOptions(options, id => {
+      if (!this.bufferedGameTitles.includes(this.gameIDsToNames.get(id))) {
+        this.bufferedGameTitles.push(this.gameIDsToNames.get(id));
       }
-      callback(name);
+      callback(this.gameIDsToNames.get(id));
     });
   }
 
   private getState(gameName: string, turn: number, callback: (s: GameState) => void) {
-    this.gmwi.getState(gameName, turn, state => {
+    this.gmwi.getState(this.gameNamesToIDs.get(gameName), turn, state => {
       callback(state);
     });
   }
@@ -46,6 +56,7 @@ export class GameManager {
    */
   private getListOfGames(callback?: (games_list) => void) {
     this.gmwi.getListOfGames(games_list => {
+      games_list = games_list.map(id => this.gameIDsToNames.get(id));
       this.bufferedGameTitles = games_list;
       if (callback) {
         callback(games_list);
@@ -70,26 +81,43 @@ export class GameManager {
   }
 
   public setCurrentDisplayStateOnGame(name: string, turn: number) {
-    this.displayStates.set(name, turn);
+    this.displayStates.set(this.gameNamesToIDs.get(name), turn);
   }
 
   public getCurrentDisplayStateOnGame(name: string) {
-    if (!this.displayStates.has(name)) {
-      this.displayStates.set(name, 0);
+    let id = this.gameNamesToIDs.get(name);
+    if (!this.displayStates.has(id)) {
+      this.displayStates.set(id, 0);
     }
-    return this.displayStates.get(name);
+    return this.displayStates.get(id);
   }
 
   public getGameStatus(name: string, callback: (status: MessageContent.StatusReportContent) => void) {
-    this.gmwi.getStatus(name, callback);
+    this.gmwi.getStatus(this.gameNamesToIDs.get(name), callback);
   }
 
   public sendAction(gameName: string, id: number, method: ActionMethod, action: Action, callback: (gameName: string) => void) {
-    this.gmwi.sendAction(gameName, id, method, action, callback);
+    this.gmwi.sendAction(this.gameNamesToIDs.get(gameName), id, method, action, callback);
   }
 
   public getGameState(gameName: string, turn: number, callback: (state: GameState) => void) {
-    this.gmwi.getState(gameName, turn, callback);
+    this.gmwi.getState(this.gameNamesToIDs.get(gameName), turn, callback);
+  }
+
+  public renameGame(oldName: string, newName: string) {
+    if (oldName == newName) return;
+    let counter = 2;
+    if (this.gameNamesToIDs.has(newName)) {
+      while (this.gameIDsToNames.has(newName + ` (${counter})`)) {
+        counter++;
+      }
+      newName = newName + ` (${counter})`;
+    }
+    let id = this.gameNamesToIDs.get(oldName);
+    this.gameNamesToIDs.delete(oldName);
+    this.gameNamesToIDs.set(newName, id);
+    this.gameIDsToNames.delete(id);
+    this.gameIDsToNames.set(id, newName);
   }
 
 

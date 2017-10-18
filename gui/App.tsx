@@ -162,20 +162,19 @@ export class App extends React.Component<any, State> {
   }
 
   changeGameName(e) {
-    alert('Currently not implemented');
-    /*
     if (e.keyCode == 13) {
       e.preventDefault();
       var newGameName = document.getElementById('gameName').innerText.trim();
       console.log(newGameName);
-      var game = Api.getGameManager().getGame(this.state.activeGame);
-      game.name = newGameName;
-      document.getElementById('gameName').blur();
-      this.setState((prev, _props) => {
-        prev.activeGame = newGameName;
-        return prev;
+      Api.getGameManager().renameGame(this.state.activeGame, newGameName);
+      Api.getGameManager().hasGame(newGameName, () => {
+        document.getElementById('gameName').blur();
+        this.setState((prev, _props) => {
+          prev.activeGame = newGameName;
+          return prev;
+        });
       });
-    }*/
+    }
   }
 
   render() {
@@ -212,7 +211,7 @@ export class App extends React.Component<any, State> {
             <ButtonGroup>
               <Button icon="menu" onClick={() => { this.toggleMenu() }} active={!this.state.menuRetracted} />
             </ButtonGroup>
-            {this.state.contentState == AppContent.GameLive ? <span id="gameName" contentEditable={/*!Api.getGameManager().isReplay(this.state.activeGame)*/ false} onKeyDown={this.changeGameName.bind(this)}></span> : null}
+            {this.state.contentState == AppContent.GameLive ? <span id="gameName" contentEditable={/*!Api.getGameManager().isReplay(this.state.activeGame)*/ true} onKeyDown={this.changeGameName.bind(this)}></span> : null}
             <Button icon="doc-text" onClick={() => { this.toggleConsole() }} pullRight={true} />
           </ToolbarActions>
         </Toolbar>
