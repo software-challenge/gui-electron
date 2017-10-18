@@ -38,18 +38,26 @@ export class Server extends EventEmitter {
   private events: ServerEvent[] = [];
   private status: ExecutableStatus.Status;
   private process;
+  private logbuffer: string;
   ready: Promise<void>;
   //private listeners: ((ServerEvent) => void)[] = [];
 
   constructor(autostart: boolean = true) {
     super();
+    this.logbuffer = "";
+    setInterval(() => {
+      if (this.logbuffer != "") {
+        Logger.getLogger().log("server", "stdout", this.logbuffer);
+        this.logbuffer = "";
+      }
+    }, 500);
     console.log('__dirname ' + __dirname);
     this.status = ExecutableStatus.Status.NOT_STARTED;
 
     this.ready = new Promise((resolve, reject) => {
       try {
         this.on("stdout", s => {
-          Logger.getLogger().log("server", "stdout", s);
+          this.logbuffer += s + "\n";
           if (/ClientManager running/.test(s)) {
             Helpers.log("Server ready");
             resolve();
