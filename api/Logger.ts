@@ -51,8 +51,14 @@ export class Logger {
           }
         </style>
         <script type="text/javascript">
+          function escape(str){
+            return str.replace(/\W/g, '');
+          }
           function filter(){
-
+            let actorName = escape(document.getElementById('actor-filter').value.trim());
+            let focusName = escape(document.getElementById('focus-filter').value.trim());
+            var nodes = document.querySelectorAll('.message');
+            //for(var i = 0; i < )
           }
         </script>
         </head>
@@ -75,11 +81,11 @@ export class Logger {
     if (this.logFile) {
       if (this.logToHTML) {
         fs.appendFile(this.logFile, `
-          <div class="message  ${actor.replace(/\W/g, '')} ${focus.replace(/\W/g, '')}" style="color: ${Logger.StringToColor(focus)}">
+          <div class="message  ${actor.replace(/\W/g, '')} ${focus.replace(/\W/g, '')}">
             <div class="header" style="color: ${Logger.StringToColor(actor)};">
               <span class="timestamp">${timestamp}</span>
               <span class="actor">${actor}</span>
-              <span class="focus">${focus}</span>
+              <span class="focus" style="color: ${Logger.StringToColor(focus)}">${focus}</span>
             </div>
             <pre class="message-content">${(message + "").replace(/\</g, '&lt;').replace(/\>/g, '&gt;').trim()}</pre>
           </div>
