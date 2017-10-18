@@ -229,3 +229,10 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 #gameName[contenteditable="true"]{
   cursor: text;
 }
+
+#waiting{
+  opacity: 0;
+  transition: opacity 0.5s;
+  font-weight: bold;
+  color:red;
+}

@@ -36,6 +36,7 @@ export class LiveGame extends Game {
     // if the game didn't start after 10 seconds, assume error
     let timeout = 10000;
     setTimeout(() => gameStartError(`game didn't start after ${timeout}ms`), timeout);
+
     var construct = (async function () {
 
       //Register hook to go offline
@@ -93,22 +94,7 @@ export class LiveGame extends Game {
        */
       let pause = false;
 
-      //Create room
-      let firstCanTimeout = gco.firstPlayerType != "Human";
-      let firstShouldBePaused = pause;
-      let secondCanTimeout = gco.secondPlayerType != "Human";
-      let secondShouldBePaused = pause;
-      var p1 = new PlayerClientOptions(gco.firstPlayerName, firstCanTimeout, firstShouldBePaused);
-      var p2 = new PlayerClientOptions(gco.secondPlayerName, secondCanTimeout, secondShouldBePaused);
 
-      var reservation: RoomReservation = await this.observer.prepareRoom(p1, p2);
-      this.roomId = reservation.roomId;
-
-      Logger.log("Reserved room with id " + this.roomId);
-
-      //Observe room
-      await this.observer.observeRoom(reservation.roomId);
-      Logger.log("Observing room with id " + this.roomId);
 
       let configureClient = ((type: PlayerType, startType: StartType, name: string, path: string, reservation: string): GameClient => {
         switch (type) {
@@ -168,14 +154,62 @@ export class LiveGame extends Game {
         }
       });
 
-      this.client1 = configureClient(gco.firstPlayerType, gco.firstPlayerStartType, gco.firstPlayerName, gco.firstPlayerPath, reservation.reservation1);
-      this.client2 = configureClient(gco.secondPlayerType, gco.secondPlayerStartType, gco.secondPlayerName, gco.secondPlayerPath, reservation.reservation2);
+      //Create room
+      let firstCanTimeout = gco.firstPlayerType != "Human";
+      let firstShouldBePaused = pause;
+      let secondCanTimeout = gco.secondPlayerType != "Human";
+      let secondShouldBePaused = pause;
+      var p1 = new PlayerClientOptions(gco.firstPlayerName, firstCanTimeout, firstShouldBePaused);
+      var p2 = new PlayerClientOptions(gco.secondPlayerName, secondCanTimeout, secondShouldBePaused);
 
-      // wait for clients to start
-      // NOTE that the order of resolution of the connect-promises is arbitrary
-      await Promise.all([this.client1.start(), this.client2.start()]).catch((reason) => gameStartError(reason));
+      let needsToReserveRoom: boolean = gco.firstPlayerType != "External" && gco.secondPlayerType != "External";
 
-      this.is_live = true;
+      if (needsToReserveRoom) {
+        console.log("automatic game");
+        var reservation: RoomReservation = await this.observer.prepareRoom(p1, p2);
+        this.roomId = reservation.roomId;
+
+        Logger.log("Reserved room with id " + this.roomId);
+
+        //Observe room
+        await this.observer.observeRoom(reservation.roomId);
+        Logger.log("Observing room with id " + this.roomId);
+
+        this.client1 = configureClient(gco.firstPlayerType, gco.firstPlayerStartType, gco.firstPlayerName, gco.firstPlayerPath, reservation.reservation1);
+        this.client2 = configureClient(gco.secondPlayerType, gco.secondPlayerStartType, gco.secondPlayerName, gco.secondPlayerPath, reservation.reservation2);
+
+        // wait for clients to start
+        // NOTE that the order of resolution of the connect-promises is arbitrary
+        await Promise.all([this.client1.start(), this.client2.start()]).catch((reason) => gameStartError(reason));
+        this.is_live = true;
+      } else {
+        console.log("manual game");
+        let auto_client;
+        this.observer.awaitJoinGameRoom().then(roomId => {
+          this.roomId = roomId;
+          //Observe room
+          this.observer.observeRoom(roomId).then(() => {
+            Logger.log("Observing room with id " + this.roomId);
+          });
+        })
+
+        //Start one client
+        if (gco.firstPlayerType == "External") {
+          this.client2 = configureClient(gco.secondPlayerType, gco.secondPlayerStartType, gco.secondPlayerName, gco.secondPlayerPath, undefined);
+          auto_client = this.client2;
+        } else {
+          this.client1 = configureClient(gco.firstPlayerType, gco.firstPlayerStartType, gco.firstPlayerName, gco.firstPlayerPath, undefined);
+          auto_client = this.client1;
+        }
+
+        auto_client.start().then(() => {
+          this.is_live = true;
+        }).catch((reason) => gameStartError(reason));
+      }
+
+
+
+
     }).bind(this);
 
 

@@ -99,6 +99,9 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
   // is called when the user wants to start a game with a valid configuration
   private handleStartGame() {
     window.localStorage[localStorageCreationOptions] = JSON.stringify(this.state);
+    if (this.state.firstPlayerType == "External" || this.state.secondPlayerType == "External") {
+      document.getElementById('waiting').style.opacity = "1";
+    }
     this.gameCreationCallback(
       new GameCreationOptions(
         this.state.firstPlayerType,
@@ -156,10 +159,10 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
     );
     var startControl;
     if (this.validConfiguration()) {
-      if (this.state.firstPlayerType != "External" && this.state.secondPlayerType != "External") {
-        startControl = <Button text="Start!" pullRight={true} onClick={() => this.handleStartGame()} />;
+      if (this.state.firstPlayerType == "External" && this.state.secondPlayerType == "External") {
+        startControl = <p>Aktuell sind Spiele mit zwei externen Clients noch nicht unterstuetzt!</p>
       } else {
-        startControl = <p>Aktuell sind Spiele mit externen Clients noch nicht unterstuetzt!</p>
+        startControl = <Button text="Start!" pullRight={true} onClick={() => this.handleStartGame()} />;
       }
     } else {
       startControl = <p>Ungueltige Einstellungen!</p>
@@ -175,6 +178,9 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
         {secondPlayerControl}
         <div id="start">
           {startControl}
+        </div>
+        <div id="waiting">
+          Warte auf manuellen Spieler
         </div>
       </div>
     );
