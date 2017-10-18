@@ -10,3 +10,4 @@ socha
 *.log
 out
 dist
+*.log.html

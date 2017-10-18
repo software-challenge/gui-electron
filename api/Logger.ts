@@ -43,12 +43,49 @@ export class Logger {
         <html>
         <head>
         <style>
-          #log{
-            font-family: sans-serif;
-          }
-          .hidden{
-            display: none;
-          }
+        #log{
+          font-family: sans-serif;
+          width: 90%;
+          margin-left: auto;
+          margin-right: auto;
+          margin-top: auto;
+        }
+        .hidden{
+          display: none;
+        }
+        .message{
+          margin: 8px;
+          background-color: #eee;
+          padding: 6px;
+          border-radius: 4px;
+        }
+        .message-content{
+          overflow-x: scroll;
+          font-size: 12px;
+        }
+        .header{
+          font-size: 12px;
+          font-family: monospace;
+        }
+        .actor{
+          font-weight: 900;
+        }
+        .timestamp{
+          opacity: .7;
+        }
+        #filter {
+          background-color: #eee;
+          top: 0px;
+          padding: 8px;
+          width: 100vw;
+        }
+        body {
+          margin: 0px;
+          padding: 0px;
+          width: 100vw;
+          height: 100vh;
+          overflow-x: hidden;
+        }
         </style>
         <script type="text/javascript">
           function escape(str){
