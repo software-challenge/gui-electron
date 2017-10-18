@@ -37,6 +37,9 @@ export class LiveGame extends Game {
     let timeout = 10000;
     setTimeout(() => gameStartError(`game didn't start after ${timeout}ms`), timeout);
     var construct = (async function () {
+      let timeout = 10000;
+      setTimeout(() => gameStartError(`game didn't start after ${timeout}ms`), timeout);
+
       //Register hook to go offline
       AsyncApi.getServer().on('status', s => {
         if (s == ExecutableStatus.Status.EXITED) {
@@ -65,7 +68,7 @@ export class LiveGame extends Game {
         gameStartSuccessful();
         this.gameResult = r;
         this.is_live = false;
-      })
+      });
 
       this.observer.on('message', msg => {
         let m: ConsoleMessage = {
@@ -104,7 +107,7 @@ export class LiveGame extends Game {
       await this.observer.observeRoom(reservation.roomId);
       Logger.log("Observing room with id " + this.roomId);
 
-      let configureClient = (type: PlayerType, startType: StartType, name: string, path: string, reservation: string): GameClient => {
+      let configureClient = ((type: PlayerType, startType: StartType, name: string, path: string, reservation: string): GameClient => {
         switch (type) {
           case "Computer":
             let executableClient;
@@ -160,10 +163,10 @@ export class LiveGame extends Game {
           case "External":
             throw "TODO";
         }
-      }
+      });
 
-      this.client1 = configureClient(gco.firstPlayerType, gco.firstPlayerStartType, gco.firstPlayerName, gco.firstPlayerPath, reservation.reservation1)
-      this.client2 = configureClient(gco.secondPlayerType, gco.secondPlayerStartType, gco.secondPlayerName, gco.secondPlayerPath, reservation.reservation2)
+      this.client1 = configureClient(gco.firstPlayerType, gco.firstPlayerStartType, gco.firstPlayerName, gco.firstPlayerPath, reservation.reservation1);
+      this.client2 = configureClient(gco.secondPlayerType, gco.secondPlayerStartType, gco.secondPlayerName, gco.secondPlayerPath, reservation.reservation2);
 
       // wait for clients to start
       // NOTE that the order of resolution of the connect-promises is arbitrary
@@ -172,8 +175,12 @@ export class LiveGame extends Game {
       this.is_live = true;
     }).bind(this);
 
+
+
+
     construct();
   }
+
 
   getMessages(): ConsoleMessage[] {
     return this.messages;
@@ -226,6 +233,8 @@ export class LiveGame extends Game {
       console.log("The file was saved!");
     });
   }
+
+
 }
 
 
