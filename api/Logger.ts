@@ -42,6 +42,7 @@ export class Logger {
         fs.writeFileSync(this.logFile, `
         <html>
         <head>
+        <meta charset="utf-8"/>
         <style>
         #log{
           font-family: sans-serif;
@@ -94,15 +95,22 @@ export class Logger {
           function filter(){
             let actorName = escape(document.getElementById('actor-filter').value.trim());
             let focusName = escape(document.getElementById('focus-filter').value.trim());
+
             var nodes = document.querySelectorAll('.message');
-            //for(var i = 0; i < )
+            for(var i = 0; i < nodes.length; i++){
+              if((actorName == "" || nodes[i].getAttribute('actor').indexOf(actorName) != -1) && (focusName == "" || nodes[i].getAttribute('focus').indexOf(focusName) != -1)){
+                nodes[i].classList.remove('hidden');
+              }else{
+                nodes[i].classList.add('hidden');
+              }
+            }
           }
         </script>
         </head>
         <body>
         <div id="filter">
-          Actor: <input type="text" id="actor-filter" onchange="filter();" /><br/>
-          Focus: <input type="text" id="focus-filter" onchange="filter();" />
+          Actor: <input type="text" id="actor-filter" onkeydown="filter();" onblur="filter();" /><br/>
+          Focus: <input type="text" id="focus-filter" onkeydown="filter();" onblur="filter();"/>
         </div>
         <div id="log">
         `);
@@ -118,7 +126,7 @@ export class Logger {
     if (this.logFile) {
       if (this.logToHTML) {
         fs.appendFile(this.logFile, `
-          <div class="message  ${actor.replace(/\W/g, '')} ${focus.replace(/\W/g, '')}">
+          <div class="message" actor="${actor.replace(/\W/g, '')}" focus="${focus.replace(/\W/g, '')}">
             <div class="header" style="color: ${Logger.StringToColor(actor)};">
               <span class="timestamp">${timestamp}</span>
               <span class="actor">${actor}</span>
