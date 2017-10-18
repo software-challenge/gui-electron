@@ -44,12 +44,20 @@ export class Logger {
         <head>
         <meta charset="utf-8"/>
         <style>
+        input{
+          margin: 4px;
+          background-color: #fff;
+          border: 1px solid #fff;
+          border-radius: 4px;
+          font-family: monospace;
+          font-size: 12px;
+        }
         #log{
           font-family: sans-serif;
           width: 90%;
           margin-left: auto;
           margin-right: auto;
-          margin-top: auto;
+          margin-top: 76px;
         }
         .hidden{
           display: none;
@@ -76,10 +84,15 @@ export class Logger {
           opacity: .7;
         }
         #filter {
+          position: fixed;
+          font-family: sans;
           background-color: #eee;
           top: 0px;
           padding: 8px;
-          width: 100vw;
+          width: calc(100vw - 16px);
+          text-align: right;
+          font-size: 12px;
+          height: 52px;
         }
         body {
           margin: 0px;
