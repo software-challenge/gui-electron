@@ -193,14 +193,13 @@ export class LiveGame extends Game {
             Logger.log("Observing room with id " + this.roomId);
           });
 
-          //Disable timeout if human
-          if (auto_client_is_human_client) {
-            Logger.log("Disabling timeout for human client in slot 1");
-            this.observer.setTimeoutEnabled(this.roomId, 1, false);
-          }
-
           //Add client to room
           auto_client.start().then(() => {
+            //Disable timeout if human
+            if (auto_client_is_human_client) {
+              Logger.log("Disabling timeout for human client in slot 1");
+              this.observer.setTimeoutEnabled(this.roomId, 1, false);
+            }
             this.is_live = true;
           }).catch((reason) => gameStartError(reason));
         });
