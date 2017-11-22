@@ -80,7 +80,7 @@ export class ObserverClient extends GenericClient {
   }
 
   observeRoom(roomId: string): Promise<void> {
-    return new Promise((res, rej) => {
+    return new Promise<void>((res, rej) => {
       this.writeData(`<observe roomId="${roomId}" passphrase="${PASSPHRASE}" />`);//Send request
       this.once('message', d => {//Wait for answer
         d = d.toString(); //Stringify buffer
@@ -116,7 +116,7 @@ export class ObserverClient extends GenericClient {
 
   requestStep(roomId: string, forced: boolean = true): Promise<void> {
     Logger.getLogger().log("ObserverClient", "requestStep", "Requesting next step for room with id " + roomId + "(forced=" + forced + ")");
-    return new Promise((res, rej) => {
+    return new Promise<void>((res, rej) => {
       this.writeData(`<step roomId="${roomId}" forced="${forced}" />`);//Send request
       this.once('state', () => res()); //Wait for state
     });
@@ -125,6 +125,11 @@ export class ObserverClient extends GenericClient {
   setPaused(roomId: string, pause: boolean) {
     Logger.getLogger().log("ObserverClient", "setPaused", `Setting room ${roomId} to ${pause ? 'paused' : 'unpaused'}`);
     this.writeData(`<pause roomId="${roomId}" pause="${pause}" />`);//Send request
+  }
+
+  setTimeoutEnabled(roomId: string, slot: 0 | 1, enabled: boolean) {
+    Logger.getLogger().log("ObserverClient", "setTimeoutEnabled", `Setting timeout in ${roomId} and slot ${slot} to ${enabled ? 'enabled' : 'disabled'}`);
+    this.writeData(`<timeout activate="${enabled}" roomId="${roomId}" slot="${slot}" />`);
   }
 }
 

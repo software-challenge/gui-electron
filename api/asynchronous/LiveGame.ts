@@ -165,7 +165,7 @@ export class LiveGame extends Game {
       let needsToReserveRoom: boolean = gco.firstPlayerType != "External" && gco.secondPlayerType != "External";
 
       if (needsToReserveRoom) {
-        console.log("automatic game");
+        Logger.log("Starting automatic game");
         var reservation: RoomReservation = await this.observer.prepareRoom(p1, p2);
         this.roomId = reservation.roomId;
 
@@ -183,28 +183,44 @@ export class LiveGame extends Game {
         await Promise.all([this.client1.start(), this.client2.start()]).catch((reason) => gameStartError(reason));
         this.is_live = true;
       } else {
-        console.log("manual game");
-        let auto_client;
+        Logger.log("Starting manual game");
+        let auto_client: GameClient;
+        let auto_client_is_human_client: boolean = false;;
         this.observer.awaitJoinGameRoom().then(roomId => {
           this.roomId = roomId;
           //Observe room
           this.observer.observeRoom(roomId).then(() => {
             Logger.log("Observing room with id " + this.roomId);
           });
-        })
 
-        //Start one client
+          //Disable timeout if human
+          if (auto_client_is_human_client) {
+            Logger.log("Disabling timeout for human client in slot 1");
+            this.observer.setTimeoutEnabled(this.roomId, 1, false);
+          }
+
+          //Add client to room
+          auto_client.start().then(() => {
+            this.is_live = true;
+          }).catch((reason) => gameStartError(reason));
+        });
+
+        //Configure one client
         if (gco.firstPlayerType == "External") {
           this.client2 = configureClient(gco.secondPlayerType, gco.secondPlayerStartType, gco.secondPlayerName, gco.secondPlayerPath, undefined);
+          if (gco.secondPlayerType == "Human") {
+            auto_client_is_human_client = true;
+          }
           auto_client = this.client2;
         } else {
           this.client1 = configureClient(gco.firstPlayerType, gco.firstPlayerStartType, gco.firstPlayerName, gco.firstPlayerPath, undefined);
+          if (gco.firstPlayerType == "Human") {
+            auto_client_is_human_client = true;
+          }
           auto_client = this.client1;
         }
 
-        auto_client.start().then(() => {
-          this.is_live = true;
-        }).catch((reason) => gameStartError(reason));
+
       }
 
 
