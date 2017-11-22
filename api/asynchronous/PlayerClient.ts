@@ -65,7 +65,11 @@ export class GenericPlayer extends GenericClient {
 
   joinPrepared(reservation: string): Promise<Array<any>> {
     let requestJoin = new Promise((resolve, reject) => {
-      this.writeData(`<protocol><joinPrepared reservationCode="${reservation}" />`, resolve);
+      if (reservation) {
+        this.writeData(`<protocol><joinPrepared reservationCode="${reservation}" />`, resolve);
+      } else {
+        this.writeData(`<protocol><join gameType="swc_2018_hase_und_igel"/>`, resolve);
+      }
     });
     this.joinRequest = Promise.all([requestJoin, new Promise((resolve, reject) => { this.joined = resolve; })]);
     return this.joinRequest;
