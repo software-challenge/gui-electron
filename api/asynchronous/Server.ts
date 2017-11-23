@@ -6,11 +6,12 @@ import { Logger } from '../Logger';
 //import * as events from "events"
 import { EventEmitter } from "events";
 import { remote } from "electron";
+require ('hazardous'); // important to get the paths right in distributed app
 import path = require("path");
 
 //const EventEmitter: NodeJS.EventEmitter = require('events');
 
-const SERVER_CWD = "../../../server"; // naked directory name
+const SERVER_CWD = "server"; // naked directory name NOTE: don't use any paths here! They change when the app is distributed and break server spawning
 const SERVER_NAME = "softwarechallenge-server.jar"
 
 import { spawn } from 'child_process';
@@ -83,7 +84,10 @@ export class Server extends EventEmitter {
     this.events = [];
     this.stop();
     console.log("Starting server (server should reside in ./server directory)");
-    this.process = spawn('java', ['-jar', SERVER_NAME], { cwd: path.join(__dirname, SERVER_CWD) });
+    // NOTE that the path will be different when the app is distributed!
+    var cwd = path.join(__dirname, "..", "..", "..", SERVER_CWD);
+    console.log("cwd: " + cwd);
+    this.process = spawn('java', ['-jar', SERVER_NAME], { cwd: cwd });
     this.setStatus(ExecutableStatus.Status.RUNNING);
     this.process.stdout.on('data', (data) => {
       // XXX
