@@ -33,7 +33,7 @@ export class Logger {
 
   constructor(logToConsole: boolean, logToHTML: boolean = true, logFile?: string) {
     if (logFile) {
-      this.logFile = logFile;
+      this.logFile = './test.log';
     }
     this.logToHTML = logToHTML;
     if (logToHTML) {
