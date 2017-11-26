@@ -1,6 +1,7 @@
 import { Game } from '../rules/Game';
 import { GameState, GameResult } from '../rules/HaseUndIgel';
 import { Parser } from './Parser';
+import { Logger } from '../Logger';
 
 export class Replay extends Game {
   constructor(replayFilePath: string, name: string) {
@@ -29,7 +30,7 @@ export class Replay extends Game {
                   this.gameResult = GameResult.fromJSON(result);
                 }
               }
-              console.log(`loaded ${this.gameStates.length} states from ${replayFilePath}`);
+              Logger.getLogger().log("Replay", "constructor", `loaded ${this.gameStates.length} states from ${replayFilePath}`);
             }
           }
           gameReady();

@@ -51,7 +51,7 @@ export class GenericPlayer extends GenericClient {
           break;
         case 'error':
           var message = decoded.room.data[0].$.message;
-          console.log(decoded.room);
+          Logger.getLogger().logObject("PlayerClient", "handleMessage", "Received Error:", decoded.room);
           this.emit('error', message);
           break;
         case 'result':
@@ -60,7 +60,7 @@ export class GenericPlayer extends GenericClient {
         default:
           throw `Unknown data class: ${decoded.room.data[0]['$'].class}\n\n${JSON.stringify(decoded)}`;
       }
-    }).catch(error => console.log("Error in Parser.getJSONFromXML: " + error));
+    }).catch(error => Logger.getLogger().log("PlayerClient", "handleMessage", "Error in Parser.getJSONFromXML: " + error));
   }
 
   joinPrepared(reservation: string): Promise<Array<any>> {

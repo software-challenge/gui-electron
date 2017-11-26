@@ -10,6 +10,8 @@ import { UIHint } from '../rules/UIHint';
 
 import { LiveGame } from './LiveGame'
 
+import { Logger } from '../Logger';
+
 //const dialog = remote.dialog;
 
 export class HumanClient extends GenericPlayer implements GameClient {
@@ -23,7 +25,7 @@ export class HumanClient extends GenericPlayer implements GameClient {
     this.reservation = reservation;
     this.game = game;
     this.on('welcome', welcomeMessage => {
-      console.log(name + " got welcome message: ", welcomeMessage)
+      Logger.getLogger().log("HumanClient", "welcome", name + ` got welcome message: ${JSON.stringify(welcomeMessage, null, 4)}`);
       this.color = welcomeMessage.mycolor;
       this.roomId = welcomeMessage.roomId;
     });
@@ -33,7 +35,7 @@ export class HumanClient extends GenericPlayer implements GameClient {
   }
 
   handleMoveRequest = async function () {
-    console.log("handling move request");
+    Logger.getLogger().log("HumanClient", "handleMoveRequest", "handling move request");
 
     //1. Build move
 
@@ -49,7 +51,7 @@ export class HumanClient extends GenericPlayer implements GameClient {
               try {
                 action.perform(actionState);
               } catch (error) {
-                console.log("ERROR: " + error);
+                Logger.getLogger().log("HumanClient", "handleMoveRequest", "ERROR: " + error);
                 move.pop();
                 return; //aka continue;
               }
@@ -111,13 +113,13 @@ export class HumanClient extends GenericPlayer implements GameClient {
   }
 
   start(): Promise<any> {
-    console.log("Human player starting");
+    Logger.getLogger().log("HumanClient", "start", "Human player starting");
     return this.joinPrepared(this.reservation)
   }
 
   stop() {
     var stop = async function () {
-      console.log("Human player stopped")
+      Logger.getLogger().log("HumanClient", "stop", "Human player stopped")
     }.bind(this);
     return stop();
   }

@@ -1,4 +1,5 @@
 import { GenericPlayer } from './PlayerClient';
+import { Logger } from '../Logger';
 
 import { GameState, Player, PLAYERCOLOR } from '../rules/HaseUndIgel';
 
@@ -18,7 +19,7 @@ export class SimpleClient extends GenericPlayer {
     });
 
     this.on('moverequest', () => {
-      console.log("Move requested");
+      Logger.getLogger().log("SimpleClient", "moverequest", "Move requested");
     })
 
   }

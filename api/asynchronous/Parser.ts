@@ -1,6 +1,6 @@
 
 import { parseString } from 'xml2js';
-
+import { Logger } from '../Logger';
 
 export module Parser {
 
@@ -15,7 +15,7 @@ export module Parser {
     return new Promise((res, rej) => {
       parseString(xml, function (err, result) {
         if (err) {
-          console.log("Error parsing xml:\n\n" + xml);
+          Logger.getLogger().log("Parser", "getJSONFromXML", "Error parsing xml:\n\n" + xml);
           rej(err);
         } else {
           res(result);

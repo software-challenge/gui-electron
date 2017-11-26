@@ -36,7 +36,6 @@ export class ExecutableClient extends EventEmitter implements GameClient {
 
   start(): Promise<void> {
     this.ready = new Promise((res, rej) => {
-      console.log("Starting", this.program, this.arguments)
       Logger.getLogger().log("ExecutableClient", "spawn", `${this.program} ${this.arguments.join(' ')} (cwd: ${this.workingDirectory})`);
       let options = {
         cwd: this.workingDirectory,
@@ -70,7 +69,7 @@ export class ExecutableClient extends EventEmitter implements GameClient {
 
   stop() {
     if (this.process != null) {
-      console.log("Stopping server");
+      Logger.getLogger().log("ExecutableClient", "stop", "Stopping client");
       this.process.kill();
       this.setStatus(ExecutableStatus.Status.EXITED);
       this.process = null;
@@ -78,7 +77,7 @@ export class ExecutableClient extends EventEmitter implements GameClient {
   }
 
   private setStatus(s: ExecutableStatus.Status) {
-    console.log("Status change of " + this.program + ": " + ExecutableStatus.toString(s));
+    Logger.getLogger().log("ExecutableClient", "setStatus", "Status change of " + this.program + ": " + ExecutableStatus.toString(s));
     this.status = s;
     this.emit('status', s);
   }

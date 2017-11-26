@@ -42,16 +42,6 @@ export class ObserverClient extends GenericClient {
         }
       });
 
-      this.on('message', m => {
-        m = m.toString();
-        if (/joinedGameRoom/.test(m)) {
-          m = m.replace('<protocol>', ''); //Strip unmatched protocol tag
-          Parser.getJSONFromXML(m).then(res => {//Convert to JSON object
-            console.log("Got joinedGameRoom: " + res);
-          });
-        }
-      });
-
 
 
 
@@ -64,13 +54,12 @@ export class ObserverClient extends GenericClient {
     return new Promise((res, rej) => {
       let l = (m) => {
         m = m.toString();
-        console.log("m");
         if (/joinedGameRoom/.test(m)) {
           this.removeListener('message', l);
           m = m.replace('<protocol>', ''); //Strip unmatched protocol tag
           Parser.getJSONFromXML(m).then(result => {//Convert to JSON object
             let roomId = result.joinedGameRoom.$.roomId
-            console.log("joined game room " + roomId);
+            Logger.getLogger().log("ObserverClient", "awaitJoinGameRoom", "joined game room " + roomId);
             res(roomId);
           });
         }

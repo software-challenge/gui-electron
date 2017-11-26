@@ -4,6 +4,7 @@ import { GameState, PLAYERCOLOR, Action } from '../rules/HaseUndIgel';
 import { AsyncGameManager } from './AsyncGameManager';
 import { UIHint } from '../rules/UIHint';
 import { ActionMethod } from '../rules/ActionMethod';
+import { Logger } from '../Logger';
 
 export class AsyncApi {
   private static server: Server;
@@ -28,7 +29,7 @@ export class AsyncApi {
 
   public static hasActionRequest(gameName: string): boolean {
     if (this.actionRequests.has(gameName)) {
-      console.log(`${gameName} has Request ID ${[...this.actionRequests.get(gameName).keys()].join(',')}`);
+      Logger.getLogger().log('AsyncApi', 'hasActionRequest', `${gameName} has Request ID ${[...this.actionRequests.get(gameName).keys()].join(',')}`);
       return this.actionRequests.has(gameName) && this.actionRequests.get(gameName).size > 0;
     } else {
       return false;
@@ -40,10 +41,10 @@ export class AsyncApi {
   }
 
   public static redeemActionRequest(gameName: string, id: number, method: ActionMethod, action?: Action) {
-    console.log(`redeemActionRequest for game ${gameName}, id ${id}, map: `, this.actionRequests.get(gameName))
-    let request = this.actionRequests.get(gameName).get(id)
+    Logger.getLogger().log('AsyncApi', 'redeemActionRequest', `redeemActionRequest for game ${gameName}, id ${id}, map: ${JSON.stringify(this.actionRequests.get(gameName), null, 4)}`);
+    let request = this.actionRequests.get(gameName).get(id);
     if (isUndefined(request)) {
-      console.log(`found no request for id ${id}, map was`, this.actionRequests.get(gameName))
+      Logger.getLogger().log('AsyncApi', 'redeemActionRequest', `found no request for id ${id}, map was  ${JSON.stringify(this.actionRequests.get(gameName), null, 4)}`);
     } else {
       request.callback(method, action);//Handle things on the client side
       this.actionRequests.get(gameName).delete(id);//Remove request from list

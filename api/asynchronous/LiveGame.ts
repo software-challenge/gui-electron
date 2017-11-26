@@ -13,6 +13,7 @@ import { HumanClient } from './HumanClient';
 import { EventEmitter } from "events";
 import { Helpers } from '../Helpers';
 import { Game } from '../rules/Game';
+import { Logger } from '../Logger';
 //const dialog = remote.dialog;
 
 export class LiveGame extends Game {
@@ -139,7 +140,7 @@ export class LiveGame extends Game {
               SC_Logger.getLogger().log("Game Client", `${name}:status`, "status changed to " + ExecutableStatus.toString(s));
               if (s == ExecutableStatus.Status.EXITED) {
                 if (this.is_live) {
-                  console.log("ERROR!"); //TODO: FIXME
+                  //TODO: FIXME
                   //dialog.showErrorBox("Spielerstellung", "Client " + name + " hat sich beendet.");
                   gameStartError(`client "${name}" exited.`);
                 }
@@ -282,9 +283,10 @@ export class LiveGame extends Game {
     }
     fs.writeFile(path, data, function (err) {
       if (err) {
-        return console.log(err);
+        Logger.getLogger().log("LiveGame", "saveReplay", "Error saving replay: " + err);
+        return err;
       }
-      console.log("The file was saved!");
+      Logger.getLogger().log("LiveGame", "saveReplay", "Replay saved in " + path);
     });
   }
 

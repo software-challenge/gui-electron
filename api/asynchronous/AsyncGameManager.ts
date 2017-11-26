@@ -111,12 +111,9 @@ export class AsyncGameManager {
         break;
 
       case "get state":
-        console.log("get state");
         let state_content: MessageContent.GetStateContent = m.message_content;
         if (this.games.has(m.gameName)) {
-          console.log(m.gameName, state_content.turn);
           this.games.get(m.gameName).getState(state_content.turn).then(gs => {
-            console.log("got state");
             let get_state_response = new Message();
             get_state_response.gameName = m.gameName;
             get_state_response.message_type = "gamestate";
@@ -135,7 +132,6 @@ export class AsyncGameManager {
       case "send action":
         let action_content: MessageContent.SendActionContent = m.message_content;
         if (this.games.has(m.gameName)) {
-          console.log("Message: \n" + JSON.stringify(m, null, '\t'));
           AsyncApi.redeemActionRequest(m.gameName, action_content.id, action_content.actionMethod, action_content.action);
           let send_action_response = new Message();
           send_action_response.gameName = m.gameName;

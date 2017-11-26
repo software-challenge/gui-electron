@@ -4,6 +4,8 @@ import { GameState, Action } from '../rules/HaseUndIgel';
 import { Message, MessageContent } from '../rules/Message';
 import { ActionMethod } from '../rules/ActionMethod';
 import { Logger } from '../Logger';
+import * as treekill from 'tree-kill';
+
 
 import * as child_process from "child_process";
 export class GameManagerWorkerInterface {
@@ -131,10 +133,17 @@ export class GameManagerWorkerInterface {
     this.worker.on('message', l);
   }
 
+  private hasStopped = false;
+
   stop() {
     let m = new Message();
     m.message_type = "stop";
     this.worker.send(m);
+    this.worker.on('message', m => {
+      if (m.message_type == "stopped") {
+        treekill(this.worker.pid);
+      }
+    });
   }
 
 }
