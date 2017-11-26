@@ -6,7 +6,7 @@ import { Logger } from '../Logger';
 //import * as events from "events"
 import { EventEmitter } from "events";
 import { remote } from "electron";
-require ('hazardous'); // important to get the paths right in distributed app
+require('hazardous'); // important to get the paths right in distributed app
 import path = require("path");
 
 //const EventEmitter: NodeJS.EventEmitter = require('events');
@@ -15,6 +15,7 @@ const SERVER_CWD = "server"; // naked directory name NOTE: don't use any paths h
 const SERVER_NAME = "softwarechallenge-server.jar"
 
 import { spawn } from 'child_process';
+import * as treekill from 'tree-kill';
 
 const cp = require('child_process');
 
@@ -52,7 +53,6 @@ export class Server extends EventEmitter {
         this.logbuffer = "";
       }
     }, 500);
-    console.log('__dirname ' + __dirname);
     this.status = ExecutableStatus.Status.NOT_STARTED;
 
     this.ready = new Promise((resolve, reject) => {
@@ -79,14 +79,15 @@ export class Server extends EventEmitter {
   }
 
   start() {
+    this.hasExited = false;
     this.stdout = [];
     this.stderr = [];
     this.events = [];
     this.stop();
-    console.log("Starting server (server should reside in ./server directory)");
+    Logger.getLogger().log("Server", "start", "Starting server (server should reside in ./server directory)");
     // NOTE that the path will be different when the app is distributed!
     var cwd = path.join(__dirname, "..", "..", "..", SERVER_CWD);
-    console.log("cwd: " + cwd);
+    Logger.getLogger().log("Server", "start", "cwd: " + cwd);
     this.process = spawn('java', ['-jar', SERVER_NAME], { cwd: cwd });
     this.setStatus(ExecutableStatus.Status.RUNNING);
     this.process.stdout.on('data', (data) => {
@@ -109,12 +110,25 @@ export class Server extends EventEmitter {
     });
   }
 
+  private hasExited = false;
+
   stop() {
     if (this.process != null) {
-      console.log("Stopping server");
-      this.process.kill();
+      Logger.getLogger().log("Server", "stop", "    this.worker.kill();*/Stopping server. Current Status: " + ExecutableStatus.toString(this.getStatus()) + " current pid: " + this.process.pid);
+
+      this.process.stdin.pause();
+      this.process.stdout.pause();
+      this.process.stderr.pause();
+
+      let pid = this.process.pid;
+
+      treekill(pid);
+
       this.setStatus(ExecutableStatus.Status.EXITED);
+
+
       this.process = null;
+      Logger.getLogger().log("Server", "stop", "terminated");
     }
   }
 

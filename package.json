@@ -53,6 +53,7 @@
     "react-dom": "^15.6.1",
     "react-photonkit": "^0.4.1",
     "sax": "^1.2.4",
+    "tree-kill": "^1.2.0",
     "xml2js": "^0.4.17"
   },
   "devDependencies": {

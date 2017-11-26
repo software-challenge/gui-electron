@@ -2,6 +2,7 @@ import * as React from 'react';
 import { render } from 'react-dom';
 import { App } from './App';
 import { Api } from '../api/Api';
+import { Logger } from '../api/Logger';
 
 var loadedCSS: string[] = [];
 
@@ -16,6 +17,8 @@ export function loadCSS(filename: string) {
 }
 
 export function main() {
+  Logger.injectLineNumbersIntoConsoleLog();
+  var hasExited: boolean = false;
   window.addEventListener("beforeunload", () => {
     Api.stop();
   })
