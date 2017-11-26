@@ -32,9 +32,6 @@ export class Logger {
 
 
   constructor(logToConsole: boolean, logToHTML: boolean = true, logFile?: string) {
-    if (logFile) {
-      this.logFile = './test.log';
-    }
     this.logToHTML = logToHTML;
     if (logToHTML) {
       this.logFile = this.logFile + ".html";
@@ -161,6 +158,10 @@ export class Logger {
     this.__log(d.toLocaleString() + '.' + ('000' + d.getMilliseconds()).slice(-3), actor, focus, message);
   }
 
+  public logObject(actor: string, focus: string, message: string, object: any) {
+    this.log(actor, focus, message + "\n" + JSON.stringify(object, null, 4));
+  }
+
   public focus(actor: string, focus: string) {
     return { log: (message) => this.log(actor, focus, message) };
   }
@@ -175,6 +176,14 @@ export class Logger {
     } else {
       return "";
     }
+  }
+
+  /**
+   * Debug function for finding console.log where Logger.log should have been used
+   */
+  public static injectLineNumbersIntoConsoleLog() {
+    let clog = console.log;
+    console.log = (t) => clog(new Error().stack.split('\n')[3].trim().substring(3) + ":  " + t);
   }
 
 }
