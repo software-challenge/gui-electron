@@ -13,9 +13,10 @@ import { Game } from './Game';
 import { LogConsole } from './LogConsole';
 import { Logger } from '../api/Logger';
 import { ErrorPage } from './ErrorPage';
+import { Hotfix } from './Hotfix';
 
 const d = new Date();
-process.env.SGC_LOG_PATH = `./software-challenge-gui-${d.getFullYear()}.${d.getUTCMonth() + 1}.${d.getUTCDate()}_${d.getHours()}.${d.getMinutes()}.${d.getSeconds()}.log` //TODO fixme
+process.env.SGC_LOG_PATH = `software-challenge-gui-${d.getFullYear()}.${d.getUTCMonth() + 1}.${d.getUTCDate()}.log` //TODO fixme
 
 
 const dialog = remote.dialog;
@@ -26,6 +27,7 @@ enum AppContent {
   Blank,
   GameCreation,
   GameLive,
+  GameWaiting,
   Administration,
   Error,
   Log
@@ -45,9 +47,14 @@ export class App extends React.Component<any, State> {
     this.state = {
       menuRetracted: false,
       consoleRetracted: true,
-      contentState: AppContent.Empty,
+      contentState: Hotfix.isGameReload() ? AppContent.GameWaiting : AppContent.Empty,
       activeGame: null
     }
+    Hotfix.init((gco => {
+      Api.getGameManager().createGame(gco, name => {
+        this.switchToKnownGame(name);
+      });
+    }).bind(this));
   }
 
   private toggleMenu() {
@@ -81,7 +88,7 @@ export class App extends React.Component<any, State> {
   private switchToKnownGame(gameName: string) {
     console.log("switching to " + gameName);
     this.setState((prev, _props) => {
-      prev.contentState = AppContent.Empty;
+      prev.contentState = AppContent.GameWaiting;
       return prev;
     });
     this.forceUpdate();
@@ -120,9 +127,10 @@ export class App extends React.Component<any, State> {
             replayName = replayName.substring(0, liofp);
           }
           let gco = new GameCreationOptions(null, null, filenames[0], "Replay", null, null, null, null, replayName);
-          Api.getGameManager().createGame(gco, name => {
+          /*Api.getGameManager().createGame(gco, name => {
             this.switchToKnownGame(name);
-          });
+          });*/
+          Hotfix.reloadIntoGame(gco);
         }
       }
     );
@@ -140,9 +148,10 @@ export class App extends React.Component<any, State> {
         if (!has_game) {
           console.log("No such game known")
           o.gameName = name;
-          Api.getGameManager().createGame(o, name => {
+          /*Api.getGameManager().createGame(o, name => {
             this.switchToKnownGame(gameName);
-          });
+          });*/
+          Hotfix.reloadIntoGame(o);
         } else {
           tryStart(basename, counter + 1);
         }
@@ -217,6 +226,9 @@ export class App extends React.Component<any, State> {
         break;
       case AppContent.Log:
         mainPaneContent = <iframe src={Logger.getLogger().getLogFilePath()} seamless={true} />;
+        break;
+      case AppContent.GameWaiting:
+        mainPaneContent = <h1>Warte auf Spielstart</h1>
         break;
       default:
         mainPaneContent =
