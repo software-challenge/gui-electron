@@ -5,7 +5,7 @@ import { Message, MessageContent } from '../rules/Message';
 import { ActionMethod } from '../rules/ActionMethod';
 import { Logger } from '../Logger';
 import * as treekill from 'tree-kill';
-
+import * as path from 'path';
 
 import * as child_process from "child_process";
 export class GameManagerWorkerInterface {
@@ -13,7 +13,8 @@ export class GameManagerWorkerInterface {
   constructor() {
     Logger.getLogger().log("GameManagerWorkerInterface", "constructor", "Forking GameManagerWorker.");
     var fork: any = child_process.fork; //disable typechecking, one faulty line causes everything to fail
-    this.worker = fork(`${__dirname}/../asynchronous/GameManagerWorker.js`, { stdio: ['inherit', 'inherit', 'inherit', 'ipc'], env: { "SGC_LOG_PATH": process.env.SGC_LOG_PATH } });
+    console.log("SGC_LOG_PATH:" + process.env.SGC_LOG_PATH);
+    this.worker = fork(path.join(__dirname, "/../asynchronous/GameManagerWorker.js"), { stdio: ['inherit', 'inherit', 'inherit', 'ipc'], env: { "SGC_LOG_PATH": process.env.SGC_LOG_PATH } });
     this.worker.on('message', m => {
       if (m.message_type == "error") {
         console.error(m);

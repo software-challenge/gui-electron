@@ -15,8 +15,6 @@ import { Logger } from '../api/Logger';
 import { ErrorPage } from './ErrorPage';
 import { Hotfix } from './Hotfix';
 
-const d = new Date();
-process.env.SGC_LOG_PATH = `software-challenge-gui-${d.getFullYear()}.${d.getUTCMonth() + 1}.${d.getUTCDate()}.log` //TODO fixme
 
 
 const dialog = remote.dialog;

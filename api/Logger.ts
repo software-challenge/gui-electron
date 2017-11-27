@@ -1,5 +1,6 @@
 
 import * as fs from "fs";
+import * as path from 'path';
 
 //import { remote } from 'electron';
 
@@ -9,9 +10,9 @@ export class Logger {
 
   public static getLogger() {
     if (!this.logger) {
-      let path = process.env.SGC_LOG_PATH;
-      console.log("creating log in ", path)
-      this.logger = new Logger(false, true, path);
+      let logpath = process.env.SGC_LOG_PATH;
+      console.log("creating log in ", logpath)
+      this.logger = new Logger(false, true, logpath);
     }
     return this.logger;
   }
@@ -33,6 +34,7 @@ export class Logger {
 
   constructor(logToConsole: boolean, logToHTML: boolean = true, logFile?: string) {
     this.logToHTML = logToHTML;
+    this.logFile = logFile;
     if (logToHTML) {
       this.logFile = this.logFile + ".html";
       if (!fs.existsSync(this.logFile)) {
@@ -127,6 +129,10 @@ export class Logger {
         <div id="log">
         `);
       }
+    } else {
+      if (!fs.existsSync(this.logFile)) {
+        fs.writeFileSync(this.logFile, "");
+      }
     }
     this.logToConsole = logToConsole;
   }
@@ -146,9 +152,9 @@ export class Logger {
             </div>
             <pre class="message-content">${(message + "").replace(/\</g, '&lt;').replace(/\>/g, '&gt;').trim()}</pre>
           </div>
-        `, () => { });
+        `, (err) => { if (err) { console.error(err); } });
       } else {
-        fs.appendFile(this.logFile, message, () => { });
+        fs.appendFile(this.logFile, message, (err) => { if (err) { console.error(err); } });
       }
     }
   }

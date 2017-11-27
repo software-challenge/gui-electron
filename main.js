@@ -3,10 +3,11 @@ const { app, BrowserWindow } = require('electron')
 app.commandLine.appendSwitch('ignore-gpu-blacklist', 'true'); //Ignore warning about third-party AMD drivers on linux
 const path = require('path')
 const url = require('url')
-
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let win
+let win;
+
+//Set log path
 
 function createWindow() {
   // Create the browser window.
@@ -17,7 +18,7 @@ function createWindow() {
     pathname: path.join(app.getAppPath(), 'index.html'),
     protocol: 'file:',
     slashes: true
-  }), options = { //Make sure a few extra options are enabled
+  }) + '?dirname=' + encodeURIComponent(__dirname), options = { //Make sure a few extra options are enabled
     webgl: true, //WebGL needs to be forced on with older radeon cards
     experimentalFeatures: true, //Some extra features to speed up canvas/GL operations
     experimentalCanvasFeatures: true,
