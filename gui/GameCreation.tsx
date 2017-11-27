@@ -161,6 +161,8 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
     if (this.validConfiguration()) {
       if (this.state.firstPlayerType == "External" && this.state.secondPlayerType == "External") {
         startControl = <p>Aktuell sind Spiele mit zwei externen Clients noch nicht unterstuetzt!</p>
+      } else if (this.state.firstPlayerType == "Human" && this.state.secondPlayerType == "External") {
+        startControl = <p>Aktuell kann bei Spielen mit externen Clients nur der externe Client beginnen und der Mensch als zweites spielen!</p>
       } else {
         startControl = <Button text="Start!" pullRight={true} onClick={() => this.handleStartGame()} />;
       }

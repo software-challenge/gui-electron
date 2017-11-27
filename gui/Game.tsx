@@ -2,7 +2,6 @@ import { remote } from 'electron';
 import { GameState } from '../api/rules/HaseUndIgel';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { ProgressBar } from './ProgressBar';
 import { Viewer } from '../viewer/Viewer';
 import { GameCreationOptions } from '../api/rules/GameCreationOptions';
 import { GameInfo } from '../api/synchronous/GameInfo';
@@ -344,7 +343,6 @@ export class Game extends React.Component<{ name: string }, State> {
     return (
       <div className="replay-viewer" ref={elem => { this.startViewer(elem) }}>
         <div className="replay-controls">
-          <ProgressBar turnCount={this.currentStateCount()} currentTurn={this.state.currentTurn} turnCallback={t => { if (t <= this.currentStateCount.bind(this)()) { this.displayTurn.bind(this)(t) } }} />
           <div className="button-container">
             {playPause}{back}{forward}
             <img className="speed-label svg-icon" src="assets/tachometer-alt.svg" />

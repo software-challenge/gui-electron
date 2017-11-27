@@ -81,44 +81,11 @@
 .replay-viewer > .replay-controls {
     position: absolute;
     height: 5vh;
+    padding-top: 1.5vh;
     bottom: 0;
     width: 100%;
     font-size: 3em;
     background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 30%);
-}
-
-.replay-viewer > .replay-controls > .progress-bar {
-    position: relative;
-    height: 0.5vh;
-    background-color: gray;
-    width: 80%;
-    margin: 0.6vh auto;
-    border-radius: 3px;
-}
-
-.replay-viewer > .replay-controls > .progress-bar > div.progress-position {
-    position: absolute;
-    height: 0.5vh;
-    width: 0.5vh;
-    background-color: red;
-    border-radius: 3px;
-    transition: width 0.5s;
-}
-
-.replay-viewer > .replay-controls > .progress-bar > .progress-loaded {
-    position: absolute;
-    height: 0.5vh;
-    background-color: white;
-    border-radius: 3px;
-    transition: width 0.5s;
-}
-
-.replay-viewer > .replay-controls > .progress-bar > .round-text {
-    position: absolute;
-    right: 0;
-    top: 1vh;
-    font-size: 2vh;
-    color: white;
 }
 
 .replay-viewer > .replay-controls > .button-container {
@@ -149,52 +116,6 @@ img.svg-icon {
 
 /*.replay-viewer > .replay-controls > .button-container > .playbackSpeed {
 }*/
-
-/* Styling Range Input */
-input[type=range]{
-    -webkit-appearance: none;
-    width: 20vw;
-    height: 2vh;
-    background-color: transparent;
-}
-
-input[type=range]::-webkit-slider-runnable-track {
-    margin-top: 0;
-    width: 100%;
-    height: 0.5vh;
-    background: #ccc;
-    border: none;
-    border-radius: 3px;
-}
-
-input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    border: none;
-    height: 1.6vh;
-    width: 4px;
-    background: white;
-    margin-top: -0.5vh;
-    border-radius: 3px;
-}
-
-input[type=range].progress-loaded::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    border: none;
-    height: 1.0vh;
-    width: 1.0vh;
-    background: red;
-    margin-top: -0.3vh;
-    border-radius: 5px;
-}
-
-input[type=range]:focus {
-    outline: none;
-}
-
-input[type=range]:focus::-webkit-slider-runnable-track {
-    background: #ccc;
-}
-/* Styling Range Input END */
 
 .replay-viewer > .replay-controls > .button-container > button:hover > img {
     margin: -1px 1px 1px -1px;
