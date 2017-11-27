@@ -1,6 +1,6 @@
 {
   "name": "software-challenge-gui",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "GUI der Software-Challenge",
   "repository": "https://github.com/CAU-Kiel-Tech-Inf/socha_graphical_client",
   "main": "main.js",
