@@ -18,7 +18,7 @@ function createWindow() {
     pathname: path.join(app.getAppPath(), 'index.html'),
     protocol: 'file:',
     slashes: true
-  }) + '?dirname=' + encodeURIComponent(__dirname), options = { //Make sure a few extra options are enabled
+  }) + '?dirname=' + encodeURIComponent(process.cwd()), options = { //Make sure a few extra options are enabled
     webgl: true, //WebGL needs to be forced on with older radeon cards
     experimentalFeatures: true, //Some extra features to speed up canvas/GL operations
     experimentalCanvasFeatures: true,
