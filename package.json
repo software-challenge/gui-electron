@@ -1,0 +1,102 @@
+{
+  "name": "software-challenge-gui",
+  "version": "19.0.0",
+  "description": "GUI der Software-Challenge",
+  "repository": "https://github.com/CAU-Kiel-Tech-Inf/socha_graphical_client",
+  "main": "main.js",
+  "scripts": {
+    "test": "mocha --compilers ts:ts-node/register,tsx:ts-node/register 'test/**/*.spec.@(ts|tsx)'",
+    "start": "yarn install && yarn compile && electron .",
+    "start-dev": "yarn install && yarn compile && electron . --dev",
+    "getserver": "rm -rf socha && git clone git@github.com:CAU-Kiel-Tech-Inf/socha.git -b master --depth 1 && cd socha && ant && cd .. && rm -rf server && rm -rf client && cp -r socha/build/software-challenge-server/runnable server && cp -r socha/build/piranhas_2019_player/runnable client",
+    "copyserver": "rm -rf server && rm -rf client && cp -r ../server/build/software-challenge-server/runnable server && cp -r ../server/build/piranhas_2019_player/runnable client",
+    "dist": "yarn install && yarn compile && electron-builder --win --linux --mac",
+    "dist-win": "yarn install && yarn compile && electron-builder --win",
+    "dist-linux": "yarn install && yarn compile && electron-builder --linux",
+    "compile": "rimraf out && tsc"
+  },
+  "author": "Software-Challenge Team",
+  "license": "ISC",
+  "build": {
+    "appId": "de.software-challenge.gui",
+    "productName": "Software-Challenge GUI",
+    "files": [
+      "*",
+      "*/**",
+      "out",
+      "!dist",
+      "!client"
+    ],
+    "asar": true,
+    "asarUnpack": [
+      "server"
+    ],
+    "directories": {
+      "output": "dist",
+      "buildResources": "build-resources"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": "x64"
+        },
+        "zip"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": [
+        "zip"
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "tar.xz"
+      ],
+      "icon": "build-resources"
+    }
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "gl-matrix": "^2.4.0",
+    "hazardous": "^0.3.0",
+    "phaser": "^3.10.1",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "react-iframe": "^1.2.0",
+    "react-photonkit": "^0.4.1",
+    "request": "^2.83.0",
+    "sax": "^1.2.4",
+    "tree-kill": "^1.2.0",
+    "xml2js": "^0.4.17"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.16.8",
+    "@types/chai": "^4.0.4",
+    "@types/es6-promise": "^0.0.32",
+    "@types/express": "^4.11.0",
+    "@types/mocha": "^2.2.42",
+    "@types/react": "^16.0.36",
+    "@types/react-dom": "^16.0.3",
+    "@types/request": "^2.0.13",
+    "@types/sax": "^1.0.0",
+    "chai": "^4.1.1",
+    "chai-immutable": "^1.6.0",
+    "electron": "^1.8.7",
+    "electron-builder": "^19.27.3",
+    "electron-builder-squirrel-windows": "^19.27.3",
+    "electron-packager": "^9.0.1",
+    "mocha": "^3.5.0",
+    "rimraf": "^2.6.1",
+    "ts-node": "^3.3.0",
+    "tslint": "^5.5.0",
+    "typescript": "~2.7.0"
+  }
+}

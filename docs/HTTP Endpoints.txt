@@ -1,0 +1,10 @@
+The server component defines a number of http endpoints
+These are:
+
+/stop -> stops the server
+	returns "server stopped"
+/list-games -> returns a json-array of the current gameIds in the server memory
+/start-game -> takes a json of a GameCreationOptions-object in the request body and creates a game, returns the gameId as text
+/status?id=5 -> returns a status report for the game with the id 5 (signature: { numberOfStates: number, gameStatus: GameStatus, moveRequest?: TransferableMoveRequest, gameResult?: GameResult })
+/state?id=4&turn=3 -> returns a json of the GameState object for the third turn in the game with the gameId of 4
+/send-move?id=7&moveId=34 -> fulfills the move request with the id 34 for the game with the id 7 using the json of array of Action supplied in the request body

@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "jsxFactory": "React.createElement",
+    "jsx": "react",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "outDir": "out",
+    "listFiles": true,
+    "checkJs": true,
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2016",
+    "watch": false,
+    "skipLibCheck": true,
+    "noImplicitAny": false
+  },
+  "include": [
+    "gui/**/*",
+    "api/**/*",
+    "viewer/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "compileOnSave": true
+}

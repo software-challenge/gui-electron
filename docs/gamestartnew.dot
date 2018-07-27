@@ -1,0 +1,14 @@
+digraph gamestart{
+  sgcs [label="Show game creation screen"];
+  sv [label="Selection finished"];
+  sdtp [label="Child process receives data"];
+  rc [label="Room created"];
+  error [label="Error"];
+
+  sgcs -> sv [label="player selects options"];
+sv-> sgcs [label="selection invalid"];
+  sv -> sdtp [label="selection valid: serialize data, send to child process"];
+  
+
+
+}
