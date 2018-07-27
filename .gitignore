@@ -1,0 +1,16 @@
+!require.js
+*.map
+node_modules
+typings
+build
+server
+client
+socha
+*.log
+out
+dist
+*.log.html
+*.blend1
+*.blend2
+*.blend3
+.vscode

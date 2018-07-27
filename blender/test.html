@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Babylon Template</title>
+
+  <style>
+    html,
+    body {
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    #renderCanvas {
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+    }
+
+    #debug {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 1000;
+      font-family: monospace;
+      font-size: 12pt;
+      background-color: rgba(255, 255, 255, 0.7);
+      color: black;
+    }
+  </style>
+
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://code.jquery.com/pep/0.4.1/pep.js"></script>
+
+</head>
+
+<body>
+
+  <canvas id="renderCanvas" touch-action="none"></canvas> //touch-action="none" for best results from PEP
+  <div id="debug">TEST</div>
+  <script>
+    let fontgen = (characters_scene, spacing = 0) => {
+      var t0 = new Date().getTime();
+
+      let cloneMesh = (mesh, newName) => {
+        var clone = new BABYLON.Mesh(newName, characters_scene);
+        var vertexData = new BABYLON.VertexData();
+        var positions = mesh.getVerticesData(BABYLON.VertexBuffer.PositionKind);
+        var normals = mesh.getVerticesData(BABYLON.VertexBuffer.NormalKind);
+        var indices = mesh.getIndices();
+        vertexData.positions = positions;
+        vertexData.indices = indices;
+        vertexData.normals = normals;
+        vertexData.applyToMesh(clone);
+        clone.rotation.x = mesh.rotation.x;
+        clone.rotation.y = mesh.rotation.y;
+        clone.rotation.z = mesh.rotation.z;
+        return clone;
+      }
+
+      let getBox = (mesh) => {
+        var positions = mesh.getVerticesData(BABYLON.VertexBuffer.PositionKind);
+        let xmin, ymin, zmin, xmax, ymax, zmax;
+        xmin = positions[0];
+        ymin = positions[1];
+        zmin = positions[2];
+        xmax = positions[0];
+        ymax = positions[1];
+        zmax = positions[2];
+        for (var i = 0; i < positions.length; i += 3) {
+          if (positions[i + 0] < xmin) {
+            xmin = positions[i + 0];
+          }
+          if (positions[i + 0] > xmax) {
+            xmax = positions[i + 0];
+          }
+          if (positions[i + 1] < ymin) {
+            ymin = positions[i + 1];
+          }
+          if (positions[i + 1] > ymax) {
+            ymax = positions[i + 1];
+          }
+          if (positions[i + 2] < zmin) {
+            zmin = positions[i + 2];
+          }
+          if (positions[i + 2] > zmax) {
+            zmax = positions[i + 2];
+          }
+        }
+        return {
+          x: (xmax - xmin),
+          y: (ymax - ymin),
+          z: (zmax - zmin)
+        }
+      }
+
+
+
+      var chars = {}; //Base meshes for the characters
+
+      var charcodes = [];
+
+      var strings = {}; //A map for parentID -> string
+
+      var meshes = {}; //Map: parentID -> children
+
+      var number_of_chars = 0;
+
+      var colors = {}; // A map of colourName -> [colouredMesh]
+
+      var materials = {}; //A map of colourName -> material
+
+      var colorNames = [];
+
+      var fg = {};
+
+      fg.addMeshes = scene => {
+        scene.meshes.forEach(m => {
+          if (m.id.startsWith('char_')) {
+            let cid = parseInt(m.id.replace('char_', ''));
+            if (charcodes.indexOf(cid) == -1) {
+              charcodes.push(cid);
+            }
+            m.position.z -= 1000000; //Move far away so it doesn't show up
+            chars[cid] = m;
+            chars[cid].__fgenbox = getBox(m);
+            number_of_chars++;
+          }
+        });
+      }
+
+      fg.addColour = (name, material, regenColorCache = true) => {
+        materials[name] = material;
+        colorNames.push(name);
+        if (regenColorCache) {
+          fg.regenColorCache();
+        }
+      }
+
+      fg.regenColorCache = () => {
+        var t0 = new Date().getTime();
+        colorNames.forEach(cname => {
+          colors[cname] = {};
+          let o = 0;
+          charcodes.forEach(ccode => {
+            let newMesh = cloneMesh(chars[ccode], cname + '_' + ccode);
+            newMesh.material = materials[cname];
+            newMesh.__fgenbox = chars[ccode].__fgenbox;
+            colors[cname][ccode] = newMesh;
+            o++;
+          });
+          console.log(cname + ": " + o);
+        });
+        var t1 = new Date().getTime();
+        console.log(`fontgen: cache regen took ${(t1 - t0)}ms`);
+      }
+
+      fg.write = (string, parent, scaling = 1, colour = "default", align = "left") => {
+        let pid = parent.id;
+        if (strings[pid] != string) {//Don't render twice
+
+          //1. Prepare parent
+          if (meshes[pid]) {//Clear old string
+            meshes[pid].forEach(m => {
+              parent.removeChild(m);
+              m.dispose();
+            });
+            meshes[pid] = [];
+          } else { //New string, make room for character meshes
+            meshes[pid] = [];
+          }
+
+          //2. Iterate string
+          let x = 0;
+          for (var i = 0; i < string.length; i++) {
+            let ccode = string.charCodeAt(i);
+            //console.log(colors, colour, colors[colour]);
+            let templateMesh = colors[colour][ccode];
+            //console.log(templateMesh.material.name);
+            var instancedMesh = templateMesh.createInstance(pid + '_' + colour + '_' + ccode + '_' + i);
+            //console.log(pid + '_' + colour + '_' + ccode + '_' + i);
+            instancedMesh.position.z = 0;
+            instancedMesh.position.x = x;
+            instancedMesh.parent = parent;
+            instancedMesh.scaling.x = scaling;
+            instancedMesh.scaling.y = scaling;
+            instancedMesh.scaling.z = scaling;
+            meshes[pid].push(instancedMesh);
+            x += (spacing * scaling);
+            x += templateMesh.__fgenbox.x * scaling;
+          }
+
+          //Align string
+          if (align == "right") {
+            meshes[pid].forEach(m => m.position.x -= x);
+          } else if (align == "center") {
+            meshes[pid].forEach(m => m.position.x -= x / 2);
+          }
+        }
+      };
+
+      var blackMaterial = new BABYLON.StandardMaterial('__fgblackMaterial', characters_scene);
+      blackMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+
+      fg.addMeshes(characters_scene);
+      fg.addColour("default", blackMaterial);
+      var t1 = new Date().getTime();
+      console.log(`fontgen: ${number_of_chars} characters loaded in ${(t1 - t0)}ms`);
+      return fg;
+    }
+
+  </script>
+
+
+  <script>
+    var canvas = document.getElementById("renderCanvas"); // Get the canvas element 
+
+    var engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
+    var scene = new BABYLON.Scene(engine, "base");
+    var plane = BABYLON.MeshBuilder.CreatePlane("plane", {}, scene);
+    var camera = new BABYLON.UniversalCamera("camera", new BABYLON.Vector3(0, 0, -10), scene);
+    camera.setTarget(BABYLON.Vector3.Zero());
+
+
+    let fg, box;
+
+
+    /******* End of the create scene function ******/
+    var standardPipeline = new BABYLON.PostProcessRenderPipeline(engine, "standardPipeline");
+
+    BABYLON.SceneLoader.Load("", "haseundigel2.babylon", engine, game_scene => {
+      game_scene.materials.forEach(m => {
+        m.backFaceCulling = false;
+      });
+      var light = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), game_scene);
+
+
+      BABYLON.SceneLoader.Load("", "overlay.babylon", engine, overlay_scene => {
+
+        BABYLON.SceneLoader.Append("", "characters.babylon", overlay_scene, characters_scene => {
+
+          fg = fontgen(overlay_scene, 0.05);
+
+          var carrot_count_red = overlay_scene.getMeshByID('carrot_count_red');
+
+          var redMaterial = new BABYLON.StandardMaterial('redMaterial', overlay_scene);
+          redMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
+          fg.addColour("red", redMaterial, false);
+
+          var greenMaterial = new BABYLON.StandardMaterial('greenMaterial', overlay_scene);
+          greenMaterial.diffuseColor = new BABYLON.Color3(0, 1, 0);
+          fg.addColour("green", greenMaterial);
+
+          box = BABYLON.MeshBuilder.CreateBox("box", {}, overlay_scene);
+          box.material = greenMaterial;
+          box.position.y = -3;
+          box.position.x = -10;
+
+          fg.write("nice!", carrot_count_red, 3, "red", "right");
+          //fg.write("text", box, undefined, "default");
+
+
+
+
+          /*var texture = new BABYLON.RenderTargetTexture("overlay_tex", 512, scene);
+  
+          texture.renderList.push(myMesh);
+          scene.customRenderTargets.push(texture)
+  */
+          overlay_scene.autoClear = false;
+
+          var salad_blue = overlay_scene.getMeshByID('salad_spinner_blue');
+          var salad_red = overlay_scene.getMeshByID('salad_spinner_red');
+          var carrot_red = overlay_scene.getMeshByID('carrot_spinner_red');
+          var carrot_blue = overlay_scene.getMeshByID('carrot_spinner_blue');
+
+
+
+
+
+          engine.runRenderLoop(function () { // Register a render loop to repeatedly render the scene
+            game_scene.render();
+            overlay_scene.render();
+            salad_red.rotation.y += 0.02;
+            carrot_red.rotation.y += 0.02;
+            salad_blue.rotation.y -= 0.02;
+            carrot_blue.rotation.y -= 0.02;
+            fg.write(new Date().getTime() + "e", box, undefined, "green");
+          });
+
+          /*setInterval(() => {
+            fg.write(new Date().getTime() + "e", box, undefined, "green");
+          }, 100);*/
+
+          window.addEventListener("mousemove", function () {
+            // We try to pick an object
+            var pickResult = overlay_scene.pick(overlay_scene.pointerX, overlay_scene.pointerY);
+            if (pickResult.hit) {
+              var pickedMesh = pickResult.pickedMesh;
+              //fg.write(pickedMesh.id + "", box);
+              document.getElementById('debug').innerText = `id=${pickedMesh.id}, name=${pickedMesh.name}`;
+            }
+          });
+        });
+
+
+
+
+        window.addEventListener("resize", function () { // Watch for browser/canvas resize events
+          engine.resize();
+        });
+
+      });
+
+    });
+
+
+    /*engine.runRenderLoop(function () { // Register a render loop to repeatedly render the scene
+      scene.render();
+    });*/
+
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+digraph gamestart{
+  sgcs [label="Show game creation screen"];
+  sv [label="Selection finished"];
+  sdtp [label="Child process receives data"];
+  cr [label="room created with reservation"];
+  sc1 [label="client 1 started"];
+  sc2 [label="client 2 started"];
+  wgs [label="first state received"];
+  wfc [label="room created without reservation"];
+  oj [label="observer joined"];
+
+
+  error [label="Error"];
+
+  sgcs -> sv [label="player selects options"];
+sv-> sgcs [label="selection invalid"];
+  sv -> sdtp [label="selection valid: serialize data, send to child process"];
+  sdtp -> cr [label="no clients manual, reserve room with timeouts"];
+  cr -> sc1 [label="start client 1 with reservation"];
+  sc1 -> sc2 [label="start client 2 with reservation"];
+
+  sdtp -> wfc [label="at least one client manual, wait for room creation"];
+  wfc -> oj [label="connect observer"];
+}
