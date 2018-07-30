@@ -312,12 +312,10 @@ export class GameResult {
 
   static fromJSON(json: any): GameResult {
     var gr = new GameResult();
+    // TODO should this really take element 0? And if yes, why are there even two scores?
     gr.cause = json.score[0].$.cause;
     gr.reason = json.score[0].$.reason;
-
-    // FIXME: this leads to an error in the backend
-    gr.winner = Player.fromJSON(json.winner[0]);
-
+    gr.winner = json.winner ? Player.fromJSON(json.winner[0]) : null;
     return gr;
   }
 }

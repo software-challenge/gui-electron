@@ -200,6 +200,7 @@ export class Viewer {
   }
 
   showEndscreen(result: GameResult) {
+    console.log("Showing Endscreen for GameResult", result)
     if (this.endScreen === null) {
       this.endScreen = document.createElement('div');
       this.endScreen.classList.add('endscreen');
@@ -207,7 +208,9 @@ export class Viewer {
     }
     this.endScreen.innerHTML = "<h1>Spiel vorbei</h1>"+
       "<h2>"+result.reason+"</h2>"+
-      "<h3>Gewinner: "+result.winner.displayName+" ("+(result.winner.color == Player.COLOR.RED ? "Rot" : "Blau")+")</h3>";
+      (result.winner ?
+      "<h3>Gewinner: "+result.winner.displayName+" ("+(result.winner.color == Player.COLOR.RED ? "Rot" : "Blau")+")</h3>" : 
+      "<h3>Unentschieden!</h3>");
     this.endScreen.setAttribute('style', "opacity: 1.0; display: block");
   }
 
