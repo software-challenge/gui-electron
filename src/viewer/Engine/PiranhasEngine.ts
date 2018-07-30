@@ -31,11 +31,11 @@ export class SimpleScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.spritesheet('water', 'assets/piranhas/water.png', { frameWidth: 32, frameHeight: 32 });
-    this.load.image('fish_red', 'assets/piranhas/fish_red.png');
-    this.load.image('fish_blue', 'assets/piranhas/fish_blue.png');
-    this.load.image('octopus', 'assets/piranhas/octopus.png');
-    this.load.image('marker', 'assets/select-field.png');
+    this.load.spritesheet('water', 'resources/piranhas/water.png', { frameWidth: 32, frameHeight: 32 });
+    this.load.image('fish_red', 'resources/piranhas/fish_red.png');
+    this.load.image('fish_blue', 'resources/piranhas/fish_blue.png');
+    this.load.image('octopus', 'resources/piranhas/octopus.png');
+    this.load.image('marker', 'resources/select-field.png');
   }
   create() {
     this.input.on("pointerdown", (e: any) => this.handleClick(e));

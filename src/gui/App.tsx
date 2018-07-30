@@ -227,7 +227,7 @@ export class App extends React.Component<any, State> {
       default:
         mainPaneContent =
           <div className="main-container">
-            <img src="assets/piranhas/piranhas-logo.png" style={{width: "100%"}} />
+            <img src="resources/piranhas/piranhas-logo.png" style={{width: "100%"}} />
             <h1>Willkommen bei der Software-Challenge!</h1>
             <p>Klicken Sie links auf "Neues Spiel" um zu beginnen.</p>
             <p>Diese frühe Version hat noch einige Fehler. Bitte melden Sie Fehler, die Sie finden, im Forum. Hinweise zur Ursache von Fehlern finden sich im Log, aufrufbar über "Programm-Log" auf der linken Seite. Bei Problemen hilft oft ein Neustart des Programms.</p>
@@ -245,7 +245,7 @@ export class App extends React.Component<any, State> {
               <Button icon="menu" onClick={() => { this.toggleMenu(); }} active={!this.state.menuRetracted} />
             </ButtonGroup>
             {this.state.contentState == AppContent.GameLive ? <span id="game-name" contentEditable={/*!Api.getGameManager().isReplay(this.state.activeGame)*/ true} onKeyDown={this.changeGameName.bind(this)} /> : null}
-            {this.state.contentState == AppContent.GameLive ? <button title="Close Game" className="svg-button close-game" onClick={() => this.closeGame(this.state.activeGameId)}><img className="svg-icon" src="assets/x-circled.svg" /></button> : null}
+            {this.state.contentState == AppContent.GameLive ? <button title="Close Game" className="svg-button close-game" onClick={() => this.closeGame(this.state.activeGameId)}><img className="svg-icon" src="resources/x-circled.svg" /></button> : null}
             <Button icon="doc-text" onClick={() => { this.toggleConsole(); }} pullRight={true} />
           </ToolbarActions>
         </Toolbar>
@@ -262,7 +262,7 @@ export class App extends React.Component<any, State> {
                 </NavItem>
                 {Api.getGameManager().getBufferedGameTitles().map(
                   t => (<NavItem onClick={() => this.showGame(t.id)} active={this.state.contentState == AppContent.GameLive && this.state.activeGameId == t.id}>
-                    <UnicodeIcon icon="🎳" />{t.name} ({t.id})<span className="close-button-container"><button title="Close Game" className="svg-button close-game" onClick={e => { this.closeGame(t.id); e.stopPropagation() }}><img className="svg-icon" src="assets/x-circled.svg" /></button></span></NavItem>
+                    <UnicodeIcon icon="🎳" />{t.name} ({t.id})<span className="close-button-container"><button title="Close Game" className="svg-button close-game" onClick={e => { this.closeGame(t.id); e.stopPropagation() }}><img className="svg-icon" src="resources/x-circled.svg" /></button></span></NavItem>
                   ))}
                 <NavTitle title="Informationen" />
                 <NavItem onClick={() => this.showRules()}>
