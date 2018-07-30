@@ -16,13 +16,11 @@
     "skipLibCheck": true,
     "noImplicitAny": false
   },
-  "include": [
-    "gui/**/*",
-    "api/**/*",
-    "viewer/**/*"
+  "include": [ 
+    "src/api/**/*",
+    "src/gui/**/*",
+    "src/viewer/**/*" 
   ],
-  "exclude": [
-    "node_modules"
-  ],
+  "exclude": [ "node_modules" ],
   "compileOnSave": true
 }

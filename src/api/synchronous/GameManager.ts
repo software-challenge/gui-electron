@@ -51,9 +51,9 @@ export class GameManager {
    */
   public createGame(options: GameCreationOptions, callback: (gameInfo: GameInfo) => void) {
     this.gmwi.createGameWithOptions(options, id => {
-      let gameInfo = this.getGameInfo(id);
+      let gameInfo = this.getGameInfo(id)
       if (!this.bufferedGameInfo.map(i => i.id).includes(id)) {
-        this.bufferedGameInfo.push(this.getGameInfo(id));
+        this.bufferedGameInfo.push(this.getGameInfo(id))
       }
       callback(gameInfo);
     });

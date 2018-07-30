@@ -268,12 +268,12 @@ export class Game extends React.Component<{ gameId: number, name: string }, Stat
 
 
   render() {
-    var image = "assets/" + (this.state.playPause == "pause" ? "play" : "pause") + ".svg";
+    var image = "resources/" + (this.state.playPause == "pause" ? "play" : "pause") + ".svg";
     var playPause = <button title="Los" onClick={this.playPause.bind(this)}><img className="svg-icon" src={image} /></button>;
-    var forward = <button title="Zug vor" onClick={this.next.bind(this)}><img className="svg-icon" src="assets/step-forward.svg" /></button>;
-    var back = <button title="Zug zurück" onClick={this.previous.bind(this)}><img className="svg-icon" src="assets/step-backward.svg" /></button>;
+    var forward = <button title="Zug vor" onClick={this.next.bind(this)}><img className="svg-icon" src="resources/step-forward.svg" /></button>;
+    var back = <button title="Zug zurück" onClick={this.previous.bind(this)}><img className="svg-icon" src="resources/step-backward.svg" /></button>;
     var speed = <input title="Abspielgeschwindigkeit" className="playbackSpeed" type="range" min="0" max={MAX_INTERVAL} step="100" onChange={(e) => this.handleSpeedChange(e)} value={MAX_INTERVAL - this.state.playbackSpeed} />;
-    var save = <button className="save" title="Replay speichern" onClick={this.saveReplay.bind(this)}><img className="svg-icon" src="assets/arrow-to-bottom.svg" /></button>;
+    var save = <button className="save" title="Replay speichern" onClick={this.saveReplay.bind(this)}><img className="svg-icon" src="resources/arrow-to-bottom.svg" /></button>;
     this.updateProgress()
     console.log("Turn: " + this.state.currentTurn)
     return (
@@ -281,13 +281,13 @@ export class Game extends React.Component<{ gameId: number, name: string }, Stat
         <div className="replay-controls">
           <div className="button-container">
             {playPause}{back}{forward}
-            <img className="speed-label svg-icon" src="assets/tachometer.svg" />
+            <img className="speed-label svg-icon" src="resources/tachometer.svg" />
             {speed}
             <span style={{fontSize: '13pt', color: 'white', marginLeft: '1em'}}>Zug: {this.state.currentTurn}</span>
             {/*save*/}
           </div>
         </div>
-        {this.playbackStarted ? "" : <button id="start-button" title="Los" onClick={event => this.playPause()}><img className="svg-icon" src="assets/play.svg" /></button>}
+        {this.playbackStarted ? "" : <button id="start-button" title="Los" onClick={event => this.playPause()}><img className="svg-icon" src="resources/play.svg" /></button>}
       </div >
     );
   }

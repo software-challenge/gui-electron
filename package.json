@@ -1,6 +1,7 @@
 {
   "name": "software-challenge-gui",
-  "version": "19.0.0",
+  "productName": "Software-Challenge GUI",
+  "version": "19.0.1",
   "description": "GUI der Software-Challenge",
   "repository": "https://github.com/CAU-Kiel-Tech-Inf/socha_graphical_client",
   "main": "main.js",
@@ -8,32 +9,27 @@
     "test": "mocha --compilers ts:ts-node/register,tsx:ts-node/register 'test/**/*.spec.@(ts|tsx)'",
     "start": "yarn install && yarn compile && electron .",
     "start-dev": "yarn install && yarn compile && electron . --dev",
-    "getserver": "rm -rf socha && git clone git@github.com:CAU-Kiel-Tech-Inf/socha.git -b master --depth 1 && cd socha && ant && cd .. && rm -rf server && rm -rf client && cp -r socha/build/software-challenge-server/runnable server && cp -r socha/build/piranhas_2019_player/runnable client",
-    "copyserver": "rm -rf server && rm -rf client && cp -r ../server/build/software-challenge-server/runnable server && cp -r ../server/build/piranhas_2019_player/runnable client",
-    "dist": "yarn install && yarn compile && electron-builder --win --linux --mac",
-    "dist-win": "yarn install && yarn compile && electron-builder --win",
-    "dist-linux": "yarn install && yarn compile && electron-builder --linux",
+    "getserver": "rimraf socha && git clone git@github.com:CAU-Kiel-Tech-Inf/socha.git --depth 1 && cd socha && ant && cd .. && rimraf server && rimraf client && cp -r socha/build/software-challenge-server/runnable server && cp -r socha/build/piranhas_2019_player/runnable client && rimraf socha",
+    "copyserver": "rimraf server && rimraf client && cp -r ../server/build/software-challenge-server/runnable server && cp -r ../server/build/piranhas_2019_player/runnable client",
+    "dist": "yarn install && yarn compile && electron-builder",
+    "dist-all": "rimraf dist && yarn install && yarn compile && electron-builder --win --linux --mac",
     "compile": "rimraf out && tsc"
   },
   "author": "Software-Challenge Team",
   "license": "ISC",
   "build": {
     "appId": "de.software-challenge.gui",
-    "productName": "Software-Challenge GUI",
     "files": [
-      "*",
-      "*/**",
-      "out",
-      "!dist",
-      "!client"
+      "main.js",
+      "src",
+      "server",
+      "out"
     ],
     "asar": true,
-    "asarUnpack": [
-      "server"
-    ],
+    "asarUnpack": [ "server" ],
     "directories": {
       "output": "dist",
-      "buildResources": "build-resources"
+      "buildResources": "assets/build-resources"
     },
     "win": {
       "target": [
@@ -56,10 +52,8 @@
     },
     "linux": {
       "target": [
-        "AppImage",
-        "tar.xz"
-      ],
-      "icon": "build-resources"
+        "AppImage"
+      ]
     }
   },
   "dependencies": {
@@ -92,7 +86,6 @@
     "electron": "^1.8.7",
     "electron-builder": "^19.27.3",
     "electron-builder-squirrel-windows": "^19.27.3",
-    "electron-packager": "^9.0.1",
     "mocha": "^3.5.0",
     "rimraf": "^2.6.1",
     "ts-node": "^3.3.0",
