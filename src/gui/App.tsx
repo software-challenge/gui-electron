@@ -230,7 +230,7 @@ export class App extends React.Component<any, State> {
             <img src="resources/piranhas/piranhas-logo.png" style={{width: "100%"}} />
             <h1>Willkommen bei der Software-Challenge!</h1>
             <p>Klicken Sie links auf "Neues Spiel" um zu beginnen.</p>
-            <p>Diese frühe Version hat noch einige Fehler. Bitte melden Sie Fehler, die Sie finden, im Forum. Hinweise zur Ursache von Fehlern finden sich im Log, aufrufbar über "Programm-Log" auf der linken Seite. Bei Problemen hilft oft ein Neustart des Programms.</p>
+            <p>Diese frühe Version hat noch einige Fehler. Bitte melden Sie Fehler, die Sie finden, im Forum oder im Discord. Hinweise zur Ursache von Fehlern finden sich im Log, aufrufbar über "Programm-Log" auf der linken Seite.</p>
             <p><a href="https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che" target="_blank">Bedienungsanleitung (aus der allgemeinen Dokumentation)</a></p>
           </div>;
         break;
