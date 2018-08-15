@@ -3,6 +3,11 @@ import { Helpers } from "./Helpers";
 import { Player, GameResult, Coordinates, Direction, Move, GameRuleLogic, GameState, Board, RenderState, UiState, SelectFish, SelectTargetDirection, FinishMove, None, InteractionEvent, FieldSelected } from '../api/rules/CurrentGame';
 import { Logger } from '../api/Logger';
 
+interface AnimationState {
+  state: RenderState
+  animationCallback: () => void
+}
+
 export class Viewer {
   //DOM Elements
   element: HTMLElement;
@@ -20,6 +25,7 @@ export class Viewer {
   endScreen: HTMLDivElement = null;
   needsRerender: number;
   currentMove: number = 0;
+  queue: AnimationState[]
 
   constructor() {
     //Initialize container
@@ -33,6 +39,7 @@ export class Viewer {
     this.canvas = document.createElement('canvas');
     this.canvas.classList.add('viewerCanvas');
     this.element.appendChild(this.canvas);
+    this.queue = []
 
     this.engine = new PiranhasEngine(this.canvas);
   }
@@ -66,28 +73,38 @@ export class Viewer {
   }
 
   undock() {
-    this.engine.clear();
+    this.engine.clearUI();
+    this.queue = []
   }
 
-  render(state: RenderState, animation_callback?: () => void) {
+  render(state: RenderState, animationCallback?: () => void) {
     if (this.engine == null) {
       return;
     }
-    this.engine.clear();
+    this.engine.clearUI();
     // finish all animations and let the callbacks fire, updating the view state
     this.engine.scene.tweens.each(tween => { tween.stop(1); tween.complete() })
     var onFinish: () => void = () => {
+      this.animating = false;
       this.tempstate = state.gameState.clone();
-      if (animation_callback) {
-        animation_callback();
+      if (animationCallback) {
+        animationCallback();
+      }
+      if (this.queue.length > 0) {
+        var nextStateToRender = this.queue.shift();
+        this.render(nextStateToRender.state, nextStateToRender.animationCallback)
       }
     }
-    // FIXME: quick and easy way. better check the complete gamestate
-    if (this.tempstate && (state.gameState.turn == this.tempstate.turn + 1) && this.engine.scene.boardEqualsView(this.tempstate.board)) {
+    if (this.tempstate && !this.animating && (state.gameState.turn == this.tempstate.turn + 1) && this.engine.scene.boardEqualsView(this.tempstate.board)) {
+      this.animating = true;
       this.engine.animateMove(this.tempstate, state.gameState.lastMove, onFinish);
     } else {
-      this.engine.draw(state);
-      onFinish();
+      if (this.animating) {
+        this.queue.push({state: state, animationCallback: animationCallback});
+      } else {
+        this.engine.draw(state);
+        onFinish();
+      }
     }
   }
 
@@ -209,7 +226,7 @@ export class Viewer {
     this.endScreen.innerHTML = "<h1>Spiel vorbei</h1>"+
       "<h2>"+result.reason+"</h2>"+
       (result.winner ?
-      "<h3>Gewinner: "+result.winner.displayName+" ("+(result.winner.color == Player.COLOR.RED ? "Rot" : "Blau")+")</h3>" : 
+      "<h3>Gewinner: "+result.winner.displayName+" ("+(result.winner.color == Player.COLOR.RED ? "Rot" : "Blau")+")</h3>" :
       "<h3>Unentschieden!</h3>");
     this.endScreen.setAttribute('style', "opacity: 1.0; display: block");
   }

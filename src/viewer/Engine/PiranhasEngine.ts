@@ -20,6 +20,7 @@ const offsetY = 100;
 
 export class SimpleScene extends Phaser.Scene {
 
+  public allObjects: Phaser.GameObjects.Sprite[] // references to all sprites (for clearing)
   public graphics: FieldGraphics[][]; // graphics to render the board
   public markers: Phaser.GameObjects.Sprite[]; // graphics to mark fields
   public selectedFish: Coordinates; // currently selected fish (if any)
@@ -49,6 +50,7 @@ export class SimpleScene extends Phaser.Scene {
 
     this.graphics = [];
     this.markers = [];
+    this.allObjects = [];
     this.selectedFish = null;
     this.createFieldLabels();
   }
@@ -117,6 +119,10 @@ export class SimpleScene extends Phaser.Scene {
           sprite.setData('fieldType', field)
         }
 
+        this.allObjects.push(water)
+        if (sprite) {
+          this.allObjects.push(sprite)
+        }
 
         return {
           background: water,
@@ -127,19 +133,8 @@ export class SimpleScene extends Phaser.Scene {
   }
 
   updateBoardGraphics(board:Board) {
-    console.log("updateBoardGraphics (set) entry")
-    this.graphics.forEach((row) => {
-      row.forEach((g) => {
-        if (g.foreground) {
-          g.foreground.destroy();
-        }
-        if (g.background) {
-          g.background.destroy();
-        }
-      });
-    });
+    this.destroySprites()
     this.graphics = this.createBoardGraphics(board);
-    console.log("updateBoardGraphics (set) leave")
   }
 
   handleClick(event: any) {
@@ -147,6 +142,13 @@ export class SimpleScene extends Phaser.Scene {
     if (target) {
       this.fieldClickHandler(target)
     }
+  }
+
+  destroySprites() {
+    this.allObjects.forEach((obj) => {
+      obj.destroy()
+    })
+    this.allObjects = []
   }
 
   unmarkFields() {
@@ -313,7 +315,7 @@ export class PiranhasEngine {
     this.game.scene.add("simple", this.scene, true);
   }
 
-  clear() {
+  clearUI() {
     if (this.scene) {
       this.scene.deselectFish();
       this.scene.unmarkFields();

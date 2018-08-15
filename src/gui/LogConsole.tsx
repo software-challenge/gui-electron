@@ -9,8 +9,8 @@ interface State {
 export class LogConsole extends React.Component<{ gameId: number }, State> {
   private listener;
 
-  constructor() {
-    super(null);
+  constructor(props) {
+    super(props);
     this.state = {
       messages: []
     };
@@ -45,5 +45,5 @@ export class LogConsole extends React.Component<{ gameId: number }, State> {
       </div>
     );
   }
-  
+
 }
