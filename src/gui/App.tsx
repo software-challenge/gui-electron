@@ -44,8 +44,8 @@ interface State {
 
 export class App extends React.Component<any, State> {
   private gameCreationOptions;
-  constructor() {
-    super(null);
+  constructor(props) {
+    super(props);
     this.state = {
       menuRetracted: false,
       consoleRetracted: true,
@@ -254,24 +254,24 @@ export class App extends React.Component<any, State> {
             <RetractableSidebar retracted={this.state.menuRetracted}>
               <NavGroup>
                 <NavTitle title="Spiele" />
-                <NavItem onClick={() => this.showGameCreation()} active={this.state.contentState == AppContent.GameCreation}>
+                <NavItem key="new" onClick={() => this.showGameCreation()} active={this.state.contentState == AppContent.GameCreation}>
                   <UnicodeIcon icon="+" />Neues Spiel
                 </NavItem>
-                <NavItem onClick={() => this.loadReplay()}>
+                <NavItem key="replay" onClick={() => this.loadReplay()}>
                   <UnicodeIcon icon="↥" />Replay laden
                 </NavItem>
                 {Api.getGameManager().getBufferedGameTitles().map(
-                  t => (<NavItem onClick={() => this.showGame(t.id)} active={this.state.contentState == AppContent.GameLive && this.state.activeGameId == t.id}>
+                  t => (<NavItem key={t.id} onClick={() => this.showGame(t.id)} active={this.state.contentState == AppContent.GameLive && this.state.activeGameId == t.id}>
                     <UnicodeIcon icon="🎳" />{t.name} ({t.id})<span className="close-button-container"><button title="Close Game" className="svg-button close-game" onClick={e => { this.closeGame(t.id); e.stopPropagation() }}><img className="svg-icon" src="resources/x-circled.svg" /></button></span></NavItem>
                   ))}
                 <NavTitle title="Informationen" />
-                <NavItem onClick={() => this.showRules()}>
+                <NavItem key="rules" onClick={() => this.showRules()}>
                   <UnicodeIcon icon="❔" />Spielregeln
                 </NavItem>
-                <NavItem onClick={() => this.showHelp()}>
+                <NavItem key="help" onClick={() => this.showHelp()}>
                   <UnicodeIcon icon="❔" />Hilfe
                 </NavItem>
-                <NavItem onClick={() => this.showLog()}>
+                <NavItem key="log" onClick={() => this.showLog()}>
                   <UnicodeIcon icon="📜" />Programm-Log
                 </NavItem>
               </NavGroup>

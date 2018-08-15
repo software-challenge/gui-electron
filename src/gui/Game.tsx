@@ -41,8 +41,8 @@ export class Game extends React.Component<{ gameId: number, name: string }, Stat
 
   private viewerState: ViewerState;
 
-  constructor() {
-    super(null);
+  constructor(props) {
+    super(props);
     this.viewer = null;
     loadCSS('css/viewer.css');
     this.state = {
