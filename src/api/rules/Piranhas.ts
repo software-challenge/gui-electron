@@ -10,8 +10,8 @@ export class GameState {
   red: Player;
   blue: Player;
   turn: number;
-  startPlayer: PLAYERCOLOR;
-  currentPlayer: PLAYERCOLOR;
+  startPlayerColor: PLAYERCOLOR;
+  currentPlayerColor: PLAYERCOLOR;
   board: Board;
   has_result: boolean;
   lastMove: Move;
@@ -19,17 +19,20 @@ export class GameState {
   constructor() {
     this.red = new Player(Player.COLOR.RED);
     this.blue = new Player(Player.COLOR.BLUE);
-    this.startPlayer = Player.COLOR.RED;
-    this.currentPlayer = Player.COLOR.RED;
+    this.startPlayerColor = Player.COLOR.RED;
+    this.currentPlayerColor = Player.COLOR.RED;
     this.turn = 0;
     this.board = new Board();
     this.has_result = false;
   }
 
   static fromJSON(json: any): GameState {
+    console.log("creating gamestate from json:", json)
+    console.log("start color", json.$.startPlayerColor)
+    console.log("current color", json.$.currentPlayerColor)
     var gs = new GameState();
-    gs.startPlayer = Player.ColorFromString(json.$.startPlayer);
-    gs.currentPlayer = Player.ColorFromString(json.$.currentPlayer);
+    gs.startPlayerColor = Player.ColorFromString(json.$.startPlayerColor);
+    gs.currentPlayerColor = Player.ColorFromString(json.$.currentPlayerColor);
     gs.turn = parseInt(json.$.turn);
     gs.red = Player.fromJSON(json.red[0]);
     gs.blue = Player.fromJSON(json.blue[0]);
@@ -43,8 +46,8 @@ export class GameState {
   clone(): GameState {
     let clone = new GameState();
     clone.turn = this.turn;
-    clone.startPlayer = this.startPlayer;
-    clone.currentPlayer = this.currentPlayer;
+    clone.startPlayerColor = this.startPlayerColor;
+    clone.currentPlayerColor = this.currentPlayerColor;
     clone.red = this.red.clone();
     clone.blue = this.blue.clone();
     clone.board = this.board.clone();
@@ -66,11 +69,11 @@ export class GameState {
   }
 
   getCurrentPlayer(): Player {
-    return this.getPlayerByColor(this.currentPlayer);
+    return this.getPlayerByColor(this.currentPlayerColor);
   }
 
   getOtherPlayer(): Player {
-    return this.getPlayerByColor(Player.OtherColor(this.currentPlayer));
+    return this.getPlayerByColor(Player.OtherColor(this.currentPlayerColor));
   }
 
   getPlayerByColor(color: PLAYERCOLOR) {
@@ -82,7 +85,7 @@ export class GameState {
   }
 
   getStartPlayer() {
-    return this.getPlayerByColor(this.startPlayer);
+    return this.getPlayerByColor(this.startPlayerColor);
   }
 }
 
