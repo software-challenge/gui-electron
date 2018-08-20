@@ -31,7 +31,7 @@ enum ViewerState {
 
 const MAX_INTERVAL = 3000; // max pause time between turns in playback mode
 
-export class Game extends React.Component<{ gameId: number, name: string }, State> {
+export class Game extends React.Component<{ gameId: number, name: string, isReplay: boolean }, State> {
 
   private viewer: Viewer;
   private mounted: boolean;
@@ -245,25 +245,24 @@ export class Game extends React.Component<{ gameId: number, name: string }, Stat
   }
 
   saveReplay() {
-    /*if (this.game instanceof LiveGame) {
+    if (!this.props.isReplay) {
       dialog.showSaveDialog(
         {
           title: "Wähle einen Ort zum Speichern des Replays",
-          defaultPath: this.game.name + '.xml',
+          defaultPath: this.props.name + '.xml',
           filters: [{ name: "Replay-Dateien", extensions: ["xml"] }]
         },
         (filename) => {
           // dialog returns undefined when user clicks cancel or an array of strings (paths) if user selected a file
           if (filename) {
             //window.localStorage[localStorageProgramPath] = filenames[0];
-            console.log("Attempting to save " + filename)
-            if (this.game instanceof LiveGame) {
-              this.game.saveReplay(filename);
-            }
+            console.log("Attempting to save", filename)
+            // TODO send request to server to save the game
+            Api.getGameManager().saveReplayOfGame(this.props.gameId, filename)
           }
         }
       );
-    }*/
+    }
   }
 
 
@@ -284,7 +283,7 @@ export class Game extends React.Component<{ gameId: number, name: string }, Stat
             <img className="speed-label svg-icon" src="resources/tachometer.svg" />
             {speed}
             <span style={{fontSize: '13pt', color: 'white', marginLeft: '1em'}}>Zug: {this.state.currentTurn}</span>
-            {/*save*/}
+            {save}
           </div>
         </div>
         {this.playbackStarted ? "" : <button id="start-button" title="Los" onClick={event => this.playPause()}><img className="svg-icon" src="resources/play.svg" /></button>}

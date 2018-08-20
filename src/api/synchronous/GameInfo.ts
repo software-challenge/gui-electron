@@ -1,8 +1,6 @@
 export class GameInfo {
-  name: string;
-  currentTurn: number;
-  isReplay: boolean;
-  constructor(name: string) {
-    this.name = name;
-  }
+  id: number
+  name: string
+  currentTurn: number
+  isReplay: boolean
 }

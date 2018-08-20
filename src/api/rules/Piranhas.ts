@@ -57,14 +57,13 @@ export class GameState {
 
   static lift(that: any): GameState {//Flat clone that adds methods to an object serialized to json
     let clone = new GameState();
+    console.log("GameState lifting", that)
     Object.assign<GameState, GameState>(clone, that);
     clone.red = Player.lift(clone.red);
     clone.blue = Player.lift(clone.blue);
     clone.board = Board.lift(clone.board);
-    if (clone.lastMove) {
+    if (clone.lastMove)
       clone.lastMove = Move.lift(clone.lastMove);
-    }
-
     return clone;
   }
 
