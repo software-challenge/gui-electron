@@ -248,7 +248,7 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
           firstPlayer: this.createPlayer(this.state.players[0]),
           secondPlayer: this.createPlayer(this.state.players[1]),
           gameName: this.state.gameName.value,
-          gameId: Api.getGameManager().createGameId(this.state.gameName.value)
+          gameId: Api.getGameManager().createGameId(this.state.gameName.value, false)
         });
       }} />;
     } else {

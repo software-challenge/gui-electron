@@ -63,6 +63,19 @@ export class GameManagerWorkerInterface {
     fetch(Backend.urlFor('/delete-game?id='+gameId))
   }
 
+  saveReplayOfGame(gameId: number, path: string) {
+    console.log("Saving replay of game with id " + gameId + " to " + path);
+    fetch(Backend.urlFor('/save-replay'),
+      {
+        method: 'POST',
+        body: JSON.stringify({gameId: gameId, path: path}),
+        headers: new Headers({
+          'Content-Type': 'application/json'
+        })
+      })
+      .then(r => r.json())
+      .catch(e => Logger.getLogger().log("GameManagerWorkerInterface", "saveReplayOfGame", "Error saving replay of a game: " + e));
+  }
   /**
    * Requests the gameState for the given turn and game
    * @param gameName

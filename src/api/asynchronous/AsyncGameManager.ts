@@ -68,6 +68,18 @@ export class AsyncGameManager {
       }
     });
 
+    this.server.post('/save-replay', (req, res) => {
+      try {
+        let options = req.body;
+        let g: Game = this.games.get(options.gameId);
+        if (g instanceof LiveGame) {
+          g.saveReplay(options.path)
+        }
+      } catch (e) {
+        res.status(500).send(e.toString());
+      }
+    });
+
     this.server.get('/delete-game', (req, res) => {
       try {
         let gameId = parseInt(req.query.id);
@@ -146,8 +158,6 @@ export class AsyncGameManager {
     } else if (game instanceof LiveGame) { //Game is a live game and might or might not be finished, let's find out
       let lg: LiveGame = game;
       if (lg.isLive()) {
-
-        console.log("Human move requested for game with id " + gameId + ":", AsyncApi.hasMoveRequest(gameId));
         if (AsyncApi.hasMoveRequest(gameId)) {//If there's an action request currently lodged with the API
           resp.gameStatus = "REQUIRES INPUT";
           var [id, mr] = AsyncApi.getMoveRequest(gameId);//Get the request and assemble the response. We can request this ActionRequest many times, but only redeem it once

@@ -125,7 +125,7 @@ export class App extends React.Component<any, State> {
             replayName = replayName.substring(0, liofp);
           }
           let gco: Replay = {
-            gameId: Api.getGameManager().createGameId(replayName),
+            gameId: Api.getGameManager().createGameId(replayName, true),
             gameName: replayName,
             kind: GameType.Replay,
             path: filenames[0]
@@ -201,7 +201,7 @@ export class App extends React.Component<any, State> {
         break;
       case AppContent.GameLive:
         console.log("activeGameId: " + this.state.activeGameId);
-        mainPaneContent = <Game gameId={this.state.activeGameId} name={Api.getGameManager().getGameInfo(this.state.activeGameId).name} />;
+        mainPaneContent = <Game gameId={this.state.activeGameId} name={Api.getGameManager().getGameInfo(this.state.activeGameId).name} isReplay={Api.getGameManager().getGameInfo(this.state.activeGameId).isReplay} />;
         break;
       case AppContent.Blank:
         mainPaneContent = <div id="blank"></div>;

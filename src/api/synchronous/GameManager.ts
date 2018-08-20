@@ -3,20 +3,20 @@ import { GameManagerWorkerInterface } from './GameManagerWorkerInterface';
 import { GameState, Move } from '../rules/CurrentGame';
 import { MessageContent } from '../rules/Message';
 import { ActionMethod } from '../rules/ActionMethod';
-
-export interface GameInfo {
-  id: number,
-  name: string
-}
+import { GameInfo } from './GameInfo';
 
 export class GameManager {
   private gmwi: GameManagerWorkerInterface;
 
   private bufferedGameInfo: GameInfo[];
 
-  private displayStates: Map<number, number>;
 
+  // properties only saved in frontend:
+  // FIXME: this is a mess and comes from the time where games were identified by name
+  // better manage all state in the backend and only buffer in the frontend
   private gameIDsToNames: Map<number, string>;
+  private gameIDsToIsReplay: Map<number, boolean>;
+  private displayStates: Map<number, number>;
 
   private nextID: number;
 
@@ -25,13 +25,15 @@ export class GameManager {
     this.bufferedGameInfo = [];
     this.displayStates = new Map<number, number>();
     this.gameIDsToNames = new Map<number, string>();
+    this.gameIDsToIsReplay = new Map<number, boolean>();
     this.nextID = 0;
   }
 
-  public createGameId(gameName: string): number {
+  public createGameId(gameName: string, isReplay: boolean): number {
     let currentGameID = this.nextID;
     this.nextID++;
     this.gameIDsToNames.set(currentGameID, gameName);
+    this.gameIDsToIsReplay.set(currentGameID, isReplay);
     return currentGameID;
   }
 
@@ -41,7 +43,12 @@ export class GameManager {
   }
 
   public getGameInfo(gameId: number): GameInfo {
-    return {id: gameId, name: this.gameIDsToNames.get(gameId)}
+    return {
+      id: gameId,
+      name: this.gameIDsToNames.get(gameId),
+      isReplay: this.gameIDsToIsReplay.get(gameId),
+      currentTurn: this.getCurrentDisplayStateOnGame(gameId)
+    }
   }
 
   /**
@@ -53,10 +60,14 @@ export class GameManager {
     this.gmwi.createGameWithOptions(options, id => {
       let gameInfo = this.getGameInfo(id)
       if (!this.bufferedGameInfo.map(i => i.id).includes(id)) {
-        this.bufferedGameInfo.push(this.getGameInfo(id))
+        this.bufferedGameInfo.push(gameInfo)
       }
       callback(gameInfo);
     });
+  }
+
+  public saveReplayOfGame(gameId: number, path: string) {
+    this.gmwi.saveReplayOfGame(gameId, path)
   }
 
   private getState(gameName: string, turn: number, callback: (s: GameState) => void) {

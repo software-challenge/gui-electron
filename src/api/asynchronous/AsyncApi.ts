@@ -25,7 +25,6 @@ export class AsyncApi {
 
   public static hasMoveRequest(gameId: number): boolean {
     if (this.moveRequests.has(gameId)) {
-      console.log(`Game ${gameId} has request ID ${[...this.moveRequests.get(gameId).keys()].join(',')}`);
       return this.moveRequests.has(gameId) && this.moveRequests.get(gameId).size > 0;
     } else {
       return false;
@@ -49,7 +48,7 @@ export class AsyncApi {
   }
 
   public static lodgeActionRequest(gameId: number, state: GameState, callback: (m: Move) => void) {
-    console.log("new move request for " + gameId);
+    console.log("new move request for game " + gameId);
     if (!this.moveRequests.has(gameId)) {
       this.moveRequests.set(gameId, new Map<number, MoveRequest>());
     }
