@@ -183,7 +183,7 @@ export class Viewer {
     if (shouldSelectFish) {
       let ownFishFields = state.board.fields.map((col, x) => {
         return col.map((field, y) => {
-          if (field == GameRuleLogic.playerFieldType(state.currentPlayer)) {
+          if (field == GameRuleLogic.playerFieldType(state.currentPlayerColor)) {
             return {x: x, y: y};
           } else {
             return null;
