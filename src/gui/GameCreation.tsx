@@ -48,8 +48,8 @@ class ErrorList extends React.PureComponent<{ errors: Array<string> }> {
 }
 
 export class GameCreation extends React.Component<{ gameCreationCallback: (GameCreationOptions) => void }, FormState> {
-  constructor() {
-    super(null);
+  constructor(props) {
+    super(props);
 
     let defaults = {
       generalErrors: [],

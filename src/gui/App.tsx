@@ -17,8 +17,6 @@ import { ApplicationStatus } from './ApplicationStatus';
 import { Hotfix } from './Hotfix';
 import Iframe from 'react-iframe';
 
-
-
 const dialog = remote.dialog;
 const shell = remote.shell;
 

@@ -168,6 +168,11 @@ export class Logger {
     this.log(actor, focus, message + "\n" + JSON.stringify(object, null, 4));
   }
 
+  public logError(actor: string, focus: string, message: string, error: any) {
+    this.log(actor, focus, message)
+    console.error(error)
+  }
+
   public focus(actor: string, focus: string) {
     return { log: (message) => this.log(actor, focus, message) };
   }
