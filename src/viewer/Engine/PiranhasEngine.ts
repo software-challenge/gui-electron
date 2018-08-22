@@ -219,8 +219,14 @@ export class SimpleScene extends Phaser.Scene {
     };
   }
 
-  updateBoard(gameState: GameState, move: Move, animationDone: () => void) {
+  updateBoard(gameState: GameState, move: Move) {
     console.log("updateBoard (animate) entry")
+    if (move == null) {
+      // added this check because of strange bug where a promise rejection
+      // happened because of passing an undefined move into this method. The
+      // promise rejection was silently ignored and it was hard to find.
+      throw "move is not defined"
+    }
     this.boardEqualsView(gameState.board)
     let spriteToMove = this.graphics[move.fromField.x][move.fromField.y].foreground;
     if (spriteToMove != null) {
@@ -240,7 +246,6 @@ export class SimpleScene extends Phaser.Scene {
             targetGraphic.destroy();
           }
           this.unmarkFields();
-          animationDone();
         }
       });
     } else {
@@ -284,7 +289,12 @@ export class SimpleScene extends Phaser.Scene {
         let expectedCoordinates: Coordinates = this.fieldCoordinates({x: x, y: y})
         if (field.foreground != null) {
           if (expectedCoordinates.x != field.foreground.x || expectedCoordinates.y != field.foreground.y) {
-            statesDoMatch = false
+            // NOTE that we are ignoring not matching coordinates (only logging
+            //them) because the sprite may be on its way to the final position.
+            //This enables adding animations on already animating sprites and
+            //resolves the problem where an animation is nearly not finished but
+            //the board has to be rendered for the next state, canceling all
+            //animations.
             console.warn(`sprite was not on it's place on (${x},${y})`, field.foreground)
           }
         }
@@ -337,8 +347,16 @@ export class PiranhasEngine {
     this.scene.markFields(this.selectableFields);
   }
 
-  animateMove(state: GameState, move: Move, animationDone: () => void) {
-    this.scene.updateBoard(state, move, animationDone);
+  animateMove(state: GameState, move: Move) {
+    this.scene.updateBoard(state, move);
+  }
+
+  finishAnimations() {
+    this.scene.tweens.each(tween => { tween.seek(1); tween.complete() })
+  }
+
+  animating():boolean {
+    return this.scene.tweens.getAllTweens().length > 0
   }
 
   cancelInteractions() {

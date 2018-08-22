@@ -1,4 +1,5 @@
 import { GameRuleLogic, Line } from './PiranhasGameRules';
+import * as deepEqual from "deep-equal";
 
 export type LineDirection = "HORIZONTAL" | "VERTICAL" | "RISING_DIAGONAL" | "FALLING_DIAGONAL";
 export const ALL_DIRECTIONS: LineDirection[] = ["HORIZONTAL", "VERTICAL", "RISING_DIAGONAL", "FALLING_DIAGONAL"]
@@ -375,6 +376,10 @@ export class RenderState {
   constructor(gameState: GameState, uiState: UiState) {
     this.gameState = gameState;
     this.uiState = uiState;
+  }
+
+  equals(other: RenderState):boolean {
+    return deepEqual(this, other)
   }
 }
 

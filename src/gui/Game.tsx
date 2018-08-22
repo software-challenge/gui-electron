@@ -65,7 +65,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
     }
   }
 
-  private updateProgress() {
+  private updateViewer() {
     Api.getGameManager().getGameStatus(this.props.gameId, (status) => {
       console.log("updateProgress", {gameName: this.props.name, stateNumber: this.state.currentTurn});
       // Endscreen
@@ -80,7 +80,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
         if (this.state.waitingForInput) {
           this.interact(status);
         } else {
-          this.viewer.render(new RenderState(gameState, "none"), () => {})
+          this.viewer.render(new RenderState(gameState, "none"))
         }
       });
     });
@@ -273,7 +273,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
     var back = <button title="Zug zurück" onClick={this.previous.bind(this)}><img className="svg-icon" src="resources/step-backward.svg" /></button>;
     var speed = <input title="Abspielgeschwindigkeit" className="playbackSpeed" type="range" min="0" max={MAX_INTERVAL} step="100" onChange={(e) => this.handleSpeedChange(e)} value={MAX_INTERVAL - this.state.playbackSpeed} />;
     var save = <button className="save" title="Replay speichern" onClick={this.saveReplay.bind(this)}><img className="svg-icon" src="resources/arrow-to-bottom.svg" /></button>;
-    this.updateProgress()
+    this.updateViewer()
     console.log("Turn: " + this.state.currentTurn)
     return (
       <div id="replay-viewer" ref={(elem) => {this.viewerElement = elem}}>

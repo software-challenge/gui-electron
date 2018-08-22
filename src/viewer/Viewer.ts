@@ -3,11 +3,6 @@ import { Helpers } from "./Helpers";
 import { Player, GameResult, Coordinates, Direction, Move, GameRuleLogic, GameState, Board, RenderState, UiState, SelectFish, SelectTargetDirection, FinishMove, None, InteractionEvent, FieldSelected } from '../api/rules/CurrentGame';
 import { Logger } from '../api/Logger';
 
-interface AnimationState {
-  state: RenderState
-  animationCallback: () => void
-}
-
 export class Viewer {
   //DOM Elements
   element: HTMLElement;
@@ -19,13 +14,12 @@ export class Viewer {
   startup_timestamp: number;
 
   //Rendering
-  rerenderControlActive: boolean;
-  animating = false;
-  lastRoundRendered: boolean = false;
-  endScreen: HTMLDivElement = null;
-  needsRerender: number;
-  currentMove: number = 0;
-  queue: AnimationState[]
+
+  private rerenderControlActive: boolean;
+  private endScreen: HTMLDivElement = null;
+  private currentMove: number = 0;
+  // the last rendered state (i.e. what is currently displayed)
+  private currentState: RenderState;
 
   constructor() {
     //Initialize container
@@ -39,13 +33,10 @@ export class Viewer {
     this.canvas = document.createElement('canvas');
     this.canvas.classList.add('viewerCanvas');
     this.element.appendChild(this.canvas);
-    this.queue = []
 
     this.engine = new PiranhasEngine(this.canvas);
   }
 
-  // the last rendered gamestate, to enable animations
-  private tempstate: GameState;
   resize() {
     /*
     this.canvas.setAttribute('width', this.element.clientWidth.toString());
@@ -73,38 +64,34 @@ export class Viewer {
   }
 
   undock() {
-    this.engine.clearUI();
-    this.queue = []
+    this.engine.clearUI()
   }
 
-  render(state: RenderState, animationCallback?: () => void) {
+  render(state: RenderState) {
     if (this.engine == null) {
       return;
     }
-    this.engine.clearUI();
-    // finish all animations and let the callbacks fire, updating the view state
-    this.engine.scene.tweens.each(tween => { tween.stop(1); tween.complete() })
-    var onFinish: () => void = () => {
-      this.animating = false;
-      this.tempstate = state.gameState.clone();
-      if (animationCallback) {
-        animationCallback();
-      }
-      if (this.queue.length > 0) {
-        var nextStateToRender = this.queue.shift();
-        this.render(nextStateToRender.state, nextStateToRender.animationCallback)
-      }
-    }
-    if (this.tempstate && !this.animating && (state.gameState.turn == this.tempstate.turn + 1) && this.engine.scene.boardEqualsView(this.tempstate.board)) {
-      this.animating = true;
-      this.engine.animateMove(this.tempstate, state.gameState.lastMove, onFinish);
+    if (this.currentState && this.currentState.equals(state)) {
+      console.log("should render same state, doing nothing")
+      return
     } else {
-      if (this.animating) {
-        this.queue.push({state: state, animationCallback: animationCallback});
-      } else {
-        this.engine.draw(state);
-        onFinish();
-      }
+      console.log("rendering new state", {ui: state.uiState, turn: state.gameState.turn})
+    }
+
+    this.engine.clearUI();
+
+    if (state.gameState.lastMove &&
+        this.currentState &&
+//        !this.engine.animating() &&
+        (state.gameState.turn === this.currentState.gameState.turn + 1) &&
+        this.engine.scene.boardEqualsView(this.currentState.gameState.board)) {
+      this.engine.animateMove(this.currentState.gameState, state.gameState.lastMove);
+      this.currentState = state
+    } else {
+      this.engine.finishAnimations();
+      this.engine.scene.tweens.killAll()
+      this.engine.draw(state);
+      this.currentState = state
     }
   }
 

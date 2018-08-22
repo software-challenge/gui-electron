@@ -31,8 +31,7 @@ export class GameManagerWorkerInterface {
       .then(r => callback(r))
       .catch(e => {
         if (retries == 0) {
-          Logger.getLogger().log("GameManagerWorkerInterface", "getListOfGames", "Error getting list of games: " + e)
-          throw e;
+          Logger.getLogger().logError("GameManagerWorkerInterface", "getListOfGames", "Error getting list of games: " + e, e)
         } else {
           setTimeout(() => this.getListOfGames(callback,retries - 1),250);
         }
@@ -56,7 +55,7 @@ export class GameManagerWorkerInterface {
       })
       .then(r => r.json())
       .then(t => { console.log("Created game with id " + t); callback(parseInt(t)); })
-      .catch(e => Logger.getLogger().log("GameManagerWorkerInterface", "createGameWithOptions", "Error creating game: " + e));
+      .catch(e => Logger.getLogger().logError("GameManagerWorkerInterface", "createGameWithOptions", "Error creating game: " + e, e));
   }
 
   deleteGame(gameId: number) {
@@ -74,7 +73,7 @@ export class GameManagerWorkerInterface {
         })
       })
       .then(r => r.json())
-      .catch(e => Logger.getLogger().log("GameManagerWorkerInterface", "saveReplayOfGame", "Error saving replay of a game: " + e));
+      .catch(e => Logger.getLogger().logError("GameManagerWorkerInterface", "saveReplayOfGame", "Error saving replay of a game: " + e, e));
   }
   /**
    * Requests the gameState for the given turn and game
@@ -86,7 +85,9 @@ export class GameManagerWorkerInterface {
     fetch(Backend.urlFor(`/state?id=${gameId}&turn=${turn}`))
       .then(r => r.json())
       .then(state => callback(GameState.lift(state)))
-      .catch(e => Logger.getLogger().log("GameManagerWorkerInterface", "getState", "Error getting state: " + e));
+      .catch(e => {
+        Logger.getLogger().logError("GameManagerWorkerInterface", "getState", "Error getting state: " + e, e)
+      });
   }
 
 
@@ -99,7 +100,7 @@ export class GameManagerWorkerInterface {
     fetch(Backend.urlFor(`/status?id=${gameId}`))
       .then(r => r.json())
       .then(status => callback(status))
-      .catch(e => Logger.getLogger().log("GameManagerWorkerInterface", "getStatus", "Error getting status: " + e));
+      .catch(e => Logger.getLogger().logError("GameManagerWorkerInterface", "getStatus", "Error getting status: " + e, e));
   }
 
   /**
@@ -122,14 +123,14 @@ export class GameManagerWorkerInterface {
       .then(r => r.text())
       .then(t => { callback(gameId); return t; })
       .then(t => Logger.getLogger().log("GameManagerWorkerInterface", "sendMove", "Server response: " + t))
-      .catch(e => Logger.getLogger().log("GameManagerWorkerInterface", "createGameWithOptions", "Error creating game: " + e));
+      .catch(e => Logger.getLogger().logError("GameManagerWorkerInterface", "createGameWithOptions", "Error creating game: " + e, e));
   }
 
   stop() {
     fetch(Backend.urlFor('/stop'), { method: "POST" })
       .then(t => t.text())
       .then(t => Logger.getLogger().log("GameManagerWorkerInterface", "stop", "received server message: " + t))
-      .catch(e => Logger.getLogger().log("GameManagerWorkerInterface", "stop", "Error stopping backend: " + e));
+      .catch(e => Logger.getLogger().logError("GameManagerWorkerInterface", "stop", "Error stopping backend: " + e, e));
   }
 
 }
