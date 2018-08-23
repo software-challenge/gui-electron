@@ -9,7 +9,7 @@
     "test": "mocha --compilers ts:ts-node/register,tsx:ts-node/register 'test/**/*.spec.@(ts|tsx)'",
     "start": "(test -d server || yarn getserver) && yarn install && yarn compile && electron .",
     "start-dev": "yarn install && yarn compile && electron . --dev",
-    "getserver": "rimraf socha && git clone git@github.com:CAU-Kiel-Tech-Inf/socha.git --depth 1 && cd socha && ./gradlew deploy && cd .. && rimraf server && rimraf client && cp -r socha/server/build/runnable server && cp socha/players/build/libs/defaultplayer.jar . && rimraf socha",
+    "getserver": "rimraf socha && git clone git@github.com:CAU-Kiel-Tech-Inf/socha.git --depth 1 && cd socha && ./gradlew deploy && cd build/deploy && unzip -d runnable software-challenge-server.zip && cd ../../.. && rimraf server && rimraf client && cp -r socha/build/deploy/runnable server",
     "copyserver": "rimraf server && rimraf client && ../socha/gradlew deploy -p ../socha && cp -r ../socha/server/build/runnable server && cp ../socha/players/build/libs/defaultplayer.jar . && rimraf sochat",
     "dist": "yarn install && yarn compile && electron-builder",
     "dist-all": "rimraf dist && yarn install && yarn compile && electron-builder --win --linux --mac",
