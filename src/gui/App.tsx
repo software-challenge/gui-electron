@@ -249,13 +249,13 @@ export class App extends React.Component<any, State> {
                     <UnicodeIcon icon="🎳" />{t.name} ({t.id})<span className="close-button-container"><button title="Close Game" className="svg-button close-game" onClick={e => { this.closeGame(t.id); e.stopPropagation() }}><img className="svg-icon" src="resources/x-circled.svg" /></button></span></NavItem>
                   ))}
                 <NavTitle title="Informationen" />
-                <NavItem key="rules" onClick={() => this.show(AppContent.Rules)}>
+                <NavItem key="rules" onClick={() => this.show(AppContent.Rules)} active={this.state.contentState == AppContent.Rules}>
                   <UnicodeIcon icon="❔" />Spielregeln
                 </NavItem>
-                <NavItem key="help" onClick={() => this.show(AppContent.Help)}>
+                <NavItem key="help" onClick={() => this.show(AppContent.Help)} active={this.state.contentState == AppContent.Help}>
                   <UnicodeIcon icon="❔" />Hilfe
                 </NavItem>
-                <NavItem key="log" onClick={() => this.show(AppContent.Log)}>
+                <NavItem key="log" onClick={() => this.show(AppContent.Log)} active={this.state.contentState == AppContent.Log}>
                   <UnicodeIcon icon="📜" />Programm-Log
                 </NavItem>
               </NavGroup>
