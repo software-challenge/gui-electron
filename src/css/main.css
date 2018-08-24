@@ -90,14 +90,6 @@ img.svg-icon {
   font-size: 80%;
 }
 
-#blank {
-  width: 100%;
-  height: 100%;
-  background-color: black;
-  margin: 0;
-  padding: 0;
-}
-
 #game-name {
   width: 50%;
   margin-left: 25%;
@@ -118,7 +110,7 @@ img.svg-icon {
   color:red;
 }
 
-button#open-help {
+button.top-wide {
   width: 100%;
   height: 2em;
 }

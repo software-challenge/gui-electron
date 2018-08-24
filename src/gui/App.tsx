@@ -41,7 +41,7 @@ interface State {
 }
 
 export class App extends React.Component<any, State> {
-  private gameCreationOptions;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -55,48 +55,6 @@ export class App extends React.Component<any, State> {
         this.showGame(info.id);
       });
     }).bind(this));
-  }
-
-  private toggleMenu() {
-    this.setState((prev, props) => {
-      return {...prev, menuRetracted: !prev.menuRetracted};
-    });
-  }
-
-  private toggleConsole() {
-    this.setState((prev, props) => {
-      return {...prev, consoleRetracted: !prev.consoleRetracted};
-    });
-  }
-
-  private showSettings() {
-    this.setState((prev, props) => {
-      return {...prev, contentState: AppContent.Administration};
-    });
-  }
-
-  private showGameCreation() {
-    this.setState((prev, props) => {
-      return {...prev, contentState: AppContent.GameCreation};
-    });
-  }
-
-  private showGame(gameId: number) {
-    console.log("Switching to game with id " + gameId);
-    /* FIXME: Game.tsx depends on a componentWillUnmount call when switching to
-    another game. But React doesn't unmount the Game component if we are just
-    switching between two games (keeping contentState at AppContent.GameLive).
-    So we are switching to GameWaiting before to trigger an unmount. The
-    expectation was that changing the props always unmounts the component, but
-    this seems not to be true. Better move the code out of the unmount callback
-    and research how to listen for property changes. */
-    this.setState((prev, _props) => {
-      return {...prev, contentState: AppContent.GameWaiting};
-    }, () =>
-      this.setState((prev, _props) => {
-        return {...prev, contentState: AppContent.GameLive, activeGameId: gameId};
-      }));
-    document.getElementById('game-name').innerText = Api.getGameManager().getGameInfo(gameId).name;
   }
 
   private loadReplay() {
@@ -144,25 +102,53 @@ export class App extends React.Component<any, State> {
       this.showGame(info.id);
     });
     Logger.getLogger().log('App', 'startGameWithOptions', 'starting game with options: ' + JSON.stringify(o));
-
   }
 
-  private showHelp() {
-    this.setState((prev, _props) => {
-      return {...prev, contentState: AppContent.Help};
+  private toggleMenu() {
+    this.setState((prev, props) => {
+      return {...prev, menuRetracted: !prev.menuRetracted};
     });
   }
 
-  private showRules() {
-    this.setState((prev, _props) => {
-      return {...prev, contentState: AppContent.Rules};
+  private toggleConsole() {
+    this.setState((prev, props) => {
+      return {...prev, consoleRetracted: !prev.consoleRetracted};
     });
   }
 
-  private showLog() {
+  private showGame(gameId: number) {
+    console.log("Switching to game with id " + gameId);
+    /* FIXME: Game.tsx depends on a componentWillUnmount call when switching to
+    another game. But React doesn't unmount the Game component if we are just
+    switching between two games (keeping contentState at AppContent.GameLive).
+    So we are switching to GameWaiting before to trigger an unmount. The
+    expectation was that changing the props always unmounts the component, but
+    this seems not to be true. Better move the code out of the unmount callback
+    and research how to listen for property changes. */
+    this.refreshContent(AppContent.GameWaiting)
     this.setState((prev, _props) => {
-      return {...prev, contentState: AppContent.Log};
+      return {...prev, contentState: AppContent.GameWaiting};
+    }, () =>
+      this.setState((prev, _props) => {
+        return {...prev, contentState: AppContent.GameLive, activeGameId: gameId};
+      }));
+    document.getElementById('game-name').innerText = Api.getGameManager().getGameInfo(gameId).name;
+  }
+
+  private show(content: AppContent) {
+    this.setState((prev, props) => {
+      return {...prev, contentState: content};
     });
+  }
+
+  private refreshContent(inbetween: AppContent = AppContent.Blank) {
+    const previousState = this.state.contentState
+    this.setState((prev, _props) => {
+      return {...prev, contentState: inbetween};
+    }, () => { this.setState((prev, _props) => {
+      console.log("Setting state to", previousState)
+      return {...prev, contentState: previousState};
+    }) });
   }
 
   changeGameName(e) {
@@ -202,7 +188,7 @@ export class App extends React.Component<any, State> {
         mainPaneContent = <Game gameId={this.state.activeGameId} name={Api.getGameManager().getGameInfo(this.state.activeGameId).name} isReplay={Api.getGameManager().getGameInfo(this.state.activeGameId).isReplay} />;
         break;
       case AppContent.Blank:
-        mainPaneContent = <div id="blank"></div>;
+        mainPaneContent = <div/>;
         break;
       case AppContent.Error:
         mainPaneContent = <ErrorPage Title="Schlimmer Fehler" Message="Das Programm ist kaputt." />;
@@ -212,8 +198,8 @@ export class App extends React.Component<any, State> {
         break;
       case AppContent.Help:
         mainPaneContent = <div>
-          <button id="open-help" onClick={() => shell.openExternal("https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che")}>Extern öffnen</button>
-          <Iframe id="help" styles={{height: "calc(100% - 2em)"}} url="https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che" />
+          <button className="top-wide" onClick={() => shell.openExternal("https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che")}>Extern öffnen</button>
+          <Iframe styles={{height: "calc(100% - 2em)"}} url="https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che" />
         </div>;
         break;
       case AppContent.Log:
@@ -252,7 +238,7 @@ export class App extends React.Component<any, State> {
             <RetractableSidebar retracted={this.state.menuRetracted}>
               <NavGroup>
                 <NavTitle title="Spiele" />
-                <NavItem key="new" onClick={() => this.showGameCreation()} active={this.state.contentState == AppContent.GameCreation}>
+                <NavItem key="new" onClick={() => this.show(AppContent.GameCreation)} active={this.state.contentState == AppContent.GameCreation}>
                   <UnicodeIcon icon="+" />Neues Spiel
                 </NavItem>
                 <NavItem key="replay" onClick={() => this.loadReplay()}>
@@ -263,13 +249,13 @@ export class App extends React.Component<any, State> {
                     <UnicodeIcon icon="🎳" />{t.name} ({t.id})<span className="close-button-container"><button title="Close Game" className="svg-button close-game" onClick={e => { this.closeGame(t.id); e.stopPropagation() }}><img className="svg-icon" src="resources/x-circled.svg" /></button></span></NavItem>
                   ))}
                 <NavTitle title="Informationen" />
-                <NavItem key="rules" onClick={() => this.showRules()}>
+                <NavItem key="rules" onClick={() => this.show(AppContent.Rules)}>
                   <UnicodeIcon icon="❔" />Spielregeln
                 </NavItem>
-                <NavItem key="help" onClick={() => this.showHelp()}>
+                <NavItem key="help" onClick={() => this.show(AppContent.Help)}>
                   <UnicodeIcon icon="❔" />Hilfe
                 </NavItem>
-                <NavItem key="log" onClick={() => this.showLog()}>
+                <NavItem key="log" onClick={() => this.show(AppContent.Log)}>
                   <UnicodeIcon icon="📜" />Programm-Log
                 </NavItem>
               </NavGroup>
