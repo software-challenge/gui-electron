@@ -23,7 +23,7 @@ export class LiveGame extends Game {
   client2: GameClient;
   private is_live: boolean;
   private has_finished: boolean;
-  private roomId: string;
+  private roomId: Promise<string>;
 
 
   constructor(gco: GameCreationOptions) {
@@ -32,74 +32,77 @@ export class LiveGame extends Game {
     let Logger = SC_Logger.getLogger().focus("Game", "constructor");
     Logger.log("Creating game " + gco.gameId);
     Logger.log("Options: " + JSON.stringify(gco, null ,2));
+    let timeout = 10000;
+
     let gameStartSuccessful;
     let gameStartError;
     this.ready = new Promise<void>((res, rej) => { gameStartSuccessful = res; gameStartError = rej; });
-    // if the game didn't start after 10 seconds, assume error
-    let timeout = 10000;
 
+    this.roomId =
+      AsyncApi.getServer().then(server => {
 
-    var construct = (async function () {
+        //Register hook to go offline
+        server.on('status', s => {
+          if (s == ExecutableStatus.Status.EXITED) {
+            //Server exited.
+            //Stop client processes, set game to not live
+            this.is_live = false;
+          }
+        });
+        //Wait for server to start
+        return server.ready.then(() => server)
+      })
+      .then(server => {
+        Logger.log("API Server is ready");
+        //Create observer
+        Logger.log("Creating Observer Client");
+        this.observer = new ObserverClient(server.getHost(), server.getPort());
 
-      //Register hook to go offline
-      AsyncApi.getServer().on('status', s => {
-        if (s == ExecutableStatus.Status.EXITED) {
-          //Server exited.
-          //Stop client processes, set game to not live
+        this.observer.once('state', s => {
+          Logger.log("First gamestate received, game successfully started");
+          gameStartSuccessful()
+          this.roomId.then(id => this.observer.setPaused(id, false))
+        });
+
+        this.observer.on('state', s => {
+          this.gameStates.push(s);
+          this.emit('state' + (this.gameStates.length - 1), s);
+          this.emit('state_update');
+        });
+
+        this.observer.on('result', r => {
+          gameStartSuccessful()
+          this.gameResult = r;
           this.is_live = false;
-        }
-      });
-      //Wait for server to start
-      await AsyncApi.getServer().ready;
+        });
 
-      Logger.log("API Server is ready");
+        this.observer.on('message', msg => {
+          let m: ConsoleMessage = {
+            sender: "observer",
+            type: "output",
+            text: msg
+          };
+          this.messages.push(m);
+          // this.emit('message', m);
+        });
 
-      //Create observer
-      Logger.log("Creating Observer Client");
-      this.observer = new ObserverClient();
+        return Promise.all([server, this.observer.ready]);
+      })
+      .then(results => {
+        let server = results[0]
+        let observer = results[1]
+        Logger.log("Observer ready");
 
-      this.observer.once('state', s => {
-        Logger.log("First gamestate received, game successfully started");
-        this.observer.setPaused(this.roomId, false);
-        gameStartSuccessful();
-      });
+        if (gco.kind === GameType.Versus) {
+          let matchPlayerTypes = (kinds: Array<[PlayerType, PlayerType]>):boolean => {
+            return kinds.some(t => gco.firstPlayer.kind === t[0] && gco.secondPlayer.kind === t[1])
+          }
 
-      this.observer.on('state', s => {
-        this.gameStates.push(s);
-        this.emit('state' + (this.gameStates.length - 1), s);
-        this.emit('state_update');
-      });
-
-      this.observer.on('result', r => {
-        gameStartSuccessful();
-        this.gameResult = r;
-        this.is_live = false;
-      });
-
-      this.observer.on('message', msg => {
-        let m: ConsoleMessage = {
-          sender: "observer",
-          type: "output",
-          text: msg
-        };
-        this.messages.push(m);
-        // this.emit('message', m);
-      });
-
-      await this.observer.ready;
-
-      Logger.log("Observer ready");
-
-      if (gco.kind === GameType.Versus) {
-        let matchPlayerTypes = (kinds: Array<[PlayerType, PlayerType]>):boolean => {
-          return kinds.some(t => gco.firstPlayer.kind === t[0] && gco.secondPlayer.kind === t[1])
-        }
-
-        if (matchPlayerTypes([
-          [PlayerType.Computer, PlayerType.Computer],
-          [PlayerType.Human,    PlayerType.Computer],
-          [PlayerType.Computer, PlayerType.Human],
-          [PlayerType.Human,    PlayerType.Human]])) {
+          if (matchPlayerTypes([
+            [PlayerType.Computer, PlayerType.Computer],
+            [PlayerType.Human,    PlayerType.Computer],
+            [PlayerType.Computer, PlayerType.Human],
+            [PlayerType.Human,    PlayerType.Human]])) {
             //Reserve room, start clients, done
             Logger.log("Automatic game");
 
@@ -107,85 +110,138 @@ export class LiveGame extends Game {
             var p2 = new PlayerClientOptions(gco.secondPlayer.name, gco.secondPlayer.timeoutPossible);
 
             Logger.log("Starting automatic game");
-            var reservation: RoomReservation = await this.observer.prepareRoom(p1, p2);
-            this.roomId = reservation.roomId;
+            this.observer.prepareRoom(p1, p2).then(reservation => {
+              let roomId = reservation.roomId
+              Logger.log("Reserved room with id " + roomId)
+              return this.observer.observeRoom(roomId).then(() => {
+                Logger.log("Observing room with id " + roomId);
+                return reservation
+              })
+            }).then(reservation => {
+              if (gco.firstPlayer.kind == PlayerType.Computer) {
+                this.client1 = new ExecutableClient(
+                  gco.firstPlayer,
+                  reservation.reservation1,
+                  server.getHost(),
+                  server.getPort()
+                )
+              } else {
+                this.client1 = new HumanClient(
+                  server.getHost(),
+                  server.getPort(),
+                  gco.firstPlayer.name,
+                  reservation.reservation1,
+                  this.id
+                );
+              }
+              Logger.log("Client 1 started");
 
-            Logger.log("Reserved room with id " + this.roomId);
+              if (gco.secondPlayer.kind == PlayerType.Computer) {
+                this.client2 = new ExecutableClient(
+                  gco.secondPlayer,
+                  reservation.reservation2,
+                  server.getHost(),
+                  server.getPort()
+                )
+              } else {
+                this.client2 = new HumanClient(
+                  server.getHost(),
+                  server.getPort(),
+                  gco.secondPlayer.name,
+                  reservation.reservation2,
+                  this.id
+                )
+              }
+              Logger.log("Client 2 started");
 
-            //Observe room
-            await this.observer.observeRoom(reservation.roomId);
-            Logger.log("Observing room with id " + this.roomId);
-
-            this.client1 = gco.firstPlayer.kind == PlayerType.Computer ? new ExecutableClient(gco.firstPlayer, reservation.reservation1) : new HumanClient(gco.firstPlayer.name, reservation.reservation1, this.id);
-            Logger.log("Client 1 started");
-
-            this.client2 = gco.secondPlayer.kind == PlayerType.Computer ? new ExecutableClient(gco.secondPlayer, reservation.reservation2) : new HumanClient(gco.secondPlayer.name, reservation.reservation2, this.id);
-            Logger.log("Client 2 started");
-
-            // wait for clients to start
-            // NOTE that the order of resolution of the connect-promises is arbitrary
-            await Promise.all([this.client1.start(), this.client2.start()]).catch((reason) => gameStartError(reason));
-            this.is_live = true;
-        } else if (matchPlayerTypes([
-          [PlayerType.Human,   PlayerType.Manual],
-          [PlayerType.Manual,  PlayerType.Human],
-          [PlayerType.Computer,PlayerType.Manual],
-          [PlayerType.Manual,  PlayerType.Computer]])) {
+              // wait for clients to start
+              // NOTE that the order of resolution of the connect-promises is arbitrary
+              return Promise.all([
+                this.client1.start(),
+                this.client2.start()])
+                .then(() => this.is_live = true)
+            })
+          } else if (matchPlayerTypes([
+            [PlayerType.Human,   PlayerType.Manual],
+            [PlayerType.Manual,  PlayerType.Human],
+            [PlayerType.Computer,PlayerType.Manual],
+            [PlayerType.Manual,  PlayerType.Computer]])) {
 
             Logger.log("Starting half-automatic half-manual game");
             //Wait for manual client to connect, start other client
             let auto_client: GameClient;
             let auto_client_is_human_client: boolean = false;
-            this.roomId = await this.observer.awaitJoinGameRoom();
-            //Observe room
-            this.observer.observeRoom(this.roomId).then(() => {
-              Logger.log("Observing room with id " + this.roomId);
-            });
-
-
-            Logger.log("Configure automatic client");
-            //Configure one client
-            if (gco.firstPlayer.kind == PlayerType.Manual) {
-              this.client2 = gco.secondPlayer.kind == PlayerType.Computer ? new ExecutableClient(gco.secondPlayer, undefined) : new HumanClient(gco.secondPlayer.name, undefined, this.id);
-              if (gco.secondPlayer.kind == PlayerType.Human) {
-                auto_client_is_human_client = true;
+            this.observer.awaitJoinGameRoom().then(roomId => {
+              return this.observer.observeRoom(roomId).then(() => {
+                Logger.log("Observing room with id " + roomId);
+                return roomId
+              });
+            }).then(roomId => {
+              Logger.log("Configure automatic client");
+              //Configure one client
+              if (gco.firstPlayer.kind == PlayerType.Manual) {
+                if (gco.secondPlayer.kind == PlayerType.Computer) {
+                  this.client2 = new ExecutableClient(
+                    gco.secondPlayer,
+                    undefined,
+                    server.getHost(),
+                    server.getPort()
+                  )
+                } else {
+                  this.client2 = new HumanClient(
+                    server.getHost(),
+                    server.getPort(),
+                    gco.secondPlayer.name,
+                    undefined,
+                    this.id
+                  )
+                }
+                if (gco.secondPlayer.kind == PlayerType.Human) {
+                  auto_client_is_human_client = true;
+                }
+                auto_client = this.client2;
+              } else {
+                if (gco.firstPlayer.kind == PlayerType.Computer) {
+                  this.client1 = new ExecutableClient(gco.firstPlayer, undefined, server.getHost(), server.getPort())
+                } else {
+                  this.client1 = new HumanClient(server.getHost(), server.getPort(), gco.firstPlayer.name, undefined, this.id)
+                }
+                if (gco.firstPlayer.kind == PlayerType.Human) {
+                  auto_client_is_human_client = true;
+                }
+                auto_client = this.client1;
               }
-              auto_client = this.client2;
-            } else {
-              this.client1 = gco.firstPlayer.kind == PlayerType.Computer ? new ExecutableClient(gco.firstPlayer, undefined) : new HumanClient(gco.firstPlayer.name, undefined, this.id);
-              if (gco.firstPlayer.kind == PlayerType.Human) {
-                auto_client_is_human_client = true;
-              }
-              auto_client = this.client1;
-            }
 
-            //Add client to room
-            auto_client.start().then(() => {
-              //Disable timeout if human
-              if (auto_client_is_human_client) {
-                Logger.log("Disabling timeout for human client in slot 1");
-                this.observer.setTimeoutEnabled(this.roomId, 1, false);
-              }
-              this.is_live = true;
-            }).catch((reason) => gameStartError(reason));
-        } else if (matchPlayerTypes([
-          [PlayerType.Manual, PlayerType.Manual]])) {
+              //Add client to room
+              return auto_client.start().then(() => {
+                //Disable timeout if human
+                if (auto_client_is_human_client) {
+                  Logger.log("Disabling timeout for human client in slot 1");
+                  this.observer.setTimeoutEnabled(roomId, 1, false);
+                }
+                this.is_live = true;
+                return roomId
+              })
+            })
+          } else if (matchPlayerTypes([
+            [PlayerType.Manual, PlayerType.Manual]])) {
             Logger.log("Starting manual game");
             Logger.log("Waiting for room creation");
-            this.roomId = await this.observer.awaitJoinGameRoom();
-            //Observe room
-            this.observer.observeRoom(this.roomId).then(() => {
-              Logger.log("Observing room with id " + this.roomId);
+            return this.observer.awaitJoinGameRoom().then(roomId => {
+              //Observe room
+              return this.observer.observeRoom(roomId).then(() => {
+                Logger.log("Observing room with id " + roomId);
+                return roomId
+              });
             });
 
-        } else {
-            Logger.log("Something went wrong. PT: " + JSON.stringify([gco.firstPlayer.kind, gco.secondPlayer.kind]));
+          } else {
+            let message = "Something went wrong. Player types: " + JSON.stringify([gco.firstPlayer.kind, gco.secondPlayer.kind])
+            Logger.log(message);
+            return Promise.reject(message)
+          }
         }
-      }
-    }).bind(this);
-
-    construct();
-
+      })
   }
 
   getMessages(): ConsoleMessage[] {
@@ -217,7 +273,7 @@ export class LiveGame extends Game {
 
   requestNext() {
     if (this.is_live) {
-      this.observer.requestStep(this.roomId);
+      this.roomId.then(id => this.observer.requestStep(id))
     }
   }
 
@@ -242,7 +298,7 @@ export class LiveGame extends Game {
   }
 
   cancel() {
-    this.observer.cancelGame(this.roomId)
+    this.roomId.then(id => this.observer.cancelGame(id))
   }
 
 }

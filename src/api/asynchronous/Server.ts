@@ -39,11 +39,13 @@ export class Server extends EventEmitter {
   private status: ExecutableStatus.Status;
   private process;
   private logbuffer: string;
+  private port: number;
   ready: Promise<void>;
   //private listeners: ((ServerEvent) => void)[] = [];
 
-  constructor(autostart: boolean = true) {
+  constructor(port: number, autostart: boolean = true) {
     super();
+    this.port = port;
     this.logbuffer = "";
     setInterval(() => {
       if (this.logbuffer != "") {
@@ -76,6 +78,14 @@ export class Server extends EventEmitter {
     }
   }
 
+  getPort() {
+    return this.port
+  }
+
+  getHost() {
+    return '127.0.0.1'
+  }
+
   start() {
     this.hasExited = false;
     this.stdout = [];
@@ -85,8 +95,8 @@ export class Server extends EventEmitter {
     Logger.getLogger().log("Server", "start", "Starting server (server should reside in ./server directory)");
     // NOTE that the path will be different when the app is distributed!
     var cwd = path.join(__dirname, "..", "..", "..", SERVER_CWD);
-    Logger.getLogger().log("Server", "start", "cwd: " + cwd);
-    this.process = spawn('java', ['-jar', SERVER_NAME], { cwd: cwd });
+    Logger.getLogger().log("Server", "start", "cwd: " + cwd + ", Port: "+ this.port);
+    this.process = spawn('java', ['-jar', SERVER_NAME, '--port', this.port.toString()], { cwd: cwd });
     this.setStatus(ExecutableStatus.Status.RUNNING);
     this.process.stdout.on('data', (data) => {
       // XXX

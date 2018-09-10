@@ -18,8 +18,9 @@ export class HumanClient extends GenericPlayer implements GameClient {
   private reservation: string;
   private roomId: string;
   private gameId: number;
-  constructor(name: string, reservation: string, gameId: number) {
-    super(name);
+
+  constructor(host: string, port: number, name: string, reservation: string, gameId: number) {
+    super(host, port, name);
     this.reservation = reservation;
     this.gameId = gameId;
     this.on('welcome', welcomeMessage => {

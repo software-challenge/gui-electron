@@ -6,8 +6,6 @@ import { Helpers } from '../Helpers';
 import { SAXParser } from 'sax';
 import { Logger } from '../Logger';
 
-const SERVER_PORT = 13050;
-
 export class GenericClient extends events.EventEmitter {
 
   private clientSocket: any;
@@ -24,10 +22,10 @@ export class GenericClient extends events.EventEmitter {
   // TODO: this parser is only used to find the start and end of a xml message. The message string is then emitted as message and parsed AGAIN. This should be merged in the future.
   private parser = new SAXParser(true, {});
 
-  constructor(sendProtocol: boolean = true, name?: string) {
+  constructor(host: string, port: number, sendProtocol: boolean = true, name?: string) {
     super();
     this.name = name;
-    this.clientSocket = net.createConnection({ port: SERVER_PORT }, () => {
+    this.clientSocket = net.createConnection(port, host, () => {
       if (sendProtocol) {
         this.writeData('<protocol>', () => {
           this.setStatus(ClientStatus.Status.CONNECTED); //NodeJS Sockets don't have flush, so this will have to do

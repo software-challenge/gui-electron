@@ -15,4 +15,4 @@ process.on('unhandledRejection', (reason, promise) => {
 
 
 Logger.getLogger().log("GameManagerWorker", "main", "GameManagerWorker coming online.");
-AsyncApi.getAsyncGameManager();
+AsyncApi.getAsyncGameManager(parseInt(process.env.GAME_MANAGER_WORKER_PORT));
