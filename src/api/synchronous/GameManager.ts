@@ -1,5 +1,5 @@
 import { GameCreationOptions } from '../rules/GameCreationOptions';
-import { GameManagerWorkerInterface } from './GameManagerWorkerInterface';
+import { GameServerInfo, GameManagerWorkerInterface } from './GameManagerWorkerInterface';
 import { GameState, Move } from '../rules/CurrentGame';
 import { MessageContent } from '../rules/Message';
 import { ActionMethod } from '../rules/ActionMethod';
@@ -143,6 +143,10 @@ export class GameManager {
 
   public stop() {
     this.gmwi.stop();
+  }
+
+  public getGameServerInfo():Promise<GameServerInfo> {
+    return this.gmwi.getGameServerStatus()
   }
 
 }

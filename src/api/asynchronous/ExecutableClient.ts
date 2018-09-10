@@ -16,7 +16,7 @@ export class ExecutableClient extends EventEmitter implements GameClient {
   private workingDirectory: string = "";
   private process: child_process.ChildProcess;
 
-  constructor(player: ComputerPlayer, reservation: string, host: string = '127.0.0.1', port: number = 13050) {
+  constructor(player: ComputerPlayer, reservation: string, host: string, port: number) {
     /*program: string = 'java', options: string[] = ['-jar'], path: string, host: string = '127.0.0.1', port: number = 13050, reservation: string = ""*/
     super();
     this.workingDirectory = pathLib.dirname(player.path);

@@ -43,14 +43,14 @@ class ErrorList extends React.PureComponent<{ errors: Array<string> }> {
   }
 }
 
-export class GameCreation extends React.Component<{ gameCreationCallback: (GameCreationOptions) => void }, FormState> {
+export class GameCreation extends React.Component<{ serverPort: number, gameCreationCallback: (GameCreationOptions) => void }, FormState> {
   constructor(props) {
     super(props)
 
     let defaults = {
       generalErrors: [],
       gameName: this.unvalidatedField("Neue Begegnung"),
-      players: [this.newPlayerForm(PlayerType.Computer), this.newPlayerForm(PlayerType.Human)]
+      players: [this.newPlayerForm(PlayerType.Computer), this.newPlayerForm(PlayerType.Human)],
     }
 
     var lastCreationOptions = window.localStorage[localStorageCreationOptions]
@@ -204,7 +204,7 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
           <label className="validation-errors">{playerForm.path.errors}</label>
         </div>)
       case PlayerType.Manual:
-        return <p>Das Programm muss nach Erstellung des Spiels gestartet werden. Es sollte sich dann auf localhost, Port 13050 verbinden.</p>
+        return <p>Das Programm muss nach Erstellung des Spiels gestartet werden. Es sollte sich dann auf localhost, Port {this.props.serverPort} verbinden.</p>
     }
   }
 
@@ -277,6 +277,7 @@ export class GameCreation extends React.Component<{ gameCreationCallback: (GameC
 
         <div id="waiting">
           Warte auf manuellen Spieler
+          (sollte sich auf Port {this.props.serverPort} verbinden)
         </div>
         <div id="start">
           {startControl}

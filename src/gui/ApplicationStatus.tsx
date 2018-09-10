@@ -24,10 +24,12 @@ export class ApplicationStatus extends React.Component<{}, State>{
   }
 
   componentDidMount() {
+    /*
     Backend.ready().then(() => this.startCheck()).catch((err) => {
       this.setState((prev, _props) => { prev.errors.push(err); return prev; });
       this.updateCheckStatus("ErrorWhileChecking");
     });
+    */
   }
 
   private updateCheckStatus(newStatus: CheckStatus): void {
@@ -51,6 +53,7 @@ export class ApplicationStatus extends React.Component<{}, State>{
 
   private checkServer(): Promise<boolean> {
     console.log("checking server");
+    /*
     return Backend.gameServerStatus().then((res) => {
       if (res != "OK") {
         this.setState((prev, _props) => { prev.errors.push(res); return prev; });
@@ -59,6 +62,8 @@ export class ApplicationStatus extends React.Component<{}, State>{
         return true;
       }
     });
+    */
+    return Promise.resolve(true)
   }
 
   render() {

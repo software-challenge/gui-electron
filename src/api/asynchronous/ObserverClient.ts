@@ -11,8 +11,8 @@ const PASSPHRASE = "examplepassword"; // TODO read from server.properties file (
 
 export class ObserverClient extends GenericClient {
   log: string;
-  constructor() {
-    super(true, "Observer");
+  constructor(host: string, port: number) {
+    super(host, port, true, "Observer");
     this.log = "";
   }
 

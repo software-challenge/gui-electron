@@ -1,24 +1,28 @@
 import { Server } from './Server';
 import { Move, GameState, PLAYERCOLOR } from '../rules/CurrentGame';
 import { AsyncGameManager } from './AsyncGameManager';
+import * as portfinder from 'portfinder';
 
 export class AsyncApi {
-  private static server: Server;
+  private static server: Promise<Server>;
   private static asyncGameManager: AsyncGameManager;
 
   private static moveRequests: Map<number, Map<number, MoveRequest>> = new Map<number, Map<number, MoveRequest>>();
   private static nextKey: number = 0;
 
-  public static getServer(): Server {
-    if (!AsyncApi.server) {
-      AsyncApi.server = new Server(true);
+  public static getServer(): Promise<Server> {
+    if (AsyncApi.server == null) {
+      AsyncApi.server = portfinder.getPortPromise({port: 13050})
+        .then((port) => {
+          return new Server(port, true);
+        })
     }
     return AsyncApi.server;
   }
 
-  public static getAsyncGameManager(): AsyncGameManager {
+  public static getAsyncGameManager(port: number): AsyncGameManager {
     if (!this.asyncGameManager) {
-      this.asyncGameManager = new AsyncGameManager();
+      this.asyncGameManager = new AsyncGameManager(port);
     }
     return this.asyncGameManager;
   }

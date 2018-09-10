@@ -38,6 +38,7 @@ interface State {
   consoleRetracted: boolean;
   contentState: AppContent;
   activeGameId: number;
+  serverPort: number;
 }
 
 export class App extends React.Component<any, State> {
@@ -48,7 +49,8 @@ export class App extends React.Component<any, State> {
       menuRetracted: false,
       consoleRetracted: true,
       contentState: Hotfix.isGameReload() ? AppContent.GameWaiting : AppContent.Empty,
-      activeGameId: null
+      activeGameId: null,
+      serverPort: null
     };
     Hotfix.init((gco => {
       Api.getGameManager().createGame(gco, info => {
@@ -151,6 +153,29 @@ export class App extends React.Component<any, State> {
     }) });
   }
 
+  private retry<T>(fn: () => Promise<T>, ms: number = 1000, retries: number = 5):Promise<T> {
+    return new Promise((resolve,reject) => {
+      fn()
+        .then(resolve)
+        .catch(() => {
+          setTimeout(() => {
+            if (retries == 0) {
+              return reject('maximum retries exceeded')
+            }
+            this.retry(fn, ms, retries - 1).then(resolve)
+          }, ms)
+        })
+    })
+  }
+
+  componentDidMount() {
+    this.retry(
+      () => Api.getGameManager().getGameServerInfo().then(info =>
+        this.setState({serverPort: info.port})
+      )
+    )
+  }
+
   changeGameName(e) {
     if (e.keyCode == 13) {
       e.preventDefault();
@@ -181,7 +206,7 @@ export class App extends React.Component<any, State> {
         mainPaneContent = <Administration />;
         break;
       case AppContent.GameCreation:
-        mainPaneContent = <GameCreation gameCreationCallback={o => this.startGameWithOptions(o)} />;
+        mainPaneContent = <GameCreation serverPort={this.state.serverPort} gameCreationCallback={o => this.startGameWithOptions(o)} />;
         break;
       case AppContent.GameLive:
         console.log("activeGameId: " + this.state.activeGameId);

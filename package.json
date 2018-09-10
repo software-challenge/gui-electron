@@ -65,6 +65,7 @@
     "gl-matrix": "^2.4.0",
     "hazardous": "^0.3.0",
     "phaser": "^3.10.1",
+    "portfinder": "^1.0.17",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-iframe": "^1.2.0",

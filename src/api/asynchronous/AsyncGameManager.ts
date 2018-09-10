@@ -8,7 +8,6 @@ import { GameStatus } from '../rules/GameStatus';
 import { TransferableMoveRequest } from '../rules/TransferableMoveRequest';
 import { Logger } from '../Logger';
 import { GameResult } from '../rules/CurrentGame';
-import { Diagnostics } from './Diagnostics';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import { Settings } from '../../viewer/Settings';
@@ -19,23 +18,25 @@ export class AsyncGameManager {
   private server: express.Express;
   private closer: any;
 
-  constructor() {
+  constructor(port: number) {
     AsyncApi.getServer();
     this.games = new Map<number, Game>();
     this.server = express();
     // parse request bodies as json. Enables access to attributes with req.body.someAttributeName
     this.server.use(bodyParser.json());
     this.setupMessages();
-    this.closer = this.server.listen(Settings.Port);
+    this.closer = this.server.listen(port);
     console.log("SERVER RUNNING");
   }
 
   private setupMessages() {
     this.server.post('/stop', (req, res) => {
       try {
-        AsyncApi.getServer().stop();
-        this.closer.close();
-        res.send('server stopped');
+        AsyncApi.getServer().then(server => {
+          server.stop();
+          this.closer.close();
+          res.send('server stopped');
+        })
       } catch (e) {
         // TODO extract exception handling (DRY)
         res.status(500).send(e);
@@ -138,13 +139,14 @@ export class AsyncGameManager {
       }
     });
 
-    this.server.get('/check-game-server-connection', (req, res) => {
-      try {
-        res.send(Diagnostics.getServerStatus());
-      } catch (e) {
-        res.status(500).send(e);
-      }
+    this.server.get('/game-server-status', (req, res) => {
+      AsyncApi.getServer()
+        .then(server => {
+          res.send({port: server.getPort()})
+        })
+        .catch(e => res.status(500).send(e))
     });
+
   }
 
   private report_status(game: Game, gameId: number): { numberOfStates: number, gameStatus: GameStatus, moveRequest?: TransferableMoveRequest, gameResult?: GameResult } {
