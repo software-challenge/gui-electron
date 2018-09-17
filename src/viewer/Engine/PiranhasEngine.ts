@@ -318,7 +318,10 @@ export class PiranhasEngine {
       width: 800,
       height: 800,
       pixelArt: true,
-      canvas: this.element
+      canvas: this.element,
+      fps: {
+        target: 10
+      }
     };
     this.game = new Phaser.Game(gameConfig);
     this.scene = new SimpleScene();

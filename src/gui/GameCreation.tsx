@@ -267,20 +267,23 @@ export class GameCreation extends React.Component<{ serverPort: number, gameCrea
     )
     return (
       <div className="game-creation main-container">
-        <Input id="input_gameName" value={this.state.gameName.value} onChange={(event) => this.handleControlChange((state, value) => state.gameName.value = value)(event)} invalid={this.hasErrors(this.state.gameName)} />
-        <label htmlFor="input_gameName" className="validation-errors">{this.state.gameName.errors}</label>
-        <br />
+        <div className="content">
+          <Input id="input_gameName" value={this.state.gameName.value} onChange={(event) => this.handleControlChange((state, value) => state.gameName.value = value)(event)} invalid={this.hasErrors(this.state.gameName)} />
+          <label htmlFor="input_gameName" className="validation-errors">{this.state.gameName.errors}</label>
+          <br />
 
-        {playerForm(0)}
-        <div id="vs">gegen</div>
-        {playerForm(1)}
+          {playerForm(0)}
+          <div id="vs">gegen</div>
+          {playerForm(1)}
 
-        <div id="waiting">
-          Warte auf manuellen Spieler
-          (sollte sich auf Port {this.props.serverPort} verbinden)
-        </div>
-        <div id="start">
-          {startControl}
+          <div id="waiting">
+            Warte auf manuellen Spieler
+            (sollte sich auf Port {this.props.serverPort} verbinden)
+          </div>
+          <div id="start">
+            {startControl}
+          </div>
+          <div className="clearfix" />
         </div>
       </div>
     )

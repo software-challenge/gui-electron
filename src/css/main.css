@@ -34,9 +34,20 @@
 }
 
 .main-container {
-  padding: 0.2em;
-  max-width: 50rem;
+  padding: 0;
+  height: 100%;
   margin: 0 auto;
+  background-image: url(../resources/piranhas/piranhas-logo.png);
+  background-repeat: no-repeat;
+  background-size: 100%;
+  background-color: #9aa999;
+}
+
+.main-container > .content {
+  margin: 0 auto;
+  max-width: 50rem;
+  background-color: rgba(255,255,255,.6);
+  padding: 1.5em;
 }
 
 .game-creation select {
@@ -137,4 +148,8 @@ button.top-wide {
 
 .nav-group-item.active .close-button-container{
     background: linear-gradient(to right, rgba(255,255,255,0), #dcdfe1, #dcdfe1, #dcdfe1);
+}
+
+.clearfix {
+    clear: both;
 }
