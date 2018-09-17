@@ -30,7 +30,9 @@ enum AppContent {
   Error,
   Log,
   Help,
-  Rules
+  Rules,
+  Quickstart,
+  JavaDocs
 }
 
 interface State {
@@ -199,6 +201,13 @@ export class App extends React.Component<any, State> {
     });
   }
 
+  showHtml(url: string) {
+    return <div>
+      <button className="top-wide" onClick={() => shell.openExternal(url)}>Extern öffnen</button>
+      <Iframe styles={{height: "calc(100% - 2em)"}} url={url} />
+    </div>;
+  }
+
   render() {
     var mainPaneContent;
     switch (this.state.contentState) {
@@ -219,13 +228,16 @@ export class App extends React.Component<any, State> {
         mainPaneContent = <ErrorPage Title="Schlimmer Fehler" Message="Das Programm ist kaputt." />;
         break;
       case AppContent.Rules:
-        mainPaneContent = <Iframe url="https://cau-kiel-tech-inf.github.io/socha-enduser-docs/spiele/piranhas/" />;
+        mainPaneContent = this.showHtml("https://cau-kiel-tech-inf.github.io/socha-enduser-docs/spiele/piranhas/");
         break;
       case AppContent.Help:
-        mainPaneContent = <div>
-          <button className="top-wide" onClick={() => shell.openExternal("https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che")}>Extern öffnen</button>
-          <Iframe styles={{height: "calc(100% - 2em)"}} url="https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che" />
-        </div>;
+        mainPaneContent = this.showHtml("https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che");
+        break;
+      case AppContent.Quickstart:
+        mainPaneContent = this.showHtml("https://cau-kiel-tech-inf.github.io/socha-enduser-docs/getting-started");
+        break;
+      case AppContent.JavaDocs:
+        mainPaneContent = this.showHtml("https://www.software-challenge.de/javadocs/");
         break;
       case AppContent.Log:
         mainPaneContent = <Iframe url={Logger.getLogger().getLogFilePath()} />;
@@ -236,11 +248,12 @@ export class App extends React.Component<any, State> {
       default:
         mainPaneContent =
           <div className="main-container">
-            <img src="resources/piranhas/piranhas-logo.png" style={{width: "100%"}} />
-            <h1>Willkommen bei der Software-Challenge!</h1>
-            <p>Klicken Sie links auf "Neues Spiel" um zu beginnen.</p>
-            <p>Diese frühe Version hat noch einige Fehler. Bitte melden Sie Fehler, die Sie finden, im Forum oder im Discord. Hinweise zur Ursache von Fehlern finden sich im Log, aufrufbar über "Programm-Log" auf der linken Seite.</p>
-            <p><a href="https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che" target="_blank">Bedienungsanleitung (aus der allgemeinen Dokumentation)</a></p>
+            <div className="content">
+              <h1>Willkommen bei der Software-Challenge!</h1>
+              <p>Klicken Sie links auf "Neues Spiel" um zu beginnen.</p>
+              <p>Diese frühe Version hat noch einige Fehler. Bitte melden Sie Fehler, die Sie finden, im Forum oder im Discord. Hinweise zur Ursache von Fehlern finden sich im Log, aufrufbar über "Programm-Log" auf der linken Seite.</p>
+              <p><a href="https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che" target="_blank">Bedienungsanleitung (aus der allgemeinen Dokumentation)</a></p>
+            </div>
           </div>;
         break;
     }
@@ -279,6 +292,12 @@ export class App extends React.Component<any, State> {
                 </NavItem>
                 <NavItem key="help" onClick={() => this.show(AppContent.Help)} active={this.state.contentState == AppContent.Help}>
                   <UnicodeIcon icon="❔" />Hilfe
+                </NavItem>
+                <NavItem key="quickstart" onClick={() => this.show(AppContent.Quickstart)} active={this.state.contentState == AppContent.Quickstart}>
+                  <UnicodeIcon icon="❔" />Getting Started
+                </NavItem>
+                <NavItem key="javadocs" onClick={() => this.show(AppContent.JavaDocs)} active={this.state.contentState == AppContent.JavaDocs}>
+                  <UnicodeIcon icon="❔" />JavaDocs
                 </NavItem>
                 <NavItem key="log" onClick={() => this.show(AppContent.Log)} active={this.state.contentState == AppContent.Log}>
                   <UnicodeIcon icon="📜" />Programm-Log

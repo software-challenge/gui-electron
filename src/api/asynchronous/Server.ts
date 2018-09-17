@@ -12,7 +12,7 @@ import path = require("path");
 //const EventEmitter: NodeJS.EventEmitter = require('events');
 
 const SERVER_CWD = "server"; // naked directory name NOTE: don't use any paths here! They change when the app is distributed and break server spawning
-const SERVER_NAME = "software-challenge-server.jar";
+const SERVER_NAME = "server.jar";
 
 import { spawn } from 'child_process';
 import * as treekill from 'tree-kill';
