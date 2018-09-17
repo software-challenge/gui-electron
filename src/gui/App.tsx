@@ -109,14 +109,14 @@ export class App extends React.Component<any, State> {
   }
 
   private toggleMenu() {
-    this.setState((prev, props) => {
-      return {...prev, menuRetracted: !prev.menuRetracted};
+    this.setState({
+      menuRetracted: !this.state.menuRetracted
     });
   }
 
   private toggleConsole() {
-    this.setState((prev, props) => {
-      return {...prev, consoleRetracted: !prev.consoleRetracted};
+    this.setState({
+      consoleRetracted: !this.state.consoleRetracted
     });
   }
 
@@ -130,33 +130,29 @@ export class App extends React.Component<any, State> {
     this seems not to be true. Better move the code out of the unmount callback
     and research how to listen for property changes. */
     this.refreshContent(AppContent.GameWaiting)
-    this.setState((prev, _props) => {
-      return {...prev, contentState: AppContent.GameWaiting};
-    }, () =>
-      this.setState((prev, _props) => {
-        return {...prev, contentState: AppContent.GameLive, activeGameId: gameId};
-      }));
+    this.show(AppContent.GameWaiting, () =>
+        this.setState({
+          contentState: AppContent.GameLive, 
+          activeGameId: gameId
+        }));
     document.getElementById('game-name').innerText = Api.getGameManager().getGameInfo(gameId).name;
   }
 
-  private show(content: AppContent) {
-    this.setState((prev, props) => {
-      return {...prev, contentState: content};
-    });
+  private show(content: AppContent, callback?: () => void) {
+    this.setState({
+      contentState: content
+    }, callback);
   }
 
   private refreshContent(inbetween: AppContent = AppContent.Blank) {
     const previousState = this.state.contentState
-    this.setState((prev, _props) => {
-      return {...prev, contentState: inbetween};
-    }, () => { this.setState((prev, _props) => {
-      console.log("Setting state to", previousState)
-      return {...prev, contentState: previousState};
-    }) });
+    this.show(inbetween, () => {
+      this.show(previousState)
+    });
   }
 
-  private retry<T>(fn: () => Promise<T>, ms: number = 1000, retries: number = 5):Promise<T> {
-    return new Promise((resolve,reject) => {
+  private retry<T>(fn: () => Promise<T>, ms: number = 1000, retries: number = 5): Promise<T> {
+    return new Promise((resolve, reject) => {
       fn()
         .then(resolve)
         .catch(() => {
@@ -173,7 +169,7 @@ export class App extends React.Component<any, State> {
   componentDidMount() {
     this.retry(
       () => Api.getGameManager().getGameServerInfo().then(info =>
-        this.setState({serverPort: info.port})
+        this.setState({ serverPort: info.port })
       )
     )
   }
@@ -187,24 +183,22 @@ export class App extends React.Component<any, State> {
       Api.getGameManager().hasGame(newGameName, () => {
         document.getElementById('game-name').blur();
         this.setState((prev, _props) => {
-          return {...prev, activeGame: newGameName};
+          return { ...prev, activeGame: newGameName };
         });
       });
     }
   }
 
   closeGame(id: number) {
-    console.log("Closing game "+id)
+    console.log("Closing game " + id)
     Api.getGameManager().deleteGame(id);
-    this.setState((prev, _props) => {
-      return {...prev, contentState: AppContent.Empty};
-    });
+    this.show(AppContent.Empty);
   }
 
   showHtml(url: string) {
     return <div>
       <button className="top-wide" onClick={() => shell.openExternal(url)}>Extern öffnen</button>
-      <Iframe styles={{height: "calc(100% - 2em)"}} url={url} />
+      <Iframe styles={{ height: "calc(100% - 2em)" }} url={url} />
     </div>;
   }
 
@@ -222,7 +216,7 @@ export class App extends React.Component<any, State> {
         mainPaneContent = <Game gameId={this.state.activeGameId} name={Api.getGameManager().getGameInfo(this.state.activeGameId).name} isReplay={Api.getGameManager().getGameInfo(this.state.activeGameId).isReplay} />;
         break;
       case AppContent.Blank:
-        mainPaneContent = <div/>;
+        mainPaneContent = <div />;
         break;
       case AppContent.Error:
         mainPaneContent = <ErrorPage Title="Schlimmer Fehler" Message="Das Programm ist kaputt." />;
