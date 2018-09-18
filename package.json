@@ -73,7 +73,8 @@
     "request": "^2.83.0",
     "sax": "^1.2.4",
     "tree-kill": "^1.2.0",
-    "xml2js": "^0.4.17"
+    "xml2js": "^0.4.17",
+    "validate-typescript": "^2.0.1"
   },
   "devDependencies": {
     "@types/body-parser": "^1.16.8",

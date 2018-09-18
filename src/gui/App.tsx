@@ -1,24 +1,26 @@
-import { Api } from '../api/Api';
-import * as React from 'react';
-import * as electron from 'electron';
-import { remote } from 'electron';
-import { Content } from "react-photonkit";
-import { Window, Toolbar, ToolbarActions, ButtonGroup, PaneGroup, Sidebar, RetractableSidebar, Pane, NavGroup, NavTitle, NavItem, Button } from './photon-fix/Components';
-import { UnicodeIcon } from './generic-components/Components';
-import { Administration } from './Administration';
-import { GameCreation } from './GameCreation';
-import * as cp from 'child_process';
-import { GameCreationOptions, StartType, Replay, Versus, GameType } from '../api/rules/GameCreationOptions';
-import { Game } from './Game';
-import { LogConsole } from './LogConsole';
-import { Logger } from '../api/Logger';
-import { ErrorPage } from './ErrorPage';
-import { ApplicationStatus } from './ApplicationStatus';
-import { Hotfix } from './Hotfix';
-import Iframe from 'react-iframe';
+import { Api } from '../api/Api'
+import * as React from 'react'
+import * as electron from 'electron'
+import { remote } from 'electron'
+import { Content } from "react-photonkit"
+import { Window, Toolbar, ToolbarActions, ButtonGroup, PaneGroup, Sidebar, RetractableSidebar, Pane, NavGroup, NavTitle, NavItem, Button } from './photon-fix/Components'
+import { UnicodeIcon } from './generic-components/Components'
+import { Administration } from './Administration'
+import { GameCreation } from './GameCreation'
+import { Replay, Versus, GameType } from '../api/rules/GameCreationOptions'
+import { Game } from './Game'
+import { LogConsole } from './LogConsole'
+import { Logger } from '../api/Logger'
+import { ErrorPage } from './ErrorPage'
+import { Hotfix } from './Hotfix'
+import Iframe from 'react-iframe'
+import * as v from 'validate-typescript'
+import { loadFromStorage } from '../helpers/Cache'
 
-const dialog = remote.dialog;
-const shell = remote.shell;
+const dialog = remote.dialog
+const shell = remote.shell
+
+const appSettings = "appSettings"
 
 enum AppContent {
   Empty,
@@ -36,29 +38,39 @@ enum AppContent {
 }
 
 interface State {
-  menuRetracted: boolean;
-  consoleRetracted: boolean;
-  contentState: AppContent;
-  activeGameId: number;
-  serverPort: number;
+  menuRetracted: boolean
+  consoleRetracted: boolean
+  contentState: AppContent
+  activeGameId: number
+  serverPort: number
+  settings: AppSettings
+}
+
+export interface AppSettings {
+  animateViewer: boolean
 }
 
 export class App extends React.Component<any, State> {
 
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       menuRetracted: false,
       consoleRetracted: true,
       contentState: Hotfix.isGameReload() ? AppContent.GameWaiting : AppContent.Empty,
       activeGameId: null,
-      serverPort: null
-    };
+      serverPort: null,
+      settings: loadFromStorage(appSettings, {
+        animateViewer: v.Type(Boolean)
+      }, {
+          animateViewer: true
+        }),
+    }
     Hotfix.init((gco => {
       Api.getGameManager().createGame(gco, info => {
-        this.showGame(info.id);
-      });
-    }).bind(this));
+        this.showGame(info.id)
+      })
+    }).bind(this))
   }
 
   private loadReplay() {
@@ -70,58 +82,58 @@ export class App extends React.Component<any, State> {
       (filenames) => {
         // dialog returns undefined when user clicks cancel or an array of strings (paths) if user selected a file
         if (filenames && filenames.length > 0 && filenames[0]) {
-          //window.localStorage[localStorageProgramPath] = filenames[0];
-          console.log("Attempting to load " + filenames[0]);
-          var liofs = filenames[0].lastIndexOf('/');
+          //window.localStorage[localStorageProgramPath] = filenames[0]
+          console.log("Attempting to load " + filenames[0])
+          var liofs = filenames[0].lastIndexOf('/')
           if (liofs == -1) {
-            liofs = filenames[0].lastIndexOf('\\');
+            liofs = filenames[0].lastIndexOf('\\')
           }
-          var replayName = filenames[0];
+          var replayName = filenames[0]
           if (liofs != -1) {
-            replayName = replayName.substring(liofs + 1);
+            replayName = replayName.substring(liofs + 1)
           }
-          var liofp = replayName.lastIndexOf('.');
+          var liofp = replayName.lastIndexOf('.')
           if (liofp != -1) {
-            replayName = replayName.substring(0, liofp);
+            replayName = replayName.substring(0, liofp)
           }
           let gco: Replay = {
             gameId: Api.getGameManager().createGameId(replayName, true),
             gameName: replayName,
             kind: GameType.Replay,
             path: filenames[0]
-          };
-          //new GameCreationOptions(null, null, filenames[0], StartType.Replay, null, null, null, null, replayName);
+          }
+          //new GameCreationOptions(null, null, filenames[0], StartType.Replay, null, null, null, null, replayName)
           Api.getGameManager().createGame(gco, info => {
-            this.showGame(info.id);
-          });
-          //Hotfix.reloadIntoGame(gco);
+            this.showGame(info.id)
+          })
+          //Hotfix.reloadIntoGame(gco)
         }
       }
-    );
+    )
   }
 
   private startGameWithOptions(o: Versus) {
-    //Hotfix.reloadIntoGame(o);
+    //Hotfix.reloadIntoGame(o)
     Api.getGameManager().createGame(o, info => {
-      this.showGame(info.id);
-    });
-    Logger.getLogger().log('App', 'startGameWithOptions', 'starting game with options: ' + JSON.stringify(o));
+      this.showGame(info.id)
+    })
+    Logger.getLogger().log('App', 'startGameWithOptions', 'starting game with options: ' + JSON.stringify(o))
   }
 
   private toggleMenu() {
     this.setState({
       menuRetracted: !this.state.menuRetracted
-    });
+    })
   }
 
   private toggleConsole() {
     this.setState({
       consoleRetracted: !this.state.consoleRetracted
-    });
+    })
   }
 
   private showGame(gameId: number) {
-    console.log("Switching to game with id " + gameId);
+    console.log("Switching to game with id " + gameId)
     /* FIXME: Game.tsx depends on a componentWillUnmount call when switching to
     another game. But React doesn't unmount the Game component if we are just
     switching between two games (keeping contentState at AppContent.GameLive).
@@ -131,24 +143,24 @@ export class App extends React.Component<any, State> {
     and research how to listen for property changes. */
     this.refreshContent(AppContent.GameWaiting)
     this.show(AppContent.GameWaiting, () =>
-        this.setState({
-          contentState: AppContent.GameLive, 
-          activeGameId: gameId
-        }));
-    document.getElementById('game-name').innerText = Api.getGameManager().getGameInfo(gameId).name;
+      this.setState({
+        contentState: AppContent.GameLive,
+        activeGameId: gameId
+      }))
+    document.getElementById('game-name').innerText = Api.getGameManager().getGameInfo(gameId).name
   }
 
   private show(content: AppContent, callback?: () => void) {
     this.setState({
       contentState: content
-    }, callback);
+    }, callback)
   }
 
   private refreshContent(inbetween: AppContent = AppContent.Blank) {
     const previousState = this.state.contentState
     this.show(inbetween, () => {
       this.show(previousState)
-    });
+    })
   }
 
   private retry<T>(fn: () => Promise<T>, ms: number = 1000, retries: number = 5): Promise<T> {
@@ -176,69 +188,74 @@ export class App extends React.Component<any, State> {
 
   changeGameName(e) {
     if (e.keyCode == 13) {
-      e.preventDefault();
-      var newGameName = document.getElementById('game-name').innerText.trim();
-      console.log(newGameName);
-      Api.getGameManager().renameGame(this.state.activeGameId, newGameName);
+      e.preventDefault()
+      var newGameName = document.getElementById('game-name').innerText.trim()
+      console.log(newGameName)
+      Api.getGameManager().renameGame(this.state.activeGameId, newGameName)
       Api.getGameManager().hasGame(newGameName, () => {
-        document.getElementById('game-name').blur();
+        document.getElementById('game-name').blur()
         this.setState((prev, _props) => {
-          return { ...prev, activeGame: newGameName };
-        });
-      });
+          return { ...prev, activeGame: newGameName }
+        })
+      })
     }
   }
 
   closeGame(id: number) {
     console.log("Closing game " + id)
-    Api.getGameManager().deleteGame(id);
-    this.show(AppContent.Empty);
+    Api.getGameManager().deleteGame(id)
+    this.show(AppContent.Empty)
   }
 
   showHtml(url: string) {
     return <div>
       <button className="top-wide" onClick={() => shell.openExternal(url)}>Extern öffnen</button>
       <Iframe styles={{ height: "calc(100% - 2em)" }} url={url} />
-    </div>;
+    </div>
   }
 
   render() {
-    var mainPaneContent;
+    var mainPaneContent
     switch (this.state.contentState) {
       case AppContent.Administration:
-        mainPaneContent = <Administration />;
-        break;
+        mainPaneContent = <Administration settings={this.state.settings} setter={(newSettings: AppSettings) => {
+          this.setState({ settings: newSettings }, () => window.localStorage[appSettings] = JSON.stringify(this.state.settings))
+        }} />
+        break
       case AppContent.GameCreation:
-        mainPaneContent = <GameCreation serverPort={this.state.serverPort} gameCreationCallback={o => this.startGameWithOptions(o)} />;
-        break;
+        mainPaneContent = <GameCreation serverPort={this.state.serverPort} gameCreationCallback={o => this.startGameWithOptions(o)} />
+        break
       case AppContent.GameLive:
-        console.log("activeGameId: " + this.state.activeGameId);
-        mainPaneContent = <Game gameId={this.state.activeGameId} name={Api.getGameManager().getGameInfo(this.state.activeGameId).name} isReplay={Api.getGameManager().getGameInfo(this.state.activeGameId).isReplay} />;
-        break;
+        console.log("activeGameId: " + this.state.activeGameId)
+        mainPaneContent = <Game gameId={this.state.activeGameId} name={Api.getGameManager().getGameInfo(this.state.activeGameId).name} isReplay={Api.getGameManager().getGameInfo(this.state.activeGameId).isReplay} animateViewer={this.state.settings.animateViewer} />
+        break
       case AppContent.Blank:
-        mainPaneContent = <div />;
-        break;
+        mainPaneContent = <div />
+        break
       case AppContent.Error:
-        mainPaneContent = <ErrorPage Title="Schlimmer Fehler" Message="Das Programm ist kaputt." />;
-        break;
+        mainPaneContent = <ErrorPage Title="Schlimmer Fehler" Message="Das Programm ist kaputt." />
+        break
       case AppContent.Rules:
-        mainPaneContent = this.showHtml("https://cau-kiel-tech-inf.github.io/socha-enduser-docs/spiele/piranhas/");
-        break;
+        mainPaneContent = this.showHtml("https://cau-kiel-tech-inf.github.io/socha-enduser-docs/spiele/piranhas/")
+        break
       case AppContent.Help:
-        mainPaneContent = this.showHtml("https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che");
-        break;
+        mainPaneContent = this.showHtml("https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che")
+        break
       case AppContent.Quickstart:
-        mainPaneContent = this.showHtml("https://cau-kiel-tech-inf.github.io/socha-enduser-docs/getting-started");
-        break;
+        mainPaneContent = this.showHtml("https://cau-kiel-tech-inf.github.io/socha-enduser-docs/getting-started")
+        break
       case AppContent.JavaDocs:
-        mainPaneContent = this.showHtml("https://www.software-challenge.de/javadocs/");
-        break;
+        mainPaneContent = this.showHtml("https://www.software-challenge.de/javadocs/")
+        break
       case AppContent.Log:
-        mainPaneContent = <Iframe url={Logger.getLogger().getLogFilePath()} />;
-        break;
+        mainPaneContent = <div>
+          <button className="top-wide" onClick={() => { Logger.getLogger().clearLog(); this.refreshContent() }}>Clear log</button>
+          <Iframe styles={{ height: "calc(100% - 2em)" }} url={Logger.getLogger().getLogFilePath()} />
+        </div>
+        break
       case AppContent.GameWaiting:
-        mainPaneContent = <h1>Warte auf Spielstart</h1>;
-        break;
+        mainPaneContent = <h1>Warte auf Spielstart</h1>
+        break
       default:
         mainPaneContent =
           <div className="main-container">
@@ -248,8 +265,8 @@ export class App extends React.Component<any, State> {
               <p>Diese frühe Version hat noch einige Fehler. Bitte melden Sie Fehler, die Sie finden, im Forum oder im Discord. Hinweise zur Ursache von Fehlern finden sich im Log, aufrufbar über "Programm-Log" auf der linken Seite.</p>
               <p><a href="https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che" target="_blank">Bedienungsanleitung (aus der allgemeinen Dokumentation)</a></p>
             </div>
-          </div>;
-        break;
+          </div>
+        break
     }
 
     //TODO: Fix renaming
@@ -258,11 +275,11 @@ export class App extends React.Component<any, State> {
         <Toolbar>
           <ToolbarActions>
             <ButtonGroup>
-              <Button icon="menu" onClick={() => { this.toggleMenu(); }} active={!this.state.menuRetracted} />
+              <Button icon="menu" onClick={() => { this.toggleMenu() }} active={!this.state.menuRetracted} />
             </ButtonGroup>
             {this.state.contentState == AppContent.GameLive ? <span id="game-name" contentEditable={/*!Api.getGameManager().isReplay(this.state.activeGame)*/ true} onKeyDown={this.changeGameName.bind(this)} /> : null}
             {this.state.contentState == AppContent.GameLive ? <button title="Close Game" className="svg-button close-game" onClick={() => this.closeGame(this.state.activeGameId)}><img className="svg-icon" src="resources/x-circled.svg" /></button> : null}
-            <Button icon="doc-text" onClick={() => { this.toggleConsole(); }} pullRight={true} />
+            <Button icon="doc-text" onClick={() => { this.toggleConsole() }} pullRight={true} />
           </ToolbarActions>
         </Toolbar>
         <Content>
@@ -278,9 +295,15 @@ export class App extends React.Component<any, State> {
                 </NavItem>
                 {Api.getGameManager().getBufferedGameTitles().map(
                   t => (<NavItem key={t.id} onClick={() => this.showGame(t.id)} active={this.state.contentState == AppContent.GameLive && this.state.activeGameId == t.id}>
-                    <UnicodeIcon icon="🎳" />{t.name} ({t.id})<span className="close-button-container"><button title="Close Game" className="svg-button close-game" onClick={e => { this.closeGame(t.id); e.stopPropagation() }}><img className="svg-icon" src="resources/x-circled.svg" /></button></span></NavItem>
+                    <UnicodeIcon icon="🎳" />{t.name} ({t.id})
+                    <span className="close-button-container">
+                      <button title="Close Game" className="svg-button close-game" onClick={e => { this.closeGame(t.id); e.stopPropagation() }}>
+                        <img className="svg-icon" src="resources/x-circled.svg" /></button></span></NavItem>
                   ))}
                 <NavTitle title="Informationen" />
+                <NavItem key="settings" onClick={() => this.show(AppContent.Administration)} active={this.state.contentState == AppContent.Administration}>
+                  <UnicodeIcon icon="⚙" />Einstellungen
+                </NavItem>
                 <NavItem key="rules" onClick={() => this.show(AppContent.Rules)} active={this.state.contentState == AppContent.Rules}>
                   <UnicodeIcon icon="❔" />Spielregeln
                 </NavItem>
@@ -307,6 +330,6 @@ export class App extends React.Component<any, State> {
           </PaneGroup>
         </Content >
       </Window >
-    );
+    )
   }
 }

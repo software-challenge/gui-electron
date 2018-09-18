@@ -14,7 +14,7 @@ export class Viewer {
   startup_timestamp: number;
 
   //Rendering
-
+  public animate: boolean
   private rerenderControlActive: boolean;
   private endScreen: HTMLDivElement = null;
   private currentMove: number = 0;
@@ -78,19 +78,23 @@ export class Viewer {
       console.log("rendering new state", {ui: state.uiState, turn: state.gameState.turn})
     }
 
-    this.engine.clearUI();
-
-    if (state.gameState.lastMove &&
-        this.currentState &&
-//        !this.engine.animating() &&
-        (state.gameState.turn === this.currentState.gameState.turn + 1) &&
-        this.engine.scene.boardEqualsView(this.currentState.gameState.board)) {
-      this.engine.animateMove(this.currentState.gameState, state.gameState.lastMove);
-      this.currentState = state
+    this.engine.clearUI()
+    if(this.animate) {
+      if (state.gameState.lastMove &&
+          this.currentState &&
+          // !this.engine.animating() &&
+          (state.gameState.turn === this.currentState.gameState.turn + 1) &&
+          this.engine.scene.boardEqualsView(this.currentState.gameState.board)) {
+        this.engine.animateMove(this.currentState.gameState, state.gameState.lastMove)
+        this.currentState = state
+      } else {
+        this.engine.finishAnimations()
+        this.engine.scene.tweens.killAll()
+        this.engine.draw(state)
+        this.currentState = state
+      }
     } else {
-      this.engine.finishAnimations();
-      this.engine.scene.tweens.killAll()
-      this.engine.draw(state);
+      this.engine.draw(state)
       this.currentState = state
     }
   }
