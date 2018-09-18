@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Api } from '../api/Api';
 
 
 interface State {

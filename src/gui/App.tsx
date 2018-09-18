@@ -48,6 +48,7 @@ interface State {
 
 export interface AppSettings {
   animateViewer: boolean
+  logDir: string
 }
 
 export class App extends React.Component<any, State> {
@@ -62,8 +63,10 @@ export class App extends React.Component<any, State> {
       serverPort: null,
       settings: loadFromStorage(appSettings, {
         animateViewer: v.Type(Boolean),
+        logDir: v.Type(String)
       }, {
           animateViewer: true,
+          logDir: "."
         }),
     }
     Hotfix.init((gco => {
@@ -219,8 +222,10 @@ export class App extends React.Component<any, State> {
     switch (this.state.contentState) {
       case AppContent.Administration:
         mainPaneContent = <Administration settings={this.state.settings} setter={(newSettings: Partial<AppSettings>) => {
-          this.setState({ settings: { ...this.state.settings, ...newSettings } }, 
+          this.setState({ settings: { ...this.state.settings, ...newSettings } },
             () => saveToStorage(appSettings, this.state.settings))
+          if (newSettings.logDir != null)
+            window.localStorage["logDir"] = newSettings.logDir
         }} />
         break
       case AppContent.GameCreation:
@@ -249,9 +254,11 @@ export class App extends React.Component<any, State> {
         mainPaneContent = this.showHtml("https://www.software-challenge.de/javadocs/")
         break
       case AppContent.Log:
+        let logger = Logger.getLogger()
         mainPaneContent = <div>
-          <button className="top-wide" onClick={() => { Logger.getLogger().clearLog(); this.refreshContent() }}>Clear log</button>
-          <Iframe styles={{ height: "calc(100% - 2em)" }} url={Logger.getLogger().getLogFilePath()} />
+          <button className="top-wide" onClick={() => { logger.clearLog(); this.refreshContent() }}>Log leeren</button>
+          Logdatei: {logger.getLogFilePath()}
+          <Iframe styles={{ height: "calc(100% - 2em)" }} url={logger.getLogFilePath()} />
         </div>
         break
       case AppContent.GameWaiting:

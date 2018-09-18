@@ -31,8 +31,9 @@ export class Administration extends React.Component<{ settings: AppSettings, set
     return (
       <div className="main-container">
         <div className="content">
-          <Button text="Clear Log" onClick={() => Logger.getLogger().clearLog()} />
+          <Button text="Log leeren" onClick={() => Logger.getLogger().clearLog()} />
           <CheckBox label="Spielzüge animieren" value={this.props.settings.animateViewer} onChange={this.setValue("animateViewer")} />
+          <label>Log-Verzeichnis (benötigt Neustart): <Input value={this.props.settings.logDir} onChange={this.setValue("logDir")} /></label>
         </div>
       </div>
     );

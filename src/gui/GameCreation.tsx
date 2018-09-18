@@ -191,11 +191,9 @@ export class GameCreation extends React.Component<{ serverPort: number, gameCrea
   private playerControl(formState: FormState, player: (s: FormState) => PlayerFormState) {
     let playerForm = player(formState)
     switch (playerForm.type.value) {
-      case PlayerType.Human:
-        return <p>menschlicher Spieler</p>
       case PlayerType.Computer:
         return (<div>
-          Wähle ein Programm zum starten<span> </span>
+          Wähle ein Programm zum starten
           <Button text="Computerspieler wählen"
             onClick={() => this.clientFileSelectDialog((state, firstSelectedPath) => {
               if (firstSelectedPath) {
