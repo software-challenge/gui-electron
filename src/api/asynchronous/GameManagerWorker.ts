@@ -3,9 +3,6 @@ import { AsyncGameManager } from './AsyncGameManager';
 import { AsyncApi } from './AsyncApi';
 import { Logger } from '../Logger';
 
-//Logger.injectLineNumbersIntoConsoleLog();
-console.log("SGC_LOG_PATH:" + process.env.SGC_LOG_PATH);
-
 process.on('unhandledRejection', (reason, promise) => {
   console.log('Unhandled Rejection at:', reason.stack || reason)
   // Recommended: send the information to sentry.io
