@@ -257,8 +257,8 @@ export class App extends React.Component<any, State> {
         let logger = Logger.getLogger()
         mainPaneContent = <div>
           <button className="top-wide" onClick={() => { logger.clearLog(); this.refreshContent() }}>Log leeren</button>
-          Logdatei: {logger.getLogFilePath()}
           <Iframe styles={{ height: "calc(100% - 2em)" }} url={logger.getLogFilePath()} />
+          <div style={{ position: "absolute", backgroundColor: "#eee", width: "calc(100% - 220px)" }}>Logdatei: {logger.getLogFilePath()}</div>
         </div>
         break
       case AppContent.GameWaiting:
