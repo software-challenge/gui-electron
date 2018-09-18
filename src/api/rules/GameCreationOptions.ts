@@ -1,4 +1,4 @@
-export const enum PlayerType {
+export enum PlayerType {
   Human = "Human",
   Computer = "Computer",
   Manual = "Manual"
