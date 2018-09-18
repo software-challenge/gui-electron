@@ -7,6 +7,7 @@ import { Api } from '../api/Api'
 import * as fs from 'fs'
 import * as v from 'validate-typescript'
 import { loadFromStorage } from '../helpers/Cache'
+import { useValue } from '../helpers/Controls'
 
 const dialog = remote.dialog
 
@@ -87,13 +88,12 @@ export class GameCreation extends React.Component<{ serverPort: number, gameCrea
 
   // To be called as onChange handler on form controls. Takes a setter function which changes the form state according to the new value. Special handling for checkboxes, because they provide their value different from all other input elements.
   private handleControlChange(setter: (s: FormState, val: string) => void, checkbox = false): (event: any) => void {
-    return function (event) {
-      var val = checkbox ? event.target.checked.toString() : event.target.value
+    return useValue(value => {
       this.setState((prev, _props) => {
-        setter(prev, val)
+        setter(prev, value)
         return prev
       })
-    }.bind(this)
+    })
   }
 
   // shows a file select dialog and calls the given setter with the selected file
@@ -257,20 +257,20 @@ export class GameCreation extends React.Component<{ serverPort: number, gameCrea
 
     let playerForm = (player: integer) => (
       <div>
-        <Input id={"input_playerName" + player} value={this.state.players[player].name.value} onChange={(event) => this.handleControlChange((state, value) => state.players[player].name.value = value)(event)} invalid={this.hasErrors(this.state.players[player].name)} />
+        <Input id={"input_playerName" + player} value={this.state.players[player].name.value} onChange={this.handleControlChange((state, value) => state.players[player].name.value = value)} invalid={this.hasErrors(this.state.players[player].name)} />
         <label htmlFor={"input_playerName" + player} className="validation-errors">{this.state.players[player].name.errors}</label>
         <br />
-        <SelectBox value={this.state.players[player].type.value} items={playerTypes} onChange={(event) => this.handleControlChange((state, value: PlayerType) => {
+        <SelectBox value={this.state.players[player].type.value} items={playerTypes} onChange={this.handleControlChange((state, value: PlayerType) => {
           state.players[player].type.value = value
           this.refreshPlayerName(state.players[player])
-        })(event)} />
+        })} />
         {this.playerControl(this.state, s => s.players[player])}
       </div>
     )
     return (
       <div className="game-creation main-container">
         <div className="content">
-          <Input id="input_gameName" value={this.state.gameName.value} onChange={(event) => this.handleControlChange((state, value) => state.gameName.value = value)(event)} invalid={this.hasErrors(this.state.gameName)} />
+          <Input id="input_gameName" value={this.state.gameName.value} onChange={this.handleControlChange((state, value) => state.gameName.value = value)} invalid={this.hasErrors(this.state.gameName)} />
           <label htmlFor="input_gameName" className="validation-errors">{this.state.gameName.errors}</label>
           <br />
 
