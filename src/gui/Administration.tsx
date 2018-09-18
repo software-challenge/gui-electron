@@ -1,15 +1,15 @@
-import * as React from 'react';
-import { Button } from "react-photonkit";
-import { Logger } from '../api/Logger';
-import { CheckBox } from './photon-fix/Components';
-import { AppSettings } from './App';
+import * as React from 'react'
+import { Logger } from '../api/Logger'
+import { Input, SelectBox, Button, CheckBox } from './photon-fix/Components'
+import { AppSettings } from './App'
+import { useValue } from '../helpers/Controls'
 
 
-export class Administration extends React.Component<{ settings: AppSettings, setter: (settings: AppSettings) => any }, AppSettings> {
-  private listener;
+export class Administration extends React.Component<{ settings: AppSettings, setter: (settings: Partial<AppSettings>) => any }, AppSettings> {
+  private listener
 
   constructor(props) {
-    super(props);
+    super(props)
   }
 
   componentDidMount() {
@@ -21,16 +21,19 @@ export class Administration extends React.Component<{ settings: AppSettings, set
   componentDidUpdate(prevProps) {
   }
 
+  setValue(key: string): (event: any) => void {
+    return useValue(value => {
+      this.props.setter({ [key]: value })
+    })
+  }
+
   render() {
     return (
-      <div>
-        <Button text="Clear Log" onClick={() => Logger.getLogger().clearLog()} />
-        <CheckBox label="Spielzüge animieren" value={this.props.settings.animateViewer} onChange={(e) => {
-            console.log("setting animateViewer to", !this.props.settings.animateViewer)
-            this.props.setter({
-              animateViewer: !this.props.settings.animateViewer
-            })
-          }} />
+      <div className="main-container">
+        <div className="content">
+          <Button text="Clear Log" onClick={() => Logger.getLogger().clearLog()} />
+          <CheckBox label="Spielzüge animieren" value={this.props.settings.animateViewer} onChange={this.setValue("animateViewer")} />
+        </div>
       </div>
     );
   }

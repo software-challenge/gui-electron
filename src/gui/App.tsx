@@ -15,7 +15,7 @@ import { ErrorPage } from './ErrorPage'
 import { Hotfix } from './Hotfix'
 import Iframe from 'react-iframe'
 import * as v from 'validate-typescript'
-import { loadFromStorage } from '../helpers/Cache'
+import { loadFromStorage, saveToStorage } from '../helpers/Cache'
 
 const dialog = remote.dialog
 const shell = remote.shell
@@ -61,9 +61,9 @@ export class App extends React.Component<any, State> {
       activeGameId: null,
       serverPort: null,
       settings: loadFromStorage(appSettings, {
-        animateViewer: v.Type(Boolean)
+        animateViewer: v.Type(Boolean),
       }, {
-          animateViewer: true
+          animateViewer: true,
         }),
     }
     Hotfix.init((gco => {
@@ -218,8 +218,9 @@ export class App extends React.Component<any, State> {
     var mainPaneContent
     switch (this.state.contentState) {
       case AppContent.Administration:
-        mainPaneContent = <Administration settings={this.state.settings} setter={(newSettings: AppSettings) => {
-          this.setState({ settings: newSettings }, () => window.localStorage[appSettings] = JSON.stringify(this.state.settings))
+        mainPaneContent = <Administration settings={this.state.settings} setter={(newSettings: Partial<AppSettings>) => {
+          this.setState({ settings: { ...this.state.settings, ...newSettings } }, 
+            () => saveToStorage(appSettings, this.state.settings))
         }} />
         break
       case AppContent.GameCreation:

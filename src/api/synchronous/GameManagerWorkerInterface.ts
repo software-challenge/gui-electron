@@ -178,7 +178,7 @@ export class GameManagerWorkerInterface {
     return this.backend.then(backend => {
       return fetch(backend.urlFor('/game-server-status'))
         .then(t => t.json().then(j => {
-          console.log("got json ", j)
+          console.log("got getGameServerStatus ", j)
           return j as GameServerInfo}))
         .catch(e => {
           Logger.getLogger().logError("GameManagerWorkerInterface", "getGameServerStatus", "Error getting game server info: " + e, e)

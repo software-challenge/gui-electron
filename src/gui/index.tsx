@@ -18,15 +18,11 @@ export function loadCSS(filename: string) {
 
 
 export function main() {
-  console.log("setting log path");
   const d = new Date();
-  console.log(window.location.search);
+  console.log("window.location.search=", window.location.search);
   let sdirname = decodeURIComponent(window.location.search.substring('?dirname='.length));
-
+  console.log("setting log path to", sdirname);
   process.env.SGC_LOG_PATH = path.join(sdirname, `software-challenge-gui-${d.getFullYear()}.${d.getUTCMonth() + 1}.${d.getUTCDate()}.log`); //TODO fixme
-
-  //Logger.injectLineNumbersIntoConsoleLog();
-  var hasExited: boolean = false;
 
   //Preload viewer:
   Api.getViewer();
