@@ -8,6 +8,9 @@ import * as fs from 'fs'
 import * as v from 'validate-typescript'
 import { loadFromStorage } from '../helpers/Cache'
 import { useValue } from '../helpers/Controls'
+import { GameInfo } from '../api/synchronous/GameInfo';
+import { Logger } from '../api/Logger';
+import { stringify } from '../helpers/Helpers';
 
 const dialog = remote.dialog
 
@@ -46,7 +49,7 @@ class ErrorList extends React.PureComponent<{ errors: Array<string> }> {
   }
 }
 
-export class GameCreation extends React.Component<{ serverPort: number, gameCreationCallback: (GameCreationOptions) => void }, FormState> {
+export class GameCreation extends React.Component<{ serverPort: number, createGame: (GameCreationOptions) => Promise<GameInfo> }, FormState> {
   constructor(props) {
     super(props)
 
@@ -146,7 +149,12 @@ export class GameCreation extends React.Component<{ serverPort: number, gameCrea
     if (this.state.players.some(p => p.type.value == PlayerType.Manual)) {
       document.getElementById('waiting').style.opacity = "1"
     }
-    this.props.gameCreationCallback(parsed)
+    this.props.createGame(parsed).catch(reason => {
+      let s = stringify(reason)
+      document.getElementById('errors').innerText =
+        reason.client ? `Spieler ${reason.client} konnte nicht erfolgreich gestartet werden: ${stringify(reason.error)}` : s
+      Logger.getLogger().log("GameCreation", "createGame", "Failed to start game: " + s)
+    });
   }
 
   private isEmpty(v: string): boolean {
@@ -233,26 +241,6 @@ export class GameCreation extends React.Component<{ serverPort: number, gameCrea
       { label: "Manuell gestarteter Client", value: PlayerType.Manual }
     ]
 
-    var startControl
-    if (this.validate(this.state)) {
-      // current settings are valid, user may start the game
-      startControl = <Button text="Start!" pullRight={true} onClick={() => {
-        // game should be started, create a game configuration from the given settings
-        this.handleStartGame({
-          kind: GameType.Versus,
-          firstPlayer: this.createPlayer(this.state.players[0]),
-          secondPlayer: this.createPlayer(this.state.players[1]),
-          gameName: this.state.gameName.value,
-          gameId: Api.getGameManager().createGameId(this.state.gameName.value, false)
-        })
-      }} />
-    } else {
-      startControl = <div className="validation-errors pull-right">
-        <p>Bitte korrigieren Sie die rot markierten Probleme, um ein Spiel zu starten.</p>
-        <ErrorList errors={this.state.generalErrors} />
-      </div>
-    }
-
     let playerForm = (player: integer) => (
       <div>
         <Input id={"input_playerName" + player} value={this.state.players[player].name.value} onChange={this.handleControlChange((state, value) => state.players[player].name.value = value)} invalid={this.hasErrors(this.state.players[player].name)} />
@@ -265,6 +253,25 @@ export class GameCreation extends React.Component<{ serverPort: number, gameCrea
         {this.playerControl(this.state, s => s.players[player])}
       </div>
     )
+
+    let startControl = this.validate(this.state) ?
+      // current settings are valid, user may start the game	
+      <Button text="Start!" pullRight={true} onClick={() => {
+        // game should be started, create a game configuration from the given settings	
+        this.handleStartGame({
+          kind: GameType.Versus,
+          firstPlayer: this.createPlayer(this.state.players[0]),
+          secondPlayer: this.createPlayer(this.state.players[1]),
+          gameName: this.state.gameName.value,
+          gameId: Api.getGameManager().createGameId(this.state.gameName.value, false)
+        })
+      }} />
+      :
+      <div className="validation-errors pull-right">
+        <p>Bitte korrigieren Sie die rot markierten Probleme, um ein Spiel zu starten.</p>
+        <ErrorList errors={this.state.generalErrors} />
+      </div>
+
     return (
       <div className="game-creation main-container">
         <div className="content">
@@ -283,6 +290,7 @@ export class GameCreation extends React.Component<{ serverPort: number, gameCrea
           <div id="start">
             {startControl}
           </div>
+          <div id="errors" />
           <div className="clearfix" />
         </div>
       </div>

@@ -4,6 +4,8 @@ import * as child_process from 'child_process';
 import { EventEmitter } from "events";
 import { Logger } from '../Logger';
 import { ComputerPlayer, StartType } from '../rules/GameCreationOptions';
+import { print } from 'util';
+import { log } from '../../helpers/Helpers';
 
 const pathLib = require('path');
 
@@ -15,6 +17,7 @@ export class ExecutableClient extends EventEmitter implements GameClient {
   private arguments: string[] = [];
   private workingDirectory: string = "";
   private process: child_process.ChildProcess;
+  private stderr: string[] = []
 
   constructor(player: ComputerPlayer, reservation: string, host: string, port: number) {
     /*program: string = 'java', options: string[] = ['-jar'], path: string, host: string = '127.0.0.1', port: number = 13050, reservation: string = ""*/
@@ -40,7 +43,7 @@ export class ExecutableClient extends EventEmitter implements GameClient {
 
   start(): Promise<void> {
     this.ready = new Promise((res, rej) => {
-      Logger.getLogger().log("ExecutableClient", "spawn", `${this.program} ${this.arguments.join(' ')} (cwd: ${this.workingDirectory})`);
+      Logger.getLogger().log("ExecutableClient", "spawn", `${this.program} ${this.arguments.join(' ')} (workdir: ${this.workingDirectory})`);
       let options = {
         cwd: this.workingDirectory,
         shell: false /* do not set to true, security risk! */
@@ -51,20 +54,22 @@ export class ExecutableClient extends EventEmitter implements GameClient {
         Logger.getLogger().log("ExecutableClient", "stdout", data.toString());
       });
       this.process.stderr.on('data', (data) => {
+        this.stderr.push(data.toString())
         Logger.getLogger().log("ExecutableClient", "stderr", data.toString());
       });
       this.process.on('error', () => {
-        this.setStatus(ExecutableStatus.Status.ERROR);
+        this.setStatus(ExecutableStatus.Status.ERROR)
+        rej(this.stderr)
       });
       this.process.on('exit', () => {
-        this.setStatus(ExecutableStatus.Status.EXITED);
+        this.setStatus(ExecutableStatus.Status.EXITED)
+        rej(this.stderr)
       });
       this.emit('ready');
-      if (this.status == ExecutableStatus.Status.RUNNING) {
-        res();
-      } else {
-        rej("Client did not start");
-      }
+      setTimeout(() => {
+        if (this.status == ExecutableStatus.Status.RUNNING)
+          res()
+      }, 1000)
     });
     return this.ready;
   }

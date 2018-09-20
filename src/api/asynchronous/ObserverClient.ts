@@ -3,7 +3,6 @@
 import { GenericClient } from './GenericClient';
 import { PlayerClientOptions } from './PlayerClient';
 import { Parser } from './Parser';
-import { Helpers } from '../Helpers';
 import { GAME_IDENTIFIER, GameState, GameResult } from '../rules/CurrentGame';
 import { Logger } from '../Logger';
 

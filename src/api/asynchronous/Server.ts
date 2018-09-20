@@ -1,17 +1,14 @@
-///<references path="../../node_modules/@types/node/index.d.ts" />
 import { ExecutableStatus } from '../rules/ExecutableStatus';
-import { Helpers } from '../Helpers';
+import { getLogLine, log } from '../../helpers/Helpers';
 import { Logger } from '../Logger';
-
-//import * as events from "events"
 import { EventEmitter } from "events";
-import { remote } from "electron";
-require('hazardous'); // important to get the paths right in distributed app
+import * as child_process from 'child_process';
 import path = require("path");
+require('hazardous'); // important to get the paths right in distributed app
 
 //const EventEmitter: NodeJS.EventEmitter = require('events');
 
-const SERVER_CWD = "server"; // naked directory name NOTE: don't use any paths here! They change when the app is distributed and break server spawning
+const SERVER_CWD = "server"; // naked directory name - don't use any paths here! They change when the app is distributed and break server spawning
 const SERVER_NAME = "server.jar";
 
 import { spawn } from 'child_process';
@@ -28,7 +25,7 @@ export class ServerEvent {
   }
 
   toString() {
-    return Helpers.getLogLine(this.data + '', this.time);
+    return getLogLine(this.data, this.time);
   }
 }
 
@@ -60,7 +57,7 @@ export class Server extends EventEmitter {
         this.on("stdout", s => {
           this.logbuffer += s + "\n";
           if (/ClientManager running/.test(s)) {
-            Helpers.log("Server ready");
+            log("Server ready");
             resolve();
           }
 
@@ -95,20 +92,18 @@ export class Server extends EventEmitter {
     Logger.getLogger().log("Server", "start", "Starting server (server should reside in ./server directory)");
     // NOTE that the path will be different when the app is distributed!
     var cwd = path.join(__dirname, "..", "..", "..", SERVER_CWD);
-    Logger.getLogger().log("Server", "start", "cwd: " + cwd + ", Port: "+ this.port);
-    this.process = spawn('java', ['-jar', SERVER_NAME, '--port', this.port.toString()], { cwd: cwd });
-    this.setStatus(ExecutableStatus.Status.RUNNING);
-    this.process.stdout.on('data', (data) => {
-      // XXX
-      //Helpers.log("Server: " + data);
-      this.stdout.push(data);
-      this.emit('stdout', data + '');
-      this.emit('event', new ServerEvent('stdout', data + ''));
-    });
+    Logger.getLogger().log("Server", "start", "starting " + SERVER_NAME + " in " + cwd + ", Port: "+ this.port);
+    this.process = child_process.spawn('java', ['-jar', SERVER_NAME, '--port', this.port.toString()], { cwd: cwd });
     this.process.stderr.on('data', (data) => {
+      log("Server stderr: " + data);
       this.stderr.push(data);
       this.emit('stderr', data + '');
       this.emit('event', new ServerEvent('stderr', data + ''));
+    });
+    this.process.stdout.on('data', (data) => {
+      this.stdout.push(data);
+      this.emit('stdout', data + '');
+      this.emit('event', new ServerEvent('stdout', data + ''));
     });
     this.process.on('error', () => {
       this.setStatus(ExecutableStatus.Status.ERROR);
@@ -116,6 +111,7 @@ export class Server extends EventEmitter {
     this.process.on('close', () => {
       this.setStatus(ExecutableStatus.Status.EXITED);
     });
+    this.setStatus(ExecutableStatus.Status.RUNNING);
   }
 
   private hasExited = false;
@@ -152,7 +148,5 @@ export class Server extends EventEmitter {
   getStatus(): ExecutableStatus.Status {
     return this.status;
   }
-
-
 
 }

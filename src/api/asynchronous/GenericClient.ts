@@ -2,7 +2,6 @@
 ///<references path="../../node_modules/@types/sax/index.d.ts" />
 const net = require('net');
 import * as events from "events";
-import { Helpers } from '../Helpers';
 import { SAXParser } from 'sax';
 import { Logger } from '../Logger';
 

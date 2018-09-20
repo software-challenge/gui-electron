@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from 'path';
+import { log } from "../helpers/Helpers";
 
 export class Logger {
   private static logger: Logger;
@@ -7,11 +8,11 @@ export class Logger {
   public static getLogger() {
     if (!this.logger) {
       let logPath = process.env.SGC_LOG_PATH
-      if(!fs.existsSync(logPath))
+      if (!fs.existsSync(logPath))
         fs.mkdirSync(logPath)
       const d = new Date()
       let logFile = path.join(logPath, `software-challenge-gui-${d.getFullYear()}.${d.getUTCMonth() + 1}.${d.getUTCDate()}.log`)
-      console.log("logging to", logFile)
+      log("logging to " + logFile)
       this.logger = new Logger(false, true, logFile)
     }
     return this.logger;

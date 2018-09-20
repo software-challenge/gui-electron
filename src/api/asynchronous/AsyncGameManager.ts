@@ -1,5 +1,4 @@
-import { Message, MessageContent } from '../rules/Message';
-import { GameCreationOptions, Replay as GCO_Replay, GameType } from '../rules/GameCreationOptions';
+import { GameType } from '../rules/GameCreationOptions';
 import { Game } from '../rules/Game';
 import { LiveGame } from './LiveGame';
 import { Replay } from './Replay';
@@ -10,7 +9,7 @@ import { Logger } from '../Logger';
 import { GameResult } from '../rules/CurrentGame';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
-import { Settings } from '../../viewer/Settings';
+import { log, stringify } from '../../helpers/Helpers';
 
 
 export class AsyncGameManager {
@@ -26,7 +25,7 @@ export class AsyncGameManager {
     this.server.use(bodyParser.json());
     this.setupMessages();
     this.closer = this.server.listen(port);
-    console.log("SERVER RUNNING");
+    log("AsyncGameManager listening");
   }
 
   private setupMessages() {
@@ -57,11 +56,10 @@ export class AsyncGameManager {
         let g: Game = options.kind == GameType.Replay ? new Replay(options) : new LiveGame(options);
         this.games.set(options.gameId, g);
         g.ready.then(() => {
-          Logger.getLogger().log("AsyncGameManager", "start_game", "promise resolved");
-          Logger.getLogger().log("AsyncGameManager", "start_game", "new game id: " + options.gameId);
+          Logger.getLogger().log("AsyncGameManager", "start_game", "game ready - new game id: " + options.gameId);
           res.json(options.gameId);
-        }).catch((e) => {
-          console.log(e);
+        }).catch(e => {
+          log("Error while waiting for game to ready: " + stringify(e));
           res.status(500).send(e);
         });
       } catch (e) {

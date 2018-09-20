@@ -13,9 +13,7 @@ export class AsyncApi {
   public static getServer(): Promise<Server> {
     if (AsyncApi.server == null) {
       AsyncApi.server = portfinder.getPortPromise({port: 13050})
-        .then((port) => {
-          return new Server(port, true);
-        })
+        .then(port => new Server(port, true))
     }
     return AsyncApi.server;
   }
