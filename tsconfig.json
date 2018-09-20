@@ -19,7 +19,7 @@
   "include": [ 
     "src/api/**/*",
     "src/gui/**/*",
-    "src/viewer/**/*" 
+    "src/viewer/**/*"
   ],
   "exclude": [ "node_modules" ],
   "compileOnSave": true

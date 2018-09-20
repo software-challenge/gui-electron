@@ -35,7 +35,7 @@ export class GenericPlayer extends GenericClient {
         case 'memento':
           var state = decoded.room.data[0].state[0];
           var gs = GameState.fromJSON(state);
-          console.log({gameState: gs});
+          console.log("handleMessage gameState:", gs);
           this.emit('state', gs);
           break;
         case 'sc.framework.plugins.protocol.MoveRequest':

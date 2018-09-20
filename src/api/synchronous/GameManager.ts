@@ -38,8 +38,8 @@ export class GameManager {
   }
 
   public getGameId(gameName: string): number {
-    this.gameIDsToNames.forEach((value, key, map) => { if(value == gameName) return key })
-    throw Error("A Game with name '"+gameName+"' does not exist!")
+    this.gameIDsToNames.forEach((value, key, map) => { if (value == gameName) return key })
+    throw Error("A Game with name '" + gameName + "' does not exist!")
   }
 
   public getGameInfo(gameId: number): GameInfo {
@@ -52,17 +52,16 @@ export class GameManager {
   }
 
   /**
-   * Creates a game with the given options, then calls the callback
-   * @param options
-   * @param callback
+   * Creates a game with the given options
+   * @returns a Promise containing the information of the created game
    */
-  public createGame(options: GameCreationOptions, callback: (gameInfo: GameInfo) => void) {
-    this.gmwi.createGameWithOptions(options, id => {
+  public createGame(options: GameCreationOptions) {
+    return this.gmwi.createGameWithOptions(options).then(id => {
       let gameInfo = this.getGameInfo(id)
       if (!this.bufferedGameInfo.map(i => i.id).includes(id)) {
         this.bufferedGameInfo.push(gameInfo)
       }
-      callback(gameInfo);
+      return gameInfo
     });
   }
 
@@ -70,10 +69,8 @@ export class GameManager {
     this.gmwi.saveReplayOfGame(gameId, path)
   }
 
-  private getState(gameName: string, turn: number, callback: (s: GameState) => void) {
-    this.gmwi.getState(this.getGameId(gameName), turn, state => {
-      callback(state);
-    });
+  private getState(gameName: string, turn: number) {
+    return this.gmwi.getState(this.getGameId(gameName), turn);
   }
 
   /**
@@ -118,16 +115,16 @@ export class GameManager {
     return this.displayStates.get(gameId);
   }
 
-  public getGameStatus(gameId: number, callback: (status: MessageContent.StatusReportContent) => void) {
-    this.gmwi.getStatus(gameId, callback);
+  public getGameStatus(gameId: number) {
+    return this.gmwi.getStatus(gameId);
   }
 
-  public sendMove(gameId: number, id: number, move: Move, callback: (gameId: number) => void) {
-    this.gmwi.sendMove(gameId, id, move, callback);
+  public sendMove(gameId: number, id: number, move: Move) {
+    return this.gmwi.sendMove(gameId, id, move);
   }
 
-  public getGameState(gameId: number, turn: number, callback: (state: GameState) => void) {
-    this.gmwi.getState(gameId, turn, callback);
+  public getGameState(gameId: number, turn: number) {
+    return this.gmwi.getState(gameId, turn);
   }
 
   public renameGame(gameId: number, newName: string) {
@@ -145,7 +142,7 @@ export class GameManager {
     this.gmwi.stop();
   }
 
-  public getGameServerInfo():Promise<GameServerInfo> {
+  public getGameServerInfo(): Promise<GameServerInfo> {
     return this.gmwi.getGameServerStatus()
   }
 

@@ -1,5 +1,3 @@
-import { remote } from 'electron';
-import { GenericClient } from './GenericClient';
 import { ObserverClient, RoomReservation } from './ObserverClient';
 import { GameState, GameResult } from '../rules/CurrentGame';
 import { GameCreationOptions, Versus, GameType, PlayerType, StartType } from '../rules/GameCreationOptions';
@@ -10,11 +8,10 @@ import { ExecutableStatus } from '../rules/ExecutableStatus';
 import { ExecutableClient } from './ExecutableClient';
 import { PlayerClientOptions } from './PlayerClient';
 import { HumanClient } from './HumanClient';
-import { EventEmitter } from "events";
-import { Helpers } from '../Helpers';
 import { Game } from '../rules/Game';
 import { Logger } from '../Logger';
-//const dialog = remote.dialog;
+import { Player } from '../rules/GameCreationOptions';
+import { Server } from './Server';
 
 
 export class LiveGame extends Game {
@@ -44,8 +41,7 @@ export class LiveGame extends Game {
         //Register hook to go offline
         server.on('status', s => {
           if (s == ExecutableStatus.Status.EXITED) {
-            //Server exited.
-            //Stop client processes, set game to not live
+            //Server exited. Stop client processes, set game to not live
             this.is_live = false;
           }
         });
@@ -118,48 +114,21 @@ export class LiveGame extends Game {
                 return reservation
               })
             }).then(reservation => {
-              if (gco.firstPlayer.kind == PlayerType.Computer) {
-                this.client1 = new ExecutableClient(
-                  gco.firstPlayer,
-                  reservation.reservation1,
-                  server.getHost(),
-                  server.getPort()
-                )
-              } else {
-                this.client1 = new HumanClient(
-                  server.getHost(),
-                  server.getPort(),
-                  gco.firstPlayer.name,
-                  reservation.reservation1,
-                  this.id
-                );
-              }
-              Logger.log("Client 1 started");
-
-              if (gco.secondPlayer.kind == PlayerType.Computer) {
-                this.client2 = new ExecutableClient(
-                  gco.secondPlayer,
-                  reservation.reservation2,
-                  server.getHost(),
-                  server.getPort()
-                )
-              } else {
-                this.client2 = new HumanClient(
-                  server.getHost(),
-                  server.getPort(),
-                  gco.secondPlayer.name,
-                  reservation.reservation2,
-                  this.id
-                )
-              }
-              Logger.log("Client 2 started");
+              this.client1 = this.createClient(gco.firstPlayer, server, reservation.reservation1)
+              Logger.log("Client 1 created")
+              this.client2 = this.createClient(gco.secondPlayer, server, reservation.reservation2)
+              Logger.log("Client 2 created")
 
               // wait for clients to start
               // NOTE that the order of resolution of the connect-promises is arbitrary
               return Promise.all([
-                this.client1.start(),
-                this.client2.start()])
-                .then(() => this.is_live = true)
+                this.client1.start().catch(reason => { throw { client: 1, error: reason } }),
+                this.client2.start().catch(reason => { throw { client: 2, error: reason } })])
+                .then(() => {
+                  Logger.log("LiveGame is live!")
+                  this.is_live = true
+                })
+                .catch(reason => gameStartError(reason))
             })
           } else if (matchPlayerTypes([
             [PlayerType.Human,   PlayerType.Manual],
@@ -180,35 +149,14 @@ export class LiveGame extends Game {
               Logger.log("Configure automatic client");
               //Configure one client
               if (gco.firstPlayer.kind == PlayerType.Manual) {
-                if (gco.secondPlayer.kind == PlayerType.Computer) {
-                  this.client2 = new ExecutableClient(
-                    gco.secondPlayer,
-                    undefined,
-                    server.getHost(),
-                    server.getPort()
-                  )
-                } else {
-                  this.client2 = new HumanClient(
-                    server.getHost(),
-                    server.getPort(),
-                    gco.secondPlayer.name,
-                    undefined,
-                    this.id
-                  )
-                }
-                if (gco.secondPlayer.kind == PlayerType.Human) {
+                this.client2 = this.createClient(gco.secondPlayer, server, undefined)
+                if (gco.secondPlayer.kind == PlayerType.Human)
                   auto_client_is_human_client = true;
-                }
                 auto_client = this.client2;
               } else {
-                if (gco.firstPlayer.kind == PlayerType.Computer) {
-                  this.client1 = new ExecutableClient(gco.firstPlayer, undefined, server.getHost(), server.getPort())
-                } else {
-                  this.client1 = new HumanClient(server.getHost(), server.getPort(), gco.firstPlayer.name, undefined, this.id)
-                }
-                if (gco.firstPlayer.kind == PlayerType.Human) {
+                this.client1 = this.createClient(gco.firstPlayer, server, undefined)
+                if (gco.firstPlayer.kind == PlayerType.Human)
                   auto_client_is_human_client = true;
-                }
                 auto_client = this.client1;
               }
 
@@ -242,6 +190,23 @@ export class LiveGame extends Game {
           }
         }
       })
+  }
+
+  createClient(player: Player, server: Server, reservation: string) {
+    return player.kind == PlayerType.Computer ?
+      new ExecutableClient(
+        player,
+        reservation,
+        server.getHost(),
+        server.getPort()
+      )
+    : new HumanClient(
+        server.getHost(),
+        server.getPort(),
+        player.name,
+        reservation,
+        this.id
+      )
   }
 
   getMessages(): ConsoleMessage[] {
@@ -302,7 +267,6 @@ export class LiveGame extends Game {
   }
 
 }
-
 
 
 export interface GameClient {

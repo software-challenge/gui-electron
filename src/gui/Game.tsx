@@ -61,7 +61,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   }
 
   private updateViewer() {
-    Api.getGameManager().getGameStatus(this.props.gameId, (status) => {
+    Api.getGameManager().getGameStatus(this.props.gameId).then((status) => {
       console.log("updateProgress", { gameName: this.props.name, stateNumber: this.state.currentTurn })
       // Endscreen
       if (this.state.currentTurn == (status.numberOfStates - 1) &&
@@ -71,7 +71,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
       } else {
         this.viewer.hideEndscreen()
       }
-      Api.getGameManager().getGameState(this.props.gameId, this.state.currentTurn, (gameState) => {
+      Api.getGameManager().getGameState(this.props.gameId, this.state.currentTurn).then((gameState) => {
         if (this.state.waitingForInput) {
           this.interact(status)
         } else {
@@ -116,7 +116,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   }
 
   private autoPlay() {
-    Api.getGameManager().getGameStatus(this.props.gameId, (status) => {
+    Api.getGameManager().getGameStatus(this.props.gameId).then((status) => {
       if (!this.isPlaying() && status.gameStatus == "REQUIRES INPUT" && status.numberOfStates == 1) {
         console.log("Human first! Triggering play...")
         this.playPause()
@@ -129,7 +129,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
     this.viewer.requestUserInteraction(status.moveRequest.state, [], (move) => {
       Logger.getLogger().log("Game", "interact", `Sending move`)
-      Api.getGameManager().sendMove(this.props.gameId, status.moveRequest.id, move, () => {
+      Api.getGameManager().sendMove(this.props.gameId, status.moveRequest.id, move).then(() => {
         // after sending the move, we want to render it as soon as the server gives out the new game state (because the user should have direct feedback on his move)
         this.waitForNextStatus(status.numberOfStates, () => this.next())
       })
@@ -137,7 +137,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   }
 
   private waitForNextStatus(currentNumberOfStates: number, callback: () => void) {
-    Api.getGameManager().getGameStatus(this.props.gameId, (status) => {
+    Api.getGameManager().getGameStatus(this.props.gameId).then((status) => {
       if (status.numberOfStates > currentNumberOfStates) {
         callback()
       } else {
@@ -148,7 +148,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
   next() {
     //1. Get a Status report
-    Api.getGameManager().getGameStatus(this.props.gameId, (status) => {
+    Api.getGameManager().getGameStatus(this.props.gameId).then((status) => {
       if (status.numberOfStates > (this.state.currentTurn + 1)) {
         // there is a next state available to display
         this.setState((lastState, props) => {

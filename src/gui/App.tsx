@@ -7,7 +7,7 @@ import { Window, Toolbar, ToolbarActions, ButtonGroup, PaneGroup, Sidebar, Retra
 import { UnicodeIcon } from './generic-components/Components'
 import { Administration } from './Administration'
 import { GameCreation } from './GameCreation'
-import { Replay, Versus, GameType } from '../api/rules/GameCreationOptions'
+import { Replay, Versus, GameType, GameCreationOptions } from '../api/rules/GameCreationOptions'
 import { Game } from './Game'
 import { LogConsole } from './LogConsole'
 import { Logger } from '../api/Logger'
@@ -16,6 +16,7 @@ import { Hotfix } from './Hotfix'
 import Iframe from 'react-iframe'
 import * as v from 'validate-typescript'
 import { loadFromStorage, saveToStorage } from '../helpers/Cache'
+import { GameInfo } from '../api/synchronous/GameInfo';
 
 const dialog = remote.dialog
 const shell = remote.shell
@@ -70,9 +71,7 @@ export class App extends React.Component<any, State> {
         }),
     }
     Hotfix.init((gco => {
-      Api.getGameManager().createGame(gco, info => {
-        this.showGame(info.id)
-      })
+      this.startGameWithOptions(gco)
     }).bind(this))
   }
 
@@ -106,37 +105,31 @@ export class App extends React.Component<any, State> {
             path: filenames[0]
           }
           //new GameCreationOptions(null, null, filenames[0], StartType.Replay, null, null, null, null, replayName)
-          Api.getGameManager().createGame(gco, info => {
-            this.showGame(info.id)
-          })
-          //Hotfix.reloadIntoGame(gco)
+          this.startGameWithOptions(gco)
         }
       }
     )
   }
 
-  private startGameWithOptions(o: Versus) {
+  private startGameWithOptions(o: GameCreationOptions): Promise<GameInfo> {
     //Hotfix.reloadIntoGame(o)
-    Api.getGameManager().createGame(o, info => {
-      this.showGame(info.id)
-    })
     Logger.getLogger().log('App', 'startGameWithOptions', 'starting game with options: ' + JSON.stringify(o))
+    return Api.getGameManager().createGame(o).then(info => {
+      this.showGame(info.id)
+      return info
+    })
   }
 
   private toggleMenu() {
-    this.setState({
-      menuRetracted: !this.state.menuRetracted
-    })
+    this.setState({ menuRetracted: !this.state.menuRetracted })
   }
 
   private toggleConsole() {
-    this.setState({
-      consoleRetracted: !this.state.consoleRetracted
-    })
+    this.setState({ consoleRetracted: !this.state.consoleRetracted })
   }
 
   private showGame(gameId: number) {
-    console.log("Switching to game with id " + gameId)
+    console.log("Switching to game with id", gameId)
     /* FIXME: Game.tsx depends on a componentWillUnmount call when switching to
     another game. But React doesn't unmount the Game component if we are just
     switching between two games (keeping contentState at AppContent.GameLive).
@@ -144,7 +137,6 @@ export class App extends React.Component<any, State> {
     expectation was that changing the props always unmounts the component, but
     this seems not to be true. Better move the code out of the unmount callback
     and research how to listen for property changes. */
-    this.refreshContent(AppContent.GameWaiting)
     this.show(AppContent.GameWaiting, () =>
       this.setState({
         contentState: AppContent.GameLive,
@@ -229,7 +221,7 @@ export class App extends React.Component<any, State> {
         }} />
         break
       case AppContent.GameCreation:
-        mainPaneContent = <GameCreation serverPort={this.state.serverPort} gameCreationCallback={o => this.startGameWithOptions(o)} />
+        mainPaneContent = <GameCreation serverPort={this.state.serverPort} createGame={o => this.startGameWithOptions(o)} />
         break
       case AppContent.GameLive:
         console.log("activeGameId: " + this.state.activeGameId)
