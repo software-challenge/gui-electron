@@ -21,6 +21,5 @@
     "src/gui/**/*",
     "src/viewer/**/*"
   ],
-  "exclude": [ "node_modules" ],
   "compileOnSave": true
 }
