@@ -9,8 +9,8 @@
     "test": "yarn install && yarn compile",
     "start": "yarn install && yarn compile && (test \"hi\" && (test -d server || yarn getserver)) || echo I'm on Windows, so i can't test! && electron .",
     "start-dev": "yarn install && yarn compile && electron . --dev",
-    "getserver": "rimraf socha && git clone git@github.com:CAU-Kiel-Tech-Inf/socha.git --depth 1 && cd socha && ./gradlew deploy -q && cd .. && rimraf server && cp -r socha/server/build/runnable server && cp socha/player/build/libs/defaultplayer.jar . && rimraf socha",
-    "copyserver": "rimraf server && rimraf client && ../socha/gradlew deploy -p ../socha && cp -r ../socha/server/build/runnable server && cp ../socha/player/build/libs/defaultplayer.jar . && rimraf socha",
+    "getserver": "rimraf socha && git clone git@github.com:CAU-Kiel-Tech-Inf/socha.git --depth 1 && cd socha && ./gradlew deploy -q && cd .. && rimraf server && cp -r socha/server/build/runnable server && rimraf socha",
+    "copyserver": "rimraf server && rimraf client && ../server/gradlew deploy -p ../server && cp -r ../server/server/build/runnable server && rimraf socha",
     "dist": "yarn install && yarn compile && electron-builder",
     "dist-all": "rimraf dist && yarn install && yarn compile && electron-builder --win --linux --mac",
     "compile": "rimraf out && tsc"
@@ -66,15 +66,15 @@
     "hazardous": "^0.3.0",
     "phaser": "^3.13.0",
     "portfinder": "^1.0.17",
-    "react": "^16.5.2",
-    "react-dom": "^16.5.2",
-    "react-iframe": "^1.3.0",
-    "react-photonkit": "^0.4.1",
+    "react": "^15",
+    "react-dom": "^15",
+    "react-iframe": "^1.2",
+    "react-photonkit": "https://github.com/react-photonkit/react-photonkit.git",
     "request": "^2.88.0",
     "sax": "^1.2.4",
     "tree-kill": "^1.2.0",
-    "xml2js": "^0.4.19",
-    "validate-typescript": "^2.0.1"
+    "validate-typescript": "^2.0.1",
+    "xml2js": "^0.4.19"
   },
   "devDependencies": {
     "@types/body-parser": "^1.16.8",
