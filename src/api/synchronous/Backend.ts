@@ -3,7 +3,7 @@ import * as request from 'request';
 import { Settings } from '../../viewer/Settings';
 
 // provides access to the nodeJS backend over HTTP
-// as definedin AsyncGameManager.ts
+// as defined in AsyncGameManager.ts
 export class Backend {
 
   private port: number;
@@ -41,7 +41,7 @@ export class Backend {
         request(this.urlFor('/'), (error, response, body) => {
           if (error) {
             if (triesLeft > 0) {
-              setTimeout(tryConnect(triesLeft - 1), 1000);
+              setTimeout(() => tryConnect(triesLeft - 1), 1000);
             } else {
               rej(`could not reach server after #{tries} tries!r`);
             }
