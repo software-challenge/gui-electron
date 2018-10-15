@@ -1,3 +1,33 @@
+os: osx
 language: node_js
-node_js:
-  - "8"
+node_js: "8"
+git:
+  depth: 3
+
+env:
+  global:
+    - ELECTRON_CACHE=$HOME/caches/electron
+    - ELECTRON_BUILDER_CACHE=$HOME/caches/electron-builder
+
+cache:
+  yarn: true
+  directories:
+    - node_modules
+    - $HOME/.gradle
+    - $HOME/caches
+
+before_deploy:
+  - yarn getserver-https
+  - yarn dist-all
+
+deploy:
+  provider: releases
+  api_key: "$GH_TOKEN"
+  file_glob: true
+  file:
+    - dist/*.AppImage
+    - dist/*.exe
+    - dist/*.zip
+  skip_cleanup: true
+  on:
+    tags: true

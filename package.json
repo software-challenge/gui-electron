@@ -9,10 +9,15 @@
     "test": "yarn install && yarn compile",
     "start": "yarn install && yarn compile && (test \"hi\" && (test -d server || yarn getserver)) || echo I'm on Windows, so i can't test! && electron .",
     "start-dev": "yarn install && yarn compile && electron . --dev",
-    "getserver": "rimraf socha && git clone git@github.com:CAU-Kiel-Tech-Inf/socha.git --depth 1 && cd socha && ./gradlew deploy -q && cd .. && rimraf server && cp -r socha/server/build/runnable server && rimraf socha",
-    "copyserver": "rimraf server && rimraf client && ../server/gradlew deploy -p ../server && cp -r ../server/server/build/runnable server && rimraf socha",
+    
+    "clonesocha": "rimraf socha && git clone --depth 1",
+    "getserver": "yarn clonesocha git@github.com:CAU-Kiel-Tech-Inf/socha.git && yarn compileserver",
+    "getserver-https": "yarn clonesocha https://github.com/CAU-Kiel-Tech-Inf/socha && yarn compileserver",
+    "compileserver": "cd socha && ./gradlew deploy -q && cd .. && rimraf server && cp -r socha/server/build/runnable server && cp socha/player/build/libs/defaultplayer.jar . && rimraf socha",
+    "copyserver": "rimraf server && rimraf client && ../server/gradlew deploy -p ../server && cp -r ../server/server/build/runnable server",
+    
     "dist": "yarn install && yarn compile && electron-builder",
-    "dist-all": "rimraf dist && yarn install && yarn compile && electron-builder --win --linux --mac",
+    "dist-all": "rimraf dist && yarn dist -mwl",
     "compile": "rimraf out && tsc"
   },
   "author": "Software-Challenge Team",
