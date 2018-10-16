@@ -178,10 +178,11 @@ export class App extends React.Component<any, State> {
     this.retry(
       () => Api.getGameManager().getGameServerStatus().then(info => {
         this.setState({ serverPort: info.port })
-        if(info.status == ExecutableStatus.Status.ERROR || info.status == ExecutableStatus.Status.EXITED)
+        if(info.status == ExecutableStatus.Status.ERROR || info.status == ExecutableStatus.Status.EXITED) {
           Logger.getLogger().logError("App", "server", "Server status " + info.status.toString() + ": " + info.error, info.error)
           alert("Es gab einen Fehler beim Starten des Game-Servers, das Programm wird wahrscheinlich nicht funktionieren!\n"+
             "Fehler: " + info.error)
+        }
       })
     )
   }
