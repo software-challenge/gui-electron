@@ -1,6 +1,8 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Backend } from '../api/synchronous/Backend';
+import { Api } from '../api/Api';
+import { ExecutableStatus } from '../api/rules/ExecutableStatus';
 
 type CheckStatus = "Idle" | // check has not begun yet
   "Checking" | // check is running
@@ -24,51 +26,43 @@ export class ApplicationStatus extends React.Component<{}, State>{
   }
 
   componentDidMount() {
-    /*
-    Backend.ready().then(() => this.startCheck()).catch((err) => {
-      this.setState((prev, _props) => { prev.errors.push(err); return prev; });
-      this.updateCheckStatus("ErrorWhileChecking");
-    });
-    */
+    this.startCheck()
+  }
+
+  private pushError(error: any) {
+    this.setState((prev, _props) => { prev.errors.push(error); return prev; });
   }
 
   private updateCheckStatus(newStatus: CheckStatus): void {
-    this.setState((prev, _props) =>  {return  {...prev, checkStatus: newStatus};} );
+    this.setState({ checkStatus: newStatus });
   }
 
-  private startCheck(): void {
+  startCheck(): void {
     this.updateCheckStatus("Checking");
-    Promise.all([
-      this.checkServer().then((result) => {
-        this.setState((prev, _props) => { return {...prev, serverReachable: result};});
-      }).catch((err) => {
-        this.setState((prev, _props) => { prev.errors.push(err); return prev; });
-      })
-    ]).then((_result) => {
-      this.updateCheckStatus("Completed");
-    }).catch((_error) => {
+    this.checkServer().then(result => {
+        this.setState({ serverReachable: result });
+        this.updateCheckStatus("Completed");
+    }).catch(error => {
+      this.pushError("Error while checking: " + error);
       this.updateCheckStatus("ErrorWhileChecking");
     });
   }
 
-  private checkServer(): Promise<boolean> {
+  checkServer(): Promise<boolean> {
     console.log("checking server");
-    /*
-    return Backend.gameServerStatus().then((res) => {
-      if (res != "OK") {
-        this.setState((prev, _props) => { prev.errors.push(res); return prev; });
-        return false;
+    return Api.getGameManager().getGameServerStatus().then(serverInfo => {
+      if (serverInfo.status != ExecutableStatus.Status.RUNNING) {
+        this.pushError(serverInfo)
+        return false
       } else {
-        return true;
+        return true
       }
     });
-    */
-    return Promise.resolve(true)
   }
 
   render() {
     return (
-      <div>Pruefung durchgefuehrt: {this.state.checkStatus}<p>{this.state.errors.join(" ")}</p><p>{this.state.errors.join(" ")}</p></div>
+      <div>Pruefung durchgefuehrt: {this.state.checkStatus}<p>Server reachable: {this.state.serverReachable.toString()}</p><p>{this.state.errors.join(" ")}</p></div>
     );
   }
 }

@@ -23,7 +23,7 @@ export class Backend {
   public gameServerStatus(): Promise<string> {
     console.log("requesting game server status");
     return new Promise<string>((res, rej) => {
-      request(this.urlFor('/check-game-server-connection'), (error, response, body) => {
+      request(this.urlFor('/server-info'), (error, response, body) => {
         console.log("got response", error, response);
         if (error) {
           rej(error);

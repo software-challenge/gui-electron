@@ -10,15 +10,18 @@ import * as path from 'path'
 import * as portfinder from 'portfinder'
 
 import * as child_process from "child_process"
+import { ExecutableStatus } from '../rules/ExecutableStatus';
 
 
 export interface GameServerInfo {
+  status: ExecutableStatus.Status
   port: number
+  error: String
 }
 
 export class GameManagerWorkerInterface {
   worker: child_process.ChildProcess
-  backend: Promise<Backend>
+  private backend: Promise<Backend>
 
   constructor() {
     Logger.getLogger().log("GameManagerWorkerInterface", "constructor", "Forking GameManagerWorker.")
@@ -30,7 +33,7 @@ export class GameManagerWorkerInterface {
         return new Backend(port)
       })
 
-    this.backend.then((backend) => {
+    this.backend.then(backend => {
       this.worker = fork(
         path.join(__dirname, "/../asynchronous/GameManagerWorker.js"), {
           execArgv: process.execArgv,
@@ -150,7 +153,7 @@ export class GameManagerWorkerInterface {
   }
 
   getGameServerStatus(): Promise<GameServerInfo> {
-    return this.fetchBackend('game-server-status')
+    return this.fetchBackend("server-info")
       .then(t => t.json().then(j => {
         console.log("got getGameServerStatus ", j)
         return j as GameServerInfo

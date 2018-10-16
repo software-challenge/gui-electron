@@ -10,7 +10,6 @@ export class GameManager {
 
   private bufferedGameInfo: GameInfo[];
 
-
   // properties only saved in frontend:
   // FIXME: this is a mess and comes from the time where games were identified by name
   // better manage all state in the backend and only buffer in the frontend
@@ -69,14 +68,12 @@ export class GameManager {
     this.gmwi.saveReplayOfGame(gameId, path)
   }
 
+  /** Gets the state for the game with the id corresponding to the name and the specific turn */
   private getState(gameName: string, turn: number) {
     return this.gmwi.getState(this.getGameId(gameName), turn);
   }
 
-  /**
-   * Requests a fresh list of games from the worker, updates the buffered list and calls the callback
-   * @param callback
-   */
+  /** Requests a fresh list of games from the worker, updates the buffer and calls the callback */
   private getListOfGames(callback?: (games_list: GameInfo[]) => void) {
     this.gmwi.getListOfGames((gameIds: number[]) => {
       var gameInfos = gameIds.map(e => this.getGameInfo(e));
@@ -87,9 +84,7 @@ export class GameManager {
     });
   }
 
-  /**
-   * Returns a buffered list of game titles from the last time
-   */
+  /** Returns a list of game titles from the buffer of the last request */
   public getBufferedGameTitles(): GameInfo[] {
     this.getListOfGames();
     return this.bufferedGameInfo;
@@ -142,7 +137,7 @@ export class GameManager {
     this.gmwi.stop();
   }
 
-  public getGameServerInfo(): Promise<GameServerInfo> {
+  public getGameServerStatus() {
     return this.gmwi.getGameServerStatus()
   }
 

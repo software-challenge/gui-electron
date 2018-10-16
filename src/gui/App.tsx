@@ -17,6 +17,7 @@ import Iframe from 'react-iframe'
 import * as v from 'validate-typescript'
 import { loadFromStorage, saveToStorage } from '../helpers/Cache'
 import { GameInfo } from '../api/synchronous/GameInfo';
+import { ExecutableStatus } from '../api/rules/ExecutableStatus';
 
 const dialog = remote.dialog
 const shell = remote.shell
@@ -63,9 +64,9 @@ export class App extends React.Component<any, State> {
       activeGameId: null,
       serverPort: null,
       settings: loadFromStorage(appSettings, {
-        animateViewer: v.Type(Boolean),
-        logDir: v.Type(String)
-      }, {
+          animateViewer: v.Type(Boolean),
+          logDir: v.Type(String)
+        }, {
           animateViewer: true,
           logDir: "."
         }),
@@ -175,9 +176,13 @@ export class App extends React.Component<any, State> {
 
   componentDidMount() {
     this.retry(
-      () => Api.getGameManager().getGameServerInfo().then(info =>
+      () => Api.getGameManager().getGameServerStatus().then(info => {
         this.setState({ serverPort: info.port })
-      )
+        if(info.status == ExecutableStatus.Status.ERROR || info.status == ExecutableStatus.Status.EXITED)
+          Logger.getLogger().logError("App", "server", "Server status " + info.status.toString() + ": " + info.error, info.error)
+          alert("Es gab einen Fehler beim Starten des Game-Servers, das Programm wird wahrscheinlich nicht funktionieren!\n"+
+            "Fehler: " + info.error)
+      })
     )
   }
 

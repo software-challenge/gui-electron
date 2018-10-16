@@ -10,6 +10,7 @@ import { GameResult } from '../rules/CurrentGame';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import { log, stringify } from '../../helpers/Helpers';
+import { GameServerInfo } from '../synchronous/GameManagerWorkerInterface';
 
 
 export class AsyncGameManager {
@@ -137,10 +138,14 @@ export class AsyncGameManager {
       }
     });
 
-    this.server.get('/game-server-status', (req, res) => {
+    this.server.get('/server-info', (req, res) => {
       AsyncApi.getServer()
         .then(server => {
-          res.send({port: server.getPort()})
+          res.send({
+            status: server.getStatus(),
+            port: server.getPort(),
+            error: server.stderr.join()
+          } as GameServerInfo)
         })
         .catch(e => res.status(500).send(e))
     });

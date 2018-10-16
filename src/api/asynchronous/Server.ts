@@ -31,7 +31,7 @@ export class ServerEvent {
 
 export class Server extends EventEmitter {
   private stdout: string[] = [];
-  private stderr: string[] = [];
+  public stderr: string[] = [];
   private events: ServerEvent[] = [];
   private status: ExecutableStatus.Status;
   private process;
@@ -84,7 +84,6 @@ export class Server extends EventEmitter {
   }
 
   start() {
-    this.hasExited = false;
     this.stdout = [];
     this.stderr = [];
     this.events = [];
@@ -113,8 +112,6 @@ export class Server extends EventEmitter {
     });
     this.setStatus(ExecutableStatus.Status.RUNNING);
   }
-
-  private hasExited = false;
 
   stop() {
     if (this.process != null) {

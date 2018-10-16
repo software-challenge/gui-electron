@@ -18,7 +18,8 @@
     
     "dist": "yarn install && yarn compile && electron-builder",
     "dist-all": "rimraf dist && yarn dist -mwl",
-    "compile": "rimraf out && tsc"
+    "compile": "rimraf out && tsc",
+    "clean": "rimraf out; rimraf dist; rimraf server; rimraf socha; rimraf defaultplayer.jar; rimraf *.log.html"
   },
   "author": "Software-Challenge Team",
   "license": "ISC",
