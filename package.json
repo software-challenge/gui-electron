@@ -56,6 +56,10 @@
       "category": "public.app-category.developer-tools",
       "target": [
         "zip"
+      ],
+      "electronLanguages": [
+        "de",
+        "en"
       ]
     },
     "linux": {
