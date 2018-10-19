@@ -73,7 +73,7 @@ export class GameManager {
 
   /** Requests a fresh list of games from the worker, updates the buffer and calls the callback */
   private getListOfGames(callback?: (games_list: GameInfo[]) => void) {
-    this.gmwi.getListOfGames((gameIds: number[]) => {
+    this.gmwi.getListOfGames().then((gameIds: number[]) => {
       var gameInfos = gameIds.map(e => this.getGameInfo(e));
       this.bufferedGameInfo = gameInfos;
       if (callback) {

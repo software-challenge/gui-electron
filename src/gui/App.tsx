@@ -18,6 +18,7 @@ import * as v from 'validate-typescript'
 import { loadFromStorage, saveToStorage } from '../helpers/Cache'
 import { GameInfo } from '../api/synchronous/GameInfo'
 import { ExecutableStatus } from '../api/rules/ExecutableStatus'
+import promiseRetry = require('promise-retry')
 
 const dialog = remote.dialog
 const shell = remote.shell
@@ -64,9 +65,9 @@ export class App extends React.Component<any, State> {
       activeGameId: null,
       serverPort: null,
       settings: loadFromStorage(appSettings, {
-          animateViewer: v.Type(Boolean),
-          logDir: v.Type(String)
-        }, {
+        animateViewer: v.Type(Boolean),
+        logDir: v.Type(String)
+      }, {
           animateViewer: true,
           logDir: "."
         }),
@@ -158,32 +159,15 @@ export class App extends React.Component<any, State> {
     })
   }
 
-  private retry<T>(fn: () => Promise<T>, ms: number = 1000, retries: number = 5): Promise<T> {
-    return new Promise((resolve, reject) => {
-      fn()
-        .then(resolve)
-        .catch(() => {
-          setTimeout(() => {
-            if (retries == 0) {
-              return reject('maximum retries exceeded')
-            }
-            this.retry(fn, ms, retries - 1).then(resolve)
-          }, ms)
-        })
-    })
-  }
-
   componentDidMount() {
-    this.retry(
-      () => Api.getGameManager().getGameServerStatus().then(info => {
-        this.setState({ serverPort: info.port })
-        if(info.status == ExecutableStatus.Status.ERROR || info.status == ExecutableStatus.Status.EXITED) {
-          Logger.getLogger().logError("App", "server", "Server status " + info.status.toString() + ": " + info.error, info.error)
-          alert("Es gab einen Fehler beim Starten des Game-Servers, das Programm wird wahrscheinlich nicht funktionieren!\n"+
-            "Fehler: " + info.error)
-        }
-      })
-    )
+    promiseRetry(retry => Api.getGameManager().getGameServerStatus().then(info => {
+      this.setState({ serverPort: info.port })
+      if (info.status == ExecutableStatus.Status.ERROR || info.status == ExecutableStatus.Status.EXITED) {
+        Logger.getLogger().logError("App", "server", "Server status " + info.status.toString() + ": " + info.error, info.error)
+        alert("Es gab einen Fehler beim Starten des Game-Servers, das Programm wird wahrscheinlich nicht funktionieren!\n" +
+          "Fehler: " + info.error)
+      }
+    }).catch(retry))
   }
 
   changeGameName(e) {

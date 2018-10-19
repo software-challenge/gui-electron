@@ -7,6 +7,7 @@ import * as path from 'path'
 import * as portfinder from 'portfinder'
 import * as child_process from 'child_process'
 import { ExecutableStatus } from '../rules/ExecutableStatus'
+import promiseRetry = require('promise-retry')
 
 export interface GameServerInfo {
   status: ExecutableStatus.Status
@@ -46,21 +47,16 @@ export class GameManagerWorkerInterface {
     return this.backend.then(backend => fetch(backend.urlFor("/" + query), init))
   }
 
-  /**
-   * Requests a list of the names of the games currently loaded in the worker
-   * @param callback
-   */
-  getListOfGames(callback: (gameIds: number[]) => void, retries: number = 3) {
-    return this.fetchBackend('list-games')
-      .then(r => r.json())
-      .then(r => callback(r))
-      .catch(e => {
-        if (retries == 0) {
-          Logger.getLogger().logError("GameManagerWorkerInterface", "getListOfGames", "Error getting list of games: " + e, e)
-        } else {
-          setTimeout(() => this.getListOfGames(callback, retries - 1), 250)
-        }
-      })
+  /** Requests a list of the names of the games currently loaded in the worker */
+  getListOfGames(retries: number = 3) {
+    return promiseRetry(retry => {
+        return this.fetchBackend('list-games')
+          .then(r => r.json())
+          .catch(retry);
+    }, {
+      minTimeout: 150,
+      retries: retries
+    }).catch(e => Logger.getLogger().logError("GameManagerWorkerInterface", "getListOfGames", "Error getting list of games: " + e, e))
   }
 
   /**
