@@ -2,12 +2,12 @@ import { Api } from '../api/Api'
 import * as React from 'react'
 import * as electron from 'electron'
 import { remote } from 'electron'
-import { Content } from "react-photonkit"
+import { Content } from 'react-photonkit'
 import { Window, Toolbar, ToolbarActions, ButtonGroup, PaneGroup, Sidebar, RetractableSidebar, Pane, NavGroup, NavTitle, NavItem, Button } from './photon-fix/Components'
 import { UnicodeIcon } from './generic-components/Components'
 import { Administration } from './Administration'
 import { GameCreation } from './GameCreation'
-import { Replay, Versus, GameType, GameCreationOptions } from '../api/rules/GameCreationOptions'
+import { Replay, GameType, GameCreationOptions } from '../api/rules/GameCreationOptions'
 import { Game } from './Game'
 import { LogConsole } from './LogConsole'
 import { Logger } from '../api/Logger'
@@ -16,8 +16,8 @@ import { Hotfix } from './Hotfix'
 import Iframe from 'react-iframe'
 import * as v from 'validate-typescript'
 import { loadFromStorage, saveToStorage } from '../helpers/Cache'
-import { GameInfo } from '../api/synchronous/GameInfo';
-import { ExecutableStatus } from '../api/rules/ExecutableStatus';
+import { GameInfo } from '../api/synchronous/GameInfo'
+import { ExecutableStatus } from '../api/rules/ExecutableStatus'
 
 const dialog = remote.dialog
 const shell = remote.shell
@@ -142,8 +142,7 @@ export class App extends React.Component<any, State> {
       this.setState({
         contentState: AppContent.GameLive,
         activeGameId: gameId
-      }))
-    document.getElementById('game-name').innerText = Api.getGameManager().getGameInfo(gameId).name
+      }, () => document.getElementById('game-name').innerText = Api.getGameManager().getGameInfo(gameId).name))
   }
 
   private show(content: AppContent, callback?: () => void) {
@@ -191,14 +190,8 @@ export class App extends React.Component<any, State> {
     if (e.keyCode == 13) {
       e.preventDefault()
       var newGameName = document.getElementById('game-name').innerText.trim()
-      console.log(newGameName)
+      console.log("changing Game name:", newGameName)
       Api.getGameManager().renameGame(this.state.activeGameId, newGameName)
-      Api.getGameManager().hasGame(newGameName, () => {
-        document.getElementById('game-name').blur()
-        this.setState((prev, _props) => {
-          return { ...prev, activeGame: newGameName }
-        })
-      })
     }
   }
 

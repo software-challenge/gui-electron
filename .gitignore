@@ -14,3 +14,4 @@ typings
 *.blend2
 *.blend3
 .vscode
+.idea

@@ -158,7 +158,7 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
   }
 
   private isEmpty(v: string): boolean {
-    return (v == null) || v.trim() === ""
+    return v == null || v.trim() === ""
   }
 
   private invalidPath(path: string): boolean {

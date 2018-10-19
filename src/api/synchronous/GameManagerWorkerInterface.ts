@@ -1,17 +1,12 @@
 import { GameCreationOptions } from '../rules/GameCreationOptions'
-import { GameStatus } from '../rules/GameStatus'
 import { GameState, Move } from '../rules/CurrentGame'
-import { Message, MessageContent } from '../rules/Message'
-import { ActionMethod } from '../rules/ActionMethod'
+import { MessageContent } from '../rules/Message'
 import { Logger } from '../Logger'
 import { Backend } from './Backend'
-import * as treekill from 'tree-kill'
 import * as path from 'path'
 import * as portfinder from 'portfinder'
-
-import * as child_process from "child_process"
-import { ExecutableStatus } from '../rules/ExecutableStatus';
-
+import * as child_process from 'child_process'
+import { ExecutableStatus } from '../rules/ExecutableStatus'
 
 export interface GameServerInfo {
   status: ExecutableStatus.Status
@@ -88,9 +83,9 @@ export class GameManagerWorkerInterface {
           throw c
       })
     }).then(t => {
-        console.log("Created game with id " + t)
-        return parseInt(t)
-      })
+      console.log("Created game with id " + t)
+      return parseInt(t)
+    })
   }
 
   deleteGame(gameId: number) {
@@ -128,8 +123,8 @@ export class GameManagerWorkerInterface {
       .catch(e => Logger.getLogger().logError("GameManagerWorkerInterface", "getStatus", "Error getting status: " + e, e))
   }
 
-  /** 
-   * Sends a Move for an action request with id to the worker 
+  /**
+   * Sends a Move for an action request with id to the worker
    * @returns a Promise containing the gameId
   */
   sendMove(gameId: number, id: number, move: Move): Promise<number> {

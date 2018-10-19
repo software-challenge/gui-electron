@@ -1,9 +1,7 @@
-import { GameCreationOptions } from '../rules/GameCreationOptions';
-import { GameServerInfo, GameManagerWorkerInterface } from './GameManagerWorkerInterface';
-import { GameState, Move } from '../rules/CurrentGame';
-import { MessageContent } from '../rules/Message';
-import { ActionMethod } from '../rules/ActionMethod';
-import { GameInfo } from './GameInfo';
+import { GameCreationOptions } from '../rules/GameCreationOptions'
+import { GameServerInfo, GameManagerWorkerInterface } from './GameManagerWorkerInterface'
+import { Move } from '../rules/CurrentGame'
+import { GameInfo } from './GameInfo'
 
 export class GameManager {
   private gmwi: GameManagerWorkerInterface;
