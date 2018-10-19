@@ -4,62 +4,45 @@ import { Move } from '../rules/CurrentGame'
 import { GameInfo } from './GameInfo'
 
 export class GameManager {
-  private gmwi: GameManagerWorkerInterface;
+  private gmwi: GameManagerWorkerInterface
 
-  private bufferedGameInfo: GameInfo[];
-
-  // properties only saved in frontend:
-  // FIXME: this is a mess and comes from the time where games were identified by name
-  // better manage all state in the backend and only buffer in the frontend
-  private gameIDsToNames: Map<number, string>;
-  private gameIDsToIsReplay: Map<number, boolean>;
-  private displayStates: Map<number, number>;
-
-  private nextID: number;
+  private nextID: number
+  private gameInfos: Map<number, GameInfo>
 
   constructor() {
-    this.gmwi = new GameManagerWorkerInterface();
-    this.bufferedGameInfo = [];
-    this.displayStates = new Map<number, number>();
-    this.gameIDsToNames = new Map<number, string>();
-    this.gameIDsToIsReplay = new Map<number, boolean>();
-    this.nextID = 0;
+    this.gmwi = new GameManagerWorkerInterface()
+    this.gameInfos = new Map<number, GameInfo>()
+    this.nextID = 0
   }
 
   public createGameId(gameName: string, isReplay: boolean): number {
-    let currentGameID = this.nextID;
-    this.nextID++;
-    this.gameIDsToNames.set(currentGameID, gameName);
-    this.gameIDsToIsReplay.set(currentGameID, isReplay);
-    return currentGameID;
+    let newGameId = this.nextID++
+    this.gameInfos.set(newGameId, {
+      id: newGameId,
+      name: gameName,
+      isReplay: isReplay,
+      currentTurn: 0
+    })
+    console.log("Created game", newGameId, this.getGameInfo(newGameId))
+    return newGameId
   }
 
   public getGameId(gameName: string): number {
-    this.gameIDsToNames.forEach((value, key, map) => { if (value == gameName) return key })
+    this.gameInfos.forEach((value, key, map) => { if (value.name == gameName) return key })
     throw Error("A Game with name '" + gameName + "' does not exist!")
   }
 
+  /** Returns the buffered GameInfo for the game with this id */
   public getGameInfo(gameId: number): GameInfo {
-    return {
-      id: gameId,
-      name: this.gameIDsToNames.get(gameId),
-      isReplay: this.gameIDsToIsReplay.get(gameId),
-      currentTurn: this.getCurrentDisplayStateOnGame(gameId)
-    }
+    return this.gameInfos.get(gameId)
   }
 
   /**
    * Creates a game with the given options
    * @returns a Promise containing the information of the created game
    */
-  public createGame(options: GameCreationOptions) {
-    return this.gmwi.createGameWithOptions(options).then(id => {
-      let gameInfo = this.getGameInfo(id)
-      if (!this.bufferedGameInfo.map(i => i.id).includes(id)) {
-        this.bufferedGameInfo.push(gameInfo)
-      }
-      return gameInfo
-    });
+  public createGame(options: GameCreationOptions): Promise<GameInfo> {
+    return this.gmwi.createGameWithOptions(options).then(id => this.getGameInfo(id));
   }
 
   public saveReplayOfGame(gameId: number, path: string) {
@@ -68,44 +51,29 @@ export class GameManager {
 
   /** Gets the state for the game with the id corresponding to the name and the specific turn */
   private getState(gameName: string, turn: number) {
-    return this.gmwi.getState(this.getGameId(gameName), turn);
+    return this.gmwi.getState(this.getGameId(gameName), turn)
   }
 
-  /** Requests a fresh list of games from the worker, updates the buffer and calls the callback */
-  private getListOfGames(callback?: (games_list: GameInfo[]) => void) {
-    this.gmwi.getListOfGames().then((gameIds: number[]) => {
-      var gameInfos = gameIds.map(e => this.getGameInfo(e));
-      this.bufferedGameInfo = gameInfos;
-      if (callback) {
-        callback(gameInfos);
-      }
-    });
+  /** Returns a list of GameInfos */
+  public getGameInfos(): GameInfo[] {
+    console.log(this.gameInfos)
+    return Array.from(this.gameInfos.values())
   }
 
-  /** Returns a list of game titles from the buffer of the last request */
-  public getBufferedGameTitles(): GameInfo[] {
-    this.getListOfGames();
-    return this.bufferedGameInfo;
-  }
-
-  public hasGame(name: string, callback: (has_game: boolean) => void) {
-    this.getListOfGames(games_list => {
-      this.bufferedGameInfo = games_list;
-      let hasGame = games_list.map(i => i.name).includes(name);
-      console.log("has game " + name + " : " + hasGame);
-      callback(hasGame);
-    });
+  /** returns whether a game with that name exists */
+  public hasGame(name: string) {
+    const games_list = this.getGameInfos()
+    let hasGame = games_list.map(game => game.name).includes(name)
+    console.log("hasGame " + name + ":", hasGame)
+    return hasGame
   }
 
   public setCurrentDisplayStateOnGame(gameId: number, turn: number) {
-    this.displayStates.set(gameId, turn);
+    this.getGameInfo(gameId).currentTurn = turn
   }
 
   public getCurrentDisplayStateOnGame(gameId: number) {
-    if (!this.displayStates.has(gameId)) {
-      this.displayStates.set(gameId, 0);
-    }
-    return this.displayStates.get(gameId);
+    return this.getGameInfo(gameId).currentTurn;
   }
 
   public getGameStatus(gameId: number) {
@@ -121,14 +89,12 @@ export class GameManager {
   }
 
   public renameGame(gameId: number, newName: string) {
-    this.gameIDsToNames.delete(gameId);
-    this.gameIDsToNames.set(gameId, newName);
+    this.gameInfos[gameId].name = newName
   }
 
   public deleteGame(gameId: number) {
-    this.gameIDsToNames.delete(gameId)
+    this.gameInfos.delete(gameId)
     this.gmwi.deleteGame(gameId)
-    this.bufferedGameInfo = this.bufferedGameInfo.filter((value: GameInfo) => value.id != gameId)
   }
 
   public stop() {

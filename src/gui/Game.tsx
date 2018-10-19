@@ -125,9 +125,9 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   }
 
   interact(status: MessageContent.StatusReportContent) {
-    status.moveRequest.state = GameState.lift(status.moveRequest.state)
+    const state = GameState.lift(status.moveRequest.state)
 
-    this.viewer.requestUserInteraction(status.moveRequest.state, [], (move) => {
+    this.viewer.requestUserInteraction(state, [], (move) => {
       Logger.getLogger().log("Game", "interact", `Sending move`)
       Api.getGameManager().sendMove(this.props.gameId, status.moveRequest.id, move).then(() => {
         // after sending the move, we want to render it as soon as the server gives out the new game state (because the user should have direct feedback on his move)

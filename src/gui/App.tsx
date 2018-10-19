@@ -276,7 +276,7 @@ export class App extends React.Component<any, State> {
                 <NavItem key="replay" onClick={() => this.loadReplay()}>
                   <UnicodeIcon icon="↥" />Replay laden
                 </NavItem>
-                {Api.getGameManager().getBufferedGameTitles().map(
+                {Api.getGameManager().getGameInfos().map(
                   t => (<NavItem key={t.id} onClick={() => this.showGame(t.id)} active={this.state.contentState == AppContent.GameLive && this.state.activeGameId == t.id}>
                     <UnicodeIcon icon="🎳" />{t.name} ({t.id})
                     <span className="close-button-container">
