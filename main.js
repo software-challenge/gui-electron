@@ -3,6 +3,7 @@ const { app, BrowserWindow } = require('electron')
 app.commandLine.appendSwitch('ignore-gpu-blacklist', 'true'); //Ignore warning about third-party AMD drivers on linux
 const path = require('path')
 const url = require('url')
+const fs = require('fs')
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win;
@@ -28,12 +29,24 @@ function createWindow() {
     height: 850
   });
 
+  let logDir = '.'
+  let appDir = app.getAppPath()
+  // application path may be a directory (in dev mode) or a file (when distributed)
+  // .asar files are identified as directories, but are not directories in the filesystem
+  if (fs.lstatSync(appDir).isDirectory() && !appDir.endsWith('.asar')) {
+    console.log("directory", appDir)
+    logDir = appDir
+  } else {
+    console.log("file", appDir)
+    logDir = path.dirname(appDir)
+  }
+
   // and load the index.html of the app.
   win.loadURL(url.format({
     pathname: path.join(app.getAppPath(), 'src/index.html'),
     protocol: 'file:',
     slashes: true
-  }) + '?dirname=' + encodeURIComponent(app.getPath('log')), options = { //Make sure a few extra options are enabled
+  }) + '?dirname=' + encodeURIComponent(logDir), options = { //Make sure a few extra options are enabled
     webgl: true, //WebGL needs to be forced on with older radeon cards
     experimentalFeatures: true, //Some extra features to speed up canvas/GL operations
     experimentalCanvasFeatures: true,
