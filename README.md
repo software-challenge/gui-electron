@@ -1,4 +1,4 @@
-# ![icon](assets/build-resources/icon64.png) Socha-GUI [![Build Status](https://travis-ci.com/CAU-Kiel-Tech-Inf/socha_graphical_client.svg?token=JSN9wAhxGT9zngxzmGpp&branch=master)](https://travis-ci.com/CAU-Kiel-Tech-Inf/socha_graphical_client)
+# ![icon](assets/build-resources/icon64.png) Socha-GUI [![Build Status](https://travis-ci.com/CAU-Kiel-Tech-Inf/socha-gui.svg?token=JSN9wAhxGT9zngxzmGpp&branch=master)](https://travis-ci.com/CAU-Kiel-Tech-Inf/socha-gui)
 
 ## Getting Started
 
