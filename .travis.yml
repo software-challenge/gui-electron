@@ -1,11 +1,12 @@
 os: osx
-language: node_js
-node_js: "8"
+osx_image: xcode9.3
+language: java
 git:
   depth: 3
 
 env:
   global:
+    - NODE_VERSION=8
     - ELECTRON_CACHE=$HOME/caches/electron
     - ELECTRON_BUILDER_CACHE=$HOME/caches/electron-builder
 
@@ -15,6 +16,14 @@ cache:
     - node_modules
     - $HOME/.gradle
     - $HOME/caches
+
+install:
+  - nvm install $NODE_VERSION
+  - nvm use $NODE_VERSION
+  - npm install -g yarn
+
+script:
+  - yarn
 
 before_deploy:
   - yarn getserver-https
