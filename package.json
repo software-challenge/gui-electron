@@ -7,14 +7,10 @@
   "main": "main.js",
   "scripts": {
     "test": "yarn install && yarn compile",
-    "start": "yarn install && yarn compile && (test \"hi\" && (test -d server || yarn getserver)) || echo I'm on Windows, so i can't test! && electron .",
+    "start": "yarn install && yarn compile && (test \"hi\" && (test -d server || yarn compileserver)) || echo I can't test whether the server exists! && electron .",
     "start-dev": "yarn install && yarn compile && electron . --dev",
 
-    "clonesocha": "rimraf socha && git clone --depth 1",
-    "getserver": "yarn clonesocha git@github.com:CAU-Kiel-Tech-Inf/socha.git && yarn compileserver",
-    "getserver-https": "yarn clonesocha https://github.com/CAU-Kiel-Tech-Inf/socha && yarn compileserver",
-    "compileserver": "cd socha && ./gradlew :server:deploy -q && cd .. && rimraf server && cp -r socha/server/build/runnable server && cp socha/player/build/libs/defaultplayer.jar . && rimraf socha",
-    "copyserver": "rimraf server && rimraf client && ../server/gradlew deploy -p ../server && cp -r ../server/server/build/runnable server",
+    "compileserver": "git submodule update && cd socha && ./gradlew :server:deploy -q && cd .. && rimraf server && cp -r socha/server/build/runnable server && cp socha/player/build/libs/defaultplayer.jar .",
 
     "dist": "yarn install && yarn compile && electron-builder",
     "dist-all": "rimraf dist && yarn dist -mwl",
