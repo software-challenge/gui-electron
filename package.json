@@ -21,6 +21,7 @@
   "license": "ISC",
   "build": {
     "appId": "de.software-challenge.gui",
+    "artifactName": "Software-Challenge-GUI-${os}.${ext}",
     "files": [
       "main.js",
       "src",
@@ -40,8 +41,7 @@
         {
           "target": "nsis",
           "arch": "x64"
-        },
-        "zip"
+        }
       ]
     },
     "nsis": {
