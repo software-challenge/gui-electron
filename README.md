@@ -1,4 +1,12 @@
-# ![icon](assets/build-resources/icon64.png) Socha-GUI [![Build Status](https://travis-ci.com/CAU-Kiel-Tech-Inf/socha-gui.svg?token=JSN9wAhxGT9zngxzmGpp&branch=master)](https://travis-ci.com/CAU-Kiel-Tech-Inf/socha-gui)
+<p align="center">
+  <a target="_blank" rel="noopener noreferrer" href="https://www.software-challenge.de"><img width="128" src="https://raw.githubusercontent.com/CAU-Kiel-Tech-Inf/socha-gui/master/assets/build-resources/icon.png" alt="Software-Challenge Germany logo"></a>
+</p>
+
+<p align="center">
+  <a href="https://travis-ci.com/CAU-Kiel-Tech-Inf/socha-gui" rel="nofollow"><img src="https://travis-ci.com/CAU-Kiel-Tech-Inf/socha-gui.svg?branch=master" alt="Build Status"></a>
+</p>
+
+<h1 align="center">Server GUI for Software-Challenge Germany</h1>
 
 ## Getting Started
 
