@@ -93,7 +93,7 @@
     "@types/request": "^2.0.13",
     "@types/sax": "^1.0.0",
     "electron": "^4.0.0",
-    "electron-builder": "^20.28.4",
+    "electron-builder": "^20.38.4",
     "electron-builder-squirrel-windows": "^20.28.3",
     "rimraf": "^2.6.2",
     "ts-node": "^7.0.1",
