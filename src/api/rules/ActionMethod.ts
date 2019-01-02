@@ -1,1 +1,1 @@
-export type ActionMethod = "action" | "send" | "cancel";
+export type ActionMethod = 'action' | 'send' | 'cancel';

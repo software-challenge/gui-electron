@@ -9,13 +9,13 @@ export module ExecutableStatus {
   export function toString(s: ExecutableStatus.Status): string {
     switch (s) {
       case ExecutableStatus.Status.RUNNING:
-        return "RUNNING";
+        return 'RUNNING'
       case ExecutableStatus.Status.EXITED:
-        return "EXITED";
+        return 'EXITED'
       case ExecutableStatus.Status.ERROR:
-        return "ERROR";
+        return 'ERROR'
       case ExecutableStatus.Status.NOT_STARTED:
-        return "NOT STARTED";
+        return 'NOT STARTED'
     }
   }
 }

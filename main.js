@@ -1,43 +1,43 @@
-require('hazardous');
-const { app, BrowserWindow } = require('electron')
-app.commandLine.appendSwitch('ignore-gpu-blacklist', 'true'); //Ignore warning about third-party AMD drivers on linux
+require('hazardous')
+const {app, BrowserWindow} = require('electron')
+app.commandLine.appendSwitch('ignore-gpu-blacklist', 'true') //Ignore warning about third-party AMD drivers on linux
 const path = require('path')
 const url = require('url')
 const fs = require('fs')
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let win;
+let win
 
 //Set log path
 
 // enable tracing of unhandled promise rejections
 const process = require('process')
-process.traceProcessWarnings = true;
+process.traceProcessWarnings = true
 process.on('unhandledRejection', (reason, promise) => {
   console.log('XXXXXXXX       Unhandled Rejection at:', reason.stack || reason)
   // Recommended: send the information to sentry.io
   // or whatever crash reporting service you use
-});
+})
 
 function createWindow() {
   let args = process.argv.slice(2)
-  let isDev = args.some(value => value == "--dev")
+  let isDev = args.some(value => value == '--dev')
 
   // Create the browser window.
   win = new BrowserWindow({
     width: isDev ? 1500 : 1000,
-    height: 850
-  });
+    height: 850,
+  })
 
   let logDir = '.'
   let appDir = app.getAppPath()
   // application path may be a directory (in dev mode) or a file (when distributed)
   // .asar files are identified as directories, but are not directories in the filesystem
-  if (fs.lstatSync(appDir).isDirectory() && !appDir.endsWith('.asar')) {
-    console.log("directory", appDir)
+  if(fs.lstatSync(appDir).isDirectory() && !appDir.endsWith('.asar')) {
+    console.log('directory', appDir)
     logDir = appDir
   } else {
-    console.log("file", appDir)
+    console.log('file', appDir)
     logDir = path.dirname(appDir)
   }
 
@@ -45,13 +45,13 @@ function createWindow() {
   win.loadURL(url.format({
     pathname: path.join(app.getAppPath(), 'src/index.html'),
     protocol: 'file:',
-    slashes: true
+    slashes: true,
   }) + '?dirname=' + encodeURIComponent(logDir), options = { //Make sure a few extra options are enabled
     webgl: true, //WebGL needs to be forced on with older radeon cards
     experimentalFeatures: true, //Some extra features to speed up canvas/GL operations
     experimentalCanvasFeatures: true,
     offscreen: true, //Enable offscreen rendering
-  });
+  })
 
   // Open the DevTools.
   if(isDev)
@@ -76,7 +76,7 @@ app.on('ready', createWindow)
 app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
+  if(process.platform !== 'darwin') {
     app.quit()
   }
 })
@@ -84,7 +84,7 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (win === null) {
+  if(win === null) {
     createWindow()
   }
 })

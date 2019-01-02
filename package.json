@@ -9,9 +9,9 @@
     "test": "yarn install && yarn compile",
     "start": "yarn install && yarn compile && (test \"hi\" && (test -d server || yarn compileserver)) || echo I can't test whether the server exists! && electron .",
     "start-dev": "yarn install && yarn compile && electron . --dev",
-
+    
     "compileserver": "git submodule update && cd socha && ./gradlew :server:deploy -q && cd .. && rimraf server && cp -r socha/server/build/runnable server && cp socha/player/build/libs/defaultplayer.jar .",
-
+    
     "dist": "yarn install && yarn compile && electron-builder",
     "dist-all": "rimraf dist && yarn dist -mwl",
     "compile": "rimraf out && tsc",

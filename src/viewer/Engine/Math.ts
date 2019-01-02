@@ -1,4 +1,4 @@
-import { mat4, vec3 } from "gl-matrix";
+import { mat4, vec3 } from 'gl-matrix'
 
 export module Matrix {
   export function unit(): number[] {
@@ -7,7 +7,7 @@ export module Matrix {
       0, 1, 0, 0,
       0, 0, 1, 0,
       0, 0, 0, 1
-    ];
+    ]
   }
 
   export function multiply(a: number[], b: number[]): number[] {
@@ -35,9 +35,9 @@ export module Matrix {
   }
 
   export function rotate(d: [number, number, number], alpha: number): number[] {
-    let cos_a: number = Math.cos(alpha);
-    let sin_a: number = Math.sin(alpha);
-    let _1_cos_a: number = 1 - cos_a;
+    let cos_a: number = Math.cos(alpha)
+    let sin_a: number = Math.sin(alpha)
+    let _1_cos_a: number = 1 - cos_a
     return [
       d[0] * d[0] * _1_cos_a + cos_a, d[0] * d[1] * _1_cos_a - d[2] * sin_a, d[0] * d[2] * _1_cos_a + d[1] * sin_a, 0,
       d[1] * d[0] * _1_cos_a + d[2] * sin_a, d[1] * d[1] * _1_cos_a + cos_a, d[1] * d[2] * _1_cos_a - d[0] * sin_a, 0,
@@ -47,8 +47,8 @@ export module Matrix {
   }
 
   export function perspective(aspect: number, angle: number, near: number, far: number): number[] {
-    let nf = near / far;
-    let f = 1.0 / Math.tan(angle / 2);
+    let nf = near / far
+    let f = 1.0 / Math.tan(angle / 2)
     return [ //plainly wrong
       f / aspect, 0, 0, 0,
       0, f, 0, 0,
@@ -67,7 +67,7 @@ export module Matrix {
   }
 
   export function cameraMatrix(aspect: number, angle: number, near: number, far: number, position: number[], target: number[]): number[] {
-    let r = mat4.create();
+    let r = mat4.create()
     mat4.multiply(
       r,
       mat4.perspective(
@@ -79,8 +79,7 @@ export module Matrix {
         vec3.fromValues(target[0], target[1], target[2]),
         vec3.fromValues(0, 0, 1)
       ),
-
-    );
-    return r;
+    )
+    return r
   }
 }

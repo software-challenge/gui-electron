@@ -1,0 +1,61 @@
+<component name="ProjectCodeStyleConfiguration">
+  <code_scheme name="Project" version="173">
+    <JSCodeStyleSettings>
+      <option name="USE_SEMICOLON_AFTER_STATEMENT" value="false" />
+      <option name="FORCE_SEMICOLON_STYLE" value="true" />
+      <option name="SPACE_BEFORE_FUNCTION_LEFT_PARENTH" value="false" />
+      <option name="USE_DOUBLE_QUOTES" value="false" />
+      <option name="FORCE_QUOTE_STYlE" value="true" />
+      <option name="ENFORCE_TRAILING_COMMA" value="WhenMultiline" />
+      <option name="SPACE_BEFORE_ASYNC_ARROW_LPAREN" value="false" />
+    </JSCodeStyleSettings>
+    <TypeScriptCodeStyleSettings>
+      <option name="USE_SEMICOLON_AFTER_STATEMENT" value="false" />
+      <option name="FORCE_SEMICOLON_STYLE" value="true" />
+      <option name="SPACE_BEFORE_FUNCTION_LEFT_PARENTH" value="false" />
+      <option name="USE_DOUBLE_QUOTES" value="false" />
+      <option name="FORCE_QUOTE_STYlE" value="true" />
+      <option name="ENFORCE_TRAILING_COMMA" value="WhenMultiline" />
+      <option name="IMPORTS_WRAP" value="0" />
+      <option name="SPACES_WITHIN_IMPORTS" value="true" />
+      <option name="SPACE_BEFORE_ASYNC_ARROW_LPAREN" value="false" />
+    </TypeScriptCodeStyleSettings>
+    <yaml>
+      <option name="INDENT_SEQUENCE_VALUE" value="true" />
+    </yaml>
+    <codeStyleSettings language="JSON">
+      <option name="KEEP_BLANK_LINES_IN_CODE" value="1" />
+      <indentOptions>
+        <option name="CONTINUATION_INDENT_SIZE" value="2" />
+        <option name="TAB_SIZE" value="2" />
+        <option name="KEEP_INDENTS_ON_EMPTY_LINES" value="true" />
+      </indentOptions>
+    </codeStyleSettings>
+    <codeStyleSettings language="JavaScript">
+      <option name="SPACE_BEFORE_IF_PARENTHESES" value="false" />
+      <option name="SPACE_BEFORE_WHILE_PARENTHESES" value="false" />
+      <option name="SPACE_BEFORE_FOR_PARENTHESES" value="false" />
+      <option name="SPACE_BEFORE_CATCH_PARENTHESES" value="false" />
+      <option name="SPACE_BEFORE_SWITCH_PARENTHESES" value="false" />
+      <indentOptions>
+        <option name="INDENT_SIZE" value="2" />
+        <option name="CONTINUATION_INDENT_SIZE" value="2" />
+        <option name="TAB_SIZE" value="2" />
+      </indentOptions>
+    </codeStyleSettings>
+    <codeStyleSettings language="TypeScript">
+      <option name="SPACE_BEFORE_IF_PARENTHESES" value="false" />
+      <option name="SPACE_BEFORE_WHILE_PARENTHESES" value="false" />
+      <option name="SPACE_BEFORE_FOR_PARENTHESES" value="false" />
+      <option name="SPACE_BEFORE_CATCH_PARENTHESES" value="false" />
+      <option name="SPACE_BEFORE_SWITCH_PARENTHESES" value="false" />
+      <option name="KEEP_SIMPLE_BLOCKS_IN_ONE_LINE" value="true" />
+      <option name="KEEP_SIMPLE_METHODS_IN_ONE_LINE" value="true" />
+      <indentOptions>
+        <option name="INDENT_SIZE" value="2" />
+        <option name="CONTINUATION_INDENT_SIZE" value="2" />
+        <option name="TAB_SIZE" value="2" />
+      </indentOptions>
+    </codeStyleSettings>
+  </code_scheme>
+</component>

@@ -1,13 +1,12 @@
 import { Api } from '../api/Api'
 import * as React from 'react'
-import * as electron from 'electron'
 import { remote } from 'electron'
 import { Content } from 'react-photonkit'
-import { Window, Toolbar, ToolbarActions, ButtonGroup, PaneGroup, Sidebar, RetractableSidebar, Pane, NavGroup, NavTitle, NavItem, Button } from './photon-fix/Components'
+import { Button, ButtonGroup, NavGroup, NavItem, NavTitle, Pane, PaneGroup, RetractableSidebar, Toolbar, ToolbarActions, Window } from './photon-fix/Components'
 import { UnicodeIcon } from './generic-components/Components'
 import { Administration } from './Administration'
 import { GameCreation } from './GameCreation'
-import { Replay, GameType, GameCreationOptions } from '../api/rules/GameCreationOptions'
+import { GameCreationOptions, GameType, Replay } from '../api/rules/GameCreationOptions'
 import { Game } from './Game'
 import { LogConsole } from './LogConsole'
 import { Logger } from '../api/Logger'
@@ -23,7 +22,7 @@ import promiseRetry = require('promise-retry')
 const dialog = remote.dialog
 const shell = remote.shell
 
-const appSettings = "appSettings"
+const appSettings = 'appSettings'
 
 enum AppContent {
   Empty,
@@ -68,35 +67,33 @@ export class App extends React.Component<any, State> {
         animateViewer: v.Type(Boolean),
         logDir: v.Type(String)
       }, {
-          animateViewer: true,
-          logDir: "."
-        }),
+        animateViewer: true,
+        logDir: '.'
+      }),
     }
-    Hotfix.init((gco => {
-      this.startGameWithOptions(gco)
-    }).bind(this))
+    Hotfix.init(gco => this.startGameWithOptions(gco))
   }
 
   private loadReplay() {
     dialog.showOpenDialog(
       {
-        title: "Wähle ein Replay",
-        properties: ["openFile"]
+        title: 'Wähle ein Replay',
+        properties: ['openFile']
       },
       (filenames) => {
         // dialog returns undefined when user clicks cancel or an array of strings (paths) if user selected a file
         if (filenames && filenames.length > 0 && filenames[0]) {
           //window.localStorage[localStorageProgramPath] = filenames[0]
-          console.log("Attempting to load " + filenames[0])
-          var liofs = filenames[0].lastIndexOf('/')
+          console.log('Attempting to load ' + filenames[0])
+          let liofs = filenames[0].lastIndexOf('/')
           if (liofs == -1) {
             liofs = filenames[0].lastIndexOf('\\')
           }
-          var replayName = filenames[0]
+          let replayName = filenames[0]
           if (liofs != -1) {
             replayName = replayName.substring(liofs + 1)
           }
-          var liofp = replayName.lastIndexOf('.')
+          const liofp = replayName.lastIndexOf('.')
           if (liofp != -1) {
             replayName = replayName.substring(0, liofp)
           }
@@ -123,15 +120,15 @@ export class App extends React.Component<any, State> {
   }
 
   private toggleMenu() {
-    this.setState({ menuRetracted: !this.state.menuRetracted })
+    this.setState({menuRetracted: !this.state.menuRetracted})
   }
 
   private toggleConsole() {
-    this.setState({ consoleRetracted: !this.state.consoleRetracted })
+    this.setState({consoleRetracted: !this.state.consoleRetracted})
   }
 
   private showGame(gameId: number) {
-    console.log("Switching to game with id", gameId)
+    console.log('Switching to game with id', gameId)
     /* FIXME: Game.tsx depends on a componentWillUnmount call when switching to
     another game. But React doesn't unmount the Game component if we are just
     switching between two games (keeping contentState at AppContent.GameLive).
@@ -161,11 +158,11 @@ export class App extends React.Component<any, State> {
 
   componentDidMount() {
     promiseRetry(retry => Api.getGameManager().getGameServerStatus().then(info => {
-      this.setState({ serverPort: info.port })
+      this.setState({serverPort: info.port})
       if (info.status == ExecutableStatus.Status.ERROR || info.status == ExecutableStatus.Status.EXITED) {
-        Logger.getLogger().logError("App", "server", "Server status " + info.status.toString() + ": " + info.error, info.error)
-        alert("Es gab einen Fehler beim Starten des Game-Servers, das Programm wird wahrscheinlich nicht funktionieren!\n" +
-          "Fehler: " + info.error)
+        Logger.getLogger().logError('App', 'server', 'Server status ' + info.status.toString() + ': ' + info.error, info.error)
+        alert('Es gab einen Fehler beim Starten des Game-Servers, das Programm wird wahrscheinlich nicht funktionieren!\n' +
+          'Fehler: ' + info.error)
       }
     }).catch(retry))
   }
@@ -173,14 +170,14 @@ export class App extends React.Component<any, State> {
   changeGameName(e) {
     if (e.keyCode == 13) {
       e.preventDefault()
-      var newGameName = document.getElementById('game-name').innerText.trim()
-      console.log("changing Game name:", newGameName)
+      const newGameName = document.getElementById('game-name').innerText.trim()
+      console.log('changing Game name:', newGameName)
       Api.getGameManager().renameGame(this.state.activeGameId, newGameName)
     }
   }
 
   closeGame(id: number) {
-    console.log("Closing game " + id)
+    console.log('Closing game ' + id)
     Api.getGameManager().deleteGame(id)
     this.show(AppContent.Empty)
   }
@@ -188,52 +185,65 @@ export class App extends React.Component<any, State> {
   showHtml(url: string) {
     return <div>
       <button className="top-wide" onClick={() => shell.openExternal(url)}>Extern öffnen</button>
-      <Iframe styles={{ height: "calc(100% - 2em)" }} url={url} />
+      <Iframe styles={{height: 'calc(100% - 2em)'}} url={url}/>
     </div>
   }
 
   render() {
-    var mainPaneContent
+    let mainPaneContent
     switch (this.state.contentState) {
       case AppContent.Administration:
-        mainPaneContent = <Administration settings={this.state.settings} setter={(newSettings: Partial<AppSettings>) => {
-          this.setState({ settings: { ...this.state.settings, ...newSettings } },
-            () => saveToStorage(appSettings, this.state.settings))
-          if (newSettings.logDir != null)
-            window.localStorage["logDir"] = newSettings.logDir
-        }} />
+        mainPaneContent =
+          <Administration settings={this.state.settings} setter={(newSettings: Partial<AppSettings>) => {
+            this.setState({settings: {...this.state.settings, ...newSettings}},
+              () => saveToStorage(appSettings, this.state.settings))
+            if (newSettings.logDir != null)
+              window.localStorage['logDir'] = newSettings.logDir
+          }}/>
         break
       case AppContent.GameCreation:
-        mainPaneContent = <GameCreation serverPort={this.state.serverPort} createGame={o => this.startGameWithOptions(o)} />
+        mainPaneContent =
+          <GameCreation serverPort={this.state.serverPort} createGame={o => this.startGameWithOptions(o)}/>
         break
       case AppContent.GameLive:
-        console.log("activeGameId: " + this.state.activeGameId)
-        mainPaneContent = <Game gameId={this.state.activeGameId} name={Api.getGameManager().getGameInfo(this.state.activeGameId).name} isReplay={Api.getGameManager().getGameInfo(this.state.activeGameId).isReplay} animateViewer={this.state.settings.animateViewer} />
+        console.log('activeGameId: ' + this.state.activeGameId)
+        mainPaneContent =
+          <Game gameId={this.state.activeGameId} name={Api.getGameManager().getGameInfo(this.state.activeGameId).name}
+                isReplay={Api.getGameManager().getGameInfo(this.state.activeGameId).isReplay}
+                animateViewer={this.state.settings.animateViewer}/>
         break
       case AppContent.Blank:
-        mainPaneContent = <div />
+        mainPaneContent = <div/>
         break
       case AppContent.Error:
-        mainPaneContent = <ErrorPage Title="Schlimmer Fehler" Message="Das Programm ist kaputt." />
+        mainPaneContent = <ErrorPage Title="Schlimmer Fehler" Message="Das Programm ist kaputt."/>
         break
       case AppContent.Rules:
-        mainPaneContent = this.showHtml("https://cau-kiel-tech-inf.github.io/socha-enduser-docs/spiele/piranhas/")
+        mainPaneContent = this.showHtml('https://cau-kiel-tech-inf.github.io/socha-enduser-docs/spiele/piranhas/')
         break
       case AppContent.Help:
-        mainPaneContent = this.showHtml("https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che")
+        mainPaneContent = this.showHtml('https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che')
         break
       case AppContent.Quickstart:
-        mainPaneContent = this.showHtml("https://cau-kiel-tech-inf.github.io/socha-enduser-docs/getting-started")
+        mainPaneContent = this.showHtml('https://cau-kiel-tech-inf.github.io/socha-enduser-docs/getting-started')
         break
       case AppContent.JavaDocs:
-        mainPaneContent = this.showHtml("https://www.software-challenge.de/javadocs/")
+        mainPaneContent = this.showHtml('https://www.software-challenge.de/javadocs/')
         break
       case AppContent.Log:
         let logger = Logger.getLogger()
         mainPaneContent = <div>
-          <button className="top-wide" onClick={() => { logger.clearLog(); this.refreshContent() }}>Log leeren</button>
-          <Iframe styles={{ height: "calc(100% - 2em)" }} url={logger.getLogFilePath()} />
-          <div style={{ position: "absolute", backgroundColor: "#eee", width: "calc(100% - 220px)" }}>Logdatei: {logger.getLogFilePath()}</div>
+          <button className="top-wide" onClick={() => {
+            logger.clearLog()
+            this.refreshContent()
+          }}>Log leeren
+          </button>
+          <Iframe styles={{height: 'calc(100% - 2em)'}} url={logger.getLogFilePath()}/>
+          <div style={{
+            position: 'absolute',
+            backgroundColor: '#eee',
+            width: 'calc(100% - 220px)'
+          }}>Logdatei: {logger.getLogFilePath()}</div>
         </div>
         break
       case AppContent.GameWaiting:
@@ -245,8 +255,11 @@ export class App extends React.Component<any, State> {
             <div className="content">
               <h1>Willkommen bei der Software-Challenge!</h1>
               <p>Klicken Sie links auf "Neues Spiel" um zu beginnen.</p>
-              <p>Diese frühe Version hat noch einige Fehler. Bitte melden Sie Fehler, die Sie finden, im Forum oder im Discord. Hinweise zur Ursache von Fehlern finden sich im Log, aufrufbar über "Programm-Log" auf der linken Seite.</p>
-              <p><a href="https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che" target="_blank">Bedienungsanleitung (aus der allgemeinen Dokumentation)</a></p>
+              <p>Diese frühe Version hat noch einige Fehler. Bitte melden Sie Fehler, die Sie finden, im Forum oder im
+                Discord. Hinweise zur Ursache von Fehlern finden sich im Log, aufrufbar über "Programm-Log" auf der
+                linken Seite.</p>
+              <p><a href="https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che"
+                    target="_blank">Bedienungsanleitung (aus der allgemeinen Dokumentation)</a></p>
             </div>
           </div>
         break
@@ -258,49 +271,66 @@ export class App extends React.Component<any, State> {
         <Toolbar>
           <ToolbarActions>
             <ButtonGroup>
-              <Button icon="menu" onClick={() => { this.toggleMenu() }} active={!this.state.menuRetracted} />
+              <Button icon="menu" onClick={() => { this.toggleMenu() }} active={!this.state.menuRetracted}/>
             </ButtonGroup>
-            {this.state.contentState == AppContent.GameLive ? <span id="game-name" contentEditable={/*!Api.getGameManager().isReplay(this.state.activeGame)*/ true} onKeyDown={this.changeGameName.bind(this)} /> : null}
-            {this.state.contentState == AppContent.GameLive ? <button title="Close Game" className="svg-button close-game" onClick={() => this.closeGame(this.state.activeGameId)}><img className="svg-icon" src="resources/x-circled.svg" /></button> : null}
-            <Button icon="doc-text" onClick={() => { this.toggleConsole() }} pullRight={true} />
+            {this.state.contentState == AppContent.GameLive ?
+              <span id="game-name" contentEditable={/*!Api.getGameManager().isReplay(this.state.activeGame)*/ true}
+                    onKeyDown={this.changeGameName.bind(this)}/> : null}
+            {this.state.contentState == AppContent.GameLive ?
+              <button title="Close Game" className="svg-button close-game"
+                      onClick={() => this.closeGame(this.state.activeGameId)}><img className="svg-icon"
+                                                                                   src="resources/x-circled.svg"/>
+              </button> : null}
+            <Button icon="doc-text" onClick={() => { this.toggleConsole() }} pullRight={true}/>
           </ToolbarActions>
         </Toolbar>
         <Content>
           <PaneGroup>
             <RetractableSidebar retracted={this.state.menuRetracted}>
               <NavGroup>
-                <NavTitle title="Spiele" />
-                <NavItem key="new" onClick={() => this.show(AppContent.GameCreation)} active={this.state.contentState == AppContent.GameCreation}>
-                  <UnicodeIcon icon="+" />Neues Spiel
+                <NavTitle title="Spiele"/>
+                <NavItem key="new" onClick={() => this.show(AppContent.GameCreation)}
+                         active={this.state.contentState == AppContent.GameCreation}>
+                  <UnicodeIcon icon="+"/>Neues Spiel
                 </NavItem>
                 <NavItem key="replay" onClick={() => this.loadReplay()}>
-                  <UnicodeIcon icon="↥" />Replay laden
+                  <UnicodeIcon icon="↥"/>Replay laden
                 </NavItem>
                 {Api.getGameManager().getGameInfos().map(
-                  t => (<NavItem key={t.id} onClick={() => this.showGame(t.id)} active={this.state.contentState == AppContent.GameLive && this.state.activeGameId == t.id}>
-                    <UnicodeIcon icon="🎳" />{t.name} ({t.id})
-                    <span className="close-button-container">
-                      <button title="Close Game" className="svg-button close-game" onClick={e => { this.closeGame(t.id); e.stopPropagation() }}>
-                        <img className="svg-icon" src="resources/x-circled.svg" /></button></span></NavItem>
+                  t => (<NavItem key={t.id} onClick={() => this.showGame(t.id)}
+                                 active={this.state.contentState == AppContent.GameLive && this.state.activeGameId == t.id}>
+                      <UnicodeIcon icon="🎳"/>{t.name} ({t.id})
+                      <span className="close-button-container">
+                      <button title="Close Game" className="svg-button close-game" onClick={e => {
+                        this.closeGame(t.id)
+                        e.stopPropagation()
+                      }}>
+                        <img className="svg-icon" src="resources/x-circled.svg"/></button></span></NavItem>
                   ))}
-                <NavTitle title="Informationen" />
-                <NavItem key="settings" onClick={() => this.show(AppContent.Administration)} active={this.state.contentState == AppContent.Administration}>
-                  <UnicodeIcon icon="⚙" />Einstellungen
+                <NavTitle title="Informationen"/>
+                <NavItem key="settings" onClick={() => this.show(AppContent.Administration)}
+                         active={this.state.contentState == AppContent.Administration}>
+                  <UnicodeIcon icon="⚙"/>Einstellungen
                 </NavItem>
-                <NavItem key="rules" onClick={() => this.show(AppContent.Rules)} active={this.state.contentState == AppContent.Rules}>
-                  <UnicodeIcon icon="❔" />Spielregeln
+                <NavItem key="rules" onClick={() => this.show(AppContent.Rules)}
+                         active={this.state.contentState == AppContent.Rules}>
+                  <UnicodeIcon icon="❔"/>Spielregeln
                 </NavItem>
-                <NavItem key="help" onClick={() => this.show(AppContent.Help)} active={this.state.contentState == AppContent.Help}>
-                  <UnicodeIcon icon="❔" />Hilfe
+                <NavItem key="help" onClick={() => this.show(AppContent.Help)}
+                         active={this.state.contentState == AppContent.Help}>
+                  <UnicodeIcon icon="❔"/>Hilfe
                 </NavItem>
-                <NavItem key="quickstart" onClick={() => this.show(AppContent.Quickstart)} active={this.state.contentState == AppContent.Quickstart}>
-                  <UnicodeIcon icon="❔" />Getting Started
+                <NavItem key="quickstart" onClick={() => this.show(AppContent.Quickstart)}
+                         active={this.state.contentState == AppContent.Quickstart}>
+                  <UnicodeIcon icon="❔"/>Getting Started
                 </NavItem>
-                <NavItem key="javadocs" onClick={() => this.show(AppContent.JavaDocs)} active={this.state.contentState == AppContent.JavaDocs}>
-                  <UnicodeIcon icon="❔" />JavaDocs
+                <NavItem key="javadocs" onClick={() => this.show(AppContent.JavaDocs)}
+                         active={this.state.contentState == AppContent.JavaDocs}>
+                  <UnicodeIcon icon="❔"/>JavaDocs
                 </NavItem>
-                <NavItem key="log" onClick={() => this.show(AppContent.Log)} active={this.state.contentState == AppContent.Log}>
-                  <UnicodeIcon icon="📜" />Programm-Log
+                <NavItem key="log" onClick={() => this.show(AppContent.Log)}
+                         active={this.state.contentState == AppContent.Log}>
+                  <UnicodeIcon icon="📜"/>Programm-Log
                 </NavItem>
               </NavGroup>
             </RetractableSidebar>
@@ -308,11 +338,11 @@ export class App extends React.Component<any, State> {
               {mainPaneContent}
             </Pane>
             <RetractableSidebar className="wide" retracted={this.state.consoleRetracted}>
-              {this.state.activeGameId ? <LogConsole gameId={this.state.activeGameId} /> : <div />}
+              {this.state.activeGameId ? <LogConsole gameId={this.state.activeGameId}/> : <div/>}
             </RetractableSidebar>
           </PaneGroup>
-        </Content >
-      </Window >
+        </Content>
+      </Window>
     )
   }
 }

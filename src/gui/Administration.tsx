@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Logger } from '../api/Logger'
-import { Input, SelectBox, Button, CheckBox } from './photon-fix/Components'
+import { Button, CheckBox, Input } from './photon-fix/Components'
 import { AppSettings } from './App'
 import { useValue } from '../helpers/Controls'
 
@@ -23,7 +23,7 @@ export class Administration extends React.Component<{ settings: AppSettings, set
 
   setValue(key: string): (event: any) => void {
     return useValue(value => {
-      this.props.setter({ [key]: value })
+      this.props.setter({[key]: value})
     })
   }
 
@@ -31,11 +31,13 @@ export class Administration extends React.Component<{ settings: AppSettings, set
     return (
       <div className="main-container">
         <div className="content">
-          <Button text="Log leeren" onClick={() => Logger.getLogger().clearLog()} />
-          <CheckBox label="Spielzüge animieren" value={this.props.settings.animateViewer} onChange={this.setValue("animateViewer")} />
-          <label>Log-Verzeichnis (benötigt Neustart): <Input value={this.props.settings.logDir} onChange={this.setValue("logDir")} /></label>
+          <Button text="Log leeren" onClick={() => Logger.getLogger().clearLog()}/>
+          <CheckBox label="Spielzüge animieren" value={this.props.settings.animateViewer}
+                    onChange={this.setValue('animateViewer')}/>
+          <label>Log-Verzeichnis (benötigt Neustart): <Input value={this.props.settings.logDir}
+                                                             onChange={this.setValue('logDir')}/></label>
         </div>
       </div>
-    );
+    )
   }
 }

@@ -1,30 +1,30 @@
-import { GameManager } from './synchronous/GameManager';
+import { GameManager } from './synchronous/GameManager'
 
-import { Logger } from './Logger';
-import { Viewer } from '../viewer/Viewer';
+import { Logger } from './Logger'
+import { Viewer } from '../viewer/Viewer'
 
 export class Api {
-  private static gameManager: GameManager;
-  private static logger: Logger;
-  private static viewer: Viewer;
+  private static gameManager: GameManager
+  private static logger: Logger
+  private static viewer: Viewer
 
   static getGameManager(): GameManager {
     if (!this.gameManager) {
-      this.gameManager = new GameManager();
+      this.gameManager = new GameManager()
     }
-    return this.gameManager;
+    return this.gameManager
   }
 
 
   static getViewer() {
     if (!this.viewer) {
-      this.viewer = new Viewer();
+      this.viewer = new Viewer()
     }
-    return this.viewer;
+    return this.viewer
   }
 
   static stop() {
-    this.getGameManager().stop();
+    this.getGameManager().stop()
   }
 
 
