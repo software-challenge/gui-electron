@@ -26,7 +26,10 @@ function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
     width: isDev ? 1500 : 1000,
-    height: 850
+    height: 850,
+    webPreferences: {
+      nodeIntegration: true
+    }
   });
 
   let logDir = '.'
@@ -46,11 +49,14 @@ function createWindow() {
     pathname: path.join(app.getAppPath(), 'src/index.html'),
     protocol: 'file:',
     slashes: true
-  }) + '?dirname=' + encodeURIComponent(logDir), options = { //Make sure a few extra options are enabled
-    webgl: true, //WebGL needs to be forced on with older radeon cards
-    experimentalFeatures: true, //Some extra features to speed up canvas/GL operations
+  }) + '?dirname=' + encodeURIComponent(logDir), options = {
+    //WebGL needs to be forced on with older radeon cards
+    webgl: true,
+    //Some extra features to speed up canvas/GL operations
+    experimentalFeatures: true,
     experimentalCanvasFeatures: true,
-    offscreen: true, //Enable offscreen rendering
+    //Enable offscreen rendering
+    offscreen: true
   });
 
   // Open the DevTools.
