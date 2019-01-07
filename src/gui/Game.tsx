@@ -248,6 +248,13 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
 
   render() {
+    console.log('Turn:', this.state.currentTurn, 'Status:', this.status)
+    if(!this.isGameOver(this.status))
+      this.updateViewer()
+    const showLargePlayButton = !this.playbackStarted && !this.isGameOver(this.status)
+    if(!showLargePlayButton)
+      document.getElementById('replay-viewer').style.filter = 'none'
+
     const playPause = <button title="Los" onClick={this.playPause.bind(this)}>
       <img className="svg-icon" src={'resources/' + (this.isPlaying() ? 'pause' : 'play') + '.svg'}/></button>
     const forward = <button title="Zug vor" onClick={this.next.bind(this)}>
@@ -264,11 +271,6 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
                          value={MAX_INTERVAL - this.state.playbackSpeed}/>
     const save = <button className="save" title="Replay speichern" onClick={this.saveReplay.bind(this)}>
       <img className="svg-icon" src="resources/arrow-to-bottom.svg"/></button>
-    if(!this.isGameOver(this.status))
-      this.updateViewer()
-    if(this.isPlaying() || this.isGameOver(this.status))
-      document.getElementById('replay-viewer').style.filter = 'none'
-    console.log('Turn:', this.state.currentTurn, 'Status:', this.status)
     return (
       <div id="replay-viewer" ref={(elem) => { this.viewerElement = elem }}>
         <div className="replay-controls">
@@ -280,10 +282,9 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
             {save}
           </div>
         </div>
-        {this.playbackStarted || this.isGameOver(this.status) ? '' :
+        {showLargePlayButton ?
           <button id="start-button" title="Los" onClick={this.playPause.bind(this)}>
-            <img className="svg-icon" src="resources/play.svg"/>
-          </button>}
+            <img className="svg-icon" src="resources/play.svg"/></button> : ''}
       </div>
     )
   }
