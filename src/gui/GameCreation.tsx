@@ -1,16 +1,15 @@
-import * as electron from 'electron'
 import { remote } from 'electron'
 import * as React from 'react'
-import { Input, SelectBox, Button, CheckBox } from './photon-fix/Components'
-import { GameCreationOptions, Versus, GameType, PlayerType, StartType, Player, HumanPlayer, ManualPlayer, ComputerPlayer } from '../api/rules/GameCreationOptions'
+import { Button, Input, SelectBox } from './photon-fix/Components'
+import { GameCreationOptions, GameType, HumanPlayer, Player, PlayerType, StartType } from '../api/rules/GameCreationOptions'
 import { Api } from '../api/Api'
 import * as fs from 'fs'
 import * as v from 'validate-typescript'
 import { loadFromStorage } from '../helpers/Cache'
 import { useValue } from '../helpers/Controls'
-import { GameInfo } from '../api/synchronous/GameInfo';
-import { Logger } from '../api/Logger';
-import { stringify } from '../helpers/Helpers';
+import { GameInfo } from '../api/synchronous/GameInfo'
+import { Logger } from '../api/Logger'
+import { stringify } from '../helpers/Helpers'
 
 const dialog = remote.dialog
 
@@ -43,7 +42,7 @@ interface PlayerFormState {
 class ErrorList extends React.PureComponent<{ errors: Array<string> }> {
   render() {
     const listItems = this.props.errors.map((error) =>
-      <li>{error}</li>
+      <li>{error}</li>,
     )
     return <ul>{listItems}</ul>
   }
@@ -55,7 +54,7 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
 
     let defaults = {
       generalErrors: [],
-      gameName: this.unvalidatedField("Neue Begegnung"),
+      gameName: this.unvalidatedField('Neue Begegnung'),
       players: [this.newPlayerForm(PlayerType.Computer), this.newPlayerForm(PlayerType.Human)],
     }
 
@@ -63,11 +62,11 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
       generalErrors: [v.Type(String)],
       gameName: this.fieldStateSchema(String),
       players: [{
-        type: { value: v.Options(Object.keys(PlayerType)), errors: [v.Type(String)] },
+        type: {value: v.Options(Object.keys(PlayerType)), errors: [v.Type(String)]},
         name: this.fieldStateSchema(String),
         path: this.fieldStateSchema(String),
-        timeoutEnabled: this.fieldStateSchema(Boolean)
-      }]
+        timeoutEnabled: this.fieldStateSchema(Boolean),
+      }],
     }
     this.state = loadFromStorage(localStorageCreationOptions, schema, defaults)
 
@@ -75,7 +74,7 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
   }
 
   private fieldStateSchema(type) {
-    return { value: v.Type(type), errors: [v.Type(String)] }
+    return {value: v.Type(type), errors: [v.Type(String)]}
   }
 
   private newPlayerForm(type: PlayerType) {
@@ -83,11 +82,11 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
       type: this.unvalidatedField(type),
       name: this.unvalidatedField(type),
       path: this.unvalidatedField(null),
-      timeoutEnabled: this.unvalidatedField(true)
+      timeoutEnabled: this.unvalidatedField(true),
     }
   }
 
-  private unvalidatedField(value) { return { value: value, errors: [] } }
+  private unvalidatedField(value) { return {value: value, errors: []} }
 
   // To be called as onChange handler on form controls. Takes a setter function which changes the form state according to the new value. Special handling for checkboxes, because they provide their value different from all other input elements.
   private handleControlChange(setter: (s: FormState, val: string) => void, checkbox = false): (event: any) => void {
@@ -103,29 +102,29 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
   private clientFileSelectDialog(setter: (s: FormState, firstSelectedFilename: string) => void): void {
     dialog.showOpenDialog(
       {
-        title: "Wähle einen Computerspieler",
-        properties: ["openFile"]
+        title: 'Wähle einen Computerspieler',
+        properties: ['openFile'],
       },
-      function (filenames) {
+      function(filenames) {
         // dialog returns undefined when user clicks cancel or an array of strings (paths) if user selected a file
-        if (filenames && filenames.length > 0) {
+        if(filenames && filenames.length > 0) {
           window.localStorage[localStorageProgramPath] = filenames[0]
           this.setState((prev, _props) => {
             setter(prev, filenames[0])
             return prev
           })
         }
-      }.bind(this)
+      }.bind(this),
     )
   }
 
   private createPlayer(playerSettings: PlayerFormState): Player {
-    switch (playerSettings.type.value) {
+    switch(playerSettings.type.value) {
       case PlayerType.Human:
         return {
           kind: PlayerType.Human,
           name: playerSettings.name.value,
-          timeoutPossible: false
+          timeoutPossible: false,
         } as HumanPlayer
       case PlayerType.Computer:
         return {
@@ -133,32 +132,33 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
           name: playerSettings.name.value,
           timeoutPossible: playerSettings.timeoutEnabled.value,
           path: playerSettings.path.value,
-          startType: playerSettings.path.value.endsWith(".jar") ? StartType.Java : StartType.Direct
+          startType: playerSettings.path.value.endsWith('.jar') ? StartType.Java : StartType.Direct,
         }
       case PlayerType.Manual:
         return {
           kind: PlayerType.Manual,
           name: playerSettings.name.value,
-          timeoutPossible: playerSettings.timeoutEnabled.value
+          timeoutPossible: playerSettings.timeoutEnabled.value,
         }
     }
   }
+
   // is called when the user wants to start a game with a valid configuration
   private handleStartGame(parsed: GameCreationOptions) {
     window.localStorage[localStorageCreationOptions] = JSON.stringify(this.state)
-    if (this.state.players.some(p => p.type.value == PlayerType.Manual)) {
-      document.getElementById('waiting').style.opacity = "1"
+    if(this.state.players.some(p => p.type.value == PlayerType.Manual)) {
+      document.getElementById('waiting').style.opacity = '1'
     }
     this.props.createGame(parsed).catch(reason => {
       let s = stringify(reason)
       document.getElementById('errors').innerText =
         reason.client ? `Spieler ${reason.client} konnte nicht erfolgreich gestartet werden: ${stringify(reason.error)}` : s
-      Logger.getLogger().log("GameCreation", "createGame", "Failed to start game: " + s)
-    });
+      Logger.getLogger().log('GameCreation', 'createGame', 'Failed to start game: ' + s)
+    })
   }
 
   private isEmpty(v: string): boolean {
-    return v == null || v.trim() === ""
+    return v == null || v.trim() === ''
   }
 
   private invalidPath(path: string): boolean {
@@ -167,23 +167,23 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
 
   // Validates form settings an sets appropriate error states for invalid states. Returns true if settings are valid, false if not.
   private validate(state: FormState): boolean {
-    var valid = true
+    let valid = true
     state.generalErrors = []
     state.gameName.errors = []
-    if (this.isEmpty(state.gameName.value)) {
-      state.gameName.errors.push("Der Name des Spiels darf nicht leer sein.")
+    if(this.isEmpty(state.gameName.value)) {
+      state.gameName.errors.push('Der Name des Spiels darf nicht leer sein.')
       valid = false
     }
     state.players.map((player: PlayerFormState) => {
       player.name.errors = []
-      if (this.isEmpty(player.name.value)) {
-        player.name.errors.push("Der Name des Spielers darf nicht leer sein.")
+      if(this.isEmpty(player.name.value)) {
+        player.name.errors.push('Der Name des Spielers darf nicht leer sein.')
         valid = false
       }
       player.path.errors = []
-      if (player.type.value == PlayerType.Computer) {
-        if (this.invalidPath(player.path.value)) {
-          player.path.errors.push("Bitte wähle einen Computerspieler aus.")
+      if(player.type.value == PlayerType.Computer) {
+        if(this.invalidPath(player.path.value)) {
+          player.path.errors.push('Bitte wähle einen Computerspieler aus.')
           valid = false
         }
       }
@@ -198,58 +198,69 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
   // Returns the sub-form to make changes to the settings for each player. Takes a function which should select the player for which the sub-form should show and change the settings.
   private playerControl(formState: FormState, player: (s: FormState) => PlayerFormState) {
     let playerForm = player(formState)
-    switch (playerForm.type.value) {
+    switch(playerForm.type.value) {
       case PlayerType.Computer:
         return (<div>
           Wähle ein Programm zum starten
           <Button text="Computerspieler wählen"
-            onClick={() => this.clientFileSelectDialog((state, firstSelectedPath) => {
-              if (firstSelectedPath) {
-                player(state).path.value = firstSelectedPath; this.refreshPlayerName(playerForm)
-              }
-            })} />
+                  onClick={() => this.clientFileSelectDialog((state, firstSelectedPath) => {
+                    if(firstSelectedPath) {
+                      player(state).path.value = firstSelectedPath
+                      this.refreshPlayerName(playerForm)
+                    }
+                  })}/>
           <code className={this.hasErrors(playerForm.path) ? 'validation-errors' : ''}>{playerForm.path.value}</code>
           <label className="validation-errors">{playerForm.path.errors}</label>
         </div>)
       case PlayerType.Manual:
-        return <p>Das Programm muss nach Erstellung des Spiels gestartet werden. Es sollte sich dann auf localhost, Port {this.props.serverPort} verbinden.</p>
+        return <p>Das Programm muss nach Erstellung des Spiels gestartet werden. Es sollte sich dann auf localhost,
+          Port {this.props.serverPort} verbinden.</p>
     }
   }
 
   refreshPlayerName(player: PlayerFormState) {
-    player.name.value = function () {
+    player.name.value = function() {
       let labelFor = (t: PlayerType): string => {
-        switch (t) {
-          case PlayerType.Human: return "Mensch"
-          case PlayerType.Computer: return "AI"
-          case PlayerType.Manual: return "AI-Manual"
+        switch(t) {
+          case PlayerType.Human:
+            return 'Mensch'
+          case PlayerType.Computer:
+            return 'AI'
+          case PlayerType.Manual:
+            return 'AI-Manual'
         }
       }
-      switch (player.type.value) {
-        case PlayerType.Computer: return player.path.value != null ? labelFor(PlayerType.Computer) + "-" + player.path.value.split('\\').pop().split('/').pop().split(".")[0] : labelFor(PlayerType.Computer)
-        default: return labelFor(player.type.value)
+      switch(player.type.value) {
+        case PlayerType.Computer:
+          return player.path.value != null ? labelFor(PlayerType.Computer) + '-' + player.path.value.split('\\').pop().split('/').pop().split('.')[0] : labelFor(PlayerType.Computer)
+        default:
+          return labelFor(player.type.value)
       }
     }.bind(this)()
-    this.state.gameName.value = this.state.players[0].name.value + " vs " + this.state.players[1].name.value
+    this.state.gameName.value = this.state.players[0].name.value + ' vs ' + this.state.players[1].name.value
   }
 
   render() {
-    console.log("GameCreation State:", JSON.stringify(this.state))
+    console.log('GameCreation State:', JSON.stringify(this.state))
     const playerTypes = [
-      { label: "Mensch", value: PlayerType.Human },
-      { label: "Computer", value: PlayerType.Computer },
-      { label: "Manuell gestarteter Client", value: PlayerType.Manual }
+      {label: 'Mensch', value: PlayerType.Human},
+      {label: 'Computer', value: PlayerType.Computer},
+      {label: 'Manuell gestarteter Client', value: PlayerType.Manual},
     ]
 
     let playerForm = (player: integer) => (
       <div>
-        <Input id={"input_playerName" + player} value={this.state.players[player].name.value} onChange={this.handleControlChange((state, value) => state.players[player].name.value = value)} invalid={this.hasErrors(this.state.players[player].name)} />
-        <label htmlFor={"input_playerName" + player} className="validation-errors">{this.state.players[player].name.errors}</label>
-        <br />
-        <SelectBox value={this.state.players[player].type.value} items={playerTypes} onChange={this.handleControlChange((state, value: PlayerType) => {
-          state.players[player].type.value = value
-          this.refreshPlayerName(state.players[player])
-        })} />
+        <Input id={'input_playerName' + player} value={this.state.players[player].name.value}
+               onChange={this.handleControlChange((state, value) => state.players[player].name.value = value)}
+               invalid={this.hasErrors(this.state.players[player].name)}/>
+        <label htmlFor={'input_playerName' + player}
+               className="validation-errors">{this.state.players[player].name.errors}</label>
+        <br/>
+        <SelectBox value={this.state.players[player].type.value} items={playerTypes}
+                   onChange={this.handleControlChange((state, value: PlayerType) => {
+                     state.players[player].type.value = value
+                     this.refreshPlayerName(state.players[player])
+                   })}/>
         {this.playerControl(this.state, s => s.players[player])}
       </div>
     )
@@ -263,21 +274,23 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
           firstPlayer: this.createPlayer(this.state.players[0]),
           secondPlayer: this.createPlayer(this.state.players[1]),
           gameName: this.state.gameName.value,
-          gameId: Api.getGameManager().createGameId(this.state.gameName.value, false)
+          gameId: Api.getGameManager().createGameId(this.state.gameName.value, false),
         })
-      }} />
+      }}/>
       :
       <div className="validation-errors pull-right">
         <p>Bitte korrigieren Sie die rot markierten Probleme, um ein Spiel zu starten.</p>
-        <ErrorList errors={this.state.generalErrors} />
+        <ErrorList errors={this.state.generalErrors}/>
       </div>
 
     return (
       <div className="game-creation main-container">
         <div className="content">
-          <Input id="input_gameName" value={this.state.gameName.value} onChange={this.handleControlChange((state, value) => state.gameName.value = value)} invalid={this.hasErrors(this.state.gameName)} />
+          <Input id="input_gameName" value={this.state.gameName.value}
+                 onChange={this.handleControlChange((state, value) => state.gameName.value = value)}
+                 invalid={this.hasErrors(this.state.gameName)}/>
           <label htmlFor="input_gameName" className="validation-errors">{this.state.gameName.errors}</label>
-          <br />
+          <br/>
 
           {playerForm(0)}
           <div id="vs">gegen</div>
@@ -290,8 +303,8 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
           <div id="start">
             {startControl}
           </div>
-          <div id="errors" />
-          <div className="clearfix" />
+          <div id="errors"/>
+          <div className="clearfix"/>
         </div>
       </div>
     )

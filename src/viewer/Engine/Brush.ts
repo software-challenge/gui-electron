@@ -1,10 +1,9 @@
-import { Layer } from './Layer';
-import { u32 } from './FileDefs';
+import { u32 } from './FileDefs'
 
 export class Brush {
-  program: WebGLProgram;
-  textures: { sourceName: string, shaderName: string }[];
-  name: string;
-  start: u32;
-  length: u32;
+  program: WebGLProgram
+  textures: { sourceName: string, shaderName: string }[]
+  name: string
+  start: u32
+  length: u32
 }

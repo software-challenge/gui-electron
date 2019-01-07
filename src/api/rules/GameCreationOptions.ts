@@ -1,12 +1,12 @@
 export enum PlayerType {
-  Human = "Human",
-  Computer = "Computer",
-  Manual = "Manual"
+  Human = 'Human',
+  Computer = 'Computer',
+  Manual = 'Manual'
 }
 
 export const enum StartType {
-  Java = "Java",
-  Direct = "Direct"
+  Java = 'Java',
+  Direct = 'Direct'
 }
 
 export interface IPlayer {
@@ -33,8 +33,8 @@ export interface ManualPlayer extends IPlayer {
 export type Player = HumanPlayer | ComputerPlayer | ManualPlayer;
 
 export const enum GameType {
-  Versus = "Versus",
-  Replay = "Replay"
+  Versus = 'Versus',
+  Replay = 'Replay'
 }
 
 export interface IGame {
