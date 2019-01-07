@@ -1,6 +1,7 @@
 require('hazardous')
 const {app, BrowserWindow} = require('electron')
-app.commandLine.appendSwitch('ignore-gpu-blacklist', 'true') //Ignore warning about third-party AMD drivers on linux
+//Ignore warning about third-party AMD drivers on linux
+app.commandLine.appendSwitch('ignore-gpu-blacklist', 'true')
 const path = require('path')
 const url = require('url')
 const fs = require('fs')
@@ -21,12 +22,15 @@ process.on('unhandledRejection', (reason, promise) => {
 
 function createWindow() {
   let args = process.argv.slice(2)
-  let isDev = args.some(value => value == '--dev')
+  let isDev = args.some(value => value === '--dev')
 
   // Create the browser window.
   win = new BrowserWindow({
     width: isDev ? 1500 : 1000,
     height: 850,
+    webPreferences: {
+      nodeIntegration: true,
+    },
   })
 
   let logDir = '.'
@@ -34,10 +38,10 @@ function createWindow() {
   // application path may be a directory (in dev mode) or a file (when distributed)
   // .asar files are identified as directories, but are not directories in the filesystem
   if(fs.lstatSync(appDir).isDirectory() && !appDir.endsWith('.asar')) {
-    console.log('directory', appDir)
+    console.log('Application directory', appDir)
     logDir = appDir
   } else {
-    console.log('file', appDir)
+    console.log('Application file', appDir)
     logDir = path.dirname(appDir)
   }
 
@@ -46,11 +50,14 @@ function createWindow() {
     pathname: path.join(app.getAppPath(), 'src/index.html'),
     protocol: 'file:',
     slashes: true,
-  }) + '?dirname=' + encodeURIComponent(logDir), options = { //Make sure a few extra options are enabled
-    webgl: true, //WebGL needs to be forced on with older radeon cards
-    experimentalFeatures: true, //Some extra features to speed up canvas/GL operations
+  }) + '?dirname=' + encodeURIComponent(logDir), {
+    //WebGL needs to be forced on with older radeon cards
+    webgl: true,
+    //Some extra features to speed up canvas/GL operations
+    experimentalFeatures: true,
     experimentalCanvasFeatures: true,
-    offscreen: true, //Enable offscreen rendering
+    //Enable offscreen rendering
+    offscreen: true,
   })
 
   // Open the DevTools.

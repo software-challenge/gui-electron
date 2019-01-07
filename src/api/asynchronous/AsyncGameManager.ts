@@ -1,4 +1,4 @@
-import { GameType } from '../rules/GameCreationOptions'
+import { GameCreationOptions, GameType } from '../rules/GameCreationOptions'
 import { Game } from '../rules/Game'
 import { LiveGame } from './LiveGame'
 import { Replay } from './Replay'
@@ -53,7 +53,7 @@ export class AsyncGameManager {
 
     this.server.post('/start-game', (req, res) => {
       try {
-        let options = req.body
+        let options: GameCreationOptions = req.body
         let g: Game = options.kind == GameType.Replay ? new Replay(options) : new LiveGame(options)
         this.games.set(options.gameId, g)
         g.ready.then(() => {
