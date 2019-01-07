@@ -1,4 +1,4 @@
 export enum ServerStatus {
-    OK,
-    NOT_READY
+  OK,
+  NOT_READY
 }

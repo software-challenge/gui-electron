@@ -1,129 +1,130 @@
 .sidebar.wide {
-  max-width: 40vw;
-  border: 1px solid #ddd;
+    max-width: 40vw;
+    border: 1px solid #ddd;
 }
 
 .sidebar.retractable {
-  transition: max-width 0.2s ease-in-out, min-width 0.2s ease-in-out;
-  overflow-x: hidden;
+    transition: max-width 0.2s ease-in-out, min-width 0.2s ease-in-out;
+    overflow-x: hidden;
 }
 
 .retracted {
-  max-width: 0 !important;
-  min-width: 0 !important;
+    max-width: 0 !important;
+    min-width: 0 !important;
 }
 
 .server {
-  font-family: monospace;
-  background-color: black;
-  color: #EEE;
-  padding: 0.5em;
-  max-height: 80vh;
-  overflow-y: scroll;
+    font-family: monospace;
+    background-color: black;
+    color: #EEE;
+    padding: 0.5em;
+    max-height: 80vh;
+    overflow-y: scroll;
 }
 
 .unicode-icon {
-  font-weight: bold;
-  font-size: 100%;
-  padding-right: 0.2em;
-  margin-left: -0.5em;
-  margin-right: 0.5em;
+    font-weight: bold;
+    font-size: 100%;
+    padding-right: 0.2em;
+    margin-left: -0.5em;
+    margin-right: 0.5em;
 }
+
 .form-control::after {
-  content: ' '; /* Hotfix for button padding with React*/
+    content: ' '; /* Hotfix for button padding with React*/
 }
 
 .main-container {
-  padding: 0;
-  height: 100%;
-  margin: 0 auto;
-  background-image: url(../resources/piranhas/piranhas-logo.png);
-  background-repeat: no-repeat;
-  background-size: 100%;
-  background-color: #9aa999;
+    padding: 0;
+    height: 100%;
+    margin: 0 auto;
+    background-image: url(../resources/piranhas/piranhas-logo.png);
+    background-repeat: no-repeat;
+    background-size: 100%;
+    background-color: #9aa999;
 }
 
 .main-container > .content {
-  margin: 0 auto;
-  max-width: 50rem;
-  background-color: rgba(255,255,255,.6);
-  padding: 1.5em;
+    margin: 0 auto;
+    max-width: 50rem;
+    background-color: rgba(255, 255, 255, .6);
+    padding: 1.5em;
 }
 
 .game-creation select {
-  padding: 0;
-  margin-bottom: 0.5em;
+    padding: 0;
+    margin-bottom: 0.5em;
 }
 
 .game-creation input {
-  font-size: 200%;
-  margin-bottom: 0.5em;
+    font-size: 200%;
+    margin-bottom: 0.5em;
 }
 
 .game-creation code {
-  display: block;
-  overflow: auto;
+    display: block;
+    overflow: auto;
 }
 
 .game-creation div#vs {
-  font-size: 150%;
-  text-align: center;
-  margin: 1em auto;
+    font-size: 150%;
+    text-align: center;
+    margin: 1em auto;
 }
 
 .game-creation div#start button {
-  font-size: 200%;
+    font-size: 200%;
 }
 
 label.validation-errors, div.validation-errors {
-  color: red;
+    color: red;
 }
 
 input.validation-errors, code.validation-errors {
-  border: 2px solid red;
+    border: 2px solid red;
 }
 
 .close-game {
-  vertical-align: middle;
+    vertical-align: middle;
 }
 
 .svg-button, .replay-viewer button {
-  background-color: transparent;
-  border: none;
-  color: white;
+    background-color: transparent;
+    border: none;
+    color: white;
 }
 
 img.svg-icon {
-  width: 1rem;
+    width: 1rem;
 }
 
 .logMessage .text {
-  font-size: 80%;
+    font-size: 80%;
 }
 
 #game-name {
-  width: 50%;
-  margin-left: 25%;
-  font-weight: bold;
-  font-size: 120%;
-  display: inline-block;
-  text-align: center;
+    width: 50%;
+    margin-left: 25%;
+    font-weight: bold;
+    font-size: 120%;
+    display: inline-block;
+    text-align: center;
 }
 
-#game-name[contenteditable="true"]{
-  cursor: text;
+#game-name[contenteditable="true"] {
+    cursor: text;
 }
 
 #waiting {
-  opacity: 0;
-  transition: opacity 0.5s;
-  font-weight: bold;
-  color:red;
+    opacity: 0;
+    transition: opacity 0.5s;
+    font-weight: bold;
+    color: red;
 }
 
 button.top-wide {
-  width: 100%;
-  height: 2em;
+    width: 100%;
+    height: 2em;
 }
 
 .nav-group-item {
@@ -142,12 +143,12 @@ button.top-wide {
     z-index: 99;
     height: 100%;
     padding: 0 10px 0 20px;
-    background: linear-gradient(to right, rgba(255,255,255,0), #f5f5f4, #f5f5f4, #f5f5f4);
+    background: linear-gradient(to right, rgba(255, 255, 255, 0), #f5f5f4, #f5f5f4, #f5f5f4);
     margin: -2px;
 }
 
-.nav-group-item.active .close-button-container{
-    background: linear-gradient(to right, rgba(255,255,255,0), #dcdfe1, #dcdfe1, #dcdfe1);
+.nav-group-item.active .close-button-container {
+    background: linear-gradient(to right, rgba(255, 255, 255, 0), #dcdfe1, #dcdfe1, #dcdfe1);
 }
 
 .clearfix {

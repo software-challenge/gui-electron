@@ -1,4 +1,4 @@
-import { GameState } from './CurrentGame';
+import { GameState } from './CurrentGame'
 
 export interface TransferableMoveRequest {
   state: GameState;

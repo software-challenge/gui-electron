@@ -1,54 +1,54 @@
-import * as fs from "fs";
-import * as path from 'path';
-import { log } from "../helpers/Helpers";
+import * as fs from 'fs'
+import * as path from 'path'
+import { log } from '../helpers/Helpers'
 
 export class Logger {
-  private static logger: Logger;
+  private static logger: Logger
 
   public static getLogger() {
-    if (!this.logger) {
+    if(!this.logger) {
       let logPath = process.env.SGC_LOG_PATH
-      if (!fs.existsSync(logPath))
+      if(!fs.existsSync(logPath))
         fs.mkdirSync(logPath)
       const d = new Date()
       let logFile = path.join(logPath, `software-challenge-gui-${d.getFullYear()}.${d.getUTCMonth() + 1}.${d.getUTCDate()}.log`)
-      log("logging to " + logFile)
+      log('logging to ' + logFile)
       this.logger = new Logger(false, true, logFile)
     }
-    return this.logger;
+    return this.logger
   }
 
-  private logFile: string;
-  private logToConsole: boolean;
-  private logToHTML: boolean;
+  private logFile: string
+  private logToConsole: boolean
+  private logToHTML: boolean
 
   private static StringToColor = (str: string) => {
-    const colours = 32;
-    let clr = 0;
-    for (let i = 0; i < str.length; i++) {
-      clr += str.charCodeAt(i);
-      clr %= colours;
+    const colours = 32
+    let clr = 0
+    for(let i = 0; i < str.length; i++) {
+      clr += str.charCodeAt(i)
+      clr %= colours
     }
-    return 'hsl(' + (360 / 32 * clr) + ',90%,25%)';
+    return 'hsl(' + (360 / 32 * clr) + ',90%,25%)'
   }
 
   constructor(logToConsole: boolean, logToHTML: boolean = true, logFile?: string) {
-    this.logToHTML = logToHTML;
-    this.logFile = logFile;
-    this.logToConsole = logToConsole;
-    if (logToHTML) {
-      this.logFile = this.logFile + ".html";
+    this.logToHTML = logToHTML
+    this.logFile = logFile
+    this.logToConsole = logToConsole
+    if(logToHTML) {
+      this.logFile = this.logFile + '.html'
     }
     try {
-      if (!fs.existsSync(this.logFile)) {
+      if(!fs.existsSync(this.logFile)) {
         this.createLogFile()
       } else {
-        if (!fs.existsSync(this.logFile)) {
-          fs.writeFileSync(this.logFile, "");
+        if(!fs.existsSync(this.logFile)) {
+          fs.writeFileSync(this.logFile, '')
         }
       }
-    } catch (err) {
-      console.log("Could not create log file, falling back to console logging.")
+    } catch(err) {
+      console.log('Could not create log file, falling back to console logging.')
       this.logToHTML = false
       this.logFile = null
       this.logToConsole = true
@@ -56,11 +56,11 @@ export class Logger {
   }
 
   private __log(timestamp: string, actor: string, focus: string, message: string) {
-    if (this.logToConsole) {
-      console.log(`[${timestamp}] ${actor}:${focus}:\n${message}\n\n`);
+    if(this.logToConsole) {
+      console.log(`[${timestamp}] ${actor}:${focus}:\n${message}\n\n`)
     }
-    if (this.logFile) {
-      if (this.logToHTML) {
+    if(this.logFile) {
+      if(this.logToHTML) {
         fs.appendFile(this.logFile, `
           <div class="message" actor="${actor.replace(/\W/g, '')}" focus="${focus.replace(/\W/g, '')}">
             <div class="header" style="color: ${Logger.StringToColor(actor)};">
@@ -68,22 +68,22 @@ export class Logger {
               <span class="actor">${actor}</span>
               <span class="focus" style="color: ${Logger.StringToColor(focus)}">${focus}</span>
             </div>
-            <pre class="message-content">${(message + "").replace(/\</g, '&lt;').replace(/\>/g, '&gt;').trim()}</pre>
+            <pre class="message-content">${(message + '').replace(/\</g, '&lt;').replace(/\>/g, '&gt;').trim()}</pre>
           </div>
-        `, (err) => { if (err) { console.error(err); } });
+        `, (err) => { if(err) { console.error(err) } })
       } else {
-        fs.appendFile(this.logFile, message, (err) => { if (err) { console.error(err); } });
+        fs.appendFile(this.logFile, message, (err) => { if(err) { console.error(err) } })
       }
     }
   }
 
   public log(actor: string, focus: string, message: string) {
-    let d = new Date();
-    this.__log(d.toLocaleString("de-DE") + '.' + ('000' + d.getMilliseconds()).slice(-3, -2), actor, focus, message);
+    let d = new Date()
+    this.__log(d.toLocaleString('de-DE') + '.' + ('000' + d.getMilliseconds()).slice(-3, -2), actor, focus, message)
   }
 
   public logObject(actor: string, focus: string, message: string, object: any) {
-    this.log(actor, focus, message + "\n" + JSON.stringify(object, null, 4));
+    this.log(actor, focus, message + '\n' + JSON.stringify(object, null, 4))
   }
 
   public logError(actor: string, focus: string, message: string, error: any) {
@@ -96,18 +96,18 @@ export class Logger {
   }
 
   public focus(actor: string, focus: string) {
-    return { log: (message) => this.log(actor, focus, message) };
+    return {log: (message) => this.log(actor, focus, message)}
   }
 
   public getLogFilePath(): string {
-    return this.logFile;
+    return this.logFile
   }
 
   public getCompleteLog(): string {
-    if (this.logFile) {
-      return fs.readFileSync(this.logFile).toString();
+    if(this.logFile) {
+      return fs.readFileSync(this.logFile).toString()
     } else {
-      return "";
+      return ''
     }
   }
 
@@ -115,8 +115,8 @@ export class Logger {
    * Debug function for finding console.log where Logger.log should have been used
    */
   public static injectLineNumbersIntoConsoleLog() {
-    let clog = console.log;
-    console.log = (t) => clog(new Error().stack.split('\n')[3].trim().substring(3) + ":  " + t);
+    let clog = console.log
+    console.log = (t) => clog(new Error().stack.split('\n')[3].trim().substring(3) + ':  ' + t)
   }
 
   private createLogFile() {
@@ -192,8 +192,8 @@ export class Logger {
         let actorName = escape(document.getElementById('actor-filter').value.trim());
         let focusName = escape(document.getElementById('focus-filter').value.trim());
 
-        var nodes = document.querySelectorAll('.message');
-        for(var i = 0; i < nodes.length; i++){
+        const nodes = document.querySelectorAll('.message')
+        for(let i = 0; i < nodes.length; i++){
           if((actorName == "" || nodes[i].getAttribute('actor').indexOf(actorName) != -1) && (focusName == "" || nodes[i].getAttribute('focus').indexOf(focusName) != -1)){
             nodes[i].classList.remove('hidden');
           } else {
@@ -209,7 +209,7 @@ export class Logger {
       Focus: <input type="text" id="focus-filter" onkeydown="filter();" onblur="filter();"/>
     </div>
     <div id="log">
-    `);
+    `)
   }
 
 }

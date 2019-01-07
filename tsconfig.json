@@ -15,7 +15,7 @@
     "skipLibCheck": true,
     "noImplicitAny": false
   },
-  "include": [ 
+  "include": [
     "src/api/**/*",
     "src/gui/**/*",
     "src/viewer/**/*"
