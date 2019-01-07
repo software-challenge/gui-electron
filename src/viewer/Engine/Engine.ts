@@ -23,7 +23,7 @@ export class Engine {
 
     //2. create context
     this.context = canvas.getContext('webgl')
-    if (!this.context) {
+    if(!this.context) {
       throw 'Could not create webgl context.'
     }
 
@@ -40,7 +40,7 @@ export class Engine {
 
     //3. Create shaders
 
-    for (let o in scene.objects) {
+    for(let o in scene.objects) {
       const brush: Brush = new Brush()
       const so: ThreeDObject = scene.objects[o]
       const vertexShader: WebGLShader = this.context.createShader(this.context.VERTEX_SHADER)
@@ -64,7 +64,7 @@ export class Engine {
 
     //4. Create Textures
 
-    for (let t in scene.textures) {
+    for(let t in scene.textures) {
       const texture: WebGLTexture = this.context.createTexture()
       const st: Texture = scene.textures[t]
       this.context.bindTexture(this.context.TEXTURE_2D, texture)
@@ -89,15 +89,15 @@ export class Engine {
   drawBrush(name: string, uniforms: { [name: string]: { value: number[], type: UniformType } }) {
     let brush: Brush = this.brushes[name]
     this.context.useProgram(brush.program)
-    for (let i = 0; i < brush.textures.length; i++) {
+    for(let i = 0; i < brush.textures.length; i++) {
       let location = this.context.getUniformLocation(brush.program, brush.textures[i].shaderName)
       this.context.activeTexture(this.context.TEXTURE0 + i)
       this.context.bindTexture(this.context.TEXTURE_2D, this.textures[brush.textures[i].sourceName])
       this.context.uniform1i(location, i)
     }
-    for (let u in uniforms) {
+    for(let u in uniforms) {
       let location = this.context.getUniformLocation(brush.program, u)
-      switch (uniforms[u].type) {
+      switch(uniforms[u].type) {
         case UniformType.Uniform1i: {
           this.context.uniform1i(location, uniforms[u].value[0])
           break
@@ -157,7 +157,7 @@ export class Engine {
       this.context.FLOAT,
       false,
       32,
-      0
+      0,
     )
     this.context.vertexAttribPointer(
       uvLocation,
@@ -165,7 +165,7 @@ export class Engine {
       this.context.FLOAT,
       false,
       32,
-      12
+      12,
     )
     this.context.vertexAttribPointer(
       normalLocation,
@@ -173,7 +173,7 @@ export class Engine {
       this.context.FLOAT,
       false,
       32,
-      20
+      20,
     )
     this.context.drawArrays(this.context.TRIANGLES, brush.start, brush.length)
   }

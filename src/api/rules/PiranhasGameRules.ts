@@ -10,7 +10,7 @@ export class Line implements IterableIterator<Coordinates> {
     // we will iterate from left to right, so find the leftmost field on the line inside the field
     // note that (0,0) is the lowest, leftmost point, x-axis goes to the right, y-axis goes up
     let leftmostX, leftmostY
-    switch (this.direction) {
+    switch(this.direction) {
       case 'HORIZONTAL':
         leftmostX = 0
         leftmostY = this.start.y
@@ -42,16 +42,16 @@ export class Line implements IterableIterator<Coordinates> {
 
   public next(): IteratorResult<Coordinates> {
     let result: IteratorResult<Coordinates>
-    if (this.xi >= 0 && this.yi >= 0 && this.xi < FIELDSIZE && this.yi < FIELDSIZE) {
+    if(this.xi >= 0 && this.yi >= 0 && this.xi < FIELDSIZE && this.yi < FIELDSIZE) {
       result = {done: false, value: {x: this.xi, y: this.yi}}
       // horizontal lines and diagonals move right
-      if (this.direction == 'HORIZONTAL' || this.direction == 'RISING_DIAGONAL' || this.direction == 'FALLING_DIAGONAL') {
+      if(this.direction == 'HORIZONTAL' || this.direction == 'RISING_DIAGONAL' || this.direction == 'FALLING_DIAGONAL') {
         this.xi += 1
       }
       // vertical lines and falling diagonals move down
-      if (this.direction == 'VERTICAL' || this.direction == 'FALLING_DIAGONAL') {
+      if(this.direction == 'VERTICAL' || this.direction == 'FALLING_DIAGONAL') {
         this.yi -= 1
-      } else if (this.direction == 'RISING_DIAGONAL') { // rising diagonals move up
+      } else if(this.direction == 'RISING_DIAGONAL') { // rising diagonals move up
         this.yi += 1
       }
       return result
@@ -69,7 +69,7 @@ export class Line implements IterableIterator<Coordinates> {
     const higherX = Math.max(start.x, end.x)
     const higherY = Math.max(start.y, end.y)
     return (f: Coordinates) => {
-      switch (direction) {
+      switch(direction) {
         case 'HORIZONTAL':
           return f.x > lowerX && f.x < higherX
         case 'VERTICAL':
@@ -84,7 +84,7 @@ export class Line implements IterableIterator<Coordinates> {
   }
 
   static directionsForLineDirection(lineDirection: LineDirection): Direction[] {
-    switch (lineDirection) {
+    switch(lineDirection) {
       case 'HORIZONTAL':
         return ['LEFT', 'RIGHT']
       case 'VERTICAL':
@@ -97,7 +97,7 @@ export class Line implements IterableIterator<Coordinates> {
   }
 
   static lineDirectionForDirection(direction: Direction): LineDirection {
-    switch (direction) {
+    switch(direction) {
       case 'LEFT':
       case 'RIGHT':
         return 'HORIZONTAL'
@@ -129,7 +129,7 @@ export class GameRuleLogic {
 
     // set fields with randomly selected coordinates to blocked
     // coordinates may not lay on same horizontal, vertical or diagonal lines with other selected coordinates
-    for (var i = 0; i < numberOfBlockedFields; i++) {
+    for(var i = 0; i < numberOfBlockedFields; i++) {
       const indexOfFieldToBlock = Math.floor(Math.random() * blockableFieldCoordinates.length)
       const selectedCoords = blockableFieldCoordinates[indexOfFieldToBlock]
       board.setField(selectedCoords, Board.Fieldtype.obstructed)
@@ -147,7 +147,7 @@ export class GameRuleLogic {
     let fish = (t: FIELDTYPE) => (t == Board.Fieldtype.red || t == Board.Fieldtype.blue)
     return Array.from(
       [...new Line(start, direction)],
-      (p) => board.field(p)
+      (p) => board.field(p),
     ).filter(fish).length
   }
 
@@ -156,7 +156,7 @@ export class GameRuleLogic {
   }
 
   static playerFieldType(color: PLAYERCOLOR): FIELDTYPE {
-    switch (color) {
+    switch(color) {
       case Player.COLOR.RED:
         return 'RED'
       case Player.COLOR.BLUE:
@@ -165,7 +165,7 @@ export class GameRuleLogic {
   }
 
   static fieldTypePlayer(fieldType: FIELDTYPE): PLAYERCOLOR {
-    switch (fieldType) {
+    switch(fieldType) {
       case Board.Fieldtype.red:
         return Player.COLOR.RED
       case Board.Fieldtype.blue:
@@ -203,9 +203,9 @@ export class GameRuleLogic {
 
   static validMove(move: Move, board: Board): boolean {
     let movingPlayerColor: PLAYERCOLOR
-    if (board.field(move.fromField) == Board.Fieldtype.red) {
+    if(board.field(move.fromField) == Board.Fieldtype.red) {
       movingPlayerColor = Player.COLOR.RED
-    } else if (board.field(move.fromField) == Board.Fieldtype.blue) {
+    } else if(board.field(move.fromField) == Board.Fieldtype.blue) {
       movingPlayerColor = Player.COLOR.BLUE
     } else {
       // moving from a field which is not occupied by a fish is invalid

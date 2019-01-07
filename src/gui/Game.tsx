@@ -46,14 +46,14 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
       playPause: 'pause',
       playIntervalID: null,
       playbackSpeed: 800,
-      waitingForInput: false
+      waitingForInput: false,
     }
     this.mounted = false
     this.viewerState = ViewerState.idle
   }
 
   private startViewer(e) {
-    if (!this.viewer) {
+    if(!this.viewer) {
       this.viewer = Api.getViewer()
       this.viewer.animate = this.props.animateViewer
       this.viewer.dock(e)
@@ -64,7 +64,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
     Api.getGameManager().getGameStatus(this.props.gameId).then((status) => {
       console.log('updateProgress', {gameName: this.props.name, stateNumber: this.state.currentTurn})
       // Endscreen
-      if (this.state.currentTurn == (status.numberOfStates - 1) &&
+      if(this.state.currentTurn == (status.numberOfStates - 1) &&
         (status.gameStatus == 'FINISHED' || status.gameStatus == 'REPLAY') &&
         status.gameResult) {
         this.viewer.showEndscreen(status.gameResult)
@@ -72,7 +72,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
         this.viewer.hideEndscreen()
       }
       Api.getGameManager().getGameState(this.props.gameId, this.state.currentTurn).then((gameState) => {
-        if (this.state.waitingForInput) {
+        if(this.state.waitingForInput) {
           this.interact(status)
         } else {
           this.viewer.render(new RenderState(gameState, 'none'))
@@ -84,10 +84,10 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   componentWillUnmount() {
     // no need to update state here, as it will be destroyed!
     this.mounted = false
-    if (this.state.playIntervalID !== null) {
+    if(this.state.playIntervalID !== null) {
       window.clearInterval(this.state.playIntervalID)
     }
-    if (this.viewer) {
+    if(this.viewer) {
       this.viewer.stop()
       this.viewer.undock()
     }
@@ -103,7 +103,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
     this.setState((prev, props) => {
       return {
         ...prev,
-        currentTurn: Api.getGameManager().getCurrentDisplayStateOnGame(props.gameId)
+        currentTurn: Api.getGameManager().getCurrentDisplayStateOnGame(props.gameId),
       }
     })
     this.autoPlay()
@@ -117,7 +117,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
   private autoPlay() {
     Api.getGameManager().getGameStatus(this.props.gameId).then((status) => {
-      if (!this.isPlaying() && status.gameStatus == 'REQUIRES INPUT' && status.numberOfStates == 1) {
+      if(!this.isPlaying() && status.gameStatus == 'REQUIRES INPUT' && status.numberOfStates == 1) {
         console.log('Human first! Triggering play...')
         this.playPause()
       }
@@ -138,7 +138,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
   private waitForNextStatus(currentNumberOfStates: number, callback: () => void) {
     Api.getGameManager().getGameStatus(this.props.gameId).then((status) => {
-      if (status.numberOfStates > currentNumberOfStates) {
+      if(status.numberOfStates > currentNumberOfStates) {
         callback()
       } else {
         setTimeout(() => this.waitForNextStatus(currentNumberOfStates, callback), 100)
@@ -149,7 +149,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   next() {
     //1. Get a Status report
     Api.getGameManager().getGameStatus(this.props.gameId).then((status) => {
-      if (status.numberOfStates > (this.state.currentTurn + 1)) {
+      if(status.numberOfStates > (this.state.currentTurn + 1)) {
         // there is a next state available to display
         this.setState((lastState, props) => {
           let newTurn = lastState.currentTurn + 1
@@ -158,7 +158,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
         })
       } else {
         // there is no next state available at this time
-        if (this.state.currentTurn == status.numberOfStates - 1 && status.gameStatus == 'REQUIRES INPUT' && !this.state.waitingForInput) {
+        if(this.state.currentTurn == status.numberOfStates - 1 && status.gameStatus == 'REQUIRES INPUT' && !this.state.waitingForInput) {
           this.setState({waitingForInput: true})
         }
       }
@@ -166,7 +166,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   }
 
   previous() {
-    if (this.state.currentTurn > 0) {
+    if(this.state.currentTurn > 0) {
       this.setState((lastState, props) => {
         let newTurn = Math.max(0, lastState.currentTurn - 1)
         Api.getGameManager().setCurrentDisplayStateOnGame(props.gameId, newTurn)
@@ -183,7 +183,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
     this.setState((prev, _props) => {
       const next = {...prev}
       next.playPause = (prev.playPause == 'pause' ? 'play' : 'pause')
-      if (next.playPause == 'play') {
+      if(next.playPause == 'play') {
         this.activatePlayback(next)
       } else {
         this.deactivatePlayback(next)
@@ -194,8 +194,8 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
   // has to be called inside a setState!
   activatePlayback(state: State) {
-    if (state.playPause == 'play') {
-      if (state.playIntervalID) {
+    if(state.playPause == 'play') {
+      if(state.playIntervalID) {
         clearInterval(state.playIntervalID)
       }
       state.playIntervalID = window.setInterval(() => this.next(), state.playbackSpeed)
@@ -203,7 +203,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   }
 
   deactivatePlayback(state: State) {
-    if (state.playIntervalID != null) {
+    if(state.playIntervalID != null) {
       clearInterval(state.playIntervalID)
       state.playIntervalID = null
     }
@@ -242,22 +242,22 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   }
 
   saveReplay() {
-    if (!this.props.isReplay) {
+    if(!this.props.isReplay) {
       dialog.showSaveDialog(
         {
           title: 'Wähle einen Ort zum Speichern des Replays',
           defaultPath: this.props.name + '.xml',
-          filters: [{name: 'Replay-Dateien', extensions: ['xml']}]
+          filters: [{name: 'Replay-Dateien', extensions: ['xml']}],
         },
         (filename) => {
           // dialog returns undefined when user clicks cancel or an array of strings (paths) if user selected a file
-          if (filename) {
+          if(filename) {
             //window.localStorage[localStorageProgramPath] = filenames[0]
             console.log('Attempting to save', filename)
             // TODO send request to server to save the game
             Api.getGameManager().saveReplayOfGame(this.props.gameId, filename)
           }
-        }
+        },
       )
     }
   }

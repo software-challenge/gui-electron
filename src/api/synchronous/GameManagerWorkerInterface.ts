@@ -36,9 +36,9 @@ export class GameManagerWorkerInterface {
           stdio: ['inherit', 'inherit', 'inherit', 'ipc'],
           env: {
             'SGC_LOG_PATH': process.env.SGC_LOG_PATH,
-            'GAME_MANAGER_WORKER_PORT': backend.getPort()
-          }
-        }
+            'GAME_MANAGER_WORKER_PORT': backend.getPort(),
+          },
+        },
       )
     })
   }
@@ -55,7 +55,7 @@ export class GameManagerWorkerInterface {
         .catch(retry)
     }, {
       minTimeout: 150,
-      retries: retries
+      retries: retries,
     }).catch(e => Logger.getLogger().logError('GameManagerWorkerInterface', 'getListOfGames', 'Error getting list of games: ' + e, e))
   }
 
@@ -69,11 +69,11 @@ export class GameManagerWorkerInterface {
       method: 'POST',
       body: JSON.stringify(options),
       headers: new Headers({
-        'Content-Type': 'application/json'
-      })
+        'Content-Type': 'application/json',
+      }),
     }).then(r => {
       return r.json().catch(() => r.text()).then(c => {
-        if (r.ok)
+        if(r.ok)
           return c
         else
           throw c
@@ -94,8 +94,8 @@ export class GameManagerWorkerInterface {
       method: 'POST',
       body: JSON.stringify({gameId: gameId, path: path}),
       headers: new Headers({
-        'Content-Type': 'application/json'
-      })
+        'Content-Type': 'application/json',
+      }),
     }).then(r => {
       r.json()
     }).catch(e => Logger.getLogger().logError('GameManagerWorkerInterface', 'saveReplayOfGame', 'Error saving replay of a game: ' + e, e))
@@ -129,8 +129,8 @@ export class GameManagerWorkerInterface {
       method: 'POST',
       body: JSON.stringify(move),
       headers: new Headers({
-        'Content-Type': 'application/json'
-      })
+        'Content-Type': 'application/json',
+      }),
     }).then(response => {
       Logger.getLogger().log('GameManagerWorkerInterface', 'sendMove', 'Server response: ' + response.text())
       return gameId

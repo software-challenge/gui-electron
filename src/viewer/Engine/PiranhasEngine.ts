@@ -45,7 +45,7 @@ export class SimpleScene extends Phaser.Scene {
       key: 'waves',
       frames: this.anims.generateFrameNumbers('water', {start: 0, end: 1}),
       frameRate: 2,
-      repeat: -1 // loop
+      repeat: -1, // loop
     })
 
     this.graphics = []
@@ -63,16 +63,16 @@ export class SimpleScene extends Phaser.Scene {
     Array.from(Array(FIELDSIZE), (_, x) => {
       Array.from(Array(FIELDSIZE), (_, y) => {
         let fieldCoordinates = this.fieldCoordinates({x: x, y: y})
-        if (x == 0) {
+        if(x == 0) {
           this.add.text(fieldCoordinates.x - textOffset * 1.2, fieldCoordinates.y, `y = ${y}`, coordTextStyle).setOrigin(0.5)
         }
-        if (x == FIELDSIZE - 1) {
+        if(x == FIELDSIZE - 1) {
           this.add.text(fieldCoordinates.x + textOffset, fieldCoordinates.y, (FIELDSIZE - 1 - y).toString(), labelTextStyle).setOrigin(0.5)
         }
-        if (y == 0) {
+        if(y == 0) {
           this.add.text(fieldCoordinates.x, fieldCoordinates.y + textOffset, `x = ${x}`, coordTextStyle).setOrigin(0.5)
         }
-        if (y == FIELDSIZE - 1) {
+        if(y == FIELDSIZE - 1) {
           this.add.text(fieldCoordinates.x, fieldCoordinates.y - textOffset, characters.charAt(x), labelTextStyle).setOrigin(0.5)
         }
       })
@@ -94,9 +94,9 @@ export class SimpleScene extends Phaser.Scene {
         }).play('waves')
         water.depth = 10
         let sprite = null
-        if (field != Board.Fieldtype.empty) {
+        if(field != Board.Fieldtype.empty) {
           let key
-          switch (field) {
+          switch(field) {
             case Board.Fieldtype.red:
               key = 'fish_red'
               break
@@ -112,21 +112,21 @@ export class SimpleScene extends Phaser.Scene {
               key: key,
               x: fieldCoordinates.x,
               y: fieldCoordinates.y,
-              scale: 1
-            }
+              scale: 1,
+            },
           )
           sprite.depth = 20
           sprite.setData('fieldType', field)
         }
 
         this.allObjects.push(water)
-        if (sprite) {
+        if(sprite) {
           this.allObjects.push(sprite)
         }
 
         return {
           background: water,
-          foreground: sprite
+          foreground: sprite,
         }
       })
     })
@@ -139,7 +139,7 @@ export class SimpleScene extends Phaser.Scene {
 
   handleClick(event: any) {
     let target = this.boardCoordinates(event.position)
-    if (target) {
+    if(target) {
       this.fieldClickHandler(target)
     }
   }
@@ -168,16 +168,16 @@ export class SimpleScene extends Phaser.Scene {
         x: c.x,
         y: c.y,
         scale: 2,
-        depth: 50
+        depth: 50,
       }))
     })
   }
 
   deselectFish() {
-    if (this.selectedFish) {
+    if(this.selectedFish) {
       let sprite = this.graphics[this.selectedFish.x][this.selectedFish.y].foreground
       // if sprite was already moving, reset position
-      if (sprite) {
+      if(sprite) {
         this.tweens.killTweensOf(sprite)
         let fieldCoordinates = this.fieldCoordinates(this.selectedFish)
         sprite.x = fieldCoordinates.x
@@ -197,14 +197,14 @@ export class SimpleScene extends Phaser.Scene {
       repeat: -1, // infinite loop
       yoyo: true,
       duration: 300,
-      ease: Phaser.Math.Easing.Back.In
+      ease: Phaser.Math.Easing.Back.In,
     })
   }
 
   boardCoordinates(c: Coordinates): Coordinates {
     let resultX = Math.round((c.x - offsetX) / 66)
     let resultY = FIELDSIZE - 1 - Math.round((c.y - offsetY) / 66)
-    if (resultX >= 0 && resultX < FIELDSIZE &&
+    if(resultX >= 0 && resultX < FIELDSIZE &&
       resultY >= 0 && resultY < FIELDSIZE) {
       return {x: resultX, y: resultY}
     } else {
@@ -215,13 +215,13 @@ export class SimpleScene extends Phaser.Scene {
   fieldCoordinates(c: Coordinates): Coordinates {
     return {
       x: offsetX + c.x * 66,
-      y: offsetY + (FIELDSIZE - 1 - c.y) * 66
+      y: offsetY + (FIELDSIZE - 1 - c.y) * 66,
     }
   }
 
   updateBoard(gameState: GameState, move: Move) {
     console.log('updateBoard (animate) entry')
-    if (move == null) {
+    if(move == null) {
       // added this check because of strange bug where a promise rejection
       // happened because of passing an undefined move into this method. The
       // promise rejection was silently ignored and it was hard to find.
@@ -229,7 +229,7 @@ export class SimpleScene extends Phaser.Scene {
     }
     this.boardEqualsView(gameState.board)
     let spriteToMove = this.graphics[move.fromField.x][move.fromField.y].foreground
-    if (spriteToMove != null) {
+    if(spriteToMove != null) {
       let destination = GameRuleLogic.moveTarget(move, gameState.board)
       let destinationFieldCoordinates = this.fieldCoordinates(destination)
       this.deselectFish()
@@ -242,11 +242,11 @@ export class SimpleScene extends Phaser.Scene {
         y: destinationFieldCoordinates.y,
         duration: this.animationTime,
         onComplete: () => {
-          if (targetGraphic != null) {
+          if(targetGraphic != null) {
             targetGraphic.destroy()
           }
           this.unmarkFields()
-        }
+        },
       })
     } else {
       // TODO: This happens quite often when multiple updates run in parallel.
@@ -271,24 +271,24 @@ export class SimpleScene extends Phaser.Scene {
     let keyToFieldType = {
       'red': Board.Fieldtype.red,
       'blue': Board.Fieldtype.blue,
-      'rock': Board.Fieldtype.obstructed
+      'rock': Board.Fieldtype.obstructed,
     }
     this.graphics.forEach((col, x) => {
       col.forEach((field, y) => {
         let actual: FIELDTYPE
-        if (field.foreground == null) {
+        if(field.foreground == null) {
           actual = Board.Fieldtype.empty
         } else {
           actual = field.foreground.getData('fieldType')
         }
         let expected = board.fields[x][y]
-        if (actual != expected) {
+        if(actual != expected) {
           statesDoMatch = false
           console.warn(`got field difference on (${x},${y})`, {actual: actual, expected: expected})
         }
         let expectedCoordinates: Coordinates = this.fieldCoordinates({x: x, y: y})
-        if (field.foreground != null) {
-          if (expectedCoordinates.x != field.foreground.x || expectedCoordinates.y != field.foreground.y) {
+        if(field.foreground != null) {
+          if(expectedCoordinates.x != field.foreground.x || expectedCoordinates.y != field.foreground.y) {
             // NOTE that we are ignoring not matching coordinates (only logging
             //them) because the sprite may be on its way to the final position.
             //This enables adding animations on already animating sprites and
@@ -320,8 +320,8 @@ export class PiranhasEngine {
       pixelArt: true,
       canvas: this.element,
       fps: {
-        target: 10
-      }
+        target: 10,
+      },
     }
     this.game = new Phaser.Game(gameConfig)
     this.scene = new SimpleScene()
@@ -329,7 +329,7 @@ export class PiranhasEngine {
   }
 
   clearUI() {
-    if (this.scene) {
+    if(this.scene) {
       this.scene.deselectFish()
       this.scene.unmarkFields()
     }
@@ -341,9 +341,9 @@ export class PiranhasEngine {
     this.scene.unmarkFields()
     this.selectableFields = []
     this.scene.deselectFish()
-    if (state.uiState instanceof SelectFish) {
+    if(state.uiState instanceof SelectFish) {
       this.selectableFields = state.uiState.selectableFieldCoordinates
-    } else if (state.uiState instanceof SelectTargetDirection) {
+    } else if(state.uiState instanceof SelectTargetDirection) {
       this.selectableFields = state.uiState.selectableDirections.map(sd => sd.target)
       this.scene.selectFish(state.uiState.origin)
     }

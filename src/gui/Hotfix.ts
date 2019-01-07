@@ -8,13 +8,13 @@ import { Api } from '../api/Api'
 export let Hotfix = {
   __gameCreationFunction: null, //Private storage for the game creation function
 
-  isGameReload: function () {
+  isGameReload: function() {
     return /game\_/.test(window.location.hash)
   },
 
-  reloadIntoGame: function (gco: GameCreationOptions) {
+  reloadIntoGame: function(gco: GameCreationOptions) {
     let logger = Logger.getLogger().focus('Hotfix', 'reloadIntoGame')
-    if (/game\_/.test(window.location.hash)) {
+    if(/game\_/.test(window.location.hash)) {
       window.location.hash = 'game_' + encodeURIComponent(JSON.stringify(gco)) //Store game creation options in hash
       logger.log('Starting game by reloading (hash found)')
       Api.stop()
@@ -28,11 +28,11 @@ export let Hotfix = {
 
   init(gameCreationFunction) {
     Hotfix.__gameCreationFunction = gameCreationFunction
-    if (/game\_/.test(window.location.hash)) { //If there's a game to be started
+    if(/game\_/.test(window.location.hash)) { //If there's a game to be started
       Logger.getLogger().log('Hotfix', 'init', 'Hash found, starting game')
       let gco = JSON.parse(decodeURIComponent(window.location.hash.substring('#game_'.length))) //Retrieve game creation options
       gameCreationFunction(gco) //Start game
     }
-  }
+  },
 
 }

@@ -43,7 +43,7 @@ export class Loader {
     let str = new Str()
     str.len = this.readU32()
     str.data = []
-    for (let i = 0; i < str.len; i++) {
+    for(let i = 0; i < str.len; i++) {
       str.data.push(this.readU8())
     }
     return str
@@ -69,7 +69,7 @@ export class SceneLoader {
     scene.textures = {}
     let numTextures = loader.readU32()
     console.log(numTextures)
-    for (i = 0; i < numTextures; i++) {
+    for(i = 0; i < numTextures; i++) {
       let t = new Texture()
       t.name = loader.readStr().toString()
       t.width = loader.readU32()
@@ -82,7 +82,7 @@ export class SceneLoader {
     //Read shaders
     scene.shaders = {}
     let numShaders = loader.readU32()
-    for (i = 0; i < numShaders; i++) {
+    for(i = 0; i < numShaders; i++) {
       let s = new Shader()
       s.name = loader.readStr().toString()
       s.data = loader.readStr().toString()
@@ -97,16 +97,16 @@ export class SceneLoader {
     //Read objects
     scene.objects = {}
     let numObjects = loader.readU32()
-    for (i = 0; i < numObjects; i++) {
+    for(i = 0; i < numObjects; i++) {
       let o = new ThreeDObject()
       o.vertexShader = loader.readStr().toString()
       o.fragmentShader = loader.readStr().toString()
       o.numberOfTextures = loader.readU8()
       o.textures = []
-      for (let j = 0; j < o.numberOfTextures; j++) {
+      for(let j = 0; j < o.numberOfTextures; j++) {
         o.textures.push({
           shaderName: loader.readStr().toString(),
-          sourceName: loader.readStr().toString()
+          sourceName: loader.readStr().toString(),
         })
       }
       o.name = loader.readStr().toString()
@@ -118,7 +118,7 @@ export class SceneLoader {
     //Read entities
     scene.entities = {}
     let numEntities = loader.readU32()
-    for (i = 0; i < numEntities; i++) {
+    for(i = 0; i < numEntities; i++) {
       let e = new ThreeDEntity()
       e.name = loader.readStr().toString()
       e.position = [loader.readF32(), loader.readF32(), loader.readF32()]

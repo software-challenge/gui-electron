@@ -7,7 +7,7 @@ export module ExecutableStatus {
   }
 
   export function toString(s: ExecutableStatus.Status): string {
-    switch (s) {
+    switch(s) {
       case ExecutableStatus.Status.RUNNING:
         return 'RUNNING'
       case ExecutableStatus.Status.EXITED:

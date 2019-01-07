@@ -65,10 +65,10 @@ export class App extends React.Component<any, State> {
       serverPort: null,
       settings: loadFromStorage(appSettings, {
         animateViewer: v.Type(Boolean),
-        logDir: v.Type(String)
+        logDir: v.Type(String),
       }, {
         animateViewer: true,
-        logDir: '.'
+        logDir: '.',
       }),
     }
     Hotfix.init(gco => this.startGameWithOptions(gco))
@@ -78,35 +78,35 @@ export class App extends React.Component<any, State> {
     dialog.showOpenDialog(
       {
         title: 'Wähle ein Replay',
-        properties: ['openFile']
+        properties: ['openFile'],
       },
       (filenames) => {
         // dialog returns undefined when user clicks cancel or an array of strings (paths) if user selected a file
-        if (filenames && filenames.length > 0 && filenames[0]) {
+        if(filenames && filenames.length > 0 && filenames[0]) {
           //window.localStorage[localStorageProgramPath] = filenames[0]
           console.log('Attempting to load ' + filenames[0])
           let liofs = filenames[0].lastIndexOf('/')
-          if (liofs == -1) {
+          if(liofs == -1) {
             liofs = filenames[0].lastIndexOf('\\')
           }
           let replayName = filenames[0]
-          if (liofs != -1) {
+          if(liofs != -1) {
             replayName = replayName.substring(liofs + 1)
           }
           const liofp = replayName.lastIndexOf('.')
-          if (liofp != -1) {
+          if(liofp != -1) {
             replayName = replayName.substring(0, liofp)
           }
           let gco: Replay = {
             gameId: Api.getGameManager().createGameId(replayName, true),
             gameName: replayName,
             kind: GameType.Replay,
-            path: filenames[0]
+            path: filenames[0],
           }
           //new GameCreationOptions(null, null, filenames[0], StartType.Replay, null, null, null, null, replayName)
           this.startGameWithOptions(gco)
         }
-      }
+      },
     )
   }
 
@@ -139,13 +139,13 @@ export class App extends React.Component<any, State> {
     this.show(AppContent.GameWaiting, () =>
       this.setState({
         contentState: AppContent.GameLive,
-        activeGameId: gameId
+        activeGameId: gameId,
       }, () => document.getElementById('game-name').innerText = Api.getGameManager().getGameInfo(gameId).name))
   }
 
   private show(content: AppContent, callback?: () => void) {
     this.setState({
-      contentState: content
+      contentState: content,
     }, callback)
   }
 
@@ -159,7 +159,7 @@ export class App extends React.Component<any, State> {
   componentDidMount() {
     promiseRetry(retry => Api.getGameManager().getGameServerStatus().then(info => {
       this.setState({serverPort: info.port})
-      if (info.status == ExecutableStatus.Status.ERROR || info.status == ExecutableStatus.Status.EXITED) {
+      if(info.status == ExecutableStatus.Status.ERROR || info.status == ExecutableStatus.Status.EXITED) {
         Logger.getLogger().logError('App', 'server', 'Server status ' + info.status.toString() + ': ' + info.error, info.error)
         alert('Es gab einen Fehler beim Starten des Game-Servers, das Programm wird wahrscheinlich nicht funktionieren!\n' +
           'Fehler: ' + info.error)
@@ -168,7 +168,7 @@ export class App extends React.Component<any, State> {
   }
 
   changeGameName(e) {
-    if (e.keyCode == 13) {
+    if(e.keyCode == 13) {
       e.preventDefault()
       const newGameName = document.getElementById('game-name').innerText.trim()
       console.log('changing Game name:', newGameName)
@@ -191,13 +191,13 @@ export class App extends React.Component<any, State> {
 
   render() {
     let mainPaneContent
-    switch (this.state.contentState) {
+    switch(this.state.contentState) {
       case AppContent.Administration:
         mainPaneContent =
           <Administration settings={this.state.settings} setter={(newSettings: Partial<AppSettings>) => {
             this.setState({settings: {...this.state.settings, ...newSettings}},
               () => saveToStorage(appSettings, this.state.settings))
-            if (newSettings.logDir != null)
+            if(newSettings.logDir != null)
               window.localStorage['logDir'] = newSettings.logDir
           }}/>
         break
@@ -242,7 +242,7 @@ export class App extends React.Component<any, State> {
           <div style={{
             position: 'absolute',
             backgroundColor: '#eee',
-            width: 'calc(100% - 220px)'
+            width: 'calc(100% - 220px)',
           }}>Logdatei: {logger.getLogFilePath()}</div>
         </div>
         break

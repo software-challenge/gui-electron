@@ -21,14 +21,14 @@ export class GameManager {
       id: newGameId,
       name: gameName,
       isReplay: isReplay,
-      currentTurn: 0
+      currentTurn: 0,
     })
     console.log('Created game', newGameId, this.getGameInfo(newGameId))
     return newGameId
   }
 
   public getGameId(gameName: string): number {
-    this.gameInfos.forEach((value, key, map) => { if (value.name == gameName) return key })
+    this.gameInfos.forEach((value, key, map) => { if(value.name == gameName) return key })
     throw Error('A Game with name \'' + gameName + '\' does not exist!')
   }
 

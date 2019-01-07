@@ -42,7 +42,7 @@ interface PlayerFormState {
 class ErrorList extends React.PureComponent<{ errors: Array<string> }> {
   render() {
     const listItems = this.props.errors.map((error) =>
-      <li>{error}</li>
+      <li>{error}</li>,
     )
     return <ul>{listItems}</ul>
   }
@@ -65,8 +65,8 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
         type: {value: v.Options(Object.keys(PlayerType)), errors: [v.Type(String)]},
         name: this.fieldStateSchema(String),
         path: this.fieldStateSchema(String),
-        timeoutEnabled: this.fieldStateSchema(Boolean)
-      }]
+        timeoutEnabled: this.fieldStateSchema(Boolean),
+      }],
     }
     this.state = loadFromStorage(localStorageCreationOptions, schema, defaults)
 
@@ -82,7 +82,7 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
       type: this.unvalidatedField(type),
       name: this.unvalidatedField(type),
       path: this.unvalidatedField(null),
-      timeoutEnabled: this.unvalidatedField(true)
+      timeoutEnabled: this.unvalidatedField(true),
     }
   }
 
@@ -103,28 +103,28 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
     dialog.showOpenDialog(
       {
         title: 'Wähle einen Computerspieler',
-        properties: ['openFile']
+        properties: ['openFile'],
       },
-      function (filenames) {
+      function(filenames) {
         // dialog returns undefined when user clicks cancel or an array of strings (paths) if user selected a file
-        if (filenames && filenames.length > 0) {
+        if(filenames && filenames.length > 0) {
           window.localStorage[localStorageProgramPath] = filenames[0]
           this.setState((prev, _props) => {
             setter(prev, filenames[0])
             return prev
           })
         }
-      }.bind(this)
+      }.bind(this),
     )
   }
 
   private createPlayer(playerSettings: PlayerFormState): Player {
-    switch (playerSettings.type.value) {
+    switch(playerSettings.type.value) {
       case PlayerType.Human:
         return {
           kind: PlayerType.Human,
           name: playerSettings.name.value,
-          timeoutPossible: false
+          timeoutPossible: false,
         } as HumanPlayer
       case PlayerType.Computer:
         return {
@@ -132,13 +132,13 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
           name: playerSettings.name.value,
           timeoutPossible: playerSettings.timeoutEnabled.value,
           path: playerSettings.path.value,
-          startType: playerSettings.path.value.endsWith('.jar') ? StartType.Java : StartType.Direct
+          startType: playerSettings.path.value.endsWith('.jar') ? StartType.Java : StartType.Direct,
         }
       case PlayerType.Manual:
         return {
           kind: PlayerType.Manual,
           name: playerSettings.name.value,
-          timeoutPossible: playerSettings.timeoutEnabled.value
+          timeoutPossible: playerSettings.timeoutEnabled.value,
         }
     }
   }
@@ -146,7 +146,7 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
   // is called when the user wants to start a game with a valid configuration
   private handleStartGame(parsed: GameCreationOptions) {
     window.localStorage[localStorageCreationOptions] = JSON.stringify(this.state)
-    if (this.state.players.some(p => p.type.value == PlayerType.Manual)) {
+    if(this.state.players.some(p => p.type.value == PlayerType.Manual)) {
       document.getElementById('waiting').style.opacity = '1'
     }
     this.props.createGame(parsed).catch(reason => {
@@ -170,19 +170,19 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
     let valid = true
     state.generalErrors = []
     state.gameName.errors = []
-    if (this.isEmpty(state.gameName.value)) {
+    if(this.isEmpty(state.gameName.value)) {
       state.gameName.errors.push('Der Name des Spiels darf nicht leer sein.')
       valid = false
     }
     state.players.map((player: PlayerFormState) => {
       player.name.errors = []
-      if (this.isEmpty(player.name.value)) {
+      if(this.isEmpty(player.name.value)) {
         player.name.errors.push('Der Name des Spielers darf nicht leer sein.')
         valid = false
       }
       player.path.errors = []
-      if (player.type.value == PlayerType.Computer) {
-        if (this.invalidPath(player.path.value)) {
+      if(player.type.value == PlayerType.Computer) {
+        if(this.invalidPath(player.path.value)) {
           player.path.errors.push('Bitte wähle einen Computerspieler aus.')
           valid = false
         }
@@ -198,13 +198,13 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
   // Returns the sub-form to make changes to the settings for each player. Takes a function which should select the player for which the sub-form should show and change the settings.
   private playerControl(formState: FormState, player: (s: FormState) => PlayerFormState) {
     let playerForm = player(formState)
-    switch (playerForm.type.value) {
+    switch(playerForm.type.value) {
       case PlayerType.Computer:
         return (<div>
           Wähle ein Programm zum starten
           <Button text="Computerspieler wählen"
                   onClick={() => this.clientFileSelectDialog((state, firstSelectedPath) => {
-                    if (firstSelectedPath) {
+                    if(firstSelectedPath) {
                       player(state).path.value = firstSelectedPath
                       this.refreshPlayerName(playerForm)
                     }
@@ -219,9 +219,9 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
   }
 
   refreshPlayerName(player: PlayerFormState) {
-    player.name.value = function () {
+    player.name.value = function() {
       let labelFor = (t: PlayerType): string => {
-        switch (t) {
+        switch(t) {
           case PlayerType.Human:
             return 'Mensch'
           case PlayerType.Computer:
@@ -230,7 +230,7 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
             return 'AI-Manual'
         }
       }
-      switch (player.type.value) {
+      switch(player.type.value) {
         case PlayerType.Computer:
           return player.path.value != null ? labelFor(PlayerType.Computer) + '-' + player.path.value.split('\\').pop().split('/').pop().split('.')[0] : labelFor(PlayerType.Computer)
         default:
@@ -245,7 +245,7 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
     const playerTypes = [
       {label: 'Mensch', value: PlayerType.Human},
       {label: 'Computer', value: PlayerType.Computer},
-      {label: 'Manuell gestarteter Client', value: PlayerType.Manual}
+      {label: 'Manuell gestarteter Client', value: PlayerType.Manual},
     ]
 
     let playerForm = (player: integer) => (
@@ -274,7 +274,7 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
           firstPlayer: this.createPlayer(this.state.players[0]),
           secondPlayer: this.createPlayer(this.state.players[1]),
           gameName: this.state.gameName.value,
-          gameId: Api.getGameManager().createGameId(this.state.gameName.value, false)
+          gameId: Api.getGameManager().createGameId(this.state.gameName.value, false),
         })
       }}/>
       :

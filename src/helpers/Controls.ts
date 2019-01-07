@@ -4,7 +4,7 @@ export function getValue(event: any) {
 }
 
 export function useValue(use: (value: any) => void): (event: any) => void {
-  return function (event) {
+  return function(event) {
     use(getValue(event))
   }
 }

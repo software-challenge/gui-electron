@@ -7,7 +7,7 @@ import * as path from 'path'
 const loadedCSS: string[] = []
 
 export function loadCSS(filename: string) {
-  if (loadedCSS.indexOf(filename) == -1) {
+  if(loadedCSS.indexOf(filename) == -1) {
     const ln = document.createElement('link')
     ln.setAttribute('rel', 'stylesheet')
     ln.setAttribute('href', filename)
@@ -31,7 +31,7 @@ export function main() {
   })
   render(
     <App/>,
-    document.getElementById('root')
+    document.getElementById('root'),
   )
   loadCSS('css/main.css')
 }

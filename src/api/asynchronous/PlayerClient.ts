@@ -29,10 +29,10 @@ export class GenericPlayer extends GenericClient {
     Logger.getLogger().log('GenericPlayer', 'handleMessage', msg)
     Parser.getJSONFromXML(msg).then(decoded => {
       Logger.getLogger().log('GenericPlayer', 'handleMessage', JSON.stringify(decoded))
-      if (decoded.joined || !decoded.room || !decoded.room.data) {
+      if(decoded.joined || !decoded.room || !decoded.room.data) {
         return //Forgot that this happens
       }
-      switch (decoded.room.data[0]['$'].class.trim()) {//Sometimes, extra linebreaks end up here
+      switch(decoded.room.data[0]['$'].class.trim()) {//Sometimes, extra linebreaks end up here
         case 'memento':
           const state = decoded.room.data[0].state[0]
           const gs = GameState.fromJSON(state)
@@ -43,14 +43,14 @@ export class GenericPlayer extends GenericClient {
           this.emit('moverequest')
           break
         case 'welcomeMessage':
-          if (this.joined) {
+          if(this.joined) {
             this.joined()
           }
           this.emit(
             'welcome', {
               mycolor: Player.ColorFromString(decoded.room.data[0]['$'].color),
-              roomId: decoded.room['$'].roomId
-            }
+              roomId: decoded.room['$'].roomId,
+            },
           )
           break
         case 'error':
@@ -69,7 +69,7 @@ export class GenericPlayer extends GenericClient {
 
   joinPrepared(reservation: string): Promise<Array<any>> {
     let requestJoin = new Promise((resolve, reject) => {
-      if (reservation) {
+      if(reservation) {
         this.writeData(`<protocol><joinPrepared reservationCode="${reservation}" />`, resolve)
       } else {
         this.writeData(`<protocol><join gameType="${GAME_IDENTIFIER}"/>`, resolve)

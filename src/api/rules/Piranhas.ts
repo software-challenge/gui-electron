@@ -37,7 +37,7 @@ export class GameState {
     gs.red = Player.fromJSON(json.red[0])
     gs.blue = Player.fromJSON(json.blue[0])
     gs.board = Board.fromJSON(json.board[0])
-    if (json.lastMove) {
+    if(json.lastMove) {
       gs.lastMove = Move.fromJSON(json.lastMove[0])
     }
     return gs
@@ -62,7 +62,7 @@ export class GameState {
     clone.red = Player.lift(clone.red)
     clone.blue = Player.lift(clone.blue)
     clone.board = Board.lift(clone.board)
-    if (clone.lastMove)
+    if(clone.lastMove)
       clone.lastMove = Move.lift(clone.lastMove)
     return clone
   }
@@ -76,7 +76,7 @@ export class GameState {
   }
 
   getPlayerByColor(color: PLAYERCOLOR) {
-    if (color == Player.COLOR.RED) {
+    if(color == Player.COLOR.RED) {
       return this.red
     } else {
       return this.blue
@@ -101,7 +101,7 @@ export class Board {
     empty: 'EMPTY',
     obstructed: 'OBSTRUCTED',
     red: 'RED',
-    blue: 'BLUE'
+    blue: 'BLUE',
   }
   // REMEMBER to extend clone method when adding attributes here!
   public fields: FIELDTYPE[][]
@@ -114,7 +114,7 @@ export class Board {
         let x = f.$.x
         let y = f.$.y
         let fieldType = f.$.state
-        if (b.fields[x] == null) {
+        if(b.fields[x] == null) {
           b.fields[x] = []
         }
         b.fields[x][y] = fieldType
@@ -129,9 +129,9 @@ export class Board {
       this.fields[x] = []
       Array.from(Array(FIELDSIZE), (_, y) => {
         let t: FIELDTYPE
-        if (x % (FIELDSIZE - 1) == 0 && y > 0 && y < FIELDSIZE - 1) {
+        if(x % (FIELDSIZE - 1) == 0 && y > 0 && y < FIELDSIZE - 1) {
           t = Board.Fieldtype.red
-        } else if (y % (FIELDSIZE - 1) == 0 && x > 0 && x < FIELDSIZE - 1) {
+        } else if(y % (FIELDSIZE - 1) == 0 && x > 0 && x < FIELDSIZE - 1) {
           t = Board.Fieldtype.blue
         } else {
           t = Board.Fieldtype.empty
@@ -153,7 +153,7 @@ export class Board {
     let clone = new Board()
     let clonedFields: FIELDTYPE[][] = []
     this.fields.forEach((row, x) => {
-      if (clonedFields[x] == null) {
+      if(clonedFields[x] == null) {
         clonedFields[x] = []
       }
       row.forEach(f => {
@@ -168,7 +168,7 @@ export class Board {
   static lift(that: any) {
     let clone = new Board()
     let clonedFields = []
-    for (let f of that.fields) {
+    for(let f of that.fields) {
       clonedFields.push(f)
     }
     clone.fields = clonedFields
@@ -186,10 +186,10 @@ export class Player {
   static COLOR: { RED: PLAYERCOLOR, BLUE: PLAYERCOLOR } = {RED: 0, BLUE: 1}
 
   static ColorFromString(s: string): PLAYERCOLOR {
-    if (s.match(/RED/i)) {
+    if(s.match(/RED/i)) {
       return Player.COLOR.RED
     }
-    if (s.match(/BLUE/i)) {
+    if(s.match(/BLUE/i)) {
       return Player.COLOR.BLUE
     }
     throw 'Unknown color value: ' + s
@@ -244,7 +244,7 @@ export class Move {
   }
 
   private static directionFromString(s: string): Direction {
-    switch (s) {
+    switch(s) {
       case 'UP':
         return 'UP'
       case 'UP_RIGHT':
@@ -268,7 +268,7 @@ export class Move {
 
   targetField(fieldCount: number): Coordinates {
     const result = {x: this.fromField.x, y: this.fromField.y}
-    switch (this.direction) {
+    switch(this.direction) {
       case 'RIGHT':
         result.x += fieldCount
         break

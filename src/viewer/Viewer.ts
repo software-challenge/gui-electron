@@ -42,7 +42,7 @@ export class Viewer {
     */
     this.canvas.setAttribute('width', '800')
     this.canvas.setAttribute('height', '800')
-    if (this.engine) {
+    if(this.engine) {
       this.engine.resize()
     }
     /*
@@ -66,10 +66,10 @@ export class Viewer {
   }
 
   render(state: RenderState) {
-    if (this.engine == null) {
+    if(this.engine == null) {
       return
     }
-    if (this.currentState && this.currentState.equals(state)) {
+    if(this.currentState && this.currentState.equals(state)) {
       console.log('should render same state, doing nothing')
       return
     } else {
@@ -77,8 +77,8 @@ export class Viewer {
     }
 
     this.engine.clearUI()
-    if (this.animate) {
-      if (state.gameState.lastMove &&
+    if(this.animate) {
+      if(state.gameState.lastMove &&
         this.currentState &&
         // !this.engine.animating() &&
         (state.gameState.turn === this.currentState.gameState.turn + 1) &&
@@ -100,10 +100,10 @@ export class Viewer {
   // user interacted somehow
   userHasInteracted(state: GameState, actions: InteractionEvent[], move_callback: (move: Move) => void, interaction: InteractionEvent) {
     actions = actions.concat(interaction)
-    if (interaction == 'cancelled') {
+    if(interaction == 'cancelled') {
       // remove all interactions and request new input
       this.requestUserInteraction(state, [], move_callback)
-    } else if (actions.length == 2) {
+    } else if(actions.length == 2) {
       // create move and send it
       let move = this.interactionsToMove(actions)
       move_callback(move)
@@ -114,27 +114,27 @@ export class Viewer {
   }
 
   fieldsToDirection(fromField: Coordinates, toField: Coordinates): Direction {
-    if (fromField.x == toField.x) {
-      if (fromField.y > toField.y) {
+    if(fromField.x == toField.x) {
+      if(fromField.y > toField.y) {
         return 'DOWN'
-      } else if (fromField.y < toField.y) {
+      } else if(fromField.y < toField.y) {
         return 'UP'
       }
-    } else if (fromField.y == toField.y) {
-      if (fromField.x > toField.x) {
+    } else if(fromField.y == toField.y) {
+      if(fromField.x > toField.x) {
         return 'LEFT'
-      } else if (fromField.x < toField.x) {
+      } else if(fromField.x < toField.x) {
         return 'RIGHT'
       }
     } else {
-      if (fromField.x > toField.x) {
-        if (fromField.y > toField.y) {
+      if(fromField.x > toField.x) {
+        if(fromField.y > toField.y) {
           return 'DOWN_LEFT'
         } else {
           return 'UP_LEFT'
         }
-      } else if (fromField.x < toField.x) {
-        if (fromField.y > toField.y) {
+      } else if(fromField.x < toField.x) {
+        if(fromField.y > toField.y) {
           return 'DOWN_RIGHT'
         } else {
           return 'UP_RIGHT'
@@ -147,7 +147,7 @@ export class Viewer {
   interactionsToMove(interactions: InteractionEvent[]): Move {
     let fromField = interactions[0]
     let toField = interactions[1]
-    if (fromField instanceof FieldSelected && toField instanceof FieldSelected) {
+    if(fromField instanceof FieldSelected && toField instanceof FieldSelected) {
       return new Move(fromField.coordinates, this.fieldsToDirection(fromField.coordinates, toField.coordinates))
     } else {
       throw 'got illegal list of interactions to create a move'
@@ -169,10 +169,10 @@ export class Viewer {
     let modified_gamestate = this.applyInteractions(state, actions)
 
     let uiState: UiState
-    if (shouldSelectFish) {
+    if(shouldSelectFish) {
       let ownFishFields = state.board.fields.map((col, x) => {
         return col.map((field, y) => {
-          if (field == GameRuleLogic.playerFieldType(state.currentPlayerColor)) {
+          if(field == GameRuleLogic.playerFieldType(state.currentPlayerColor)) {
             return {x: x, y: y}
           } else {
             return null
@@ -180,14 +180,14 @@ export class Viewer {
         })
       }).reduce((a, c) => a.concat(c)).filter(e => e != null)
       uiState = new SelectFish(ownFishFields)
-    } else if (shouldSelectTarget) {
+    } else if(shouldSelectTarget) {
       let firstAction = actions[0]
-      if (firstAction instanceof FieldSelected) {
+      if(firstAction instanceof FieldSelected) {
         let fish = firstAction.coordinates
         let possibleMoves = GameRuleLogic.possibleMoves(modified_gamestate.board, fish)
         uiState = new SelectTargetDirection(
           fish,
-          possibleMoves.map(m => ({direction: m.direction, target: GameRuleLogic.moveTarget(m, state.board)}))
+          possibleMoves.map(m => ({direction: m.direction, target: GameRuleLogic.moveTarget(m, state.board)})),
         )
       } else {
         throw 'first action was not of type FieldSelected'
@@ -207,7 +207,7 @@ export class Viewer {
 
   showEndscreen(result: GameResult) {
     console.log('Showing Endscreen for GameResult', result)
-    if (this.endScreen === null) {
+    if(this.endScreen === null) {
       this.endScreen = document.createElement('div')
       this.endScreen.classList.add('endscreen')
       this.element.appendChild(this.endScreen)
@@ -221,7 +221,7 @@ export class Viewer {
   }
 
   hideEndscreen() {
-    if (this.endScreen) {
+    if(this.endScreen) {
       this.endScreen.setAttribute('style', 'opacity: 0.0; display: none')
     }
   }

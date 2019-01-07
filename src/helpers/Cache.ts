@@ -2,14 +2,14 @@ import * as v from 'validate-typescript'
 
 export function loadFromStorage<T>(key: string, schema: any, defaults: T): T {
   const loaded = window.localStorage[key]
-  if (loaded == null) {
+  if(loaded == null) {
     return defaults
   } else {
     const parsed: T = JSON.parse(loaded)
     try {
       v.validate(schema, parsed)
       return parsed
-    } catch (e) {
+    } catch(e) {
       console.log('Cache validation for ' + key + ' failed!')
       window.localStorage[key] = null
       return defaults

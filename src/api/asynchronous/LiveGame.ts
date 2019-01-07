@@ -41,7 +41,7 @@ export class LiveGame extends Game {
 
         //Register hook to go offline
         server.on('status', s => {
-          if (s == ExecutableStatus.Status.EXITED) {
+          if(s == ExecutableStatus.Status.EXITED) {
             //Server exited. Stop client processes, set game to not live
             this.is_live = false
           }
@@ -77,7 +77,7 @@ export class LiveGame extends Game {
             let m: ConsoleMessage = {
               sender: 'observer',
               type: 'output',
-              text: msg
+              text: msg,
             }
             this.messages.push(m)
             // this.emit('message', m);
@@ -90,12 +90,12 @@ export class LiveGame extends Game {
           let observer = results[1]
           Logger.log('Observer ready')
 
-          if (gco.kind === GameType.Versus) {
+          if(gco.kind === GameType.Versus) {
             let matchPlayerTypes = (kinds: Array<[PlayerType, PlayerType]>): boolean => {
               return kinds.some(t => gco.firstPlayer.kind === t[0] && gco.secondPlayer.kind === t[1])
             }
 
-            if (matchPlayerTypes([
+            if(matchPlayerTypes([
               [PlayerType.Computer, PlayerType.Computer],
               [PlayerType.Human, PlayerType.Computer],
               [PlayerType.Computer, PlayerType.Human],
@@ -131,7 +131,7 @@ export class LiveGame extends Game {
                   })
                   .catch(reason => gameStartError(reason))
               })
-            } else if (matchPlayerTypes([
+            } else if(matchPlayerTypes([
               [PlayerType.Human, PlayerType.Manual],
               [PlayerType.Manual, PlayerType.Human],
               [PlayerType.Computer, PlayerType.Manual],
@@ -149,14 +149,14 @@ export class LiveGame extends Game {
               }).then(roomId => {
                 Logger.log('Configure automatic client')
                 //Configure one client
-                if (gco.firstPlayer.kind == PlayerType.Manual) {
+                if(gco.firstPlayer.kind == PlayerType.Manual) {
                   this.client2 = this.createClient(gco.secondPlayer, server, undefined)
-                  if (gco.secondPlayer.kind == PlayerType.Human)
+                  if(gco.secondPlayer.kind == PlayerType.Human)
                     auto_client_is_human_client = true
                   auto_client = this.client2
                 } else {
                   this.client1 = this.createClient(gco.firstPlayer, server, undefined)
-                  if (gco.firstPlayer.kind == PlayerType.Human)
+                  if(gco.firstPlayer.kind == PlayerType.Human)
                     auto_client_is_human_client = true
                   auto_client = this.client1
                 }
@@ -164,7 +164,7 @@ export class LiveGame extends Game {
                 //Add client to room
                 return auto_client.start().then(() => {
                   //Disable timeout if human
-                  if (auto_client_is_human_client) {
+                  if(auto_client_is_human_client) {
                     Logger.log('Disabling timeout for human client in slot 1')
                     this.observer.setTimeoutEnabled(roomId, 1, false)
                   }
@@ -172,7 +172,7 @@ export class LiveGame extends Game {
                   return roomId
                 })
               })
-            } else if (matchPlayerTypes([
+            } else if(matchPlayerTypes([
               [PlayerType.Manual, PlayerType.Manual]])) {
               Logger.log('Starting manual game')
               Logger.log('Waiting for room creation')
@@ -199,14 +199,14 @@ export class LiveGame extends Game {
         player,
         reservation,
         server.getHost(),
-        server.getPort()
+        server.getPort(),
       )
       : new HumanClient(
         server.getHost(),
         server.getPort(),
         player.name,
         reservation,
-        this.id
+        this.id,
       )
   }
 
@@ -222,7 +222,7 @@ export class LiveGame extends Game {
   }
 
   getState(n: number): Promise<GameState> {
-    if (this.gameStates[n]) { //If our next state is already buffered
+    if(this.gameStates[n]) { //If our next state is already buffered
       return Promise.resolve(this.gameStates[n])
     } else {//Wait for new state to be emitted
       return new Promise((res, rej) => {
@@ -238,7 +238,7 @@ export class LiveGame extends Game {
   }
 
   requestNext() {
-    if (this.is_live) {
+    if(this.is_live) {
       this.roomId.then(id => this.observer.requestStep(id))
     }
   }
@@ -251,11 +251,11 @@ export class LiveGame extends Game {
     const fs = require('fs')
     let data = this.observer.getAllData()
     let protocolTag = '</protocol>'
-    if (!data.endsWith(protocolTag)) {
+    if(!data.endsWith(protocolTag)) {
       data = data + protocolTag
     }
-    fs.writeFile(path, data, function (err) {
-      if (err) {
+    fs.writeFile(path, data, function(err) {
+      if(err) {
         Logger.getLogger().log('LiveGame', 'saveReplay', 'Error saving replay: ' + err)
         return err
       }

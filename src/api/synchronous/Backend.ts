@@ -24,7 +24,7 @@ export class Backend {
     return new Promise<string>((res, rej) => {
       request(this.urlFor('/server-info'), (error, response, body) => {
         console.log('got response', error, response)
-        if (error) {
+        if(error) {
           rej(error)
         } else {
           res(body)
@@ -38,8 +38,8 @@ export class Backend {
       const tries = 3
       let tryConnect = (triesLeft) => {
         request(this.urlFor('/'), (error, response, body) => {
-          if (error) {
-            if (triesLeft > 0) {
+          if(error) {
+            if(triesLeft > 0) {
               setTimeout(() => tryConnect(triesLeft - 1), 1000)
             } else {
               rej(`could not reach server after #{tries} tries!r`)

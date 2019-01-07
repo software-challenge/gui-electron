@@ -11,7 +11,7 @@ export class LogConsole extends React.Component<{ gameId: number }, State> {
   constructor(props) {
     super(props)
     this.state = {
-      messages: []
+      messages: [],
     }
   }
 
@@ -39,7 +39,7 @@ export class LogConsole extends React.Component<{ gameId: number }, State> {
           <div className={'logMessage ' + msg.type}>
             <div className="sender">{msg.sender}</div>
             <code className="text">{msg.text}</code>
-          </div>
+          </div>,
         )}
       </div>
     )

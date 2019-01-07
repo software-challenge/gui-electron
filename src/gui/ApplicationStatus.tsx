@@ -19,7 +19,7 @@ export class ApplicationStatus extends React.Component<{}, State> {
     this.state = {
       checkStatus: 'Idle',
       serverReachable: false,
-      errors: []
+      errors: [],
     }
   }
 
@@ -52,7 +52,7 @@ export class ApplicationStatus extends React.Component<{}, State> {
   checkServer(): Promise<boolean> {
     console.log('checking server')
     return Api.getGameManager().getGameServerStatus().then(serverInfo => {
-      if (serverInfo.status != ExecutableStatus.Status.RUNNING) {
+      if(serverInfo.status != ExecutableStatus.Status.RUNNING) {
         this.pushError(serverInfo)
         return false
       } else {
