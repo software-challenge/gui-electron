@@ -12,12 +12,18 @@ export class Replay extends Game {
     this.ready = new Promise<void>((gameReady, gameError) => {
       new Promise((res: (string) => void, rej) => {
         let fs = require('fs')
-        fs.readFile(replay.path, 'utf8', function(err, data) {
-          if(err) {
-            rej(err)
-          }
-          res(data)
-        })
+        let zlib = require('zlib')
+
+        let buf = []
+        let stream = fs.createReadStream(replay.path)
+        if (replay.path.endsWith('.gz')) {
+          stream = stream.pipe(zlib.createGunzip())
+        }
+
+        stream
+          .on('error', function(error) { rej(error) })
+          .on('data', function(data) { buf.push(data) })
+          .on('end', function() { res(buf.join(''))})
       }).then(Parser.getJSONFromXML)
         .then(decoded => {
           if(decoded.protocol) {
