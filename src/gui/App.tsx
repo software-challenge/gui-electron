@@ -22,7 +22,7 @@ import promiseRetry = require('promise-retry')
 const dialog = remote.dialog
 const shell = remote.shell
 
-const appSettings = 'appSettings'
+const appSettingsKey = 'appSettings'
 
 enum AppContent {
   Empty,
@@ -49,7 +49,8 @@ interface State {
 }
 
 export interface AppSettings {
-  animateViewer: boolean
+  animateMoves: boolean
+  animateWater: boolean
   logDir: string
 }
 
@@ -63,11 +64,13 @@ export class App extends React.Component<any, State> {
       contentState: Hotfix.isGameReload() ? AppContent.GameWaiting : AppContent.Empty,
       activeGameId: null,
       serverPort: null,
-      settings: loadFromStorage(appSettings, {
-        animateViewer: v.Type(Boolean),
+      settings: loadFromStorage(appSettingsKey, {
+        animateMoves: v.Type(Boolean),
+        animateWater: v.Type(Boolean),
         logDir: v.Type(String),
       }, {
-        animateViewer: true,
+        animateMoves: true,
+        animateWater: true,
         logDir: '.',
       }),
     }
@@ -196,7 +199,7 @@ export class App extends React.Component<any, State> {
         mainPaneContent =
           <Administration settings={this.state.settings} setter={(newSettings: Partial<AppSettings>) => {
             this.setState({settings: {...this.state.settings, ...newSettings}},
-              () => saveToStorage(appSettings, this.state.settings))
+              () => saveToStorage(appSettingsKey, this.state.settings))
             if(newSettings.logDir != null)
               window.localStorage['logDir'] = newSettings.logDir
           }}/>
@@ -210,7 +213,7 @@ export class App extends React.Component<any, State> {
         mainPaneContent =
           <Game gameId={this.state.activeGameId} name={Api.getGameManager().getGameInfo(this.state.activeGameId).name}
                 isReplay={Api.getGameManager().getGameInfo(this.state.activeGameId).isReplay}
-                animateViewer={this.state.settings.animateViewer}/>
+                settings={this.state.settings}/>
         break
       case AppContent.Blank:
         mainPaneContent = <div/>

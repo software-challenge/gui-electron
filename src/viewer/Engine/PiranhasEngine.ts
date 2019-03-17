@@ -25,6 +25,7 @@ export class SimpleScene extends Phaser.Scene {
   public selectedFish: Coordinates // currently selected fish (if any)
   public fieldClickHandler: (c: Coordinates) => void = (_) => {}
   public animationTime: number = 200
+  public animateWater: boolean
 
   constructor() {
     super({key: 'simple'})
@@ -90,8 +91,9 @@ export class SimpleScene extends Phaser.Scene {
           x: fieldCoordinates.x,
           y: fieldCoordinates.y,
           scale: 2,
-          anims: 'waves',
-        }).play('waves')
+        })
+        if(this.animateWater)
+          water.play('waves')
         water.depth = 10
         let sprite = null
         if(field != Board.Fieldtype.empty) {
@@ -385,4 +387,5 @@ export class PiranhasEngine {
   resize() {
     // Nothing to do here
   }
+
 }

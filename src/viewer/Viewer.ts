@@ -12,10 +12,8 @@ export class Viewer {
   startup_timestamp: number
 
   //Rendering
-  public animate: boolean
-  private rerenderControlActive: boolean
+  public animateMoves: boolean
   private endScreen: HTMLDivElement = null
-  private currentMove: number = 0
   // the last rendered state (i.e. what is currently displayed)
   private currentState: RenderState
 
@@ -36,20 +34,11 @@ export class Viewer {
   }
 
   resize() {
-    /*
-    this.canvas.setAttribute('width', this.element.clientWidth.toString());
-    this.canvas.setAttribute('height', this.element.clientHeight.toString());
-    */
     this.canvas.setAttribute('width', '800')
     this.canvas.setAttribute('height', '800')
     if(this.engine) {
       this.engine.resize()
     }
-    /*
-    if (this.tempstate) {
-      this.render(this.tempstate);
-    }
-    */
   }
 
   getElement() {
@@ -77,7 +66,7 @@ export class Viewer {
     }
 
     this.engine.clearUI()
-    if(this.animate) {
+    if(this.animateMoves) {
       if(state.gameState.lastMove &&
         this.currentState &&
         // !this.engine.animating() &&

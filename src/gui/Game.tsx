@@ -6,6 +6,7 @@ import { Api } from '../api/Api'
 import { loadCSS } from '.'
 import { Logger } from '../api/Logger'
 import { MessageContent } from '../api/rules/Message'
+import { AppSettings } from './App'
 
 const dialog = remote.dialog
 
@@ -21,7 +22,7 @@ interface State {
 
 const MAX_INTERVAL = 3000 // max pause time between turns in playback mode
 
-export class Game extends React.Component<{ gameId: number, name: string, isReplay: boolean, animateViewer: boolean }, State> {
+export class Game extends React.Component<{ gameId: number, name: string, isReplay: boolean, settings: AppSettings }, State> {
 
   private viewer: Viewer
   private viewerElement: Element
@@ -44,7 +45,8 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   private startViewer(e) {
     if(!this.viewer) {
       this.viewer = Api.getViewer()
-      this.viewer.animate = this.props.animateViewer
+      this.viewer.animateMoves = this.props.settings.animateMoves
+      this.viewer.engine.scene.animateWater = this.props.settings.animateWater
       this.viewer.dock(e)
     }
   }

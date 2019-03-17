@@ -10,7 +10,7 @@ export function loadFromStorage<T>(key: string, schema: any, defaults: T): T {
       v.validate(schema, parsed)
       return parsed
     } catch(e) {
-      console.log('Cache validation for ' + key + ' failed!')
+      console.warn('Cache validation for ' + key + ' failed!')
       window.localStorage[key] = null
       return defaults
     }
@@ -18,5 +18,6 @@ export function loadFromStorage<T>(key: string, schema: any, defaults: T): T {
 }
 
 export function saveToStorage(key: string, value: any) {
+  console.log('Saving', key, 'as', value)
   window.localStorage[key] = JSON.stringify(value)
 }
