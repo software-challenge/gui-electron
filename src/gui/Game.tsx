@@ -16,12 +16,7 @@ interface State {
   playIntervalID: number
   playbackSpeed: number
   waitingForInput: boolean
-}
-
-enum ViewerState {
-  idle,
-  waiting,
-  render
+  status?: MessageContent.StatusReportContent
 }
 
 const MAX_INTERVAL = 3000 // max pause time between turns in playback mode
@@ -33,10 +28,6 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
   private elemSet: boolean
   private viewerElement: Element
-
-  private viewerState: ViewerState
-
-  private status: MessageContent.StatusReportContent
 
   constructor(props) {
     super(props)
@@ -50,8 +41,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
       playbackSpeed: 800,
       waitingForInput: false,
     }
-    this.mounted = false
-    this.viewerState = ViewerState.idle
+    this.isMounted = false
   }
 
   private startViewer(e) {
@@ -123,7 +113,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   private autoPlay() {
     Api.getGameManager().getGameStatus(this.props.gameId).then((status) => {
       if(!this.isPlaying() && status.gameStatus == 'REQUIRES INPUT' && status.numberOfStates == 1) {
-        console.log('Human first! Triggering play...')
+        console.log('Human first! Triggering autoPlay...')
         this.playPause()
       }
     })
