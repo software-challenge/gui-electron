@@ -1,6 +1,6 @@
 {
   "name": "software-challenge-gui",
-  "productName": "Software-Challenge GUI",
+  "productName": "Software-Challenge-GUI",
   "version": "19.1.4",
   "description": "GUI für die Software-Challenge",
   "repository": "https://github.com/CAU-Kiel-Tech-Inf/socha-gui",
@@ -21,7 +21,7 @@
   "license": "ISC",
   "build": {
     "appId": "de.software-challenge.gui",
-    "artifactName": "Software-Challenge-GUI-${os}.${ext}",
+    "artifactName": "${productName}-${os}-${version}.${ext}",
     "files": [
       "main.js",
       "src",
