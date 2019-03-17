@@ -35,7 +35,7 @@ export module MessageContent {
   export class StatusReportContent implements MessageContentInterface {
     gameStatus: GameStatus
     moveRequest?: TransferableMoveRequest
-    gameResult: GameResult
+    gameResult?: GameResult
     numberOfStates: number
   }
 

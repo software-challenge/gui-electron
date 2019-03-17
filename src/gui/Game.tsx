@@ -16,7 +16,7 @@ interface State {
   playIntervalID: number
   playbackSpeed: number
   waitingForInput: boolean
-  status?: MessageContent.StatusReportContent
+  isGameOver: boolean
 }
 
 const MAX_INTERVAL = 3000 // max pause time between turns in playback mode
@@ -24,9 +24,6 @@ const MAX_INTERVAL = 3000 // max pause time between turns in playback mode
 export class Game extends React.Component<{ gameId: number, name: string, isReplay: boolean, animateViewer: boolean }, State> {
 
   private viewer: Viewer
-  private mounted: boolean
-
-  private elemSet: boolean
   private viewerElement: Element
 
   constructor(props) {
@@ -40,8 +37,8 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
       playIntervalID: null,
       playbackSpeed: 800,
       waitingForInput: false,
+      isGameOver: false
     }
-    this.isMounted = false
   }
 
   private startViewer(e) {
@@ -52,22 +49,23 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
     }
   }
 
-  private isGameOver(status: MessageContent.StatusReportContent) {
-    return status != null && this.state.currentTurn == (status.numberOfStates - 1) &&
+  private isGameOver(status?: MessageContent.StatusReportContent) {
+    return status != undefined && this.state.currentTurn == (status.numberOfStates - 1) &&
       (status.gameStatus == 'FINISHED' || status.gameStatus == 'REPLAY') &&
-      status.gameResult
+      status.gameResult !== undefined
   }
 
   private updateViewer() {
-    Api.getGameManager().getGameStatus(this.props.gameId).then((status) => {
+    Api.getGameManager().getGameStatus(this.props.gameId).then(status => {
       console.log('updateProgress', {gameName: this.props.name, stateNumber: this.state.currentTurn})
-      this.status = status
       // Endscreen
-      if(this.isGameOver(status)) {
-        this.viewer.showEndscreen(status.gameResult)
-        this.setState({})
-      } else {
-        this.viewer.hideEndscreen()
+      if(!this.state.isGameOver) {
+        if(this.isGameOver(status)) {
+          this.viewer.showEndscreen(status.gameResult)
+          this.setState({isGameOver: true})
+        } else {
+          this.viewer.hideEndscreen()
+        }
       }
       Api.getGameManager().getGameState(this.props.gameId, this.state.currentTurn).then((gameState) => {
         if(this.state.waitingForInput) {
@@ -81,7 +79,6 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
   componentWillUnmount() {
     // no need to update state here, as it will be destroyed!
-    this.mounted = false
     if(this.state.playIntervalID !== null) {
       window.clearInterval(this.state.playIntervalID)
     }
@@ -106,14 +103,13 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   }
 
   componentDidMount() {
-    this.mounted = true
     this.startViewer(this.viewerElement)
   }
 
   private autoPlay() {
     Api.getGameManager().getGameStatus(this.props.gameId).then((status) => {
-      if(!this.isPlaying() && status.gameStatus == 'REQUIRES INPUT' && status.numberOfStates == 1) {
-        console.log('Human first! Triggering autoPlay...')
+      if(!this.isPlaying() && status.gameStatus == 'REQUIRES INPUT') {
+        console.log('Input required! Triggering autoPlay...')
         this.playPause()
       }
     })
@@ -238,10 +234,10 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
 
   render() {
-    console.log('Turn:', this.state.currentTurn, 'Status:', this.status)
-    if(!this.isGameOver(this.status))
-      this.updateViewer()
-    const showLargePlayButton = !this.playbackStarted && !this.isGameOver(this.status)
+    console.log('Turn:', this.state.currentTurn, 'Game over:', this.state.isGameOver)
+    this.updateViewer()
+
+    const showLargePlayButton = !this.playbackStarted && !this.state.isGameOver
     if(!showLargePlayButton)
       document.getElementById('replay-viewer').style.filter = 'none'
 

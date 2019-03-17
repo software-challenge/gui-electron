@@ -247,7 +247,10 @@ export class App extends React.Component<any, State> {
         </div>
         break
       case AppContent.GameWaiting:
-        mainPaneContent = <h1>Warte auf Spielstart</h1>
+        mainPaneContent = <div>
+          <h1>Warte auf Spielstart</h1>
+          <div id="errors"/>
+        </div>
         break
       default:
         mainPaneContent =

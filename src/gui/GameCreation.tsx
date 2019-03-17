@@ -150,9 +150,10 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
       document.getElementById('waiting').style.opacity = '1'
     }
     this.props.createGame(parsed).catch(reason => {
+      console.log('Error starting the game:', reason)
       let s = stringify(reason)
       document.getElementById('errors').innerText =
-        reason.client ? `Spieler ${reason.client} konnte nicht erfolgreich gestartet werden: ${stringify(reason.error)}` : s
+        reason.client ? `Spieler ${reason.client} konnte nicht erfolgreich gestartet werden: ${stringify(reason.error)}` : `Fehler beim Starten des Spiels: ${s}`
       Logger.getLogger().log('GameCreation', 'createGame', 'Failed to start game: ' + s)
     })
   }

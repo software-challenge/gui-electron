@@ -18,5 +18,7 @@ export function awaitEventOnce(emitter: any, event: string): Promise<void> {
 }
 
 export function stringify(object: any) {
-  return typeof object == 'string' ? object : JSON.stringify(object)
+  if(typeof object == 'string' || object instanceof Error)
+    return object
+  return JSON.stringify(object)
 }
