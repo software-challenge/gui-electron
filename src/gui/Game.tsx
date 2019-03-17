@@ -16,12 +16,7 @@ interface State {
   playIntervalID: number
   playbackSpeed: number
   waitingForInput: boolean
-}
-
-enum ViewerState {
-  idle,
-  waiting,
-  render
+  isGameOver: boolean
 }
 
 const MAX_INTERVAL = 3000 // max pause time between turns in playback mode
@@ -29,12 +24,7 @@ const MAX_INTERVAL = 3000 // max pause time between turns in playback mode
 export class Game extends React.Component<{ gameId: number, name: string, isReplay: boolean, animateViewer: boolean }, State> {
 
   private viewer: Viewer
-  private mounted: boolean
-
-  private elemSet: boolean
   private viewerElement: Element
-
-  private viewerState: ViewerState
 
   constructor(props) {
     super(props)
@@ -47,9 +37,8 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
       playIntervalID: null,
       playbackSpeed: 800,
       waitingForInput: false,
+      isGameOver: false
     }
-    this.mounted = false
-    this.viewerState = ViewerState.idle
   }
 
   private startViewer(e) {
@@ -60,16 +49,23 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
     }
   }
 
+  private isGameOver(status?: MessageContent.StatusReportContent) {
+    return status != undefined && this.state.currentTurn == (status.numberOfStates - 1) &&
+      (status.gameStatus == 'FINISHED' || status.gameStatus == 'REPLAY') &&
+      status.gameResult !== undefined
+  }
+
   private updateViewer() {
-    Api.getGameManager().getGameStatus(this.props.gameId).then((status) => {
+    Api.getGameManager().getGameStatus(this.props.gameId).then(status => {
       console.log('updateProgress', {gameName: this.props.name, stateNumber: this.state.currentTurn})
       // Endscreen
-      if(this.state.currentTurn == (status.numberOfStates - 1) &&
-        (status.gameStatus == 'FINISHED' || status.gameStatus == 'REPLAY') &&
-        status.gameResult) {
-        this.viewer.showEndscreen(status.gameResult)
-      } else {
-        this.viewer.hideEndscreen()
+      if(!this.state.isGameOver) {
+        if(this.isGameOver(status)) {
+          this.viewer.showEndscreen(status.gameResult)
+          this.setState({isGameOver: true})
+        } else {
+          this.viewer.hideEndscreen()
+        }
       }
       Api.getGameManager().getGameState(this.props.gameId, this.state.currentTurn).then((gameState) => {
         if(this.state.waitingForInput) {
@@ -83,7 +79,6 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
   componentWillUnmount() {
     // no need to update state here, as it will be destroyed!
-    this.mounted = false
     if(this.state.playIntervalID !== null) {
       window.clearInterval(this.state.playIntervalID)
     }
@@ -100,25 +95,21 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
      * from the game manager. This should be the only place where the displayed
      * turn number is received from the game manager. While the component is
      * active, the current turn is stored in the currentTurn state. */
-    this.setState((prev, props) => {
-      return {
-        ...prev,
-        currentTurn: Api.getGameManager().getCurrentDisplayStateOnGame(props.gameId),
-      }
+    this.setState({
+      currentTurn: Api.getGameManager().getCurrentDisplayStateOnGame(this.props.gameId),
     })
     this.autoPlay()
     setTimeout(() => this.autoPlay(), 100)
   }
 
   componentDidMount() {
-    this.mounted = true
     this.startViewer(this.viewerElement)
   }
 
   private autoPlay() {
     Api.getGameManager().getGameStatus(this.props.gameId).then((status) => {
-      if(!this.isPlaying() && status.gameStatus == 'REQUIRES INPUT' && status.numberOfStates == 1) {
-        console.log('Human first! Triggering play...')
+      if(!this.isPlaying() && status.gameStatus == 'REQUIRES INPUT') {
+        console.log('Input required! Triggering autoPlay...')
         this.playPause()
       }
     })
@@ -179,10 +170,9 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
   playPause() {
     this.playbackStarted = true
-    document.getElementById('replay-viewer').style.filter = 'none'
-    this.setState((prev, _props) => {
+    this.setState(prev => {
       const next = {...prev}
-      next.playPause = (prev.playPause == 'pause' ? 'play' : 'pause')
+      next.playPause = this.isPlaying() ? 'pause' : 'play'
       if(next.playPause == 'play') {
         this.activatePlayback(next)
       } else {
@@ -194,12 +184,9 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
   // has to be called inside a setState!
   activatePlayback(state: State) {
-    if(state.playPause == 'play') {
-      if(state.playIntervalID) {
-        clearInterval(state.playIntervalID)
-      }
-      state.playIntervalID = window.setInterval(() => this.next(), state.playbackSpeed)
-    }
+    if(state.playIntervalID)
+      clearInterval(state.playIntervalID)
+    state.playIntervalID = window.setInterval(() => this.next(), state.playbackSpeed)
   }
 
   deactivatePlayback(state: State) {
@@ -213,32 +200,15 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
     return this.state.playPause == 'play'
   }
 
-
-  private setStateCount(n: number, afterUpdate: () => void) {
-    this.setState((prev, _props) => {
-      return {...prev, turnCount: n}
-    }, afterUpdate)
-  }
-
-
-  currentStateCount() {
-    return this.state.turnCount
-  }
-
-
   handleSpeedChange(event) {
     const newValue = MAX_INTERVAL - Number(event.target.value)
-    this.setState((prev, _props) => {
+    this.setState(prev => {
       let next = {...prev, playbackSpeed: newValue}
       this.activatePlayback(next)
       // TODO: Pass animationTime to viewer when viewer is react component.
       this.viewer.engine.scene.animationTime = newValue
       return next
     })
-  }
-
-  displayTurn(turn: number) {
-    alert('not implemented yet')
   }
 
   saveReplay() {
@@ -264,15 +234,19 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
 
   render() {
-    const image = 'resources/' + (this.state.playPause == 'pause' ? 'play' : 'pause') + '.svg'
-    const playPause = <button title="Los" onClick={this.playPause.bind(this)}><img className="svg-icon" src={image}/>
-    </button>
-    const forward = <button title="Zug vor" onClick={this.next.bind(this)}><img className="svg-icon"
-                                                                                src="resources/step-forward.svg"/>
-    </button>
-    const back = <button title="Zug zurück" onClick={this.previous.bind(this)}><img className="svg-icon"
-                                                                                    src="resources/step-backward.svg"/>
-    </button>
+    console.log('Turn:', this.state.currentTurn, 'Game over:', this.state.isGameOver)
+    this.updateViewer()
+
+    const showLargePlayButton = !this.playbackStarted && !this.state.isGameOver
+    if(!showLargePlayButton)
+      document.getElementById('replay-viewer').style.filter = 'none'
+
+    const playPause = <button title="Los" onClick={this.playPause.bind(this)}>
+      <img className="svg-icon" src={'resources/' + (this.isPlaying() ? 'pause' : 'play') + '.svg'}/></button>
+    const forward = <button title="Zug vor" onClick={this.next.bind(this)}>
+      <img className="svg-icon" src="resources/step-forward.svg"/></button>
+    const back = <button title="Zug zurück" onClick={this.previous.bind(this)}>
+      <img className="svg-icon" src="resources/step-backward.svg"/></button>
     const speed = <input title="Abspielgeschwindigkeit"
                          className="playbackSpeed"
                          type="range"
@@ -283,8 +257,6 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
                          value={MAX_INTERVAL - this.state.playbackSpeed}/>
     const save = <button className="save" title="Replay speichern" onClick={this.saveReplay.bind(this)}>
       <img className="svg-icon" src="resources/arrow-to-bottom.svg"/></button>
-    this.updateViewer()
-    console.log('Turn: ' + this.state.currentTurn)
     return (
       <div id="replay-viewer" ref={(elem) => { this.viewerElement = elem }}>
         <div className="replay-controls">
@@ -296,10 +268,9 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
             {save}
           </div>
         </div>
-        {this.playbackStarted ? '' :
-          <button id="start-button" title="Los" onClick={event => this.playPause()}><img className="svg-icon"
-                                                                                         src="resources/play.svg"/>
-          </button>}
+        {showLargePlayButton ?
+          <button id="start-button" title="Los" onClick={this.playPause.bind(this)}>
+            <img className="svg-icon" src="resources/play.svg"/></button> : ''}
       </div>
     )
   }

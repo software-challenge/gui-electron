@@ -56,7 +56,6 @@ export class GameManager {
 
   /** Returns a list of GameInfos */
   public getGameInfos(): GameInfo[] {
-    console.log(this.gameInfos)
     return Array.from(this.gameInfos.values())
   }
 
