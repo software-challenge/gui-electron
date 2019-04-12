@@ -12,7 +12,7 @@
 
 - repository klonen
 - yarn und node installieren
-- `yarn compileserver` ausführen, damit der server im Verzeichnis `server` verfügbar wird (dieser Schritt muss zum updaten des servers wiederholt werden)
+- `yarn update-server` ausführen, damit der server im Verzeichnis `server` verfügbar wird (dieser Schritt muss zum updaten des servers wiederholt werden)
 - GUI per `yarn start` starten
 
 ## Allgemeine Struktur
@@ -42,7 +42,7 @@ VSCode compiliert den Code dann, sobald man speichert. In der laufenden Anwendun
 
 `yarn dist` baut ein Paket für das aktuelle Betriebssystem im Verzeichnis `dist`, während `dist-all` Pakete für Windows, Linux und macOS baut. Der Dateiname enthält die Versionsnummer aus `package.json`, diese sollte also vorher dort richtig eingestellt werden. Für Releases sollte auch ein entsprechendes Git Tag angelegt werden, damit man es später zuordnen kann.
 
-Es wird auch immer ein Game Server mit in den Release gepackt. Dieser sollte vorher ebenfalls mit der version getaggt werden. Er wird aus dem `server`-Verzeichnis genommen und kann dahin durch `yarn compileserver` initialisiert und aktualisiert werden.
+Es wird auch immer ein Game Server mit in den Release gepackt. Dieser sollte vorher ebenfalls mit der version getaggt werden. Er wird aus dem `server`-Verzeichnis genommen und kann dahin durch `yarn update-server` initialisiert und aktualisiert werden.
 
 ### Moegliche Probleme
 
