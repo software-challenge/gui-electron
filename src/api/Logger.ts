@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { log } from '../helpers/Helpers'
+import { log } from '../helpers/Utils'
 
 export class Logger {
   private static logger: Logger

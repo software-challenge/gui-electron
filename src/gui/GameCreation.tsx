@@ -9,7 +9,7 @@ import { loadFromStorage } from '../helpers/Cache'
 import { useValue } from '../helpers/Controls'
 import { GameInfo } from '../api/synchronous/GameInfo'
 import { Logger } from '../api/Logger'
-import { stringify } from '../helpers/Helpers'
+import { stringify } from '../helpers/Utils'
 
 const dialog = remote.dialog
 

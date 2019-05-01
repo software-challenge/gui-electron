@@ -9,7 +9,7 @@ import { Logger } from '../Logger'
 import { GameResult } from '../rules/CurrentGame'
 import * as express from 'express'
 import * as bodyParser from 'body-parser'
-import { log, stringify } from '../../helpers/Helpers'
+import { log, stringify } from '../../helpers/Utils'
 import { GameServerInfo } from '../synchronous/GameManagerWorkerInterface'
 
 
