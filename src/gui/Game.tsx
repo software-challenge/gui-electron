@@ -239,10 +239,6 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
     console.log('Turn:', this.state.currentTurn, 'Game over:', this.state.isGameOver)
     this.updateViewer()
 
-    const showLargePlayButton = !this.playbackStarted && !this.state.isGameOver
-    if(!showLargePlayButton)
-      document.getElementById('replay-viewer').style.filter = 'none'
-
     return <div id="replay-viewer" ref={(elem) => { this.viewerElement = elem }}>
       <div className="replay-controls">
         <div className="button-container">
@@ -267,7 +263,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
                       className='save'/>
         </div>
       </div>
-      {showLargePlayButton &&
+      {!this.playbackStarted && !this.state.isGameOver &&
       <GameButton id="start-button" title="Los" onClick={this.playPause.bind(this)} resource='play'/>}
     </div>
   }
