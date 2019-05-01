@@ -3,9 +3,8 @@ import { AsyncApi } from './AsyncApi'
 import { Logger } from '../Logger'
 
 process.on('unhandledRejection', (reason, promise) => {
+  // @ts-ignore
   console.log('Unhandled Rejection at:', reason.stack || reason)
-  // Recommended: send the information to sentry.io
-  // or whatever crash reporting service you use
   process.exitCode = 1
 })
 
