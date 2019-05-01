@@ -61,10 +61,9 @@
 }
 
 #replay-viewer > .replay-controls > .button-container > button {
-    margin: 2px;
     background-color: transparent;
     border: none;
-    color: white;
+    outline: none;
 }
 
 #replay-viewer > .replay-controls > .button-container > button.save {
@@ -80,13 +79,13 @@
     margin: auto 2px auto 1vw;
 }
 
-#replay-viewer > .replay-controls > .button-container > button:hover > img {
+#replay-viewer > .replay-controls > .button-container > button:hover {
     margin: -1px 1px 1px -1px;
-    filter: drop-shadow(1px);
 }
 
-#replay-viewer > .replay-controls > .button-container > button:active > img {
-    margin: 1px -1px -1px 1px;
+#replay-viewer > .replay-controls > .button-container > button:active {
+    filter: invert(20%);
+    margin: 0;
 }
 
 .viewer-container {
