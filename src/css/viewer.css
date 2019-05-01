@@ -56,10 +56,8 @@
 #replay-viewer > .replay-controls > .button-container {
     width: 80%;
     margin: 0 auto;
-}
-
-.replay-controls button {
-    font-size: 3vh;
+    display: flex;
+    align-items: center;
 }
 
 #replay-viewer > .replay-controls > .button-container > button {
@@ -100,8 +98,8 @@
 
 #replay-viewer .replay-debug {
     position: fixed;
-    right: 10;
-    top: 10;
+    right: 10px;
+    top: 10px;
     background-color: rgba(0, 0, 0, 0.7);
     color: white;
     font-family: monospace;

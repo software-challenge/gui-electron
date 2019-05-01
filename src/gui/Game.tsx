@@ -20,7 +20,8 @@ interface State {
   isGameOver: boolean
 }
 
-const MAX_INTERVAL = 3000 // max pause time between turns in playback mode
+/** max pause time between turns in playback mode */
+const MAX_PAUSE = 3000
 
 export class Game extends React.Component<{ gameId: number, name: string, isReplay: boolean, settings: AppSettings }, State> {
 
@@ -38,7 +39,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
       playIntervalID: null,
       playbackSpeed: 800,
       waitingForInput: false,
-      isGameOver: false
+      isGameOver: false,
     }
   }
 
@@ -202,8 +203,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
     return this.state.playPause == 'play'
   }
 
-  handleSpeedChange(event) {
-    const newValue = MAX_INTERVAL - Number(event.target.value)
+  setSpeed(newValue: number) {
     this.setState(prev => {
       let next = {...prev, playbackSpeed: newValue}
       this.activatePlayback(next)
@@ -243,37 +243,39 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
     if(!showLargePlayButton)
       document.getElementById('replay-viewer').style.filter = 'none'
 
-    const playPause = <button title="Los" onClick={this.playPause.bind(this)}>
-      <img className="svg-icon" src={'resources/' + (this.isPlaying() ? 'pause' : 'play') + '.svg'}/></button>
-    const forward = <button title="Zug vor" onClick={this.next.bind(this)}>
-      <img className="svg-icon" src="resources/step-forward.svg"/></button>
-    const back = <button title="Zug zurück" onClick={this.previous.bind(this)}>
-      <img className="svg-icon" src="resources/step-backward.svg"/></button>
-    const speed = <input title="Abspielgeschwindigkeit"
-                         className="playbackSpeed"
-                         type="range"
-                         min="0"
-                         max={MAX_INTERVAL}
-                         step="100"
-                         onChange={(e) => this.handleSpeedChange(e)}
-                         value={MAX_INTERVAL - this.state.playbackSpeed}/>
-    const save = <button className="save" title="Replay speichern" onClick={this.saveReplay.bind(this)}>
-      <img className="svg-icon" src="resources/arrow-to-bottom.svg"/></button>
-    return (
-      <div id="replay-viewer" ref={(elem) => { this.viewerElement = elem }}>
-        <div className="replay-controls">
-          <div className="button-container">
-            {playPause}{back}{forward}
-            <img className="speed-label svg-icon" src="resources/tachometer.svg"/>
-            {speed}
-            <span style={{fontSize: '13pt', color: 'white', marginLeft: '1em'}}>Zug: {this.state.currentTurn}</span>
-            {save}
-          </div>
+    return <div id="replay-viewer" ref={(elem) => { this.viewerElement = elem }}>
+      <div className="replay-controls">
+        <div className="button-container">
+          <GameButton title={this.isPlaying() ? 'Pause' : 'Los'} resource={this.isPlaying() ? 'pause' : 'play'}
+                      onClick={this.playPause.bind(this)}/>
+          <GameButton title='Zug zurück' resource='step-backward' onClick={this.previous.bind(this)}/>
+          <GameButton title='Zug vor' resource='step-forward' onClick={this.next.bind(this)}/>
+
+          <span style={{fontSize: '13pt', color: 'white', marginLeft: '1em'}}>Zug: {this.state.currentTurn}</span>
+
+          <img className="svg-icon speed-label" src="resources/tachometer.svg"/>
+          <input title="Abspielgeschwindigkeit"
+                 className="playbackSpeed"
+                 type="range"
+                 min="0"
+                 max={MAX_PAUSE}
+                 step="100"
+                 onChange={event => this.setSpeed(MAX_PAUSE - Number(event.target.value))}
+                 value={MAX_PAUSE - this.state.playbackSpeed}/>
+
+          <GameButton title='Replay speichern' resource='arrow-to-bottom' onClick={this.saveReplay.bind(this)}
+                      className='save'/>
         </div>
-        {showLargePlayButton ?
-          <button id="start-button" title="Los" onClick={this.playPause.bind(this)}>
-            <img className="svg-icon" src="resources/play.svg"/></button> : ''}
       </div>
-    )
+      {showLargePlayButton &&
+      <GameButton id="start-button" title="Los" onClick={this.playPause.bind(this)} resource='play'/>}
+    </div>
   }
+}
+
+const GameButton: React.FunctionComponent<React.ButtonHTMLAttributes<HTMLButtonElement> & { resource: string }> = props => {
+  const {resource, ...otherProps} = props
+  return <button {...otherProps}>
+    <img className="svg-icon" src={`resources/${resource}.svg`}/>
+  </button>
 }
