@@ -12,7 +12,6 @@ import { LogConsole } from './LogConsole'
 import { Logger } from '../api/Logger'
 import { ErrorPage } from './ErrorPage'
 import { Hotfix } from './Hotfix'
-import Iframe from 'react-iframe'
 import * as v from 'validate-typescript'
 import { loadFromStorage, saveToStorage } from '../helpers/Cache'
 import { GameInfo } from '../api/synchronous/GameInfo'
@@ -186,9 +185,9 @@ export class App extends React.Component<any, State> {
   }
 
   showHtml(url: string) {
-    return <div>
+    return <div style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
       <button className="top-wide" onClick={() => shell.openExternal(url)}>Extern öffnen</button>
-      <Iframe styles={{height: 'calc(100% - 2em)'}} url={url}/>
+      <iframe style={{flex: 1, border: 0}} src={url}/>
     </div>
   }
 
@@ -234,19 +233,22 @@ export class App extends React.Component<any, State> {
         mainPaneContent = this.showHtml('https://www.software-challenge.de/javadocs/')
         break
       case AppContent.Log:
-        let logger = Logger.getLogger()
-        mainPaneContent = <div>
+        const logger = Logger.getLogger()
+        mainPaneContent = <div style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
           <button className="top-wide" onClick={() => {
             logger.clearLog()
             this.refreshContent()
           }}>Log leeren
           </button>
-          <Iframe styles={{height: 'calc(100% - 2em)'}} url={logger.getLogFilePath()}/>
           <div style={{
             position: 'absolute',
+            top: '2em',
+            width: 'calc(100% - 230px)',
             backgroundColor: '#eee',
-            width: 'calc(100% - 220px)',
           }}>Logdatei: {logger.getLogFilePath()}</div>
+          <iframe style={{flex: 1, border: 0, overflow: 'scroll'}}
+                  src={logger.getLogFilePath()}
+                  onLoad={() => {document.querySelector('iframe').contentWindow.document.querySelector('body').style.overflowY = 'scroll'}}/>
         </div>
         break
       case AppContent.GameWaiting:
@@ -284,8 +286,8 @@ export class App extends React.Component<any, State> {
                     onKeyDown={this.changeGameName.bind(this)}/> : null}
             {this.state.contentState == AppContent.GameLive ?
               <button title="Close Game" className="svg-button close-game"
-                      onClick={() => this.closeGame(this.state.activeGameId)}><img className="svg-icon"
-                                                                                   src="resources/x-circled.svg"/>
+                      onClick={() => this.closeGame(this.state.activeGameId)}>
+                <img className="svg-icon" src="resources/x-circled.svg"/>
               </button> : null}
             <Button icon="doc-text" onClick={() => { this.toggleConsole() }} pullRight={true}/>
           </ToolbarActions>

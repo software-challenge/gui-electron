@@ -9,7 +9,7 @@
     "test": "yarn install && yarn compile",
     "start": "yarn install && yarn compile && (test \"hi\" && (test -d server || yarn update-server)) || echo I can\\'t test whether the server exists! && electron .",
     "start-dev": "yarn install && yarn compile && electron . --dev",
-  
+
     "update-server": "git submodule update && yarn compile-server",
     "compile-server": "cd socha && ./gradlew :server:deploy -q && cd .. && rimraf server && cp -r socha/server/build/runnable server && cp socha/player/build/libs/defaultplayer.jar .",
 
@@ -76,7 +76,6 @@
     "promise-retry": "^1",
     "react": "^16",
     "react-dom": "^16",
-    "react-iframe": "^1.2",
     "react-photonkit": "https://github.com/octoth0rpe/react-photonkit.git",
     "request": "^2.88.0",
     "sax": "^1.2.4",

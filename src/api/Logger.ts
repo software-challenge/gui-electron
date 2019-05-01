@@ -177,11 +177,7 @@ export class Logger {
       border-bottom-left-radius: 4px;
     }
     body {
-      margin: 0px;
-      padding: 0px;
-      width: 100vw;
-      height: 100vh;
-      overflow-x: hidden;
+      margin: 0;
     }
     </style>
     <script type="text/javascript">
