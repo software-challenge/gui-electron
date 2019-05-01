@@ -1,12 +1,7 @@
 import * as React from 'react'
 
 
-interface State {
-  messages: any;//ConsoleMessage[];
-}
-
-export class LogConsole extends React.Component<{ gameId: number }, State> {
-  private listener
+export class LogConsole extends React.Component<{ gameId: number }, { messages: any; }> {
 
   constructor(props) {
     super(props)
@@ -23,14 +18,10 @@ export class LogConsole extends React.Component<{ gameId: number }, State> {
     })
   }
 
-  componentWillUnmount() {
-  }
-
   componentDidUpdate(prevProps) {
     let console = document.getElementById('logMessages')
     console.scrollTop = console.scrollHeight
   }
-
 
   render() {
     return (
