@@ -145,16 +145,17 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
     this.setState({waitingForInput: false, currentTurn: turn})
   }
 
-  previousTurn() {
-    this.setTurn(this.state.currentTurn - 1)
+  previousTurn(numberOfTurns?: number) {
+    this.setTurn(Math.max(0, this.state.currentTurn - numberOfTurns || 1))
   }
 
-  nextTurn() {
+  nextTurn(numberOfTurns?: number) {
+    const delta = numberOfTurns || 1
     Api.getGameManager().getGameStatus(this.props.gameId).then((status) => {
       if(status.numberOfStates > this.state.currentTurn + 1) {
         // there is a next state available to display
         this.setState({turnCount: status.numberOfStates - 1})
-        this.setTurn(this.state.currentTurn + 1)
+        this.setTurn(Math.min(this.state.currentTurn + delta, status.numberOfStates - 1))
       } else {
         // there is no next state available at this time
         if(this.state.currentTurn == status.numberOfStates - 1 && status.gameStatus == 'REQUIRES INPUT' && !this.state.waitingForInput) {
@@ -240,8 +241,9 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
           <GameButton title={this.isPlaying() ? 'Pause' : 'Los'} resource={this.isPlaying() ? 'pause' : 'play'}
                       onClick={this.playPause.bind(this)}/>
           <GameButton title='Zug zurück' resource='step-backward' disabled={this.state.currentTurn < 1}
-                      onClick={this.previousTurn.bind(this)}/>
-          <GameButton title='Zug vor' resource='step-forward' onClick={this.nextTurn.bind(this)}/>
+                      onClick={e => this.previousTurn(e.shiftKey ? 5 : 1)}/>
+          <GameButton title='Zug vor' resource='step-forward'
+                      onClick={e => this.nextTurn(e.shiftKey ? 5 : 1)}/>
 
           <span className='current-turn'>Zug: {this.state.currentTurn}</span>
           <input title='Zug'
@@ -250,7 +252,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
                  max={this.state.turnCount}
                  value={this.state.currentTurn}
                  step='1'
-                 onChange={event => this.setTurn(Number(event.target.value))}/>
+                 onChange={e => this.setTurn(Number(e.target.value))}/>
 
           <img alt='speed-icon' className='svg-icon speed-icon' src='resources/tachometer.svg'/>
           <input title='Abspielgeschwindigkeit'
@@ -259,7 +261,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
                  max={MAX_PAUSE}
                  value={MAX_PAUSE - this.state.playbackSpeed}
                  step='100'
-                 onChange={event => this.setSpeed(MAX_PAUSE - Number(event.target.value))}/>
+                 onChange={e => this.setSpeed(MAX_PAUSE - Number(e.target.value))}/>
 
           <GameButton title='Replay speichern' resource='arrow-to-bottom' onClick={this.saveReplay.bind(this)}
                       className='save'/>
