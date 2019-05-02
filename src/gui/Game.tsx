@@ -125,7 +125,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
       Logger.getLogger().log('Game', 'interact', `Sending move`)
       Api.getGameManager().sendMove(this.props.gameId, status.moveRequest.id, move).then(() => {
         // after sending the move, we want to render it as soon as the server gives out the new game state (because the user should have direct feedback on his move)
-        this.waitForNextStatus(status.numberOfStates, () => this.next())
+        this.waitForNextStatus(status.numberOfStates, () => this.nextTurn())
       })
     })
   }
@@ -140,33 +140,28 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
     })
   }
 
-  next() {
-    //1. Get a Status report
+  setTurn(turn: number) {
+    Api.getGameManager().setCurrentDisplayStateOnGame(this.props.gameId, turn)
+    this.setState({waitingForInput: false, currentTurn: turn})
+  }
+
+  previousTurn() {
+    this.setTurn(this.state.currentTurn - 1)
+  }
+
+  nextTurn() {
     Api.getGameManager().getGameStatus(this.props.gameId).then((status) => {
-      if(status.numberOfStates > (this.state.currentTurn + 1)) {
+      if(status.numberOfStates > this.state.currentTurn + 1) {
         // there is a next state available to display
-        this.setState((lastState, props) => {
-          let newTurn = lastState.currentTurn + 1
-          Api.getGameManager().setCurrentDisplayStateOnGame(props.gameId, newTurn)
-          return {currentTurn: newTurn, waitingForInput: false}
-        })
+        this.setState({turnCount: status.numberOfStates - 1})
+        this.setTurn(this.state.currentTurn + 1)
       } else {
         // there is no next state available at this time
         if(this.state.currentTurn == status.numberOfStates - 1 && status.gameStatus == 'REQUIRES INPUT' && !this.state.waitingForInput) {
-          this.setState({waitingForInput: true})
+          this.setState({waitingForInput: true, turnCount: status.numberOfStates - 1})
         }
       }
     })
-  }
-
-  previous() {
-    if(this.state.currentTurn > 0) {
-      this.setState((lastState, props) => {
-        let newTurn = Math.max(0, lastState.currentTurn - 1)
-        Api.getGameManager().setCurrentDisplayStateOnGame(props.gameId, newTurn)
-        return {waitingForInput: false, currentTurn: newTurn}
-      })
-    }
   }
 
   private playbackStarted = false
@@ -190,7 +185,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   activatePlayback(state: State) {
     if(state.playIntervalID)
       clearInterval(state.playIntervalID)
-    state.playIntervalID = window.setInterval(() => this.next(), state.playbackSpeed)
+    state.playIntervalID = window.setInterval(() => this.nextTurn(), state.playbackSpeed)
   }
 
   deactivatePlayback(state: State) {
@@ -223,12 +218,10 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
           defaultPath: this.props.name + '.xml',
           filters: [{name: 'Replay-Dateien', extensions: ['xml']}],
         },
-        (filename) => {
+        filename => {
           // dialog returns undefined when user clicks cancel or an array of strings (paths) if user selected a file
           if(filename) {
-            //window.localStorage[localStorageProgramPath] = filenames[0]
             console.log('Attempting to save', filename)
-            // TODO send request to server to save the game
             Api.getGameManager().saveReplayOfGame(this.props.gameId, filename)
           }
         },
@@ -241,32 +234,39 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
     console.log('Turn:', this.state.currentTurn, 'Game over:', this.state.isGameOver)
     this.updateViewer()
 
-    return <div id="replay-viewer" ref={(elem) => { this.viewerElement = elem }}>
-      <div className="replay-controls">
-        <div className="button-container">
+    return <div id='replay-viewer' ref={(elem) => { this.viewerElement = elem }}>
+      <div className='replay-controls'>
+        <div className='button-container'>
           <GameButton title={this.isPlaying() ? 'Pause' : 'Los'} resource={this.isPlaying() ? 'pause' : 'play'}
                       onClick={this.playPause.bind(this)}/>
-          <GameButton title='Zug zurück' resource='step-backward' onClick={this.previous.bind(this)}/>
-          <GameButton title='Zug vor' resource='step-forward' onClick={this.next.bind(this)}/>
+          <GameButton title='Zug zurück' resource='step-backward' disabled={this.state.currentTurn < 1}
+                      onClick={this.previousTurn.bind(this)}/>
+          <GameButton title='Zug vor' resource='step-forward' onClick={this.nextTurn.bind(this)}/>
 
-          <span style={{fontSize: '13pt', color: 'white', marginLeft: '1em'}}>Zug: {this.state.currentTurn}</span>
+          <span className='current-turn'>Zug: {this.state.currentTurn}</span>
+          <input title='Zug'
+                 type='range'
+                 min='0'
+                 max={this.state.turnCount}
+                 value={this.state.currentTurn}
+                 step='1'
+                 onChange={event => this.setTurn(Number(event.target.value))}/>
 
-          <img alt='speed-icon' className="svg-icon speed-icon" src="resources/tachometer.svg"/>
-          <input title="Abspielgeschwindigkeit"
-                 className="playbackSpeed"
-                 type="range"
-                 min="0"
+          <img alt='speed-icon' className='svg-icon speed-icon' src='resources/tachometer.svg'/>
+          <input title='Abspielgeschwindigkeit'
+                 type='range'
+                 min='0'
                  max={MAX_PAUSE}
-                 step="100"
-                 onChange={event => this.setSpeed(MAX_PAUSE - Number(event.target.value))}
-                 value={MAX_PAUSE - this.state.playbackSpeed}/>
+                 value={MAX_PAUSE - this.state.playbackSpeed}
+                 step='100'
+                 onChange={event => this.setSpeed(MAX_PAUSE - Number(event.target.value))}/>
 
           <GameButton title='Replay speichern' resource='arrow-to-bottom' onClick={this.saveReplay.bind(this)}
                       className='save'/>
         </div>
       </div>
       {!this.playbackStarted && !this.state.isGameOver &&
-      <GameButton id="start-button" title="Los" onClick={this.playPause.bind(this)} resource='play'/>}
+      <GameButton id='start-button' title='Los' onClick={this.playPause.bind(this)} resource='play'/>}
     </div>
   }
 }
@@ -274,6 +274,6 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 const GameButton: React.FunctionComponent<React.ButtonHTMLAttributes<HTMLButtonElement> & { resource: string }> = props => {
   const {resource, ...otherProps} = props
   return <button {...otherProps}>
-    <img alt={props.title} className="svg-icon" src={`resources/${resource}.svg`}/>
+    <img alt={props.title} className='svg-icon' src={`resources/${resource}.svg`}/>
   </button>
 }
