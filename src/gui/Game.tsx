@@ -185,7 +185,8 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
     })
   }
 
-  // has to be called inside a setState!
+  /** Activates playback on this state
+   * NOTE: has to be called inside a setState! */
   activatePlayback(state: State) {
     if(state.playIntervalID)
       clearInterval(state.playIntervalID)
@@ -206,7 +207,8 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   setSpeed(newValue: number) {
     this.setState(prev => {
       let next = {...prev, playbackSpeed: newValue}
-      this.activatePlayback(next)
+      if(prev.playIntervalID)
+        this.activatePlayback(next)
       // TODO: Pass animationTime to viewer when viewer is react component.
       this.viewer.engine.scene.animationTime = newValue
       return next
@@ -249,7 +251,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
           <span style={{fontSize: '13pt', color: 'white', marginLeft: '1em'}}>Zug: {this.state.currentTurn}</span>
 
-          <img className="svg-icon speed-label" src="resources/tachometer.svg"/>
+          <img alt='speed-icon' className="svg-icon speed-icon" src="resources/tachometer.svg"/>
           <input title="Abspielgeschwindigkeit"
                  className="playbackSpeed"
                  type="range"
@@ -272,6 +274,6 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 const GameButton: React.FunctionComponent<React.ButtonHTMLAttributes<HTMLButtonElement> & { resource: string }> = props => {
   const {resource, ...otherProps} = props
   return <button {...otherProps}>
-    <img className="svg-icon" src={`resources/${resource}.svg`}/>
+    <img alt={props.title} className="svg-icon" src={`resources/${resource}.svg`}/>
   </button>
 }

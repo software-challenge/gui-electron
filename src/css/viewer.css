@@ -50,7 +50,7 @@
     filter: invert(100%);
 }
 
-#replay-viewer > .replay-controls > .button-container > img.speed-label {
+#replay-viewer > .replay-controls > .button-container > img.speed-icon {
     margin: auto 2px auto 1vw;
 }
 
