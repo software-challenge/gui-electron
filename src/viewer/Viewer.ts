@@ -21,7 +21,6 @@ export class Viewer {
     //Initialize container
     this.element = document.createElement('div')
     this.element.classList.add('viewer-container')
-    window.addEventListener('resize', this.resize.bind(this))
     //Take time measurement for later performance analysis
     this.startup_timestamp = performance.now()
 
@@ -33,21 +32,12 @@ export class Viewer {
     this.engine = new PiranhasEngine(this.canvas)
   }
 
-  resize() {
-    this.canvas.setAttribute('width', '800')
-    this.canvas.setAttribute('height', '800')
-    if(this.engine) {
-      this.engine.resize()
-    }
-  }
-
   getElement() {
     return this.element
   }
 
   dock(element: Element) {
     element.appendChild(this.element)
-    window.requestAnimationFrame(this.resize.bind(this))
   }
 
   undock() {
@@ -201,17 +191,18 @@ export class Viewer {
       this.endScreen.classList.add('endscreen')
       this.element.appendChild(this.endScreen)
     }
-    this.endScreen.innerHTML = '<h1>Spiel vorbei</h1>' +
+    this.endScreen.innerHTML =
+      '<h1>Spiel vorbei</h1>' +
       '<h2>' + result.reason + '</h2>' +
       (result.winner ?
         '<h3>Gewinner: ' + result.winner.displayName + ' (' + (result.winner.color == Player.COLOR.RED ? 'Rot' : 'Blau') + ')</h3>' :
         '<h3>Unentschieden!</h3>')
-    this.endScreen.setAttribute('style', 'opacity: 1.0; display: block')
+    this.endScreen.setAttribute('style', 'opacity: 1.0')
   }
 
   hideEndscreen() {
     if(this.endScreen) {
-      this.endScreen.setAttribute('style', 'opacity: 0.0; display: none')
+      this.endScreen.setAttribute('style', 'opacity: 0.0')
     }
   }
 }

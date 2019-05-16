@@ -2,45 +2,24 @@
     position: relative;
     font-family: 'Ubuntu', 'Arial', sans-serif;
     overflow: hidden;
-    filter: brightness(50%);
+    height: 100%;
+}
+
+#replay-viewer img.svg-icon {
+    filter: invert(100%);
 }
 
 #start-button {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: transparent;
-    border: none;
-    color: white;
-}
-
-#start-button img {
-    width: 10vw;
-}
-
-#start-button:hover > img {
-    margin: -1px 1px 1px -1px;
-    filter: drop-shadow(1px);
-}
-
-#start-button:active > img {
-    margin: 1px -1px -1px 1px;
-}
-
-#start-button:active, #start-button:focus {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
     border: none;
     outline: none;
 }
 
-#replay-viewer {
-    width: 100%;
-    height: 100%;
-}
-
-#replay-viewer > canvas {
-    width: 100%;
-    height: 100%;
+#start-button img {
+    width: 10vw;
 }
 
 #replay-viewer > .replay-controls {
@@ -56,17 +35,14 @@
 #replay-viewer > .replay-controls > .button-container {
     width: 80%;
     margin: 0 auto;
-}
-
-.replay-controls button {
-    font-size: 3vh;
+    display: flex;
+    align-items: center;
 }
 
 #replay-viewer > .replay-controls > .button-container > button {
-    margin: 2px;
     background-color: transparent;
     border: none;
-    color: white;
+    outline: none;
 }
 
 #replay-viewer > .replay-controls > .button-container > button.save {
@@ -74,46 +50,25 @@
     right: 0;
 }
 
-#replay-viewer img.svg-icon {
-    filter: invert(100%);
-}
-
-#replay-viewer > .replay-controls > .button-container > img.speed-label {
-    margin: auto 2px auto 1vw;
-}
-
-#replay-viewer > .replay-controls > .button-container > button:hover > img {
-    margin: -1px 1px 1px -1px;
-    filter: drop-shadow(1px);
-}
-
-#replay-viewer > .replay-controls > .button-container > button:active > img {
-    margin: 1px -1px -1px 1px;
-}
-
-#replay-viewer canvas {
-    /* width: 100%;
-    height: 100%; */
-    width: 800px;
-    height: 800px;
-}
-
-#replay-viewer .replay-debug {
-    position: fixed;
-    right: 10;
-    top: 10;
-    background-color: rgba(0, 0, 0, 0.7);
+#replay-viewer > .replay-controls > .button-container > span.current-turn {
+    font-size: 13pt;
     color: white;
-    font-family: monospace;
-    z-index: 100;
+    margin-left: 1em;
+    width: 60px;
 }
 
-#replay-viewer .display {
-    position: absolute;
-    top: 0;
-    width: 100%;
-    font-size: 3vh;
-    font-weight: bold;
+
+#replay-viewer > .replay-controls > .button-container > img.speed-icon {
+    margin: auto 5px auto 1em;
+}
+
+#replay-viewer > .replay-controls > .button-container > button:hover {
+    margin: -1px 1px 1px -1px;
+}
+
+#replay-viewer > .replay-controls > .button-container > button:active {
+    filter: invert(20%);
+    margin: 0;
 }
 
 .viewer-container {
@@ -122,209 +77,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #000000;
-}
-
-.display .red {
-    position: absolute;
-    left: 0;
-    top: 0;
-    color: #d1524e;
-    padding-left: 0.2em;
-    padding-right: 0.2em;
-    background: rgba(255, 255, 255, 0.5);
-    border-bottom-right-radius: 3vh;
-}
-
-.display .blue {
-    position: absolute;
-    right: 0;
-    top: 0;
-    color: #1561b9;
-    text-align: right;
-    padding-left: 0.2em;
-    padding-right: 0.2em;
-    background: rgba(255, 255, 255, 0.4);
-    border-bottom-left-radius: 3vh;
-}
-
-.display .current-player {
-    border: 3px solid green;
-}
-
-.carrots::before {
-    content: "Karotten: ";
-}
-
-.salads::before {
-    content: "Salate: ";
-}
-
-.display .cardbox {
-    position: relative;
-    height: 4vh;
-    width: 4vh;
-    padding: 0;
-    display: inline-block;
-}
-
-.display .card {
-    height: 4vh;
-    position: absolute;
-    top: 0;
-    left: 0;
-    filter: grayscale(100%);
-}
-
-.invisible {
-    display: none !important;
-}
-
-.display .cardbox.highlight .card {
-    filter: grayscale(0);
-}
-
-.display .cardbox.highlight .card:hover {
-    filter: saturate(2.0);
-}
-
-.display .round {
-    position: absolute;
-    width: 100%;
-    text-align: center;
-    top: 0;
-    left: 0;
-    font-weight: bold;
-    font-size: 5vh;
-    color: #cccacc;
-}
-
-#replay-viewer .cancel {
-    bottom: 8vh;
-    left: 10;
-    color: red;
-}
-
-#replay-viewer .skip {
-    bottom: 8vh;
-    left: 10vw;
-    color: yellow;
-}
-
-#replay-viewer .button {
-    position: absolute;
-    margin: 2px;
-    font-size: 3vh;
-    color: black;
-    border: 1px solid black;
-    padding: 1px 6px;
-    font-weight: bold;
-}
-
-#replay-viewer .send {
-    bottom: 8vh;
-    right: 10;
-}
-
-#replay-viewer .current-red .button {
-    color: white;
-    background: #d1524e;
-}
-
-#replay-viewer .current-blue .button {
-    color: white;
-    background: #1561b9;
-}
-
-#replay-viewer .eatSalad {
-    bottom: 8vh;
-    right: 13vw;
-}
-
-#replay-viewer .eatSalad:before {
-    font-family: emoji;
-    color: green;
-    content: "🥗 ";
-}
-
-#replay-viewer .exchangeCarrots.root {
-    position: absolute;
-    bottom: 8vh;
-    right: 10vw;
-    margin: 2px;
-}
-
-/* To make Emojis work, see https://coderwall.com/p/ruv9hq/display-emoji-glyphs-intermingled-with-arbitrary-text */
-@font-face {
-    font-family: emoji;
-
-    /* Fonts for text outside emoji blocks */
-    src: local('Droid Sans Mono'),
-    local('Lucida Console'),
-    local('Arial Monospaced'),
-    local(Arial);
-}
-
-@font-face {
-    font-family: emoji;
-
-    src: local('Apple Color Emoji'),
-    local('Android Emoji'),
-    local('Segoe UI'),
-    local('Twitter Color Emoji'),
-    local(EmojiSymbols),
-    local(Symbola);
-
-    /* Emoji unicode blocks */
-    unicode-range: U+1F300-1F5FF, U+1F600-1F64F, U+1F680-1F6FF, U+2600-26FF;
-}
-
-#replay-viewer div.exchangeCarrots.clickable:after {
-    font-family: emoji;
-    color: #EB8921;
-    content: " 🥕";
-}
-
-#replay-viewer div.exchangeCarrots.clickable {
-    position: relative;
-    display: inline-block;
-    padding: 2px 12px;
-    margin: 0 2px;
-}
-
-#replay-viewer .takeOrDropCarrotsCard.root {
-    position: absolute;
-    top: 0;
-    left: 0 !important;
-    background-color: rgba(0, 0, 0, 0.6);
-    width: 100%;
-    height: 100%;
-    padding-top: 10vh;
-    left: 100%;
-    text-align: center;
-}
-
-#replay-viewer div.takeOrDropCarrotsCard.clickable {
-    position: relative;
-    width: 33%;
-    margin: auto;
-    margin-bottom: 2vh;
-}
-
-#replay-viewer .button:hover {
-    background-color: #ccc;
-}
-
-#replay-viewer .button:active {
-    color: red;
-}
-
-#replay-viewer .info {
-    position: absolute;
-    bottom: 5vh;
-    left: 2em;
-    color: white;
-    font-size: 2vh;
+    background: black;
 }
 
 .endscreen {
@@ -342,44 +95,4 @@
     text-align: center;
     color: white;
     pointer-events: none;
-}
-
-.winPicture {
-    max-height: 10vh;
-    margin-top: calc(25% - 10vh);
-}
-
-.winReason {
-    font-size: 4vh;
-}
-
-.winName {
-    font-size: 5vh;
-}
-
-.winBlue {
-    font-weight: bold;
-    color: #89CFF0;
-}
-
-.winRed {
-    font-weight: bold;
-    color: #FF6961;
-}
-
-.overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: calc(100% - 6em);
-    height: calc(100% - 8em);
-    padding: 1em;
-    margin: 3em 3em;
-    border-radius: 3em;
-    background-color: rgba(0, 0, 0, 0.6);
-    transition: opacity 0.5s;
-    font-size: 4vh;
-    text-align: center;
-    color: white;
-    overflow: auto;
 }
