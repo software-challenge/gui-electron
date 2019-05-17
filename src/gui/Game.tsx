@@ -133,7 +133,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
   setTurn(turn: number) {
     Api.getGameManager().setCurrentDisplayStateOnGame(this.props.gameId, turn)
-    this.setState({waitingForInput: false, turnActive: turn})
+    this.setState({waitingForInput: false, turnActive: turn, hideStartButton: true})
   }
 
   previousTurn(numberOfTurns?: number) {
@@ -226,6 +226,16 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
     this.updateViewer()
 
     return <div id='replay-viewer' ref={(elem) => { this.viewerElement = elem }}>
+      {!hideStartButton && !isGameOver &&
+      <GameButton className='overlay' id='start-button' title='Los' onClick={this.playPause.bind(this)} resource='play'/>}
+      {isGameOver &&
+      <div className='overlay' id='endscreen'>
+        <h1>Spiel vorbei</h1>
+        <h2>{gameResult.reason}</h2>
+        <h3>{gameResult.winner ?
+          `Gewinner: ${gameResult.winner.displayName} (${gameResult.winner.color == Player.COLOR.RED ? 'Rot' : 'Blau'})` :
+          'Unentschieden!'}</h3>
+      </div>}
       <div className='replay-controls'>
         <div className='button-container'>
           <GameButton title={this.isPlaying() ? 'Pause' : 'Los'} resource={this.isPlaying() ? 'pause' : 'play'}
@@ -257,16 +267,6 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
                       className='save'/>
         </div>
       </div>
-      {!hideStartButton && !isGameOver &&
-      <GameButton id='start-button' title='Los' onClick={this.playPause.bind(this)} resource='play'/>}
-      {isGameOver &&
-      <div className='endscreen'>
-        <h1>Spiel vorbei</h1>
-        <h2>{gameResult.reason}</h2>
-        <h3>{gameResult.winner ?
-          `Gewinner: ${gameResult.winner.displayName} (${gameResult.winner.color == Player.COLOR.RED ? 'Rot' : 'Blau'})` :
-          'Unentschieden!'}</h3>
-      </div>}
     </div>
   }
 }

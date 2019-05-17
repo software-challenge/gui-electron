@@ -1,3 +1,37 @@
+.overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+#start-button {
+    border: none;
+    outline: none;
+}
+
+#start-button img {
+    width: 10vw;
+}
+
+#endscreen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+}
+
+.viewer-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: black;
+}
+
 #replay-viewer {
     position: relative;
     font-family: 'Ubuntu', 'Arial', sans-serif;
@@ -7,19 +41,6 @@
 
 #replay-viewer img.svg-icon {
     filter: invert(100%);
-}
-
-#start-button {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    border: none;
-    outline: none;
-}
-
-#start-button img {
-    width: 10vw;
 }
 
 #replay-viewer > .replay-controls {
@@ -69,29 +90,4 @@
 #replay-viewer > .replay-controls > .button-container > button:active {
     filter: invert(20%);
     margin: 0;
-}
-
-.viewer-container {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: black;
-}
-
-.endscreen {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
-    width: calc(100% - 6em);
-    height: calc(100% - 8em);
-    padding: 1em;
-    margin: 3em 3em;
-    border-radius: 3em;
-    background-color: rgba(0, 0, 0, 0.6);
-    text-align: center;
-    color: white;
-    pointer-events: none;
 }
