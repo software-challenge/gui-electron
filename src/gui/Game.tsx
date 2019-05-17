@@ -137,7 +137,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   }
 
   previousTurn(numberOfTurns?: number) {
-    this.setTurn(Math.max(0, this.state.turnActive - numberOfTurns || 1))
+    this.setTurn(Math.max(0, this.state.turnActive - (numberOfTurns || 1)))
   }
 
   nextTurn(numberOfTurns?: number) {
