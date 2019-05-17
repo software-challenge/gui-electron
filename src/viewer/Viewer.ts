@@ -1,5 +1,5 @@
 import { PiranhasEngine } from './Engine/PiranhasEngine'
-import { Coordinates, Direction, FieldSelected, GameResult, GameRuleLogic, GameState, InteractionEvent, Move, Player, RenderState, SelectFish, SelectTargetDirection, UiState } from '../api/rules/CurrentGame'
+import { Coordinates, Direction, FieldSelected, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectFish, SelectTargetDirection, UiState } from '../api/rules/CurrentGame'
 
 export class Viewer {
   //DOM Elements
@@ -182,27 +182,5 @@ export class Viewer {
 
   stop() {
     this.engine.cancelInteractions()
-  }
-
-  showEndscreen(result: GameResult) {
-    console.log('Showing Endscreen for GameResult', result)
-    if(this.endScreen === null) {
-      this.endScreen = document.createElement('div')
-      this.endScreen.classList.add('endscreen')
-      this.element.appendChild(this.endScreen)
-    }
-    this.endScreen.innerHTML =
-      '<h1>Spiel vorbei</h1>' +
-      '<h2>' + result.reason + '</h2>' +
-      (result.winner ?
-        '<h3>Gewinner: ' + result.winner.displayName + ' (' + (result.winner.color == Player.COLOR.RED ? 'Rot' : 'Blau') + ')</h3>' :
-        '<h3>Unentschieden!</h3>')
-    this.endScreen.setAttribute('style', 'opacity: 1.0')
-  }
-
-  hideEndscreen() {
-    if(this.endScreen) {
-      this.endScreen.setAttribute('style', 'opacity: 0.0')
-    }
   }
 }

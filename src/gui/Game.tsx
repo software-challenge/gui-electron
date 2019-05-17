@@ -1,5 +1,5 @@
 import { remote } from 'electron'
-import { GameState, RenderState } from '../api/rules/CurrentGame'
+import { GameResult, GameState, Player, RenderState } from '../api/rules/CurrentGame'
 import * as React from 'react'
 import { Viewer } from '../viewer/Viewer'
 import { Api } from '../api/Api'
@@ -18,6 +18,7 @@ interface State {
   playbackSpeed: number
   waitingForInput: boolean
   isGameOver: boolean
+  gameResult?: GameResult
 }
 
 /** max pause time between turns in playback mode */
@@ -62,14 +63,9 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
     Api.getGameManager().getGameStatus(this.props.gameId).then(status => {
       console.log('updateProgress', {gameName: this.props.name, stateNumber: this.state.currentTurn})
       // Endscreen
-      if(!this.state.isGameOver) {
-        if(this.isGameOver(status)) {
-          this.viewer.showEndscreen(status.gameResult)
-          this.setState({isGameOver: true})
-        } else {
-          this.viewer.hideEndscreen()
-        }
-      }
+      const gameOver = this.isGameOver(status)
+      if(gameOver != this.state.isGameOver)
+        this.setState({isGameOver: gameOver, gameResult: status.gameResult})
       Api.getGameManager().getGameState(this.props.gameId, this.state.currentTurn).then((gameState) => {
         if(this.state.waitingForInput) {
           this.interact(status)
@@ -232,7 +228,8 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
 
   render() {
-    console.log('Turn:', this.state.currentTurn, 'Game over:', this.state.isGameOver)
+    const {currentTurn, turnCount, playbackSpeed, isGameOver, gameResult} = this.state
+    console.log('Turn:', currentTurn, 'Game over:', isGameOver)
     this.updateViewer()
 
     return <div id='replay-viewer' ref={(elem) => { this.viewerElement = elem }}>
@@ -240,17 +237,17 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
         <div className='button-container'>
           <GameButton title={this.isPlaying() ? 'Pause' : 'Los'} resource={this.isPlaying() ? 'pause' : 'play'}
                       onClick={this.playPause.bind(this)}/>
-          <GameButton title='Zug zurück' resource='step-backward' disabled={this.state.currentTurn < 1}
+          <GameButton title='Zug zurück' resource='step-backward' disabled={currentTurn < 1}
                       onClick={e => this.previousTurn(e.shiftKey ? 5 : 1)}/>
           <GameButton title='Zug vor' resource='step-forward'
                       onClick={e => this.nextTurn(e.shiftKey ? 5 : 1)}/>
 
-          <span className='current-turn'>Zug: {this.state.currentTurn}</span>
+          <span className='current-turn'>Zug: {currentTurn}</span>
           <input title='Zug'
                  type='range'
                  min='0'
-                 max={this.state.turnCount}
-                 value={this.state.currentTurn}
+                 max={turnCount}
+                 value={currentTurn}
                  step='1'
                  onChange={e => this.setTurn(Number(e.target.value))}/>
 
@@ -259,7 +256,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
                  type='range'
                  min='0'
                  max={MAX_PAUSE}
-                 value={MAX_PAUSE - this.state.playbackSpeed}
+                 value={MAX_PAUSE - playbackSpeed}
                  step='100'
                  onChange={e => this.setSpeed(MAX_PAUSE - Number(e.target.value))}/>
 
@@ -267,8 +264,16 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
                       className='save'/>
         </div>
       </div>
-      {!this.playbackStarted && !this.state.isGameOver &&
+      {!this.playbackStarted && !isGameOver &&
       <GameButton id='start-button' title='Los' onClick={this.playPause.bind(this)} resource='play'/>}
+      {isGameOver &&
+      <div className='endscreen'>
+        <h1>Spiel vorbei</h1>
+        <h2>{gameResult.reason}</h2>
+        <h3>{gameResult.winner ?
+          `Gewinner: ${gameResult.winner.displayName} (${gameResult.winner.color == Player.COLOR.RED ? 'Rot' : 'Blau'})` :
+          'Unentschieden!'}</h3>
+      </div>}
     </div>
   }
 }
