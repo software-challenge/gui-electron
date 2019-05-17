@@ -64,8 +64,6 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
   private updateViewer() {
     Api.getGameManager().getGameStatus(this.props.gameId).then(status => {
-      console.log('updateProgress', {gameName: this.props.name, stateNumber: this.state.turnActive})
-      // Endscreen
       const gameOver = this.isGameOver(status)
       if(gameOver != this.state.isGameOver)
         ReactDOM.unstable_batchedUpdates(() => {
@@ -229,7 +227,6 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
   render() {
     const {turnActive, turnTotal, playbackSpeed, isGameOver, gameResult, hideStartButton} = this.state
-    console.log('Turn:', turnActive, 'Game over:', isGameOver)
     this.updateViewer()
 
     return <div id='replay-viewer' ref={(elem) => { this.viewerElement = elem }}>
