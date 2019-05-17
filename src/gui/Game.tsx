@@ -7,6 +7,7 @@ import { loadCSS } from '.'
 import { Logger } from '../api/Logger'
 import { MessageContent } from '../api/rules/Message'
 import { AppSettings } from './App'
+import * as ReactDOM from 'react-dom'
 
 const dialog = remote.dialog
 
@@ -67,7 +68,14 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
       // Endscreen
       const gameOver = this.isGameOver(status)
       if(gameOver != this.state.isGameOver)
-        this.setState({isGameOver: gameOver, gameResult: status.gameResult})
+        ReactDOM.unstable_batchedUpdates(() => {
+          if(gameOver) {
+            this.deactivatePlayback(this.state)
+            this.setState({playbackStatus: 'pause'})
+          }
+          this.setState({isGameOver: gameOver, gameResult: status.gameResult})
+        })
+
       Api.getGameManager().getGameState(this.props.gameId, this.state.turnActive).then((gameState) => {
         if(this.state.waitingForInput) {
           this.interact(status)
@@ -143,16 +151,15 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   nextTurn(numberOfTurns?: number) {
     const delta = numberOfTurns || 1
     Api.getGameManager().getGameStatus(this.props.gameId).then((status) => {
-      if(status.numberOfStates > this.state.turnActive + 1) {
-        // there is a next state available to display
+      ReactDOM.unstable_batchedUpdates(() => {
         this.setState({turnTotal: status.numberOfStates - 1})
-        this.setTurn(Math.min(this.state.turnActive + delta, status.numberOfStates - 1))
-      } else {
-        // there is no next state available at this time
-        if(this.state.turnActive == status.numberOfStates - 1 && status.gameStatus == 'REQUIRES INPUT' && !this.state.waitingForInput) {
-          this.setState({waitingForInput: true, turnTotal: status.numberOfStates - 1})
+        if(status.numberOfStates > this.state.turnActive + 1) {
+          this.setTurn(Math.min(this.state.turnActive + delta, status.numberOfStates - 1))
+        } else {
+          if(this.state.turnActive == status.numberOfStates - 1 && status.gameStatus == 'REQUIRES INPUT' && !this.state.waitingForInput)
+            this.setState({waitingForInput: true})
         }
-      }
+      })
     })
   }
 
