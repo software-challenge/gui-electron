@@ -55,9 +55,9 @@ export class GameState {
     return clone
   }
 
-  static lift(that: any): GameState {//Flat clone that adds methods to an object serialized to json
+  /** Flat clone that adds methods to an object serialized to json */
+  static lift(that: any): GameState {
     let clone = new GameState()
-    console.log('GameState lifting', that)
     Object.assign<GameState, GameState>(clone, that)
     clone.red = Player.lift(clone.red)
     clone.blue = Player.lift(clone.blue)
