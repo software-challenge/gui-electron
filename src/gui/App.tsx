@@ -16,7 +16,7 @@ import * as v from 'validate-typescript'
 import { loadFromStorage, saveToStorage } from '../helpers/Cache'
 import { GameInfo } from '../api/synchronous/GameInfo'
 import { ExecutableStatus } from '../api/rules/ExecutableStatus'
-import promiseRetry = require('promise-retry')
+const promiseRetry: any = require("promise-retry")
 
 const dialog = remote.dialog
 const shell = remote.shell

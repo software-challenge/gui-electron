@@ -7,7 +7,7 @@ import * as path from 'path'
 import * as portfinder from 'portfinder'
 import * as child_process from 'child_process'
 import { ExecutableStatus } from '../rules/ExecutableStatus'
-import promiseRetry = require('promise-retry')
+const promiseRetry: any = require("promise-retry")
 
 export interface GameServerInfo {
   status: ExecutableStatus.Status

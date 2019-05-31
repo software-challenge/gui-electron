@@ -1,12 +1,10 @@
+
 {
   "compilerOptions": {
     "jsxFactory": "React.createElement",
     "jsx": "react",
-    "module": "commonjs",
-    "moduleResolution": "node",
     "preserveConstEnums": true,
     "sourceMap": true,
-    "outDir": "out",
     "checkJs": true,
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
@@ -15,10 +13,5 @@
     "skipLibCheck": true,
     "noImplicitAny": false
   },
-  "include": [
-    "src/api/**/*",
-    "src/gui/**/*",
-    "src/viewer/**/*"
-  ],
-  "compileOnSave": true
+  "extends": "./node_modules/electron-webpack/tsconfig-base.json"
 }
