@@ -1,10 +1,7 @@
 /// <reference path="phaser.d.ts"/>
 
 import 'phaser'
-import { remote } from 'electron'
 import { Board, Coordinates, FieldSelected, FIELDSIZE, FIELDTYPE, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectFish, SelectTargetDirection, UiState } from '../../api/rules/CurrentGame'
-
-const dialog = remote.dialog
 
 const initialBoard = GameRuleLogic.addBlockedFields(new Board())
 
