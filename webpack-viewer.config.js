@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/viewer/Viewer.ts',
+  entry: './src/viewer/export.ts',
   module: {
     rules: [
       {
@@ -10,8 +10,17 @@ module.exports = {
           {
             loader: 'ts-loader',
             options: {
-              transpileOnly: true
+              transpileOnly: false
             }
+          }
+        ],
+        exclude: /node_modules/
+      },
+      {
+        test: /\.js$/,
+        use: [
+          {
+            loader: 'babel'
           }
         ],
         exclude: /node_modules/
@@ -22,7 +31,8 @@ module.exports = {
     extensions: [ '.tsx', '.ts', '.js' ]
   },
   output: {
+    path: path.resolve(__dirname, 'dist'),
     filename: 'standalone-viewer.js',
-    path: path.resolve(__dirname, 'dist')
+    library: 'standaloneViewer'
   }
 };

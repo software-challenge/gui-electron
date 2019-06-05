@@ -26,20 +26,9 @@ export class Replay extends Game {
           .on('end', function() { res(buf.join(''))})
       }).then(Parser.getJSONFromXML)
         .then(decoded => {
-          if(decoded.protocol) {
-            if(decoded.protocol.room) {
-              for(let room of decoded.protocol.room) {
-                if(room.data[0].state) {
-                  const state = room.data[0].state[0]
-                  this.gameStates.push(GameState.fromJSON(state))
-                } else if(room.data[0].score) {
-                  const result = room.data[0]
-                  this.gameResult = GameResult.fromJSON(result)
-                }
-              }
-              Logger.getLogger().log('Replay', 'constructor', `loaded ${this.gameStates.length} states from ${replay.path}`)
-            }
-          }
+          const converted = Parser.convert(decoded)
+          this.gameStates = converted.gameStates
+          this.gameResult = converted.gameResult
           gameReady()
         })
     })
