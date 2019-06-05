@@ -24,4 +24,23 @@ export module Parser {
 
   }
 
+  export function convert(json: any): any {
+    let gameStates: GameState[] = []
+    let gameResult: GameResult = new GameResult()
+    if(json.protocol) {
+      if(json.protocol.room) {
+        for(let room of json.protocol.room) {
+          if(room.data[0].state) {
+            const state = room.data[0].state[0]
+            gameStates.push(GameState.fromJSON(state))
+          } else if(room.data[0].score) {
+            const result = room.data[0]
+            gameResult = GameResult.fromJSON(result)
+          }
+        }
+      }
+    }
+    return { gameStates: gameStates, gameResult: gameResult }
+  }
+
 }
