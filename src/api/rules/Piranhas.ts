@@ -31,8 +31,9 @@ export class GameState {
     console.log('start color', json.$.startPlayerColor)
     console.log('current color', json.$.currentPlayerColor)
     const gs = new GameState()
-    gs.startPlayerColor = Player.ColorFromString(json.$.startPlayerColor)
-    gs.currentPlayerColor = Player.ColorFromString(json.$.currentPlayerColor)
+    // Added case where color is a number for final viewer
+    gs.startPlayerColor = Player.ColorFromStringOrInt(json.$.startPlayerColor)
+    gs.currentPlayerColor = Player.ColorFromStringOrInt(json.$.currentPlayerColor)
     gs.turn = parseInt(json.$.turn)
     gs.red = Player.fromJSON(json.red[0])
     gs.blue = Player.fromJSON(json.blue[0])
@@ -193,6 +194,20 @@ export class Player {
       return Player.COLOR.BLUE
     }
     throw 'Unknown color value: ' + s
+  }
+
+  static ColorFromStringOrInt(c: string | number): PLAYERCOLOR {
+    if (typeof c === "string") {
+      return Player.ColorFromString(c)
+    }
+    if (typeof c === "number") {
+      if (c === 0) {
+        return Player.COLOR.RED
+      } else {
+        return Player.COLOR.BLUE
+      }
+    }
+    throw 'Unknown color value: ' + c
   }
 
   static OtherColor(c: PLAYERCOLOR): PLAYERCOLOR {

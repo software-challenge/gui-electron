@@ -26,6 +26,7 @@ export class SimpleScene extends Phaser.Scene {
 
   constructor() {
     super({key: 'simple'})
+    console.log("simple scene created", this)
   }
 
   preload() {
@@ -37,6 +38,7 @@ export class SimpleScene extends Phaser.Scene {
   }
 
   create() {
+    console.log("engine create", this)
     this.input.on('pointerdown', (e: any) => this.handleClick(e))
 
     this.anims.create({
@@ -151,6 +153,9 @@ export class SimpleScene extends Phaser.Scene {
   }
 
   unmarkFields() {
+    if (this.markers == undefined) {
+      this.markers = []
+    }
     this.markers.forEach(m => m.destroy())
     this.markers = []
   }
@@ -354,10 +359,12 @@ export class PiranhasEngine {
   }
 
   finishAnimations() {
-    this.scene.tweens.each(tween => {
-      tween.seek(1)
-      tween.complete()
-    })
+    if (this.scene.tweens) {
+      this.scene.tweens.each(tween => {
+        tween.seek(1)
+        tween.complete()
+      })
+    }
   }
 
   animating(): boolean {

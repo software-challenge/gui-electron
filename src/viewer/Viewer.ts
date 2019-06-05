@@ -30,6 +30,7 @@ export class Viewer {
     this.element.appendChild(this.canvas)
 
     this.engine = new PiranhasEngine(this.canvas)
+    console.log("viewer created", this)
   }
 
   getElement() {
@@ -66,7 +67,9 @@ export class Viewer {
         this.currentState = state
       } else {
         this.engine.finishAnimations()
-        this.engine.scene.tweens.killAll()
+        if (this.engine.scene.tweens) {
+          this.engine.scene.tweens.killAll()
+        }
         this.engine.draw(state)
         this.currentState = state
       }
