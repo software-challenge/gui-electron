@@ -99,7 +99,7 @@
     "rimraf": "^2.6.3",
     "ts-node": "^8.1.0",
     "tslint": "^5.16.0",
-    "typescript": "^3.5.1",
+    "typescript": "3.4.5",
     "webpack": "^4.32.2"
   }
 }

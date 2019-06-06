@@ -13,5 +13,10 @@
     "skipLibCheck": true,
     "noImplicitAny": false
   },
-  "extends": "./node_modules/electron-webpack/tsconfig-base.json"
+  "include": [
+    "src/api/**/*",
+    "src/gui/**/*",
+    "src/viewer/**/*"
+  ],
+  "extends": "./tsconfig-base.json"
 }

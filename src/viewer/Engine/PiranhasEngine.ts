@@ -151,6 +151,7 @@ export class SimpleScene extends Phaser.Scene {
   }
 
   unmarkFields() {
+    console.log('simplescene', this)
     this.markers.forEach(m => m.destroy())
     this.markers = []
   }

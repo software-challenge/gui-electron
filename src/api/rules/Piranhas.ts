@@ -27,9 +27,6 @@ export class GameState {
   }
 
   static fromJSON(json: any): GameState {
-    console.log('creating gamestate from json:', json)
-    console.log('start color', json.$.startPlayerColor)
-    console.log('current color', json.$.currentPlayerColor)
     const gs = new GameState()
     gs.startPlayerColor = Player.ColorFromString(json.$.startPlayerColor)
     gs.currentPlayerColor = Player.ColorFromString(json.$.currentPlayerColor)
