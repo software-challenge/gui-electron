@@ -18,5 +18,14 @@
     "src/gui/**/*",
     "src/viewer/**/*"
   ],
+  "exclude": [
+    "src/api/asynchronous/AsyncApi.ts",
+    "src/api/asynchronous/AsyncGameManager.ts",
+    "src/api/asynchronous/ExecutableClient.ts",
+    "src/api/asynchronous/GameManagerWorker.ts",
+    "src/api/asynchronous/HumanClient.ts",
+    "src/api/asynchronous/LiveGame.ts",
+    "src/api/asynchronous/Server.ts"
+  ],
   "extends": "./tsconfig-base.json"
 }
