@@ -312,9 +312,15 @@ export class GameResult {
 
   static fromJSON(json: any): GameResult {
     const gr = new GameResult()
-    // TODO should this really take element 0? And if yes, why are there even two scores?
-    gr.cause = json.score[0].$.cause
-    gr.reason = json.score[0].$.reason
+    // there are two score elements, one for the first player and one for the second
+    // every cause which is not "REGULAR" should be used as winning reason, because these are rule violation or timeouts
+    if (json.score[0].$.cause == "REGULAR" && json.score[1].$.case != "REGULAR") {
+      gr.cause = json.score[1].$.cause
+      gr.reason = json.score[1].$.reason
+    } else {
+      gr.cause = json.score[0].$.cause
+      gr.reason = json.score[0].$.reason
+    }
     gr.winner = json.winner ? Player.fromJSON(json.winner[0]) : null
     return gr
   }
