@@ -92,7 +92,7 @@ export class Viewer {
     }
   }
 
-  fieldsToDirection(fromField: Coordinates, toField: Coordinates): Direction {
+  static fieldsToDirection(fromField: Coordinates, toField: Coordinates): Direction {
     if(fromField.x == toField.x) {
       if(fromField.y > toField.y) {
         return 'DOWN'
@@ -127,7 +127,7 @@ export class Viewer {
     let fromField = interactions[0]
     let toField = interactions[1]
     if(fromField instanceof FieldSelected && toField instanceof FieldSelected) {
-      return new Move(fromField.coordinates, this.fieldsToDirection(fromField.coordinates, toField.coordinates))
+      return new Move(fromField.coordinates, Viewer.fieldsToDirection(fromField.coordinates, toField.coordinates))
     } else {
       throw 'got illegal list of interactions to create a move'
     }

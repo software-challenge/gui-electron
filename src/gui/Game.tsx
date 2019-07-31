@@ -109,7 +109,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   private autoPlay() {
     Api.getGameManager().getGameStatus(this.props.gameId).then((status) => {
       if(!this.isPlaying() && status.gameStatus == 'REQUIRES INPUT') {
-        console.log('Input required! Automatically starting game...')
+        console.log('Player input required! Automatically starting game...')
         this.playPause()
       }
     })
@@ -137,28 +137,29 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
     })
   }
 
-  setTurn(turn: number) {
-    Api.getGameManager().setCurrentDisplayStateOnGame(this.props.gameId, turn)
-    this.setState({waitingForInput: false, turnActive: turn, hideStartButton: true})
-  }
-
-  previousTurn(numberOfTurns?: number) {
-    this.setTurn(Math.max(0, this.state.turnActive - (numberOfTurns || 1)))
+  /** Updates the current turn, clipping it between 0 and either the given maxTurn or current turnTotal and updates the state. */
+  updateTurn(turn: number, maxTurn: number = this.state.turnTotal) {
+    const newTurn = Math.max(0, Math.min(turn, maxTurn))
+    Api.getGameManager().setCurrentDisplayStateOnGame(this.props.gameId, newTurn)
+    this.setState({waitingForInput: false, hideStartButton: true, turnActive: newTurn, turnTotal: maxTurn})
   }
 
   nextTurn(numberOfTurns?: number) {
     const delta = numberOfTurns || 1
     Api.getGameManager().getGameStatus(this.props.gameId).then((status) => {
       ReactDOM.unstable_batchedUpdates(() => {
-        this.setState({turnTotal: status.numberOfStates - 1})
         if(status.numberOfStates > this.state.turnActive + 1) {
-          this.setTurn(Math.min(this.state.turnActive + delta, status.numberOfStates - 1))
+          this.updateTurn(this.state.turnActive + delta, status.numberOfStates - 1)
         } else {
           if(this.state.turnActive == status.numberOfStates - 1 && status.gameStatus == 'REQUIRES INPUT' && !this.state.waitingForInput)
             this.setState({waitingForInput: true})
         }
       })
     })
+  }
+
+  previousTurn(numberOfTurns?: number) {
+    this.updateTurn(this.state.turnActive - (numberOfTurns || 1))
   }
 
   playPause() {
@@ -256,7 +257,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
                  max={turnTotal}
                  value={turnActive}
                  step='1'
-                 onChange={e => this.setTurn(Number(e.target.value))}/>
+                 onChange={e => this.updateTurn(Number(e.target.value))}/>
 
           <img alt='speed-icon' className='svg-icon speed-icon' src='resources/tachometer.svg'/>
           <input title='Abspielgeschwindigkeit'
