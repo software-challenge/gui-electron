@@ -1,4 +1,4 @@
-import { PiranhasEngine } from './Engine/PiranhasEngine'
+import { HiveEngine } from './Engine/HiveEngine'
 import { Coordinates, Direction, FieldSelected, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectFish, SelectTargetDirection, UiState } from '../api/rules/CurrentGame'
 
 export class Viewer {
@@ -8,7 +8,7 @@ export class Viewer {
   debug: HTMLDivElement
 
   //Engine
-  engine: PiranhasEngine
+  engine: HiveEngine
   startup_timestamp: number
 
   //Rendering
@@ -29,7 +29,7 @@ export class Viewer {
     this.canvas.classList.add('viewerCanvas')
     this.element.appendChild(this.canvas)
 
-    this.engine = new PiranhasEngine(this.canvas)
+    this.engine = new HiveEngine(this.canvas)
   }
 
   getElement() {

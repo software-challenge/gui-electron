@@ -18,6 +18,9 @@ import { GameInfo } from '../api/synchronous/GameInfo'
 import { ExecutableStatus } from '../api/rules/ExecutableStatus'
 import promiseRetry = require('promise-retry')
 
+// XXX only for testing, remove
+import { PlayerType } from '../api/rules/GameCreationOptions'
+
 const dialog = remote.dialog
 const shell = remote.shell
 
@@ -74,6 +77,25 @@ export class App extends React.Component<any, State> {
       }),
     }
     Hotfix.init(gco => this.startGameWithOptions(gco))
+
+    // XXX only for testing, remove
+    window.setTimeout(() => {
+      this.startGameWithOptions({
+        kind: GameType.Versus,
+        gameName: "Test",
+        gameId: Api.getGameManager().createGameId("Test", false),
+        firstPlayer: {
+          kind: PlayerType.Human,
+          name: "Spieler 1",
+          timeoutPossible: false,
+        },
+        secondPlayer: {
+          kind: PlayerType.Human,
+          name: "Spieler 1",
+          timeoutPossible: false,
+        }
+      })
+    }, 2000);
   }
 
   private loadReplay() {
