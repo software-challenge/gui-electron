@@ -15,6 +15,13 @@
 - `yarn update-server` ausführen, damit der server im Verzeichnis `server` verfügbar wird (dieser Schritt muss zum updaten des servers wiederholt werden)
 - GUI per `yarn start` starten
 
+### Für Windows-User
+
+- repository klonen
+- yarn und node installieren (evtl. muss auch noch [Kotlin](https://downlinko.com/download-install-kotlin-windows.html) sowie [Gradle](https://gradle.org/install/) manuell installiert werden)
+- `yarn update-server-win` ausführen, damit der server im Verzeichnis `server` verfügbar wird (dieser Schritt muss zum updaten des servers wiederholt werden)
+- GUI per `yarn start-win` starten
+
 ## Allgemeine Struktur
 
 Es gibt drei Teile, jeweils in einem eigenen Hauptverzeichnis unter [src](src) GUI, API und Viewer.
