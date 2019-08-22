@@ -51,6 +51,7 @@
       "allowToChangeInstallationDirectory": true
     },
     "mac": {
+      "icon": "assets/build-resources/icon.icns",
       "category": "public.app-category.developer-tools",
       "target": [
         "zip"
@@ -61,9 +62,13 @@
       ]
     },
     "linux": {
+      "icon": "assets/build-resources/icon.png",
       "target": [
         "AppImage"
       ]
+    },
+    "win": {
+      "icon": "assets/build-resources/icon.png"
     }
   },
   "dependencies": {
