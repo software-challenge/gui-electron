@@ -8,12 +8,11 @@
   "scripts": {
     "test": "yarn install && yarn compile",
     "start": "yarn install && yarn compile && (test \"hi\" && (test -d server || yarn update-server)) || echo I can\\'t test whether the server exists! && electron .",
-    "start-win": "yarn install && yarn compile && (test \"hi\" && (test -d server || yarn update-server-win)) || echo I can\\'t test whether the server exists! && electron .",
     "start-dev": "yarn install && yarn compile && electron . --dev",
+
     "update-server": "git submodule update --remote && yarn compile-server",
-    "update-server-win": "git submodule update --remote && yarn compile-server-win",
-    "compile-server": "cd socha && ./gradlew :server:deploy -q && cd .. && rimraf server && cp -r socha/server/build/runnable server && cp socha/player/build/libs/defaultplayer.jar .",
-    "compile-server-win": "cd socha && ./gradlew :server:deploy -q && cd .. && rimraf server && xcopy socha\\server\\build\\runnable server\\ /E && xcopy socha\\player\\build\\libs\\defaultplayer.jar .",
+    "compile-server": "cd socha && ./gradlew :server:deploy -q && cd .. && rimraf server && (test \"hi\" && (cp -r socha/server/build/runnable server && cp socha/player/build/libs/defaultplayer.jar .)) || (xcopy socha\\server\\build\\runnable server\\ /E && xcopy socha\\player\\build\\libs\\defaultplayer.jar .)",
+    
     "dist": "yarn install && yarn compile && electron-builder",
     "dist-all": "rimraf dist && yarn dist -mwl",
     "compile": "rimraf out && tsc",

@@ -15,12 +15,8 @@
 - `yarn update-server` ausführen, damit der server im Verzeichnis `server` verfügbar wird (dieser Schritt muss zum updaten des servers wiederholt werden)
 - GUI per `yarn start` starten
 
-### Für Windows-User
-
-- repository klonen
-- yarn und node installieren (evtl. muss auch noch [Kotlin](https://downlinko.com/download-install-kotlin-windows.html) sowie [Gradle](https://gradle.org/install/) manuell installiert werden)
-- `yarn update-server-win` ausführen, damit der server im Verzeichnis `server` verfügbar wird (dieser Schritt muss zum updaten des servers wiederholt werden)
-- GUI per `yarn start-win` starten
+### Bei Problemen mit Windows-User
+Es kann eine manuelle Installation von [Kotlin](https://downlinko.com/download-install-kotlin-windows.html) sowie [Gradle](https://gradle.org/install/) erforderlich sein, sollte die Fehlermeldung von `missing tools` auftreten.
 
 ## Allgemeine Struktur
 
