@@ -3,7 +3,9 @@ import * as deepEqual from 'deep-equal'
 export type LineDirection = 'HORIZONTAL' | 'VERTICAL' | 'RISING_DIAGONAL' | 'FALLING_DIAGONAL';
 export const ALL_DIRECTIONS: LineDirection[] = ['HORIZONTAL', 'VERTICAL', 'RISING_DIAGONAL', 'FALLING_DIAGONAL']
 
-export const FIELDSIZE = 10
+export const FIELDSIZE = 9 // diameter of the hexagon board
+export const SHIFT = 4 // floor(FIELDSIZE/2)
+export const FIELDPIXELWIDTH = 60
 
 export class GameState {
   // REMEMBER to extend clone method when adding attributes here!
@@ -17,10 +19,10 @@ export class GameState {
   lastMove: Move
 
   constructor() {
-    this.red = new Player(Player.COLOR.RED)
-    this.blue = new Player(Player.COLOR.BLUE)
-    this.startPlayerColor = Player.COLOR.RED
-    this.currentPlayerColor = Player.COLOR.RED
+    this.red = new Player('RED')
+    this.blue = new Player('BLUE')
+    this.startPlayerColor = 'RED'
+    this.currentPlayerColor = 'RED'
     this.turn = 0
     this.board = new Board()
     this.has_result = false
@@ -76,7 +78,7 @@ export class GameState {
   }
 
   getPlayerByColor(color: PLAYERCOLOR) {
-    if(color == Player.COLOR.RED) {
+    if(color == 'RED') {
       return this.red
     } else {
       return this.blue
@@ -88,23 +90,65 @@ export class GameState {
   }
 }
 
+export class ScreenCoordinates {
 
-export type FIELDTYPE = 'EMPTY' | 'OBSTRUCTED' | 'RED' | 'BLUE';
+  x: number
+  y: number
+
+  constructor(x: number, y: number) {
+    this.x = x
+    this.y = y
+  }
+}
+
+export class Coordinates {
+
+  q: number
+  r: number
+  s: number
+
+  constructor(q: number, r: number, s: number) {
+    this.q = q
+    this.r = r
+    this.s = s
+  }
+
+  screenCoordinates(): ScreenCoordinates {
+    let x = FIELDPIXELWIDTH * (Math.sqrt(3.0) * this.q + Math.sqrt(3.0)/2.0 * this.r)
+    let y = FIELDPIXELWIDTH * (                                    3.0 /2.0 * this.r)
+    return new ScreenCoordinates(x, y)
+  }
+
+  static calcS(q: number, r: number): number {
+    return -q - r
+  }
+}
+
+export type PIECETYPE = 'EMPTY' | 'OBSTRUCTED' | 'RED' | 'BLUE';
+
+export class Piece {
+  kind: PIECETYPE
+  color: PLAYERCOLOR
+
+  constructor(kind: PIECETYPE, color: PLAYERCOLOR) {
+    this.kind = kind
+    this.color = color
+  }
+}
+
+export class Field {
+  stack: Piece[]
+  coordinates: Coordinates
+
+  constructor(stack: Piece[], coordinates: Coordinates) {
+    this.stack = stack
+    this.coordinates = coordinates
+  }
+}
 
 export class Board {
-  static Fieldtype: {
-    empty: FIELDTYPE,
-    obstructed: FIELDTYPE,
-    red: FIELDTYPE,
-    blue: FIELDTYPE
-  } = {
-    empty: 'EMPTY',
-    obstructed: 'OBSTRUCTED',
-    red: 'RED',
-    blue: 'BLUE',
-  }
   // REMEMBER to extend clone method when adding attributes here!
-  public fields: FIELDTYPE[][]
+  public fields: Field[][]
 
   static fromJSON(json: any): Board {
     const b = new Board()
@@ -125,33 +169,21 @@ export class Board {
 
   constructor() {
     this.fields = []
-    Array.from(Array(FIELDSIZE), (_, x) => {
-      this.fields[x] = []
-      Array.from(Array(FIELDSIZE), (_, y) => {
-        let t: FIELDTYPE
-        if(x % (FIELDSIZE - 1) == 0 && y > 0 && y < FIELDSIZE - 1) {
-          t = Board.Fieldtype.red
-        } else if(y % (FIELDSIZE - 1) == 0 && x > 0 && x < FIELDSIZE - 1) {
-          t = Board.Fieldtype.blue
-        } else {
-          t = Board.Fieldtype.empty
-        }
-        this.fields[x][y] = t
-      })
-    })
+    for (var x: number = -SHIFT; x < SHIFT; x++) {
+      this.fields[x+SHIFT] = []
+      for (var y: number = Math.max(-SHIFT, -x-SHIFT); y < Math.min(SHIFT, -x+SHIFT); y++) {
+        this.fields[x+SHIFT][y+SHIFT] = new Field([], new Coordinates(x, y, -x-y))
+      }
+    }
   }
 
   field(c: Coordinates) {
-    return this.fields[c.x][c.y]
-  }
-
-  setField(c: Coordinates, t: FIELDTYPE): void {
-    this.fields[c.x][c.y] = t
+    return this.fields[c.q][c.r]
   }
 
   clone(): Board {
     let clone = new Board()
-    let clonedFields: FIELDTYPE[][] = []
+    let clonedFields: Field[][] = []
     this.fields.forEach((row, x) => {
       if(clonedFields[x] == null) {
         clonedFields[x] = []
@@ -176,27 +208,26 @@ export class Board {
   }
 }
 
-export type PLAYERCOLOR = 0 | 1;
+export type PLAYERCOLOR = 'RED' | 'BLUE'
+
 
 export class Player {
   // REMEMBER to extend clone method when adding attributes here!
   displayName: string
   color: PLAYERCOLOR
 
-  static COLOR: { RED: PLAYERCOLOR, BLUE: PLAYERCOLOR } = {RED: 0, BLUE: 1}
-
   static ColorFromString(s: string): PLAYERCOLOR {
     if(s.match(/RED/i)) {
-      return Player.COLOR.RED
+      return 'RED'
     }
     if(s.match(/BLUE/i)) {
-      return Player.COLOR.BLUE
+      return 'BLUE'
     }
     throw 'Unknown color value: ' + s
   }
 
   static OtherColor(c: PLAYERCOLOR): PLAYERCOLOR {
-    return c == Player.COLOR.RED ? Player.COLOR.BLUE : Player.COLOR.RED
+    return c == 'RED' ? 'BLUE' : 'RED'
   }
 
   static fromJSON(json: any): Player {
@@ -225,80 +256,23 @@ export class Player {
 
 export type Direction = 'UP' | 'UP_RIGHT' | 'RIGHT' | 'DOWN_RIGHT' | 'DOWN' | 'DOWN_LEFT' | 'LEFT' | 'UP_LEFT';
 
-export interface Coordinates {
-  x: number;
-  y: number;
-}
-
 export class Move {
   readonly fromField: Coordinates
-  readonly direction: Direction
+  readonly toField: Coordinates
 
-  constructor(fromField: Coordinates, direction: Direction) {
+  constructor(fromField: Coordinates, toField: Coordinates) {
     this.fromField = fromField
-    this.direction = direction
+    this.toField = toField
   }
 
   static fromJSON(json: any): Move {
-    return new Move({x: parseInt(json.$.x), y: parseInt(json.$.y)}, Move.directionFromString(json.$.direction))
-  }
-
-  private static directionFromString(s: string): Direction {
-    switch(s) {
-      case 'UP':
-        return 'UP'
-      case 'UP_RIGHT':
-        return 'UP_RIGHT'
-      case 'RIGHT':
-        return 'RIGHT'
-      case 'DOWN_RIGHT':
-        return 'DOWN_RIGHT'
-      case 'DOWN':
-        return 'DOWN'
-      case 'DOWN_LEFT':
-        return 'DOWN_LEFT'
-      case 'LEFT':
-        return 'LEFT'
-      case 'UP_LEFT':
-        return 'UP_LEFT'
-      default:
-        throw `unknown direction ${s}`
-    }
-  }
-
-  targetField(fieldCount: number): Coordinates {
-    const result = {x: this.fromField.x, y: this.fromField.y}
-    switch(this.direction) {
-      case 'RIGHT':
-        result.x += fieldCount
-        break
-      case 'LEFT':
-        result.x -= fieldCount
-        break
-      case 'UP':
-        result.y += fieldCount
-        break
-      case 'DOWN':
-        result.y -= fieldCount
-        break
-      case 'DOWN_RIGHT':
-        result.x += fieldCount
-        result.y -= fieldCount
-        break
-      case 'DOWN_LEFT':
-        result.x -= fieldCount
-        result.y -= fieldCount
-        break
-      case 'UP_RIGHT':
-        result.x += fieldCount
-        result.y += fieldCount
-        break
-      case 'UP_LEFT':
-        result.x -= fieldCount
-        result.y += fieldCount
-        break
-    }
-    return result
+    // TODO
+    let q = parseInt(json.$.x)
+    let r = parseInt(json.$.y)
+    return new Move(
+      new Coordinates(q, r, Coordinates.calcS(q,r)),
+      new Coordinates(q, r, Coordinates.calcS(q,r)),
+    )
   }
 
   static lift(that: any) {
