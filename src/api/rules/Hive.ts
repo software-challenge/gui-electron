@@ -5,7 +5,7 @@ export const ALL_DIRECTIONS: LineDirection[] = ['HORIZONTAL', 'VERTICAL', 'RISIN
 
 export const FIELDSIZE = 9 // diameter of the hexagon board
 export const SHIFT = 4 // floor(FIELDSIZE/2)
-export const FIELDPIXELWIDTH = 60
+export const FIELDPIXELWIDTH = 34
 
 export class GameState {
   // REMEMBER to extend clone method when adding attributes here!
@@ -121,8 +121,8 @@ export class ScreenCoordinates {
   }
 
   boardCoordinates(): Coordinates {
-    var q = (Math.sqrt(3)/3 * this.x  -  1./3 * this.y) / FIELDPIXELWIDTH
-    var r = (                        2./3 * this.y) / FIELDPIXELWIDTH
+    var q = ( 2./3 * this.x                        ) / FIELDPIXELWIDTH
+    var r = (-1./3 * this.x  +  Math.sqrt(3)/3 * this.y) / FIELDPIXELWIDTH
     return ScreenCoordinates.round(q, r, Coordinates.calcS(q, r))
   }
 }
@@ -140,8 +140,12 @@ export class Coordinates {
   }
 
   screenCoordinates(): ScreenCoordinates {
+    /*
     let x = FIELDPIXELWIDTH * (Math.sqrt(3.0) * this.q + Math.sqrt(3.0)/2.0 * this.r)
     let y = FIELDPIXELWIDTH * (                                    3.0 /2.0 * this.r)
+    */
+    let x = FIELDPIXELWIDTH * (3./2 * this.q)
+    let y = FIELDPIXELWIDTH * (Math.sqrt(3)/2 * this.q + Math.sqrt(3) * this.r)
     return new ScreenCoordinates(x, y)
   }
 
@@ -170,6 +174,15 @@ export class Field {
     this.stack = stack
     this.coordinates = coordinates
   }
+
+  static lift(that: any) {
+    let c: Coordinates = new Coordinates(that.coordinates.q, that.coordinates.r, that.coordinates.s)
+    let stack: Piece[] = []
+    that.stack.forEach(p => {
+      stack.push(new Piece(p.kind, p.color))
+    })
+    return new Field(stack, c)
+  }
 }
 
 export class Board {
@@ -195,9 +208,9 @@ export class Board {
 
   constructor() {
     this.fields = []
-    for (var x: number = -SHIFT; x < SHIFT; x++) {
+    for (var x: number = -SHIFT; x <= SHIFT; x++) {
       this.fields[x+SHIFT] = []
-      for (var y: number = Math.max(-SHIFT, -x-SHIFT); y < Math.min(SHIFT, -x+SHIFT); y++) {
+      for (var y: number = Math.max(-SHIFT, -x-SHIFT); y <= Math.min(SHIFT, -x+SHIFT); y++) {
         this.fields[x+SHIFT][y+SHIFT] = new Field([], new Coordinates(x, y, -x-y))
       }
     }
@@ -222,13 +235,20 @@ export class Board {
     return clone
   }
 
-  // TODO: do we need this?
+  // Create real object (with methods) from data structure which was deserialized from JSON
   static lift(that: any) {
     let clone = new Board()
-    let clonedFields = []
-    for(let f of that.fields) {
-      clonedFields.push(f)
-    }
+    let clonedFields: Field[][] = []
+    that.fields.forEach((row, x) => {
+      if(clonedFields[x] == null) {
+        clonedFields[x] = []
+      }
+      row.forEach((f, y) => {
+        if (f != null) {
+          clonedFields[x][y] = Field.lift(f)
+        }
+      })
+    })
     clone.fields = clonedFields
     return clone
   }
@@ -272,7 +292,7 @@ export class Player {
     return clone
   }
 
-  // TODO need this? . Yes! For communication with the worker, or else objects won't have their methods
+  // Create real object (with methods) from data structure which was deserialized from JSON
   static lift(that: any) {
     let clone = new Player(that.color)
     Object.assign<Player, Player>(clone, that)

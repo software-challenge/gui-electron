@@ -63,46 +63,56 @@ export class SimpleScene extends Phaser.Scene {
     // TODO: use map instead of Array.from
     return Array.from(board.fields, (col, x) => {
       return Array.from(col, (field, y) => {
-        let screenCoordinates = field.coordinates.screenCoordinates()
-        let background = this.make.sprite(
-          {
-            key: 'field',
-            x: screenCoordinates.x,
-            y: screenCoordinates.y,
-            scale: 1,
-          },
-        )
-        background.depth = 10
+        let background = null
         let sprite = null
-        /*
-        if(field != Board.Fieldtype.empty) {
-          let key
-          switch(field) {
-            case Board.Fieldtype.red:
-              key = 'fish_red'
-              break
-            case Board.Fieldtype.blue:
-              key = 'fish_blue'
-              break
-            case Board.Fieldtype.obstructed:
-              key = 'octopus'
-              break
-          }
-          sprite = this.make.sprite(
+        if (field != null) {
+          let screenCoordinates = field.coordinates.screenCoordinates()
+          // don't know why the 2 and 3 multipliers are required, but it looks nice with them
+          let sx = screenCoordinates.x + (2* SHIFT * FIELDPIXELWIDTH)
+          let sy = screenCoordinates.y + (3* SHIFT * FIELDPIXELWIDTH)
+          background = this.make.sprite(
             {
-              key: key,
-              x: fieldCoordinates.x,
-              y: fieldCoordinates.y,
-              scale: 1,
+              key: 'field',
+              x: sx,
+              y: sy,
+              scale: 2,
             },
           )
-          sprite.depth = 20
-          sprite.setData('fieldType', field)
-        }
-        */
+          const coordTextStyle = {fontFamily: 'Arial', fontSize: 15, color: '#000000'}
+          let text = this.add.text(sx, sy, `(${field.coordinates.q},${field.coordinates.r})`, coordTextStyle).setOrigin(0.5)
+          text.depth = 60
+          background.depth = 10
+          /*
+            if(field != Board.Fieldtype.empty) {
+            let key
+            switch(field) {
+            case Board.Fieldtype.red:
+            key = 'fish_red'
+            break
+            case Board.Fieldtype.blue:
+            key = 'fish_blue'
+            break
+            case Board.Fieldtype.obstructed:
+            key = 'octopus'
+            break
+            }
+            sprite = this.make.sprite(
+            {
+            key: key,
+            x: fieldCoordinates.x,
+            y: fieldCoordinates.y,
+            scale: 1,
+            },
+            )
+            sprite.depth = 20
+            sprite.setData('fieldType', field)
+            }
+          */
 
-        if(sprite) {
-          this.allObjects.push(sprite)
+          if(sprite) {
+            this.allObjects.push(sprite)
+          }
+
         }
 
         return {

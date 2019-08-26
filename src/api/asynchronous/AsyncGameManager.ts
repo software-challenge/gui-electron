@@ -6,7 +6,7 @@ import { AsyncApi } from './AsyncApi'
 import { GameStatus } from '../rules/GameStatus'
 import { TransferableMoveRequest } from '../rules/TransferableMoveRequest'
 import { Logger } from '../Logger'
-import { GameResult } from '../rules/CurrentGame'
+import { GameState, GameResult } from '../rules/CurrentGame'
 import * as express from 'express'
 import * as bodyParser from 'body-parser'
 import { log, stringify } from '../../helpers/Utils'
@@ -112,6 +112,8 @@ export class AsyncGameManager {
         let gameId = parseInt(req.query.id)
         let turn = parseInt(req.query.turn)
         if(this.games.has(gameId)) {
+          // TODO
+          res.send(new GameState())
           this.games.get(gameId).getState(turn).then(gs => {
             res.send(gs)
           })
@@ -153,6 +155,12 @@ export class AsyncGameManager {
   }
 
   private report_status(game: Game, gameId: number): { numberOfStates: number, gameStatus: GameStatus, moveRequest?: TransferableMoveRequest, gameResult?: GameResult } {
+    // TODO
+    return {
+      numberOfStates: 1,
+      gameStatus: 'RUNNING'
+    }
+    /*
     let resp: any = {}
 
     resp.numberOfStates = game.getStateCount()
@@ -181,5 +189,6 @@ export class AsyncGameManager {
       throw new Error('got game which is not a replay and not a live game')
     }
     return resp
+    */
   }
 }
