@@ -238,7 +238,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
         <h1>Spiel vorbei</h1>
         <h2>{gameResult.reason}</h2>
         <h3>{gameResult.winner ?
-          `Gewinner: ${gameResult.winner.displayName} (${gameResult.winner.color == Player.COLOR.RED ? 'Rot' : 'Blau'})` :
+          `Gewinner: ${gameResult.winner.displayName} (${gameResult.winner.color == 'RED' ? 'Rot' : 'Blau'})` :
           'Unentschieden!'}</h3>
       </div>}
       <div className='replay-controls'>

@@ -99,6 +99,32 @@ export class ScreenCoordinates {
     this.x = x
     this.y = y
   }
+
+  static round(q: number, r: number, s: number) {
+    let rx = Math.round(q)
+    let ry = Math.round(r)
+    let rz = Math.round(s)
+
+    let x_diff = Math.abs(rx - q)
+    let y_diff = Math.abs(ry - r)
+    let z_diff = Math.abs(rz - s)
+
+    if (x_diff > y_diff && x_diff > z_diff) {
+      rx = -ry-rz
+    } else if (y_diff > z_diff) {
+      ry = -rx-rz
+    } else {
+      rz = -rx-ry
+    }
+
+    return new Coordinates(rx, ry, rz)
+  }
+
+  boardCoordinates(): Coordinates {
+    var q = (Math.sqrt(3)/3 * this.x  -  1./3 * this.y) / FIELDPIXELWIDTH
+    var r = (                        2./3 * this.y) / FIELDPIXELWIDTH
+    return ScreenCoordinates.round(q, r, Coordinates.calcS(q, r))
+  }
 }
 
 export class Coordinates {

@@ -36,7 +36,7 @@ export class HumanClient extends GenericPlayer implements GameClient {
 
     AsyncApi.lodgeActionRequest(this.gameId, this.state.clone(), (move: Move) => {
       let xml: string = '<room roomId="' + this.roomId + '">' +
-        '<data class="move" x="' + move.fromField.x + '" y="' + move.fromField.y + '" direction="' + move.direction + '">' +
+        '<data class="move" x="' + move.fromField.q + '" y="' + move.fromField.r + '">' +
         '</data></room>'
       this.writeData(xml)
     })

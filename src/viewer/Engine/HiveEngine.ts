@@ -2,7 +2,7 @@
 
 import 'phaser'
 import { remote } from 'electron'
-import { Board, Coordinates, FieldSelected, FIELDSIZE, FIELDTYPE, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectFish, SelectTargetDirection, UiState } from '../../api/rules/CurrentGame'
+import { Board, Coordinates, FieldSelected, FIELDSIZE, SHIFT, PIECETYPE, FIELDPIXELWIDTH, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectFish, SelectTargetDirection, UiState, ScreenCoordinates } from '../../api/rules/CurrentGame'
 
 const dialog = remote.dialog
 
@@ -52,19 +52,8 @@ export class SimpleScene extends Phaser.Scene {
     const characters = 'ABCDEFGHIJ'
     Array.from(Array(FIELDSIZE), (_, x) => {
       Array.from(Array(FIELDSIZE), (_, y) => {
-        let fieldCoordinates = this.fieldCoordinates({x: x, y: y})
-        if(x == 0) {
-          this.add.text(fieldCoordinates.x - textOffset * 1.2, fieldCoordinates.y, `y = ${y}`, coordTextStyle).setOrigin(0.5)
-        }
-        if(x == FIELDSIZE - 1) {
-          this.add.text(fieldCoordinates.x + textOffset, fieldCoordinates.y, (FIELDSIZE - 1 - y).toString(), labelTextStyle).setOrigin(0.5)
-        }
-        if(y == 0) {
-          this.add.text(fieldCoordinates.x, fieldCoordinates.y + textOffset, `x = ${x}`, coordTextStyle).setOrigin(0.5)
-        }
-        if(y == FIELDSIZE - 1) {
-          this.add.text(fieldCoordinates.x, fieldCoordinates.y - textOffset, characters.charAt(x), labelTextStyle).setOrigin(0.5)
-        }
+        // TODO
+        //  this.add.text(fieldCoordinates.x - textOffset * 1.2, fieldCoordinates.y, `y = ${y}`, coordTextStyle).setOrigin(0.5)
       })
     })
   }
@@ -74,12 +63,12 @@ export class SimpleScene extends Phaser.Scene {
     // TODO: use map instead of Array.from
     return Array.from(board.fields, (col, x) => {
       return Array.from(col, (field, y) => {
-        let fieldCoordinates = this.fieldCoordinates({x: x, y: y})
+        let screenCoordinates = field.coordinates.screenCoordinates()
         let background = this.make.sprite(
           {
             key: 'field',
-            x: fieldCoordinates.x,
-            y: fieldCoordinates.y,
+            x: screenCoordinates.x,
+            y: screenCoordinates.y,
             scale: 1,
           },
         )
@@ -129,9 +118,14 @@ export class SimpleScene extends Phaser.Scene {
     this.graphics = this.createBoardGraphics(board)
   }
 
+  insideBoard(c: Coordinates) {
+    return (Math.abs(c.q) <= SHIFT && Math.abs(c.r) <= SHIFT)
+  }
+
   handleClick(event: any) {
-    let target = this.boardCoordinates(event.position)
-    if(target) {
+    let pos = new ScreenCoordinates(event.position.x, event.position.y)
+    let target = pos.boardCoordinates()
+    if (this.insideBoard(target)) {
       this.fieldClickHandler(target)
     }
   }
@@ -154,7 +148,7 @@ export class SimpleScene extends Phaser.Scene {
     // which results in problems when unmarking...
     // originally this was this.markers = fields.map(...)
     fields.forEach(f => {
-      let c = this.fieldCoordinates(f)
+      let c = f.screenCoordinates()
       this.markers.push(this.make.sprite({
         key: 'marker',
         x: c.x,
@@ -166,6 +160,7 @@ export class SimpleScene extends Phaser.Scene {
   }
 
   deselectFish() {
+    /*
     if(this.selectedFish) {
       let sprite = this.graphics[this.selectedFish.x][this.selectedFish.y].foreground
       // if sprite was already moving, reset position
@@ -177,9 +172,12 @@ export class SimpleScene extends Phaser.Scene {
       }
       this.selectedFish = null
     }
+    TODO
+    */
   }
 
   selectFish(field: Coordinates) {
+    /*
     this.deselectFish()
     this.selectedFish = field
     let sprite = this.graphics[this.selectedFish.x][this.selectedFish.y].foreground
@@ -191,28 +189,14 @@ export class SimpleScene extends Phaser.Scene {
       duration: 300,
       ease: Phaser.Math.Easing.Back.In,
     })
-  }
-
-  boardCoordinates(c: Coordinates): Coordinates {
-    let resultX = Math.round((c.x - offsetX) / 66)
-    let resultY = FIELDSIZE - 1 - Math.round((c.y - offsetY) / 66)
-    if(resultX >= 0 && resultX < FIELDSIZE &&
-      resultY >= 0 && resultY < FIELDSIZE) {
-      return {x: resultX, y: resultY}
-    } else {
-      return null
-    }
-  }
-
-  fieldCoordinates(c: Coordinates): Coordinates {
-    return {
-      x: offsetX + c.x * 66,
-      y: offsetY + (FIELDSIZE - 1 - c.y) * 66,
-    }
+    TODO
+    */
   }
 
   updateBoard(gameState: GameState, move: Move) {
     console.log('updateBoard (animate) entry')
+    /*
+      TODO
     if(move == null) {
       // added this check because of strange bug where a promise rejection
       // happened because of passing an undefined move into this method. The
@@ -246,6 +230,7 @@ export class SimpleScene extends Phaser.Scene {
       console.warn('should animate move, but sprite was not present', move)
     }
     console.log('updateBoard (animate) leave')
+    */
   }
 
   update() {
@@ -259,6 +244,7 @@ export class SimpleScene extends Phaser.Scene {
    * @return True if the graphics show the given board, false otherwise.
    */
   boardEqualsView(board: Board) {
+    /*
     let statesDoMatch = true
     let keyToFieldType = {
       'red': Board.Fieldtype.red,
@@ -293,6 +279,9 @@ export class SimpleScene extends Phaser.Scene {
       })
     })
     return statesDoMatch
+    TODO
+    */
+    return false
   }
 }
 
@@ -367,7 +356,7 @@ export class HiveEngine {
 
     // activate callbacks...
     this.scene.fieldClickHandler = (target: Coordinates) => {
-      callback(this.selectableFields.some(s => s.x == target.x && s.y == target.y)
+      callback(this.selectableFields.some(s => s.q == target.q && s.r == target.r)
         ? new FieldSelected(target)
         : 'cancelled')
     }

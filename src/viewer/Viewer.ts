@@ -92,42 +92,12 @@ export class Viewer {
     }
   }
 
-  static fieldsToDirection(fromField: Coordinates, toField: Coordinates): Direction {
-    if(fromField.x == toField.x) {
-      if(fromField.y > toField.y) {
-        return 'DOWN'
-      } else if(fromField.y < toField.y) {
-        return 'UP'
-      }
-    } else if(fromField.y == toField.y) {
-      if(fromField.x > toField.x) {
-        return 'LEFT'
-      } else if(fromField.x < toField.x) {
-        return 'RIGHT'
-      }
-    } else {
-      if(fromField.x > toField.x) {
-        if(fromField.y > toField.y) {
-          return 'DOWN_LEFT'
-        } else {
-          return 'UP_LEFT'
-        }
-      } else if(fromField.x < toField.x) {
-        if(fromField.y > toField.y) {
-          return 'DOWN_RIGHT'
-        } else {
-          return 'UP_RIGHT'
-        }
-      }
-    }
-  }
-
   // NOTE that currentPlayerIndex is only required for the advance action (which will always be the first action of a move)
   interactionsToMove(interactions: InteractionEvent[]): Move {
     let fromField = interactions[0]
     let toField = interactions[1]
     if(fromField instanceof FieldSelected && toField instanceof FieldSelected) {
-      return new Move(fromField.coordinates, Viewer.fieldsToDirection(fromField.coordinates, toField.coordinates))
+      return new Move(fromField.coordinates, toField.coordinates)
     } else {
       throw 'got illegal list of interactions to create a move'
     }
@@ -148,6 +118,7 @@ export class Viewer {
     let modified_gamestate = this.applyInteractions(state, actions)
 
     let uiState: UiState
+    /*
     if(shouldSelectFish) {
       let ownFishFields = state.board.fields.map((col, x) => {
         return col.map((field, y) => {
@@ -178,6 +149,8 @@ export class Viewer {
     this.render(new RenderState(modified_gamestate, uiState))
     // keep original gamestate in callback
     this.engine.interact((interaction) => this.userHasInteracted(state, actions, move_callback, interaction))
+    TODO
+    */
   }
 
   stop() {
