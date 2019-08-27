@@ -140,12 +140,8 @@ export class Coordinates {
   }
 
   screenCoordinates(): ScreenCoordinates {
-    /*
-    let x = FIELDPIXELWIDTH * (Math.sqrt(3.0) * this.q + Math.sqrt(3.0)/2.0 * this.r)
-    let y = FIELDPIXELWIDTH * (                                    3.0 /2.0 * this.r)
-    */
-    let x = FIELDPIXELWIDTH * (3./2 * this.q)
-    let y = FIELDPIXELWIDTH * (Math.sqrt(3)/2 * this.q + Math.sqrt(3) * this.r)
+    let x = FIELDPIXELWIDTH * (Math.sqrt(3.0)/2 * this.q - Math.sqrt(3.0)/2 * this.r)
+    let y = FIELDPIXELWIDTH * (-3.0/2 * this.q -  3.0/2 * this.r)
     return new ScreenCoordinates(x, y)
   }
 

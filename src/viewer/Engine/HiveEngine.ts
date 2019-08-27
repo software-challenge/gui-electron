@@ -14,8 +14,8 @@ interface FieldGraphics {
 }
 
 // offsets for placing the board on the game canvas
-const offsetX = 100
-const offsetY = 100
+const offsetX = 400
+const offsetY = 400
 
 export class SimpleScene extends Phaser.Scene {
 
@@ -32,7 +32,7 @@ export class SimpleScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('field', 'resources/hive/hexa.png')
+    this.load.image('field', 'resources/hive/hexagon.png')
   }
 
   create() {
@@ -67,18 +67,17 @@ export class SimpleScene extends Phaser.Scene {
         let sprite = null
         if (field != null) {
           let screenCoordinates = field.coordinates.screenCoordinates()
-          // don't know why the 2 and 3 multipliers are required, but it looks nice with them
-          let sx = screenCoordinates.x + (2* SHIFT * FIELDPIXELWIDTH)
-          let sy = screenCoordinates.y + (3* SHIFT * FIELDPIXELWIDTH)
+          let sx = screenCoordinates.x + offsetX
+          let sy = screenCoordinates.y + offsetY
           background = this.make.sprite(
             {
               key: 'field',
               x: sx,
               y: sy,
-              scale: 2,
+              scale: 1,
             },
           )
-          const coordTextStyle = {fontFamily: 'Arial', fontSize: 15, color: '#000000'}
+          const coordTextStyle = {fontFamily: 'Arial', fontSize: 15, color: '#ffffff'}
           let text = this.add.text(sx, sy, `(${field.coordinates.q},${field.coordinates.r})`, coordTextStyle).setOrigin(0.5)
           text.depth = 60
           background.depth = 10
@@ -308,7 +307,7 @@ export class HiveEngine {
     let gameConfig = {
       width: 800,
       height: 800,
-      pixelArt: true,
+      pixelArt: false,
       canvas: this.element,
       fps: {
         target: 10,
