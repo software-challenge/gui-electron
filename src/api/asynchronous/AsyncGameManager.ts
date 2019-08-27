@@ -6,7 +6,7 @@ import { AsyncApi } from './AsyncApi'
 import { GameStatus } from '../rules/GameStatus'
 import { TransferableMoveRequest } from '../rules/TransferableMoveRequest'
 import { Logger } from '../Logger'
-import { GameState, GameResult } from '../rules/CurrentGame'
+import { GameState, GameResult, Piece } from '../rules/CurrentGame'
 import * as express from 'express'
 import * as bodyParser from 'body-parser'
 import { log, stringify } from '../../helpers/Utils'
@@ -113,10 +113,13 @@ export class AsyncGameManager {
         let turn = parseInt(req.query.turn)
         if(this.games.has(gameId)) {
           // TODO
-          res.send(new GameState())
+          let gs = new GameState()
+          res.send(gs)
+          /*
           this.games.get(gameId).getState(turn).then(gs => {
             res.send(gs)
           })
+          */
         } else {
           res.status(404).send('No game with id ' + gameId)
         }

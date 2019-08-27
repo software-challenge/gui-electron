@@ -150,7 +150,7 @@ export class Coordinates {
   }
 }
 
-export type PIECETYPE = 'EMPTY' | 'OBSTRUCTED' | 'RED' | 'BLUE';
+export type PIECETYPE = 'ANT' | 'BEE' | 'BEETLE' | 'GRASSHOPPER' | 'SPIDER'
 
 export class Piece {
   kind: PIECETYPE

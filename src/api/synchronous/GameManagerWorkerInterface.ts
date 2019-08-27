@@ -1,5 +1,5 @@
 import { GameCreationOptions } from '../rules/GameCreationOptions'
-import { GameState, Move } from '../rules/CurrentGame'
+import { GameState, Move, Piece } from '../rules/CurrentGame'
 import { MessageContent } from '../rules/Message'
 import { Logger } from '../Logger'
 import { Backend } from './Backend'
@@ -107,7 +107,16 @@ export class GameManagerWorkerInterface {
   getState(gameId: number, turn: number) {
     return this.fetchBackend(`state?id=${gameId}&turn=${turn}`)
       .then(r => r.json())
-      .then(state => GameState.lift(state))
+      .then(state => {
+        let gs = GameState.lift(state)
+        gs.board.fields[2][4].stack = [new Piece('ANT', 'RED')]
+        gs.board.fields[3][4].stack = [new Piece('BEE', 'RED')]
+        gs.board.fields[4][4].stack = [new Piece('BEETLE', 'RED')]
+        gs.board.fields[5][4].stack = [new Piece('GRASSHOPPER', 'RED')]
+        gs.board.fields[6][4].stack = [new Piece('SPIDER', 'RED')]
+        console.log(gs)
+        return gs
+      })
   }
 
 

@@ -33,6 +33,14 @@ export class SimpleScene extends Phaser.Scene {
 
   preload() {
     this.load.image('field', 'resources/hive/hexagon.png')
+    this.load.image('ant', 'resources/hive/ant.png')
+    this.load.image('bee', 'resources/hive/bee.png')
+    this.load.image('beetle', 'resources/hive/beetle.png')
+    this.load.image('spider', 'resources/hive/spider.png')
+    this.load.image('fly', 'resources/hive/fly.png')
+    this.load.image('red', 'resources/hive/red.png')
+    this.load.image('blue', 'resources/hive/blue.png')
+    this.load.image('highlight', 'resources/hive/highlight.png')
   }
 
   create() {
@@ -65,6 +73,7 @@ export class SimpleScene extends Phaser.Scene {
       return Array.from(col, (field, y) => {
         let background = null
         let sprite = null
+        let color = null
         if (field != null) {
           let screenCoordinates = field.coordinates.screenCoordinates()
           let sx = screenCoordinates.x + offsetX
@@ -81,34 +90,55 @@ export class SimpleScene extends Phaser.Scene {
           let text = this.add.text(sx, sy, `(${field.coordinates.q},${field.coordinates.r})`, coordTextStyle).setOrigin(0.5)
           text.depth = 60
           background.depth = 10
-          /*
-            if(field != Board.Fieldtype.empty) {
+          if (field.stack.length > 0) {
+            let piece = field.stack[0]
             let key
-            switch(field) {
-            case Board.Fieldtype.red:
-            key = 'fish_red'
-            break
-            case Board.Fieldtype.blue:
-            key = 'fish_blue'
-            break
-            case Board.Fieldtype.obstructed:
-            key = 'octopus'
-            break
+            let scale
+            switch(piece.kind) {
+              case 'ANT':
+                key = 'ant'
+                scale = 0.06
+                break
+              case 'BEE':
+                key = 'bee'
+                scale = 0.2
+                break
+              case 'BEETLE':
+                key = 'beetle'
+                scale = 0.06
+                break
+              case 'GRASSHOPPER':
+                key = 'fly'
+                scale = 0.08
+                break
+              case 'SPIDER':
+                key = 'spider'
+                scale = 0.12
+                break
             }
             sprite = this.make.sprite(
-            {
-            key: key,
-            x: fieldCoordinates.x,
-            y: fieldCoordinates.y,
-            scale: 1,
-            },
+              {
+                key: key,
+                x: sx,
+                y: sy,
+                scale: scale,
+              },
             )
             sprite.depth = 20
-            sprite.setData('fieldType', field)
-            }
-          */
+            sprite.setData('fieldType', piece.kind)
+            color = this.make.sprite(
+              {
+                key: piece.color == 'RED' ? 'red' : 'blue',
+                x: sx,
+                y: sy,
+                scale: 1,
+              },
+            )
+            color.depth = 19
+          }
 
           if(sprite) {
+            this.allObjects.push(color)
             this.allObjects.push(sprite)
           }
 
