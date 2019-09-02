@@ -112,14 +112,14 @@ export class Viewer {
   requestUserInteraction(state: GameState, actions: InteractionEvent[], move_callback: (move: Move) => void) {
 
     // figure out which interactions are currently needed and put them into uistate
-    let shouldSelectFish: boolean = actions.length == 0
+    let shouldSelectPiece: boolean = actions.length == 0
     let shouldSelectTarget: boolean = actions.length == 1
     let cancellable: boolean = shouldSelectTarget
     let modified_gamestate = this.applyInteractions(state, actions)
 
+    // XXX TODO interaction logic
     let uiState: UiState
-    /*
-    if(shouldSelectFish) {
+    if(shouldSelectPiece) {
       let ownFishFields = state.board.fields.map((col, x) => {
         return col.map((field, y) => {
           if(field == GameRuleLogic.playerFieldType(state.currentPlayerColor)) {
@@ -149,8 +149,6 @@ export class Viewer {
     this.render(new RenderState(modified_gamestate, uiState))
     // keep original gamestate in callback
     this.engine.interact((interaction) => this.userHasInteracted(state, actions, move_callback, interaction))
-    TODO
-    */
   }
 
   stop() {

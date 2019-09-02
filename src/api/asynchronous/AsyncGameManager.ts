@@ -153,16 +153,6 @@ export class AsyncGameManager {
   }
 
   private report_status(game: Game, gameId: number): { numberOfStates: number, gameStatus: GameStatus, moveRequest?: TransferableMoveRequest, gameResult?: GameResult } {
-    // XXX TODO
-    let resp: any = {}
-    resp.numberOfStates = 1
-    resp.gameStatus = 'REQUIRES INPUT'
-    resp.moveRequest = {
-      state: new GameState(),
-      id: 42,
-    }
-    return resp
-    /*
     let resp: any = {}
 
     resp.numberOfStates = game.getStateCount()
@@ -191,6 +181,5 @@ export class AsyncGameManager {
       throw new Error('got game which is not a replay and not a live game')
     }
     return resp
-    */
   }
 }
