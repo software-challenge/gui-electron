@@ -40,7 +40,7 @@ export class SimpleScene extends Phaser.Scene {
     this.load.image('fly', 'resources/hive/fly.png')
     this.load.image('red', 'resources/hive/red.png')
     this.load.image('blue', 'resources/hive/blue.png')
-    this.load.image('highlight', 'resources/hive/highlight.png')
+    this.load.image('marker', 'resources/hive/highlight.png')
   }
 
   create() {
@@ -97,7 +97,7 @@ export class SimpleScene extends Phaser.Scene {
             switch(piece.kind) {
               case 'ANT':
                 key = 'ant'
-                scale = 0.06
+                scale = 0.08
                 break
               case 'BEE':
                 key = 'bee'
@@ -190,15 +190,15 @@ export class SimpleScene extends Phaser.Scene {
       let c = f.screenCoordinates()
       this.markers.push(this.make.sprite({
         key: 'marker',
-        x: c.x,
-        y: c.y,
-        scale: 2,
+        x: c.x + offsetX,
+        y: c.y + offsetY,
+        scale: 1,
         depth: 50,
       }))
     })
   }
 
-  deselectFish() {
+  deselectFields() {
     /*
     if(this.selectedFish) {
       let sprite = this.graphics[this.selectedFish.x][this.selectedFish.y].foreground
@@ -215,7 +215,7 @@ export class SimpleScene extends Phaser.Scene {
     */
   }
 
-  selectFish(field: Coordinates) {
+  selectTarget(field: Coordinates) {
     /*
     this.deselectFish()
     this.selectedFish = field
@@ -350,7 +350,7 @@ export class HiveEngine {
 
   clearUI() {
     if(this.scene) {
-      this.scene.deselectFish()
+      this.scene.deselectFields()
       this.scene.unmarkFields()
     }
   }
@@ -360,13 +360,14 @@ export class HiveEngine {
     this.scene.updateBoardGraphics(state.gameState.board)
     this.scene.unmarkFields()
     this.selectableFields = []
-    this.scene.deselectFish()
+    this.scene.deselectFields()
     if(state.uiState instanceof SelectFish) {
       this.selectableFields = state.uiState.selectableFieldCoordinates
     } else if(state.uiState instanceof SelectTargetDirection) {
       this.selectableFields = state.uiState.selectableDirections.map(sd => sd.target)
-      this.scene.selectFish(state.uiState.origin)
+      this.scene.selectTarget(state.uiState.origin)
     }
+    this.selectableFields = [ new Coordinates(0,0,0) ]
     this.scene.markFields(this.selectableFields)
   }
 

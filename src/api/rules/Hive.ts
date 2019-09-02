@@ -190,13 +190,18 @@ export class Board {
     b.fields = []
     json.fields.forEach(row => {
       row.field.forEach(f => {
-        let x = f.$.x
-        let y = f.$.y
-        let fieldType = f.$.state
-        if(b.fields[x] == null) {
-          b.fields[x] = []
+        let x: number = Number(f.$.x)
+        let y: number = Number(f.$.y)
+        let z: number = Number(f.$.z)
+        let obstructed = f.$.obstructed
+        if(b.fields[x+SHIFT] == null) {
+          b.fields[x+SHIFT] = []
         }
-        b.fields[x][y] = fieldType
+        let stack = []
+        if (f.piece) {
+          stack.push(new Piece('BEE', 'RED'))
+        }
+        b.fields[x+SHIFT][y+SHIFT] = new Field(stack, new Coordinates(x, y, z))
       })
     })
     return b

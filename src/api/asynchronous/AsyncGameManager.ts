@@ -112,14 +112,9 @@ export class AsyncGameManager {
         let gameId = parseInt(req.query.id)
         let turn = parseInt(req.query.turn)
         if(this.games.has(gameId)) {
-          // TODO
-          let gs = new GameState()
-          res.send(gs)
-          /*
           this.games.get(gameId).getState(turn).then(gs => {
             res.send(gs)
           })
-          */
         } else {
           res.status(404).send('No game with id ' + gameId)
         }
@@ -158,11 +153,15 @@ export class AsyncGameManager {
   }
 
   private report_status(game: Game, gameId: number): { numberOfStates: number, gameStatus: GameStatus, moveRequest?: TransferableMoveRequest, gameResult?: GameResult } {
-    // TODO
-    return {
-      numberOfStates: 1,
-      gameStatus: 'RUNNING'
+    // XXX TODO
+    let resp: any = {}
+    resp.numberOfStates = 1
+    resp.gameStatus = 'REQUIRES INPUT'
+    resp.moveRequest = {
+      state: new GameState(),
+      id: 42,
     }
+    return resp
     /*
     let resp: any = {}
 
