@@ -53,6 +53,8 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
       this.viewer.animateMoves = this.props.settings.animateMoves
       this.viewer.engine.scene.animateWater = this.props.settings.animateWater
       this.viewer.dock(e)
+      // update current turn to display it in the toolbar and toggable sidebar
+      this.updateTurn(0)
     }
   }
 
@@ -140,7 +142,17 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   /** Updates the current turn, clipping it between 0 and either the given maxTurn or current turnTotal and updates the state. */
   updateTurn(turn: number, maxTurn: number = this.state.turnTotal) {
     const newTurn = Math.max(0, Math.min(turn, maxTurn))
-    Api.getGameManager().setCurrentDisplayStateOnGame(this.props.gameId, newTurn)
+    let gameManager = Api.getGameManager()
+    gameManager.setCurrentDisplayStateOnGame(this.props.gameId, newTurn)
+    // updates the turn in the toolbar on top of the game viewer
+    document.getElementById('game-name').innerHTML = gameManager.getGameInfo(this.props.gameId).name + " - Zug " + newTurn
+    // updates the turn in the toggable navbar on the left
+    for (let navItem of document.getElementsByClassName('navbarGameId')) {
+      if (navItem.innerHTML.replace("(", "").replace(")", "") == String(this.props.gameId)) {
+        navItem.parentElement.getElementsByClassName('navbarGameTurn')[0].innerHTML = "Zug " + newTurn + " - "
+        break
+      }
+    }
     this.setState({waitingForInput: false, hideStartButton: true, turnActive: newTurn, turnTotal: maxTurn})
   }
 

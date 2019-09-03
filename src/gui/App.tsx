@@ -329,7 +329,7 @@ export class App extends React.Component<any, State> {
                 {Api.getGameManager().getGameInfos().map(
                   t => (<NavItem key={t.id} onClick={() => this.showGame(t.id)}
                                  active={this.state.contentState == AppContent.GameLive && this.state.activeGameId == t.id}>
-                      <UnicodeIcon icon="🎳"/>{t.name} ({t.id})
+                      <UnicodeIcon icon="🎳" /><span className="navbarGameTurn" contentEditable={true}>Zug {t.currentTurn} - </span><span className="navbarGameName">{t.name}</span> <span className="navbarGameId">({t.id})</span>
                       <span className="close-button-container">
                       <button title="Close Game" className="svg-button close-game" onClick={e => {
                         this.closeGame(t.id)
@@ -337,6 +337,7 @@ export class App extends React.Component<any, State> {
                       }}>
                         <img className="svg-icon" src="resources/x-circled.svg"/></button></span></NavItem>
                   ))}
+
                 <NavTitle title="Informationen"/>
                 <NavItem key="settings" onClick={() => this.show(AppContent.Administration)}
                          active={this.state.contentState == AppContent.Administration}>

@@ -2,8 +2,8 @@ node_modules
 /server
 /out
 /dist
+/.vs
 *.jar
-
 *.log*
 *.blend1
 *.blend2
