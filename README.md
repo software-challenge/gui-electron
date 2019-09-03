@@ -15,13 +15,6 @@
 - `yarn update-server` ausführen, damit der server im Verzeichnis `server` verfügbar wird (dieser Schritt muss zum updaten des servers wiederholt werden)
 - GUI per `yarn start` starten
 
-### Für Windows-User
-
-- repository klonen
-- yarn und node installieren (evtl. muss auch noch [Kotlin](https://downlinko.com/download-install-kotlin-windows.html) sowie [Gradle](https://gradle.org/install/) manuell installiert werden)
-- `yarn update-server-win` ausführen, damit der server im Verzeichnis `server` verfügbar wird (dieser Schritt muss zum updaten des servers wiederholt werden)
-- GUI per `yarn start-win` starten
-
 ## Allgemeine Struktur
 
 Es gibt drei Teile, jeweils in einem eigenen Hauptverzeichnis unter [src](src) GUI, API und Viewer.
@@ -60,3 +53,9 @@ Es wird auch immer ein Game Server mit in den Release gepackt. Dieser sollte vor
 *Fehler:* `Error: Exit code: ENOENT. spawn xorriso ENOENT`
 
 *Loesung:* xorriso installieren
+
+### Bei Problemen unter Windows
+
+Es kann eine manuelle Installation von [Kotlin](https://downlinko.com/download-install-kotlin-windows.html) sowie [Gradle](https://gradle.org/install/) erforderlich sein, sollte die Fehlermeldung von `missing tools` auftreten bei der Ausführung von `yarn update-server`
+
+Es wird die Windows-CMD sowie PowerShell [nicht unterstützt](https://github.com/CAU-Kiel-Tech-Inf/socha-gui/pull/26/commits/6ad684bf0af5b79e4b923f272022f64b2a60f35b). Eine Bash-Shell ist notwendig wie beispielsweise [git for windows](https://gitforwindows.org/)
