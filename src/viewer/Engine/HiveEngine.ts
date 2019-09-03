@@ -2,7 +2,7 @@
 
 import 'phaser'
 import { remote } from 'electron'
-import { Board, Coordinates, FieldSelected, FIELDSIZE, SHIFT, PIECETYPE, FIELDPIXELWIDTH, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectFish, SelectTargetDirection, UiState, ScreenCoordinates } from '../../api/rules/CurrentGame'
+import { Board, Coordinates, FieldSelected, FIELDSIZE, SHIFT, PIECETYPE, FIELDPIXELWIDTH, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectPiece, SelectTargetDirection, UiState, ScreenCoordinates } from '../../api/rules/CurrentGame'
 
 const dialog = remote.dialog
 
@@ -361,7 +361,7 @@ export class HiveEngine {
     this.scene.unmarkFields()
     this.selectableFields = []
     this.scene.deselectFields()
-    if(state.uiState instanceof SelectFish) {
+    if(state.uiState instanceof SelectPiece) {
       this.selectableFields = state.uiState.selectableFieldCoordinates
     } else if(state.uiState instanceof SelectTargetDirection) {
       this.selectableFields = state.uiState.selectableDirections.map(sd => sd.target)

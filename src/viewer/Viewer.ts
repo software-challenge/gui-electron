@@ -1,5 +1,5 @@
 import { HiveEngine } from './Engine/HiveEngine'
-import { Coordinates, Direction, FieldSelected, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectFish, SelectTargetDirection, UiState } from '../api/rules/CurrentGame'
+import { Coordinates, Direction, FieldSelected, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectPiece, SelectTargetDirection, UiState } from '../api/rules/CurrentGame'
 
 export class Viewer {
   //DOM Elements
@@ -120,23 +120,23 @@ export class Viewer {
     // XXX TODO interaction logic
     let uiState: UiState
     if(shouldSelectPiece) {
-      let ownFishFields = state.board.fields.map((col, x) => {
+      let ownPieceFields = state.board.fields.map((col, x) => {
         return col.map((field, y) => {
           if(field == GameRuleLogic.playerFieldType(state.currentPlayerColor)) {
-            return {x: x, y: y}
+            return new Coordinates(x, y, -x-y)
           } else {
             return null
           }
         })
       }).reduce((a, c) => a.concat(c)).filter(e => e != null)
-      uiState = new SelectFish(ownFishFields)
+      uiState = new SelectPiece(ownPieceFields)
     } else if(shouldSelectTarget) {
       let firstAction = actions[0]
       if(firstAction instanceof FieldSelected) {
-        let fish = firstAction.coordinates
-        let possibleMoves = GameRuleLogic.possibleMoves(modified_gamestate.board, fish)
+        let piece = firstAction.coordinates
+        let possibleMoves = GameRuleLogic.possibleMoves(modified_gamestate.board, piece)
         uiState = new SelectTargetDirection(
-          fish,
+          piece,
           possibleMoves.map(m => ({direction: m.direction, target: GameRuleLogic.moveTarget(m, state.board)})),
         )
       } else {

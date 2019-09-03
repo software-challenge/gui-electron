@@ -355,8 +355,8 @@ class MoveInput {
   }
 }
 
-// user should select a fish, this is the first thing to input a new move
-export class SelectFish extends MoveInput {
+// user should select a piece, this is the first thing to input a new move
+export class SelectPiece extends MoveInput {
   readonly selectableFieldCoordinates: Coordinates[]
 
   constructor(selectable: Coordinates[]) {
@@ -392,7 +392,7 @@ export class FinishMove extends MoveInput {
 export type None = 'none';
 export type Skip = 'skip'
 
-export type UiState = SelectFish | SelectTargetDirection | FinishMove | Skip | None;
+export type UiState = SelectPiece | SelectTargetDirection | FinishMove | Skip | None;
 
 // describes a gamestate and possible interactions, the gamestate may be modified to represent an incomplete move
 export class RenderState {
