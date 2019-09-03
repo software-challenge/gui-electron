@@ -31,6 +31,7 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
     },
+    icon: path.join(__dirname, 'assets/build-resources/icon64.png')
   })
 
   let logDir = '.'
