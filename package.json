@@ -38,6 +38,7 @@
       "buildResources": "assets/build-resources"
     },
     "win": {
+      "icon": "assets/build-resources/icon.png",
       "target": [
         {
           "target": "nsis",
@@ -65,9 +66,6 @@
       "target": [
         "AppImage"
       ]
-    },
-    "win": {
-      "icon": "assets/build-resources/icon.png"
     }
   },
   "dependencies": {
