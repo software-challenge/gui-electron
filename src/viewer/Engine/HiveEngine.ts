@@ -22,7 +22,7 @@ export class SimpleScene extends Phaser.Scene {
   public allObjects: Phaser.GameObjects.Sprite[] // references to all sprites (for clearing)
   public graphics: FieldGraphics[][] // graphics to render the board
   public markers: Phaser.GameObjects.Sprite[] // graphics to mark fields
-  public selectedFish: Coordinates // currently selected fish (if any)
+  public selectedPiece: Coordinates // currently selected fish (if any)
   public fieldClickHandler: (c: Coordinates) => void = (_) => {}
   public animationTime: number = 200
   public animateWater: boolean
@@ -49,7 +49,7 @@ export class SimpleScene extends Phaser.Scene {
     this.graphics = []
     this.markers = []
     this.allObjects = []
-    this.selectedFish = null
+    this.selectedPiece = null
     this.createFieldLabels()
   }
 
@@ -199,27 +199,24 @@ export class SimpleScene extends Phaser.Scene {
   }
 
   deselectFields() {
-    /*
-    if(this.selectedFish) {
-      let sprite = this.graphics[this.selectedFish.x][this.selectedFish.y].foreground
+    if(this.selectedPiece) {
+      let fieldCoordinates = this.selectedPiece.screenCoordinates()
+      let sprite = this.graphics[fieldCoordinates.x][fieldCoordinates.y].foreground
       // if sprite was already moving, reset position
       if(sprite) {
         this.tweens.killTweensOf(sprite)
-        let fieldCoordinates = this.fieldCoordinates(this.selectedFish)
         sprite.x = fieldCoordinates.x
         sprite.y = fieldCoordinates.y
       }
-      this.selectedFish = null
+      this.selectedPiece = null
     }
-    TODO
-    */
   }
 
   selectTarget(field: Coordinates) {
-    /*
-    this.deselectFish()
-    this.selectedFish = field
-    let sprite = this.graphics[this.selectedFish.x][this.selectedFish.y].foreground
+    this.deselectFields()
+    this.selectedPiece = field
+    let fieldCoordinates = this.selectedPiece.screenCoordinates()
+    let sprite = this.graphics[fieldCoordinates.x][fieldCoordinates.y].foreground
     this.tweens.add({
       targets: [sprite],
       y: sprite.y - 20,
@@ -228,14 +225,10 @@ export class SimpleScene extends Phaser.Scene {
       duration: 300,
       ease: Phaser.Math.Easing.Back.In,
     })
-    TODO
-    */
   }
 
   updateBoard(gameState: GameState, move: Move) {
     console.log('updateBoard (animate) entry')
-    /*
-      TODO
     if(move == null) {
       // added this check because of strange bug where a promise rejection
       // happened because of passing an undefined move into this method. The
@@ -243,18 +236,17 @@ export class SimpleScene extends Phaser.Scene {
       throw 'move is not defined'
     }
     this.boardEqualsView(gameState.board)
-    let spriteToMove = this.graphics[move.fromField.x][move.fromField.y].foreground
+    let spriteToMove = this.graphics[move.fromField.screenCoordinates().x][move.fromField.screenCoordinates().y].foreground
     if(spriteToMove != null) {
       let destination = GameRuleLogic.moveTarget(move, gameState.board)
-      let destinationFieldCoordinates = this.fieldCoordinates(destination)
-      this.deselectFish()
-      let targetGraphic = this.graphics[destination.x][destination.y].foreground
-      this.graphics[destination.x][destination.y].foreground = this.graphics[move.fromField.x][move.fromField.y].foreground
-      this.graphics[move.fromField.x][move.fromField.y].foreground = null
+      this.deselectFields()
+      let targetGraphic = this.graphics[destination.screenCoordinates().x][destination.screenCoordinates().y].foreground
+      this.graphics[destination.screenCoordinates().x][destination.screenCoordinates().y].foreground = this.graphics[move.fromField.screenCoordinates().x][move.fromField.screenCoordinates().y].foreground
+      this.graphics[move.fromField.screenCoordinates().x][move.fromField.screenCoordinates().y].foreground = null
       this.tweens.add({
         targets: [spriteToMove],
-        x: destinationFieldCoordinates.x,
-        y: destinationFieldCoordinates.y,
+        x: destination.screenCoordinates().x,
+        y: destination.screenCoordinates().y,
         duration: this.animationTime,
         onComplete: () => {
           if(targetGraphic != null) {
@@ -269,7 +261,6 @@ export class SimpleScene extends Phaser.Scene {
       console.warn('should animate move, but sprite was not present', move)
     }
     console.log('updateBoard (animate) leave')
-    */
   }
 
   update() {

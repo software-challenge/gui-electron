@@ -11,9 +11,9 @@ export class GameRuleLogic {
     return board
   }
 
-  static moveTarget(move: Move, board: Board): Board {
+  static moveTarget(move: Move, board: Board): Coordinates {
     // TODO
-    return board
+    return null
   }
 
   static playerFieldType(player: PLAYERCOLOR) {
