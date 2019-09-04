@@ -301,8 +301,6 @@ export class Player {
   }
 }
 
-export type Direction = 'UP' | 'UP_RIGHT' | 'RIGHT' | 'DOWN_RIGHT' | 'DOWN' | 'DOWN_LEFT' | 'LEFT' | 'UP_LEFT';
-
 export class Move {
   readonly fromField: Coordinates
   readonly toField: Coordinates
@@ -365,20 +363,15 @@ export class SelectPiece extends MoveInput {
   }
 }
 
-export interface DirectionWithCoordinates {
-  direction: Direction
-  target: Coordinates
-}
-
 // user should select a target direction to move, this is the second thing to input a new move
-export class SelectTargetDirection extends MoveInput {
+export class SelectTargetField extends MoveInput {
   readonly origin: Coordinates
-  readonly selectableDirections: DirectionWithCoordinates[]
+  readonly selectableFields: Coordinates[]
 
-  constructor(o: Coordinates, selectable: DirectionWithCoordinates[]) {
+  constructor(o: Coordinates, selectable: Coordinates[]) {
     super(false, false)
     this.origin = o
-    this.selectableDirections = selectable
+    this.selectableFields = selectable
   }
 }
 
@@ -392,7 +385,7 @@ export class FinishMove extends MoveInput {
 export type None = 'none';
 export type Skip = 'skip'
 
-export type UiState = SelectPiece | SelectTargetDirection | FinishMove | Skip | None;
+export type UiState = SelectPiece | SelectTargetField | FinishMove | Skip | None;
 
 // describes a gamestate and possible interactions, the gamestate may be modified to represent an incomplete move
 export class RenderState {

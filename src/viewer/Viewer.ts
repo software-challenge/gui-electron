@@ -1,5 +1,5 @@
 import { HiveEngine } from './Engine/HiveEngine'
-import { Coordinates, Direction, FieldSelected, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectPiece, SelectTargetDirection, UiState } from '../api/rules/CurrentGame'
+import { Coordinates, FieldSelected, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectPiece, SelectTargetField, UiState } from '../api/rules/CurrentGame'
 
 export class Viewer {
   //DOM Elements
@@ -135,9 +135,9 @@ export class Viewer {
       if(firstAction instanceof FieldSelected) {
         let piece = firstAction.coordinates
         let possibleMoves = GameRuleLogic.possibleMoves(modified_gamestate.board, piece)
-        uiState = new SelectTargetDirection(
+        uiState = new SelectTargetField(
           piece,
-          possibleMoves.map(m => ({direction: m.direction, target: GameRuleLogic.moveTarget(m, state.board)})),
+          possibleMoves.map(m => m.toField),
         )
       } else {
         throw 'first action was not of type FieldSelected'

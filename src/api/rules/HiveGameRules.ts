@@ -10,4 +10,14 @@ export class GameRuleLogic {
     // TODO
     return board
   }
+
+  static moveTarget(move: Move, board: Board): Board {
+    // TODO
+    return board
+  }
+
+  static playerFieldType(player: PLAYERCOLOR) {
+    // TODO
+    return null
+  }
 }
