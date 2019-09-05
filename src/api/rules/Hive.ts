@@ -17,6 +17,8 @@ export class GameState {
   board: Board
   has_result: boolean
   lastMove: Move
+  undeployedRedPieces: Piece[]
+  undeployedBluePieces: Piece[]
 
   constructor() {
     this.red = new Player('RED')
@@ -39,6 +41,14 @@ export class GameState {
     gs.red = Player.fromJSON(json.red[0])
     gs.blue = Player.fromJSON(json.blue[0])
     gs.board = Board.fromJSON(json.board[0])
+    gs.undeployedRedPieces = []
+    json.undeployedRedPieces[0].piece.forEach(p => {
+      gs.undeployedRedPieces.push(Piece.fromJSON(p));
+    })
+    gs.undeployedBluePieces = []
+    json.undeployedBluePieces[0].piece.forEach(p => {
+      gs.undeployedBluePieces.push(Piece.fromJSON(p));
+    })
     if(json.lastMove) {
       gs.lastMove = Move.fromJSON(json.lastMove[0])
     }
@@ -53,6 +63,8 @@ export class GameState {
     clone.red = this.red.clone()
     clone.blue = this.blue.clone()
     clone.board = this.board.clone()
+    clone.undeployedRedPieces = this.undeployedRedPieces
+    clone.undeployedBluePieces = this.undeployedBluePieces
     clone.has_result = this.has_result
     return clone
   }
@@ -121,9 +133,11 @@ export class ScreenCoordinates {
   }
 
   boardCoordinates(): Coordinates {
-    var q = ( 2./3 * this.x                        ) / FIELDPIXELWIDTH
-    var r = (-1./3 * this.x  +  Math.sqrt(3)/3 * this.y) / FIELDPIXELWIDTH
-    return ScreenCoordinates.round(q, r, Coordinates.calcS(q, r))
+    // calculate axial coordinates
+    let aq = ( Math.sqrt(3)/3 * this.x - 1./3 * this.y ) / FIELDPIXELWIDTH
+    let ar = (                           2./3 * this.y ) / FIELDPIXELWIDTH
+    let cube = new Coordinates(aq, ar, -aq-ar)
+    return ScreenCoordinates.round(cube.q, cube.r, cube.s)
   }
 }
 
@@ -140,8 +154,13 @@ export class Coordinates {
   }
 
   screenCoordinates(): ScreenCoordinates {
-    let x = FIELDPIXELWIDTH * (Math.sqrt(3.0)/2 * this.q - Math.sqrt(3.0)/2 * this.r)
-    let y = FIELDPIXELWIDTH * (-3.0/2 * this.q -  3.0/2 * this.r)
+    let axial = {
+      q: this.q,
+      r: this.s
+    }
+    let x = FIELDPIXELWIDTH * (Math.sqrt(3.0)/2 * axial.q - Math.sqrt(3.0)/2 * axial.r)
+    let y = FIELDPIXELWIDTH * (-3.0/2 *           axial.q -  3.0/2 *           axial.r)
+
     return new ScreenCoordinates(x, y)
   }
 
@@ -159,6 +178,13 @@ export class Piece {
   constructor(kind: PIECETYPE, color: PLAYERCOLOR) {
     this.kind = kind
     this.color = color
+  }
+
+  static fromJSON(json: any): Piece {
+    return new Piece(
+      json['$']['type'],
+      json['$']['owner']
+    )
   }
 }
 
@@ -179,6 +205,13 @@ export class Field {
     })
     return new Field(stack, c)
   }
+
+  owner(): PLAYERCOLOR {
+    if (this.stack.length == 0) {
+      return null
+    }
+    return this.stack[this.stack.length - 1].color
+  }
 }
 
 export class Board {
@@ -198,8 +231,9 @@ export class Board {
           b.fields[x+SHIFT] = []
         }
         let stack = []
+        // TODO this should be a stack of pieces, not "f.piece"
         if (f.piece) {
-          stack.push(new Piece('BEE', 'RED'))
+          stack.push(Piece.fromJSON(f.piece))
         }
         b.fields[x+SHIFT][y+SHIFT] = new Field(stack, new Coordinates(x, y, z))
       })
@@ -356,15 +390,17 @@ class MoveInput {
 // user should select a piece, this is the first thing to input a new move
 export class SelectPiece extends MoveInput {
   readonly selectableFieldCoordinates: Coordinates[]
+  readonly undeployedColor: PLAYERCOLOR
 
-  constructor(selectable: Coordinates[]) {
+  constructor(selectable: Coordinates[], color: PLAYERCOLOR) {
     super(false, false)
     this.selectableFieldCoordinates = selectable
+    this.undeployedColor = color
   }
 }
 
-// user should select a target direction to move, this is the second thing to input a new move
-export class SelectTargetField extends MoveInput {
+// user should select a target field to move a piece which is already on the board
+export class SelectDragTargetField extends MoveInput {
   readonly origin: Coordinates
   readonly selectableFields: Coordinates[]
 
@@ -374,6 +410,21 @@ export class SelectTargetField extends MoveInput {
     this.selectableFields = selectable
   }
 }
+
+// user should select a target field to put a piece from the undeployed pieces
+export class SelectSetTargetField extends MoveInput {
+  readonly color: PLAYERCOLOR
+  readonly index: number
+  readonly selectableFields: Coordinates[]
+
+  constructor(color: PLAYERCOLOR, index: number, selectable: Coordinates[]) {
+    super(false, false)
+    this.color = color
+    this.index = index
+    this.selectableFields = selectable
+  }
+}
+
 
 // user has completed the input of a move and may start over or send the move
 export class FinishMove extends MoveInput {
@@ -385,7 +436,7 @@ export class FinishMove extends MoveInput {
 export type None = 'none';
 export type Skip = 'skip'
 
-export type UiState = SelectPiece | SelectTargetField | FinishMove | Skip | None;
+export type UiState = SelectPiece | SelectSetTargetField | SelectDragTargetField | FinishMove | Skip | None;
 
 // describes a gamestate and possible interactions, the gamestate may be modified to represent an incomplete move
 export class RenderState {
@@ -403,7 +454,7 @@ export class RenderState {
 }
 
 // describes a interface action the user has performed, will be returned by the viewer if the user clicks on something interactive
-export type InteractionEvent = FieldSelected | Sent | Cancelled | Skipped;
+export type InteractionEvent = FieldSelected | UndeployedPieceSelected | Sent | Cancelled | Skipped;
 
 export type Sent = 'sent';
 export type Cancelled = 'cancelled';
@@ -414,5 +465,15 @@ export class FieldSelected {
 
   constructor(c: Coordinates) {
     this.coordinates = c
+  }
+}
+
+export class UndeployedPieceSelected {
+  readonly color: PLAYERCOLOR
+  readonly index: number
+
+  constructor(color: PLAYERCOLOR, index: number) {
+    this.color = color
+    this.index = index
   }
 }

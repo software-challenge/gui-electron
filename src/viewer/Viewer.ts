@@ -1,5 +1,5 @@
 import { HiveEngine } from './Engine/HiveEngine'
-import { Coordinates, FieldSelected, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectPiece, SelectTargetField, UiState } from '../api/rules/CurrentGame'
+import { Coordinates, FieldSelected, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectPiece, UndeployedPieceSelected, SelectSetTargetField, SelectDragTargetField, UiState } from '../api/rules/CurrentGame'
 
 export class Viewer {
   //DOM Elements
@@ -120,27 +120,35 @@ export class Viewer {
     // XXX TODO interaction logic
     let uiState: UiState
     if(shouldSelectPiece) {
-      let ownPieceFields = state.board.fields.map((col, x) => {
-        return col.map((field, y) => {
-          if(field == GameRuleLogic.playerFieldType(state.currentPlayerColor)) {
-            return new Coordinates(x, y, -x-y)
+      let ownPieceFields = state.board.fields.map(col => {
+        return col.map(field => {
+          if(field.owner() == state.currentPlayerColor) {
+            return field.coordinates
           } else {
             return null
           }
         })
       }).reduce((a, c) => a.concat(c)).filter(e => e != null)
-      uiState = new SelectPiece(ownPieceFields)
+      uiState = new SelectPiece(ownPieceFields, state.currentPlayerColor)
     } else if(shouldSelectTarget) {
       let firstAction = actions[0]
       if(firstAction instanceof FieldSelected) {
         let piece = firstAction.coordinates
         let possibleMoves = GameRuleLogic.possibleMoves(modified_gamestate.board, piece)
-        uiState = new SelectTargetField(
+        uiState = new SelectDragTargetField(
           piece,
-          possibleMoves.map(m => m.toField),
+          [new Coordinates(0,0,0)] // TODO
         )
-      } else {
-        throw 'first action was not of type FieldSelected'
+      }
+      if (firstAction instanceof UndeployedPieceSelected) {
+        uiState = new SelectSetTargetField(
+          firstAction.color,
+          firstAction.index,
+          [new Coordinates(0,0,0)] // TODO
+        )
+      }
+      if (!uiState) {
+        throw 'first action was not of type FieldSelected or UndeployedPieceSelected'
       }
     } else {
       throw 'we should not interact at all'
