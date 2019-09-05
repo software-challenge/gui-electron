@@ -335,12 +335,21 @@ export class Player {
   }
 }
 
+export type MOVETYPE = 'SET' | 'DRAG'
 export class Move {
   readonly fromField: Coordinates
+  readonly undeployedPiece: PIECETYPE
   readonly toField: Coordinates
+  readonly moveType: MOVETYPE
 
-  constructor(fromField: Coordinates, toField: Coordinates) {
-    this.fromField = fromField
+  constructor(fromFieldOrPiece: Coordinates | PIECETYPE, toField: Coordinates) {
+    if (fromFieldOrPiece instanceof Coordinates) {
+      this.moveType = 'DRAG'
+      this.fromField = fromFieldOrPiece
+    } else {
+      this.moveType = 'SET'
+      this.undeployedPiece = fromFieldOrPiece
+    }
     this.toField = toField
   }
 
@@ -471,9 +480,14 @@ export class FieldSelected {
 export class UndeployedPieceSelected {
   readonly color: PLAYERCOLOR
   readonly index: number
+  kind: PIECETYPE
 
   constructor(color: PLAYERCOLOR, index: number) {
     this.color = color
     this.index = index
+  }
+
+  setKind(kind: PIECETYPE) {
+    this.kind = kind
   }
 }

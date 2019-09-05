@@ -92,12 +92,15 @@ export class Viewer {
     }
   }
 
-  // NOTE that currentPlayerIndex is only required for the advance action (which will always be the first action of a move)
   interactionsToMove(interactions: InteractionEvent[]): Move {
-    let fromField = interactions[0]
+    let fromFieldOrPiece = interactions[0]
     let toField = interactions[1]
-    if(fromField instanceof FieldSelected && toField instanceof FieldSelected) {
-      return new Move(fromField.coordinates, toField.coordinates)
+    if(fromFieldOrPiece instanceof FieldSelected && toField instanceof FieldSelected) {
+      // DragMove
+      return new Move(fromFieldOrPiece.coordinates, toField.coordinates)
+    } else if(fromFieldOrPiece instanceof UndeployedPieceSelected && toField instanceof FieldSelected) {
+      // SetMove
+      return new Move(fromFieldOrPiece.kind, toField.coordinates)
     } else {
       throw 'got illegal list of interactions to create a move'
     }
@@ -132,19 +135,27 @@ export class Viewer {
       uiState = new SelectPiece(ownPieceFields, state.currentPlayerColor)
     } else if(shouldSelectTarget) {
       let firstAction = actions[0]
+      let allFields = state.board.fields.map(
+        col => col.map(field => field.coordinates)
+      ).reduce((a, c) => a.concat(c))
       if(firstAction instanceof FieldSelected) {
         let piece = firstAction.coordinates
         let possibleMoves = GameRuleLogic.possibleMoves(modified_gamestate.board, piece)
         uiState = new SelectDragTargetField(
           piece,
-          [new Coordinates(0,0,0)] // TODO
+          allFields // TODO: only select target fields of possible moves
         )
       }
       if (firstAction instanceof UndeployedPieceSelected) {
+        if (firstAction.color == 'RED') {
+          firstAction.setKind(state.undeployedRedPieces[firstAction.index].kind)
+        } else {
+          firstAction.setKind(state.undeployedBluePieces[firstAction.index].kind)
+        }
         uiState = new SelectSetTargetField(
           firstAction.color,
           firstAction.index,
-          [new Coordinates(0,0,0)] // TODO
+          allFields // TODO: only select target fields of possible moves
         )
       }
       if (!uiState) {
