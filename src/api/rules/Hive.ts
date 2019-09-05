@@ -191,10 +191,13 @@ export class Piece {
 export class Field {
   stack: Piece[]
   coordinates: Coordinates
+  // Vogelnest Y/N
+  obstructed: boolean
 
   constructor(stack: Piece[], coordinates: Coordinates) {
     this.stack = stack
     this.coordinates = coordinates
+    this.obstructed = false
   }
 
   static lift(that: any) {
