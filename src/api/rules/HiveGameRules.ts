@@ -2,6 +2,10 @@ import { Board, Coordinates, FIELDSIZE, PIECETYPE, Move, Player, PLAYERCOLOR, Fi
 
 export class GameRuleLogic {
 
+  static addBlockedFields(board: Board): Board {
+    return board
+  }
+
   static getNeighbours(board: Board, field: Coordinates): Field[] {
     let tmp = []
     let coords = field.screenCoordinates()
@@ -79,6 +83,47 @@ export class GameRuleLogic {
     return fields
   }
 
+  /** Validates whether nor not the path to the neighbour via adjacent tiles is obstructed or not
+   * 
+   * @param board
+   * @param a
+   * @param b
+   */
+  static isNeighbourObstructed(board: Board, a: Coordinates, b: Coordinates): boolean {
+    if (this.isNeighbour(a, b)) {
+      console.log("Feld a ist kein Nachbar von b", a, b)
+      return true
+    }
+
+    let shared = this.sharedNeighboursOfTwoCoords(board, a, b)
+    // 2 benachbarte Felder müssen mindestens 1 und höchstens 2 weiteren gemeinsamen Nachbarn haben
+    if (shared.length > 2 && shared.length < 1) {
+      console.log("Unerwartete Anzahl an gemeinsamen Nachbarfeldern von a, b, shared", a, b, shared)
+      return true
+    }
+
+    let blocked = 0
+    for (let tile of shared) {
+      if (tile.obstructed || tile.stack.length > 0) {
+        blocked++
+      }
+    }
+    return shared.length - blocked > 0
+  }
+
+  static sharedNeighboursOfTwoCoords(board: Board, a: Coordinates, b: Coordinates): Field[] {
+    let tmp = []
+    let nb = this.getNeighbours(board, b)
+
+    for (let na of this.getNeighbours(board, a)) {
+      if (nb.indexOf(na)) {
+        tmp.push(na)
+      }
+    }
+
+    return tmp
+  }
+
   /** Determines whether or not given coordinate is adjacent to the swarm
    * if except is != null, the field of except will not be counted as part of the swarm
    * 
@@ -151,7 +196,7 @@ export class GameRuleLogic {
 
       // find all valid adjacent fields
       for (let f of fields) {
-        if (this.isNeighbour(f.coordinates, currentField)) {
+        if (this.isNeighbour(f.coordinates, currentField) && !this.isNeighbourObstructed(state.board, f.coordinates, currentField)) {
           let tmp = {
             c: f.coordinates,
             dist: Math.sqrt(Math.pow(target.x - f.coordinates.screenCoordinates().x, 2) + Math.pow(target.y - f.coordinates.screenCoordinates().y, 2))
@@ -188,17 +233,21 @@ export class GameRuleLogic {
       return false
     }
 
-    this.getNeighbours(state.board, move.fromField).forEach(field => {
-      // field occupied ?
-      if (field.stack.length == 0 && !field.obstructed) {
-        // field equals target field ?
-        let coords = field.coordinates.screenCoordinates()
-        let end = move.toField.screenCoordinates()
-        if (coords.x == end.x && coords.y == end.y) {
-          return true
-        }
-      }
-    })
+    return this.isNeighbour(move.fromField, move.toField) && !this.isNeighbourObstructed(state.board, move.fromField, move.toField)
+  }
+
+  static validateBeetleMove(state: GameState, move: Move): boolean {
+    let start = move.fromField.screenCoordinates()
+    if (state.board[start.x][start.y].stack.length < 1 || state.board[start.x][start.y].stack[state.board[start.x][start.y].stack.length - 1].kind != 'BEETLE') {
+      // this is not a BEETLE!!!
+      return false
+    }
+
+    return this.isNeighbour(move.fromField, move.toField) && !this.isNeighbourObstructed(state.board, move.fromField, move.toField)
+  }
+
+  static validateSpiderMove(state: GameState, move: Move): boolean {
+    // TODO..... benötigt wahrscheinlich eine Kombination von validateAntMove und einem Strecken-Counter
     return false
   }
 

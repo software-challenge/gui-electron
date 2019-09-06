@@ -153,10 +153,12 @@ export class Coordinates {
     this.r = r
     this.s = s
     if (q + r + s != 0) {
-      throw new Error("Given coordinates are corrupted: {q: " + q + ", r: " + r + ", s: " + s + "}")
+      console.log("Given coordinates are corrupted: {q: " + q + ", r: " + r + ", s: " + s + "}")
+      return null
     }
     if (!GameRuleLogic.isOnBoard(this)) {
-      throw new RangeError("Given coordinates are out of field: {q: " + q + ", r: " + r + ", s: " + s + "}")
+      console.log("Given coordinates are out of field: {q: " + q + ", r: " + r + ", s: " + s + "}")
+      return null
     }
   }
 
