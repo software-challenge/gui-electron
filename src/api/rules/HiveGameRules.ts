@@ -269,8 +269,52 @@ export class GameRuleLogic {
     return []
   }
 
-  static moveTarget(move: Move, board: Board): Coordinates {
-    // TODO
+  static performMove(state: GameState, move: Move): void {
+    // validate move TODO
+    // apply move
+    if (move.moveType == 'SET') {
+      let piece = null
+
+      // Rot
+      if (state.currentPlayerColor == 'RED') {
+        for (let p of state.undeployedRedPieces) {
+          if (p.kind == move.undeployedPiece) {
+            piece = p
+            delete state.undeployedRedPieces[state.undeployedRedPieces.indexOf(p)]
+            break
+          }
+        }
+      }
+      // Blau
+      else {
+        for (let p of state.undeployedBluePieces) {
+          if (p.kind == move.undeployedPiece) {
+            piece = p
+            delete state.undeployedBluePieces[state.undeployedBluePieces.indexOf(p)]
+            break
+          }
+        }
+      }
+
+      if (piece == null) {
+        console.log("Zu setzendes piece konnte nicht gefunden werden in move", move)
+        return null
+      }
+
+      state.board.fields[move.toField.screenCoordinates().x][move.toField.screenCoordinates().y].stack.push(piece)
+    }
+    else if (move.moveType == 'DRAG') {
+      let oldStack = state.board.fields[move.fromField.screenCoordinates().x][move.fromField.screenCoordinates().y].stack
+      let newStack = state.board.fields[move.toField.screenCoordinates().x][move.toField.screenCoordinates().y].stack
+      let piece = oldStack.pop()      
+      newStack.push(piece)
+    }
+    else {
+      console.log("Unbekannter moveType....", move)
+    }
+
+    // change active player
+    state.currentPlayerColor = state.getOtherPlayer().color
     return null
   }
 }
