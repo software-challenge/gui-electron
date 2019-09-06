@@ -1,4 +1,5 @@
 import * as deepEqual from 'deep-equal'
+import { GameRuleLogic } from './HiveGameRules';
 
 export type LineDirection = 'HORIZONTAL' | 'VERTICAL' | 'RISING_DIAGONAL' | 'FALLING_DIAGONAL';
 export const ALL_DIRECTIONS: LineDirection[] = ['HORIZONTAL', 'VERTICAL', 'RISING_DIAGONAL', 'FALLING_DIAGONAL']
@@ -151,6 +152,12 @@ export class Coordinates {
     this.q = q
     this.r = r
     this.s = s
+    if (q + r + s != 0) {
+      throw new Error("Given coordinates are corrupted: {q: " + q + ", r: " + r + ", s: " + s + "}")
+    }
+    if (!GameRuleLogic.isOnBoard(this)) {
+      throw new RangeError("Given coordinates are out of field: {q: " + q + ", r: " + r + ", s: " + s + "}")
+    }
   }
 
   screenCoordinates(): ScreenCoordinates {
