@@ -3,7 +3,20 @@ import { Board, Coordinates, FIELDSIZE, PIECETYPE, Move, Player, PLAYERCOLOR, Fi
 export class GameRuleLogic {
 
   static addBlockedFields(board: Board): Board {
+    let x, y = 0
+    for (let i = 0; i < 3; i++) {
+      do {
+        x = this.randomIntFromInterval(0, board.fields.length)
+        y = this.randomIntFromInterval(0, board.fields[x].length)
+      } while (board.fields[x][y] == null || board.fields[x][y].obstructed)
+      board.fields[x][y].obstructed = true
+    }
+
     return board
+  }
+
+  static randomIntFromInterval(min: integer, max: integer): integer {
+    return Math.floor(Math.random() * (max - min + 1) + min)
   }
 
   static getNeighbours(board: Board, field: Coordinates): Field[] {
