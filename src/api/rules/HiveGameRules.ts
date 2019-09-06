@@ -119,8 +119,7 @@ export class GameRuleLogic {
   }
 
   static isOnBoard(coord: Coordinates): boolean {
-    let c = coord.screenCoordinates()
-    return -SHIFT <= c.x && c.x <= SHIFT && -SHIFT <= c.y && c.y <= SHIFT
+    return -SHIFT <= coord.q && coord.q <= SHIFT && -SHIFT <= coord.r && coord.r <= SHIFT
   }
 
   static validateMove(state: GameState, move: Move): boolean {
