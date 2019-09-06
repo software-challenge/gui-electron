@@ -121,7 +121,7 @@ export class GameRuleLogic {
         blocked++
       }
     }
-    return shared.length - blocked > 0
+    return shared.length - blocked == 0
   }
 
   static sharedNeighboursOfTwoCoords(board: Board, a: Coordinates, b: Coordinates): Field[] {
