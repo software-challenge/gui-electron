@@ -4,6 +4,7 @@ export class GameRuleLogic {
 
   static addBlockedFields(board: Board): Board {
     let x, y = 0
+    console.log("Adding vogelnester", board)
     for (let i = 0; i < 3; i++) {
       do {
         x = this.randomIntFromInterval(0, board.fields.length)
@@ -302,12 +303,14 @@ export class GameRuleLogic {
       }
 
       state.board.fields[move.toField.screenCoordinates().x][move.toField.screenCoordinates().y].stack.push(piece)
+      console.log("Setze piece, mit move", piece, move)
     }
     else if (move.moveType == 'DRAG') {
       let oldStack = state.board.fields[move.fromField.screenCoordinates().x][move.fromField.screenCoordinates().y].stack
       let newStack = state.board.fields[move.toField.screenCoordinates().x][move.toField.screenCoordinates().y].stack
-      let piece = oldStack.pop()      
+      let piece = oldStack.pop()
       newStack.push(piece)
+      console.log("Bewege piece, mit move", piece, move)
     }
     else {
       console.log("Unbekannter moveType....", move)

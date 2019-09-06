@@ -106,8 +106,9 @@ export class GameManagerWorkerInterface {
    */
   getState(gameId: number, turn: number) {
     return this.fetchBackend(`state?id=${gameId}&turn=${turn}`)
-      .then(r => r.json())
+      .then(r => { console.log("DEBUG", r, r.json()); r.json()  })
       .then(state => {
+        console.log("with state: ", state)
         let gs = GameState.lift(state)
         /*
         gs.board.fields[2][4].stack = [new Piece('ANT', 'RED')]
@@ -117,6 +118,7 @@ export class GameManagerWorkerInterface {
         gs.board.fields[6][4].stack = [new Piece('SPIDER', 'BLUE')]
         */
         console.log("Got gamestate form backend", gs)
+        console.log("with state: ", state)
         return gs
       })
   }
