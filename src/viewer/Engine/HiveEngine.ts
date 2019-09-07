@@ -319,7 +319,6 @@ export class SimpleScene extends Phaser.Scene {
     this.boardEqualsView(gameState.board)
     let spriteToMove = this.graphics[move.fromField.screenCoordinates().x][move.fromField.screenCoordinates().y].foreground
     if(spriteToMove != null) {
-      GameRuleLogic.performMove(gameState, move)
       this.deselectFields()
       let targetGraphic = this.graphics[move.toField.screenCoordinates().x][move.toField.screenCoordinates().y].foreground
       this.graphics[move.toField.screenCoordinates().x][move.toField.screenCoordinates().y].foreground = this.graphics[move.fromField.screenCoordinates().x][move.fromField.screenCoordinates().y].foreground

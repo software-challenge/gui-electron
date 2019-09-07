@@ -26,9 +26,6 @@ export class GameRuleLogic {
 
     if (coords.x + 1 <= SHIFT) {
       tmp.push(board.fields[coords.x + 1][coords.y])
-      if (coords.y + 1 <= SHIFT) {
-        tmp.push(board.fields[coords.x + 1][coords.y + 1])
-      }
       if (coords.y - 1 >= -SHIFT) {
         tmp.push(board.fields[coords.x + 1][coords.y - 1])
       }
@@ -37,9 +34,6 @@ export class GameRuleLogic {
       tmp.push(board.fields[coords.x - 1][coords.y])
       if (coords.y + 1 <= SHIFT) {
         tmp.push(board.fields[coords.x - 1][coords.y + 1])
-      }
-      if (coords.y - 1 >= -SHIFT) {
-        tmp.push(board.fields[coords.x - 1][coords.y - 1])
       }
     }
     if (coords.y + 1 <= SHIFT) {
@@ -268,56 +262,5 @@ export class GameRuleLogic {
   static possibleMoves(board: Board, field: Coordinates): Move[] {
     // TODO
     return []
-  }
-
-  static performMove(state: GameState, move: Move): void {
-    // validate move TODO
-    // apply move
-    if (move.moveType == 'SET') {
-      let piece = null
-
-      // Rot
-      if (state.currentPlayerColor == 'RED') {
-        for (let p of state.undeployedRedPieces) {
-          if (p.kind == move.undeployedPiece) {
-            piece = p
-            delete state.undeployedRedPieces[state.undeployedRedPieces.indexOf(p)]
-            break
-          }
-        }
-      }
-      // Blau
-      else {
-        for (let p of state.undeployedBluePieces) {
-          if (p.kind == move.undeployedPiece) {
-            piece = p
-            delete state.undeployedBluePieces[state.undeployedBluePieces.indexOf(p)]
-            break
-          }
-        }
-      }
-
-      if (piece == null) {
-        console.log("Zu setzendes piece konnte nicht gefunden werden in move", move)
-        return null
-      }
-
-      state.board.fields[move.toField.arrayCoordinates().x][move.toField.arrayCoordinates().y].stack.push(piece)
-      console.log("Setze piece, mit move", piece, move)
-    }
-    else if (move.moveType == 'DRAG') {
-      let oldStack = state.board.fields[move.fromField.arrayCoordinates().x][move.fromField.arrayCoordinates().y].stack
-      let newStack = state.board.fields[move.toField.arrayCoordinates().x][move.toField.arrayCoordinates().y].stack
-      let piece = oldStack.pop()
-      newStack.push(piece)
-      console.log("Bewege piece, mit move", piece, move)
-    }
-    else {
-      console.log("Unbekannter moveType....", move)
-    }
-
-    // change active player
-    state.currentPlayerColor = state.getOtherPlayer().color
-    return null
   }
 }
