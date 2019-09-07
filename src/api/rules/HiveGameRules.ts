@@ -1,4 +1,4 @@
-import { Board, Coordinates, FIELDSIZE, PIECETYPE, Move, Player, PLAYERCOLOR, Field, SHIFT, GameState, Piece, ArrayCoordinates } from './Hive'
+import { ArrayCoordinates, Board, Coordinates, Field, GameState, Move, PIECETYPE, PLAYERCOLOR, SHIFT } from './Hive'
 
 export class GameRuleLogic {
 
@@ -91,7 +91,7 @@ export class GameRuleLogic {
     }
 
     let shared = this.sharedNeighboursOfTwoCoords(board, a, b)
-    // 2 benachbarte Felder müssen mindestens 1 und höchstens 2 weiteren gemeinsamen Nachbarn haben
+    // 2 benachbarte Felder mï¿½ssen mindestens 1 und hï¿½chstens 2 weiteren gemeinsamen Nachbarn haben
     if (shared.length > 2 && shared.length < 1) {
       console.log("Unerwartete Anzahl an gemeinsamen Nachbarfeldern von a, b, shared", a, b, shared)
       return true
@@ -295,7 +295,7 @@ export class GameRuleLogic {
       return false
     }
 
-    // TODO..... benötigt wahrscheinlich eine Kombination von validateAntMove und einem Strecken-Counter
+    // TODO..... benï¿½tigt wahrscheinlich eine Kombination von validateAntMove und einem Strecken-Counter
     return false
   }
 
@@ -303,7 +303,7 @@ export class GameRuleLogic {
     let moves = []
     let allFields = this.getFieldsNextToSwarm(board, null)
 
-    // fürs erste brute-force durch
+    // fuers erste brute-force durch
     switch (board.getTopPiece(field).kind) {
       case 'ANT':
         for (let f of allFields) {
