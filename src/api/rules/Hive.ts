@@ -140,6 +140,33 @@ export class ScreenCoordinates {
     let cube = new Coordinates(aq, ar, -aq-ar)
     return ScreenCoordinates.round(cube.q, cube.r, cube.s)
   }
+
+  arrayCoordinates(): ArrayCoordinates {
+    return this.boardCoordinates().arrayCoordinates()
+  }
+}
+
+export class ArrayCoordinates {
+
+  x: number // first index
+  y: number // 2. index of 2d-array representation
+
+  constructor(x: number, y: number) {
+    if (x < 0 || y < 0 || x > FIELDSIZE - 1 || y > FIELDSIZE - 1) {
+      console.log("Given 2d-coordinates are corrupted: {x: " + x + ", y: " +y + "}")
+      return null
+    }
+    this.x = x
+    this.y = y
+  }
+
+  boardCoordinates(): Coordinates {
+    // calculate axial coordinates
+    let aq = (Math.sqrt(3) / 3 * this.x - 1. / 3 * this.y) / FIELDPIXELWIDTH
+    let ar = (2. / 3 * this.y) / FIELDPIXELWIDTH
+    let cube = new Coordinates(aq, ar, -aq - ar)
+    return ScreenCoordinates.round(cube.q, cube.r, cube.s)
+  }
 }
 
 export class Coordinates {
@@ -171,6 +198,10 @@ export class Coordinates {
     let y = FIELDPIXELWIDTH * (-3.0/2 *           axial.q -  3.0/2 *           axial.r)
 
     return new ScreenCoordinates(x, y)
+  }
+
+  arrayCoordinates(): ArrayCoordinates {
+    return new ArrayCoordinates(this.q + SHIFT, this.r + SHIFT)
   }
 
   static calcS(q: number, r: number): number {

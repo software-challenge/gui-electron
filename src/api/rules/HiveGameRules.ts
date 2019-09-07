@@ -22,7 +22,7 @@ export class GameRuleLogic {
 
   static getNeighbours(board: Board, field: Coordinates): Field[] {
     let tmp = []
-    let coords = field.screenCoordinates()
+    let coords = field.arrayCoordinates()
 
     if (coords.x + 1 <= SHIFT) {
       tmp.push(board.fields[coords.x + 1][coords.y])
@@ -53,8 +53,8 @@ export class GameRuleLogic {
   }
 
   static isNeighbour(a: Coordinates, b: Coordinates): boolean {
-    let ca = a.screenCoordinates()
-    let cb = b.screenCoordinates()
+    let ca = a.arrayCoordinates()
+    let cb = b.arrayCoordinates()
     return ca.x == cb.x && ca.y == cb.y - 1 || ca.x == cb.x && ca.y == cb.y + 1 || ca.x == cb.x + 1 && ca.y == cb.y || ca.x == cb.x + 1 && ca.y == cb.y - 1 || ca.x == cb.x + 1 && ca.y == cb.y + 1 || ca.x == cb.x - 1 && ca.y == cb.y || ca.x == cb.x - 1 && ca.y == cb.y - 1 || ca.x == cb.x - 1 && ca.y == cb.y + 1
   }
 
@@ -197,11 +197,11 @@ export class GameRuleLogic {
     let visitedFields = []
     let touchedFields = []
     let currentField = move.fromField
-    let target = move.toField.screenCoordinates()
+    let target = move.toField.arrayCoordinates()
     while (currentField == move.fromField || visitedFields.length < fields.length && touchedFields.length > 0 && (currentField.q != move.toField.q || currentField.r != move.toField.r || currentField.s != move.toField.s)) {
       visitedFields.push({
         c: currentField,
-        dist: Math.sqrt(Math.pow(target.x - currentField.screenCoordinates().x, 2) + Math.pow(target.y - currentField.screenCoordinates().y, 2))
+        dist: Math.sqrt(Math.pow(target.x - currentField.arrayCoordinates().x, 2) + Math.pow(target.y - currentField.arrayCoordinates().y, 2))
       })
       let i = touchedFields.findIndex(e => e.c === currentField)
       if (i || i == 0) {
@@ -213,7 +213,7 @@ export class GameRuleLogic {
         if (this.isNeighbour(f.coordinates, currentField) && !this.isNeighbourObstructed(state.board, f.coordinates, currentField)) {
           let tmp = {
             c: f.coordinates,
-            dist: Math.sqrt(Math.pow(target.x - f.coordinates.screenCoordinates().x, 2) + Math.pow(target.y - f.coordinates.screenCoordinates().y, 2))
+            dist: Math.sqrt(Math.pow(target.x - f.coordinates.arrayCoordinates().x, 2) + Math.pow(target.y - f.coordinates.arrayCoordinates().y, 2))
           }
 
           // prevent double-entrys
@@ -241,7 +241,7 @@ export class GameRuleLogic {
   }
 
   static validateBeeMove(state: GameState, move: Move): boolean {
-    let start = move.fromField.screenCoordinates()
+    let start = move.fromField.arrayCoordinates()
     if (state.board[start.x][start.y].stack.length != 1 || state.board[start.x][start.y].stack[0].kind != 'BEE') {
       // this is not a BEE!!!
       return false
@@ -251,7 +251,7 @@ export class GameRuleLogic {
   }
 
   static validateBeetleMove(state: GameState, move: Move): boolean {
-    let start = move.fromField.screenCoordinates()
+    let start = move.fromField.arrayCoordinates()
     if (state.board[start.x][start.y].stack.length < 1 || state.board[start.x][start.y].stack[state.board[start.x][start.y].stack.length - 1].kind != 'BEETLE') {
       // this is not a BEETLE!!!
       return false
@@ -302,12 +302,12 @@ export class GameRuleLogic {
         return null
       }
 
-      state.board.fields[move.toField.screenCoordinates().x][move.toField.screenCoordinates().y].stack.push(piece)
+      state.board.fields[move.toField.arrayCoordinates().x][move.toField.arrayCoordinates().y].stack.push(piece)
       console.log("Setze piece, mit move", piece, move)
     }
     else if (move.moveType == 'DRAG') {
-      let oldStack = state.board.fields[move.fromField.screenCoordinates().x][move.fromField.screenCoordinates().y].stack
-      let newStack = state.board.fields[move.toField.screenCoordinates().x][move.toField.screenCoordinates().y].stack
+      let oldStack = state.board.fields[move.fromField.arrayCoordinates().x][move.fromField.arrayCoordinates().y].stack
+      let newStack = state.board.fields[move.toField.arrayCoordinates().x][move.toField.arrayCoordinates().y].stack
       let piece = oldStack.pop()
       newStack.push(piece)
       console.log("Bewege piece, mit move", piece, move)
