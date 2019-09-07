@@ -6,7 +6,7 @@ import { Board, Piece, Coordinates, FieldSelected, FIELDSIZE, SHIFT, PLAYERCOLOR
 
 const dialog = remote.dialog
 
-const initialBoard = GameRuleLogic.addBlockedFields(new Board())
+//const initialBoard = GameRuleLogic.addBlockedFields(new Board())
 
 interface FieldGraphics {
   background: Phaser.GameObjects.Sprite;
