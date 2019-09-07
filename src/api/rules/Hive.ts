@@ -190,10 +190,18 @@ export class Piece {
   }
 
   static fromJSON(json: any): Piece {
-    return new Piece(
-      json['$']['type'],
-      json['$']['owner']
-    )
+    // TODO its with $ when in gamestate and without when in move...? make consistent!
+    if (json['$']) {
+      return new Piece(
+        json['$']['type'],
+        json['$']['owner']
+      )
+    } else {
+      return new Piece(
+        json['type'],
+        json['owner']
+      )
+    }
   }
 }
 

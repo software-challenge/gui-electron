@@ -42,10 +42,11 @@ export class HumanClient extends GenericPlayer implements GameClient {
           '<destination><x>' + move.toField.q + '</x><y>' + move.toField.r + '</y><z>' + move.toField.s + '</z></destination>'
       } else {
         xml = xml +
-          '<piece owner="' + this.state.currentPlayerColor + '" type="' + move.undeployedPiece + '" />'
+          '<piece owner="' + this.state.currentPlayerColor + '" type="' + move.undeployedPiece + '" />' +
           '<destination><x>' + move.toField.q + '</x><y>' + move.toField.r + '</y><z>' + move.toField.s + '</z></destination>'
       }
       xml = xml + '</data></room>'
+      Logger.getLogger().log('HumanClient', 'handleMoveRequest', "Sending move " + xml)
       this.writeData(xml)
     })
   }
