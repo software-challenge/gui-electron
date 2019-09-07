@@ -341,7 +341,7 @@ export class Board {
   }
 
   getField(c: Coordinates): Field {
-    if (this.fields.length <= c.arrayCoordinates().x || c.arrayCoordinates().x < 0 || this.fields[c.arrayCoordinates().x].length <= c.arrayCoordinates().y || c.arrayCoordinates().y < 0) {
+    if (!GameRuleLogic.isOnBoard(c) || this.fields.length <= c.arrayCoordinates().x || c.arrayCoordinates().x < 0 || this.fields[c.arrayCoordinates().x].length <= c.arrayCoordinates().y || c.arrayCoordinates().y < 0) {
       return null
     }
     return this.fields[c.arrayCoordinates().x][c.arrayCoordinates().y]
