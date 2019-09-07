@@ -135,15 +135,12 @@ export class Viewer {
       uiState = new SelectPiece(ownPieceFields, state.currentPlayerColor)
     } else if(shouldSelectTarget) {
       let firstAction = actions[0]
-      let allFields = state.board.fields.map(
-        col => col.map(field => field.coordinates)
-      ).reduce((a, c) => a.concat(c))
       if(firstAction instanceof FieldSelected) {
         let piece = firstAction.coordinates
         let possibleMoves = GameRuleLogic.possibleMoves(modified_gamestate.board, piece)
         uiState = new SelectDragTargetField(
           piece,
-          allFields // TODO: only select target fields of possible moves
+          possibleMoves // TODO: only select target fields of possible moves
         )
       }
       if (firstAction instanceof UndeployedPieceSelected) {
@@ -152,11 +149,24 @@ export class Viewer {
         } else {
           firstAction.setKind(state.undeployedBluePieces[firstAction.index].kind)
         }
-        uiState = new SelectSetTargetField(
-          firstAction.color,
-          firstAction.index,
-          allFields // TODO: only select target fields of possible moves
-        )
+
+        // Falls noch keine Spielfigur platziert wurde
+        if (modified_gamestate.board.countPieces() == 0) {
+          uiState = new SelectSetTargetField(
+            firstAction.color,
+            firstAction.index,
+            modified_gamestate.board.fields.map(
+              col => col.map(field => field.coordinates)
+            ).reduce((a, c) => a.concat(c))
+          )
+        }
+        else {
+          uiState = new SelectSetTargetField(
+            firstAction.color,
+            firstAction.index,
+            GameRuleLogic.getFieldsNextToSwarm(modified_gamestate.board, null).map(f => f.coordinates)
+          )
+        }
       }
       if (!uiState) {
         throw 'first action was not of type FieldSelected or UndeployedPieceSelected'

@@ -153,7 +153,7 @@ export class ArrayCoordinates {
 
   constructor(x: number, y: number) {
     if (x < 0 || y < 0 || x > FIELDSIZE - 1 || y > FIELDSIZE - 1) {
-      console.log("Given 2d-coordinates are corrupted: {x: " + x + ", y: " +y + "}")
+      console.log("Given 2d-coordinates are corrupted: {x: " + x + ", y: " + y + "}")
       return null
     }
     this.x = x
@@ -161,11 +161,7 @@ export class ArrayCoordinates {
   }
 
   boardCoordinates(): Coordinates {
-    // calculate axial coordinates
-    let aq = (Math.sqrt(3) / 3 * this.x - 1. / 3 * this.y) / FIELDPIXELWIDTH
-    let ar = (2. / 3 * this.y) / FIELDPIXELWIDTH
-    let cube = new Coordinates(aq, ar, -aq - ar)
-    return ScreenCoordinates.round(cube.q, cube.r, cube.s)
+    return new Coordinates(this.x - SHIFT, this.y - SHIFT, -(this.x - SHIFT)-(this.y - SHIFT))
   }
 }
 
@@ -206,6 +202,10 @@ export class Coordinates {
 
   static calcS(q: number, r: number): number {
     return -q - r
+  }
+
+  equal(c: Coordinates): boolean {
+    return this.q == c.q && this.r == c.r && this.s == c.s
   }
 }
 
@@ -338,6 +338,28 @@ export class Board {
     })
     clone.fields = clonedFields
     return clone
+  }
+
+  getField(c: Coordinates): Field {
+    if (this.fields.length <= c.arrayCoordinates().x || c.arrayCoordinates().x < 0 || this.fields[c.arrayCoordinates().x].length <= c.arrayCoordinates().y || c.arrayCoordinates().y < 0) {
+      return null
+    }
+    return this.fields[c.arrayCoordinates().x][c.arrayCoordinates().y]
+  }
+
+  getTopPiece(c: Coordinates): Piece {
+    return this.fields[c.arrayCoordinates().x][c.arrayCoordinates().y].stack[this.fields[c.arrayCoordinates().x][c.arrayCoordinates().y].stack.length - 1]
+  }
+
+  countPieces(): integer {
+    let placedPieces = 0
+    for (let col of this.fields) {
+      for (let f of col) {
+        placedPieces += f.stack.length
+      }
+    }
+
+    return placedPieces
   }
 }
 

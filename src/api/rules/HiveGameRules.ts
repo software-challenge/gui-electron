@@ -1,4 +1,4 @@
-import { Board, Coordinates, FIELDSIZE, PIECETYPE, Move, Player, PLAYERCOLOR, Field, SHIFT, GameState, Piece } from './Hive'
+import { Board, Coordinates, FIELDSIZE, PIECETYPE, Move, Player, PLAYERCOLOR, Field, SHIFT, GameState, Piece, ArrayCoordinates } from './Hive'
 
 export class GameRuleLogic {
 
@@ -21,28 +21,25 @@ export class GameRuleLogic {
   }
 
   static getNeighbours(board: Board, field: Coordinates): Field[] {
+    console.log("DEBUG: getting Neighbours of, from board", field, board)
     let tmp = []
-    let coords = field.arrayCoordinates()
+    let coords = [
+      new Coordinates(field.q + 1, field.r - 1, field.s + 0),
+      new Coordinates(field.q + 1, field.r + 0, field.s - 1),
+      new Coordinates(field.q + 0, field.r + 1, field.s - 1),
+      new Coordinates(field.q - 1, field.r + 1, field.s + 0),
+      new Coordinates(field.q - 1, field.r + 0, field.s + 1),
+      new Coordinates(field.q + 0, field.r - 1, field.s + 1)
+    ]
 
-    if (coords.x + 1 <= SHIFT) {
-      tmp.push(board.fields[coords.x + 1][coords.y])
-      if (coords.y - 1 >= -SHIFT) {
-        tmp.push(board.fields[coords.x + 1][coords.y - 1])
+    for (let c of coords) {
+      if (board.getField(c) == null) {
+        continue
       }
-    }
-    if (coords.x - 1 >= -SHIFT) {
-      tmp.push(board.fields[coords.x - 1][coords.y])
-      if (coords.y + 1 <= SHIFT) {
-        tmp.push(board.fields[coords.x - 1][coords.y + 1])
-      }
-    }
-    if (coords.y + 1 <= SHIFT) {
-      tmp.push(board.fields[coords.x][coords.y + 1])
-    }
-    if (coords.y - 1 >= -SHIFT) {
-      tmp.push(board.fields[coords.x][coords.y - 1])
+      tmp.push(board.getField(c))
     }
 
+    console.log("Nachbarn sind: ", tmp)
     return tmp
   }
 
@@ -142,7 +139,7 @@ export class GameRuleLogic {
   static fieldNextToSwarm(board: Board, field: Coordinates, except: Coordinates): boolean {
     let fields = this.getFieldsNextToSwarm(board, except)
     for (let f of fields) {
-      if (f.coordinates.q == field.q || f.coordinates.r == field.r || f.coordinates.s == field.s) {
+      if (field.equal(f.coordinates)) {
         return true
       }
     }
@@ -157,22 +154,37 @@ export class GameRuleLogic {
    * @param except
    */
   static getFieldsNextToSwarm(board: Board, except: Coordinates): Field[] {
-    let pieces = []
-    board.fields.forEach(row => row.forEach(field => {
-      if (field.stack.length == 0 && !field.obstructed) {
-        let tmp = this.getNeighbours(board, field.coordinates)
-        tmp.forEach(f => {
-          if (f.stack.length > 0 && (except == null || f.coordinates.q != except.q || f.coordinates.r != except.r || f.coordinates.s != except.s))
-            pieces.push(field)
+    let tiles = []
+    board.fields.forEach((row, i) => row.forEach((field, ii) => {
+      if (field != null && field.stack.length > 0 && !field.obstructed && (except == null || !except.equal(field.coordinates))) {
+        console.log("DEBUG: found piece on field", field)
+        if (!field.coordinates.equal(new ArrayCoordinates(i, ii).boardCoordinates())) {
+          console.log("Da ist was schief gegangen.... das Feld: ", field, " hat den Index [" + i + "][" + ii + "] im 2d-array, was den Coordinaten: ", new ArrayCoordinates(i, ii).boardCoordinates(), " entspricht, jedoch als Attribut einen abweichenden Wert")
+        }
+
+        this.getNeighbours(board, field.coordinates).forEach(f => {
+          if (f.stack.length == 0 && !field.obstructed && (except == null || !except.equal(f.coordinates))) {
+            let bereitsEnthalten = false
+            for (let enthalten of tiles) {
+              if (f.coordinates.equal(enthalten.coordinates)) {
+                bereitsEnthalten = true
+                break
+              }
+            }
+
+            if (!bereitsEnthalten) {
+              tiles.push(f)
+            }
+          }
         })
       }
     }))
 
-    return pieces
+    return tiles
   }
 
   static isOnBoard(coord: Coordinates): boolean {
-    return -SHIFT <= coord.q && coord.q <= SHIFT && -SHIFT <= coord.r && coord.r <= SHIFT
+    return -SHIFT <= coord.q && coord.q <= SHIFT && -SHIFT <= coord.r && coord.r <= SHIFT && -SHIFT <= coord.s && coord.s <= SHIFT
   }
 
   static validateMove(state: GameState, move: Move): boolean {
@@ -180,31 +192,40 @@ export class GameRuleLogic {
     return false
   }
 
-  static validateAntMove(state: GameState, move: Move): boolean {
-    if (!this.fieldNextToSwarm(state.board, move.toField, move.fromField)) {
+  static isSwarmConnected(board: Board, from: Coordinates, to: Coordinates): boolean {
+    return false
+  }
+
+  static validateAntMove(board: Board, from: Coordinates, to: Coordinates): boolean {
+    if (board.getField(from).stack.length < 1 || board.getTopPiece(from).kind != 'ANT') {
+      // this is not an ANT!!!
+      return false
+    }
+
+    if (!this.fieldNextToSwarm(board, to, from) || !this.isSwarmConnected(board, from, to)) {
       return false
     }
 
     // A-Star modified
     let fieldCounter = 0
-    let fields = this.getFieldsNextToSwarm(state.board, move.fromField)
+    let fields = this.getFieldsNextToSwarm(board, from)
     let visitedFields = []
     let touchedFields = []
-    let currentField = move.fromField
-    let target = move.toField.arrayCoordinates()
-    while (currentField == move.fromField || visitedFields.length < fields.length && touchedFields.length > 0 && (currentField.q != move.toField.q || currentField.r != move.toField.r || currentField.s != move.toField.s)) {
+    let currentField = from
+    let target = to.arrayCoordinates()
+    while (currentField.equal(from) || visitedFields.length < fields.length && touchedFields.length > 0 && !currentField.equal(to)) {
       visitedFields.push({
         c: currentField,
         dist: Math.sqrt(Math.pow(target.x - currentField.arrayCoordinates().x, 2) + Math.pow(target.y - currentField.arrayCoordinates().y, 2))
       })
-      let i = touchedFields.findIndex(e => e.c === currentField)
+      let i = touchedFields.findIndex(e => e.c.equal(currentField))
       if (i || i == 0) {
         delete touchedFields[i]
       }
 
       // find all valid adjacent fields
       for (let f of fields) {
-        if (this.isNeighbour(f.coordinates, currentField) && !this.isNeighbourObstructed(state.board, f.coordinates, currentField)) {
+        if (this.isNeighbour(f.coordinates, currentField) && !this.isNeighbourObstructed(board, f.coordinates, currentField)) {
           let tmp = {
             c: f.coordinates,
             dist: Math.sqrt(Math.pow(target.x - f.coordinates.arrayCoordinates().x, 2) + Math.pow(target.y - f.coordinates.arrayCoordinates().y, 2))
@@ -231,36 +252,105 @@ export class GameRuleLogic {
       currentField = minCost
     }
 
-    return currentField.q == move.toField.q && currentField.r && move.toField.r && currentField.s == move.toField.s
+    return currentField.equal(to)
   }
 
-  static validateBeeMove(state: GameState, move: Move): boolean {
-    let start = move.fromField.arrayCoordinates()
-    if (state.board[start.x][start.y].stack.length != 1 || state.board[start.x][start.y].stack[0].kind != 'BEE') {
+  static validateBeeMove(board: Board, from: Coordinates, to: Coordinates): boolean {
+    if (board.getField(from).stack.length < 1 || board.getTopPiece(from).kind != 'BEE') {
       // this is not a BEE!!!
       return false
     }
 
-    return this.isNeighbour(move.fromField, move.toField) && !this.isNeighbourObstructed(state.board, move.fromField, move.toField)
+    if (!this.fieldNextToSwarm(board, to, from) || !this.isSwarmConnected(board, from, to)) {
+      return false
+    }
+
+    return this.isNeighbour(from, to) && !this.isNeighbourObstructed(board, from, to)
   }
 
-  static validateBeetleMove(state: GameState, move: Move): boolean {
-    let start = move.fromField.arrayCoordinates()
-    if (state.board[start.x][start.y].stack.length < 1 || state.board[start.x][start.y].stack[state.board[start.x][start.y].stack.length - 1].kind != 'BEETLE') {
+  static validateBeetleMove(board: Board, from: Coordinates, to: Coordinates): boolean {
+    if (board.getField(from).stack.length < 1 || board.getTopPiece(from).kind != 'BEETLE') {
       // this is not a BEETLE!!!
       return false
     }
 
-    return this.isNeighbour(move.fromField, move.toField) && !this.isNeighbourObstructed(state.board, move.fromField, move.toField)
+    if (!this.fieldNextToSwarm(board, to, from) || !this.isSwarmConnected(board, from, to)) {
+      return false
+    }
+
+    return this.isNeighbour(from, to) && !this.isNeighbourObstructed(board, from, to)
   }
 
-  static validateSpiderMove(state: GameState, move: Move): boolean {
+  static validateGrasshopperMove(board: Board, from: Coordinates, to: Coordinates): boolean {
+    if (board.getField(from).stack.length < 1 || board.getTopPiece(from).kind != 'GRASSHOPPER') {
+      // this is not a GRASSHOPPER!!!
+      return false
+    }
+
+    if (!this.fieldNextToSwarm(board, to, from) || !this.isSwarmConnected(board, from, to)) {
+      return false
+    }
+
+    // TODO
+    return false
+  }
+
+  static validateSpiderMove(board: Board, from: Coordinates, to: Coordinates): boolean {
+    if (board.getField(from).stack.length < 1 || board.getTopPiece(from).kind != 'SPIDER') {
+      // this is not a SPIDER!!!
+      return false
+    }
+
+    if (!this.fieldNextToSwarm(board, to, from) || !this.isSwarmConnected(board, from, to)) {
+      return false
+    }
+
     // TODO..... benötigt wahrscheinlich eine Kombination von validateAntMove und einem Strecken-Counter
     return false
   }
 
-  static possibleMoves(board: Board, field: Coordinates): Move[] {
-    // TODO
-    return []
+  static possibleMoves(board: Board, field: Coordinates): Coordinates[] {
+    let moves = []
+    let allFields = this.getFieldsNextToSwarm(board, null)
+
+    // fürs erste brute-force durch
+    switch (board.getTopPiece(field).kind) {
+      case 'ANT':
+        for (let f of allFields) {
+          if (this.validateAntMove(board, field, f.coordinates)) {
+            moves.push(f.coordinates)
+          }
+        }
+        break
+      case 'BEE':
+        for (let f of allFields) {
+          if (this.validateBeeMove(board, field, f.coordinates)) {
+            moves.push(f.coordinates)
+          }
+        }
+        break
+      case 'BEETLE':
+        for (let f of allFields) {
+          if (this.validateBeetleMove(board, field, f.coordinates)) {
+            moves.push(f.coordinates)
+          }
+        }
+        break
+      case 'GRASSHOPPER':
+        for (let f of allFields) {
+          if (this.validateGrasshopperMove(board, field, f.coordinates)) {
+            moves.push(f.coordinates)
+          }
+        }
+        break
+      case 'SPIDER':
+        for (let f of allFields) {
+          if (this.validateSpiderMove(board, field, f.coordinates)) {
+            moves.push(f.coordinates)
+          }
+        }
+        break
+    }
+    return moves
   }
 }
