@@ -40,7 +40,7 @@ export class SimpleScene extends Phaser.Scene {
     this.load.image('bee', 'resources/hive/bee.png')
     this.load.image('beetle', 'resources/hive/beetle.png')
     this.load.image('spider', 'resources/hive/spider.png')
-    this.load.image('fly', 'resources/hive/fly.png')
+    this.load.image('grasshopper', 'resources/hive/grasshopper.png')
     this.load.image('red', 'resources/hive/red.png')
     this.load.image('blue', 'resources/hive/blue.png')
     this.load.image('marker', 'resources/hive/highlight.png')
@@ -96,15 +96,15 @@ export class SimpleScene extends Phaser.Scene {
           break
         case 'BEE':
           key = 'bee'
-          scale = 0.2
+          scale = 0.1
           break
         case 'BEETLE':
           key = 'beetle'
           scale = 0.06
           break
         case 'GRASSHOPPER':
-          key = 'fly'
-          scale = 0.08
+          key = 'grasshopper'
+          scale = 0.18
           break
         case 'SPIDER':
           key = 'spider'
