@@ -6,7 +6,8 @@ import { Button, ButtonGroup, NavGroup, NavItem, NavTitle, Pane, PaneGroup, Retr
 import { UnicodeIcon } from './generic-components/Components'
 import { Administration } from './Administration'
 import { GameCreation } from './GameCreation'
-import { GameCreationOptions, GameType, Replay } from '../api/rules/GameCreationOptions'
+// XXX only for testing, remove
+import { GameCreationOptions, GameType, PlayerType, Replay } from '../api/rules/GameCreationOptions'
 import { Game } from './Game'
 import { LogConsole } from './LogConsole'
 import { Logger } from '../api/Logger'
@@ -17,9 +18,6 @@ import { loadFromStorage, saveToStorage } from '../helpers/Cache'
 import { GameInfo } from '../api/synchronous/GameInfo'
 import { ExecutableStatus } from '../api/rules/ExecutableStatus'
 import promiseRetry = require('promise-retry')
-
-// XXX only for testing, remove
-import { PlayerType } from '../api/rules/GameCreationOptions'
 
 const dialog = remote.dialog
 const shell = remote.shell
@@ -246,7 +244,7 @@ export class App extends React.Component<any, State> {
         mainPaneContent = this.showHtml('https://cau-kiel-tech-inf.github.io/socha-enduser-docs/spiele/piranhas/')
         break
       case AppContent.Help:
-        mainPaneContent = this.showHtml('https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che')
+        mainPaneContent = this.showHtml('https://cau-kiel-tech-inf.github.io/socha-enduser-docs/server.html#die-programmoberfl%C3%A4che')
         break
       case AppContent.Quickstart:
         mainPaneContent = this.showHtml('https://cau-kiel-tech-inf.github.io/socha-enduser-docs/getting-started')

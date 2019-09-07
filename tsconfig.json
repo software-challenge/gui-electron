@@ -21,8 +21,6 @@
     "src/viewer/**/*"
   ],
   "exclude": [
-    "src/api/rules/Piranhas*",
-    "src/viewer/Engine/Piranhas*"
   ],
   "compileOnSave": true
 }
