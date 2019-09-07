@@ -306,7 +306,7 @@ export class GameRuleLogic {
     }
 
     // TODO
-    return false
+    return from.isInLineWith(to)
   }
 
   static validateSpiderMove(board: Board, from: Coordinates, to: Coordinates): boolean {

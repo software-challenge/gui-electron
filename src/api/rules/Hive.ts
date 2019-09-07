@@ -207,6 +207,10 @@ export class Coordinates {
   equal(c: Coordinates): boolean {
     return this.q == c.q && this.r == c.r && this.s == c.s
   }
+
+  isInLineWith(c: Coordinates): boolean {
+    return this.q - c.q == -this.r - c.r && this.s == c.s || this.q - c.q == -this.s - c.s && this.r == c.r || this.s - c.s == -this.r - c.r && this.q == c.q
+  }
 }
 
 export type PIECETYPE = 'ANT' | 'BEE' | 'BEETLE' | 'GRASSHOPPER' | 'SPIDER'
