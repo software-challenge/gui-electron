@@ -14,18 +14,15 @@ export class GameRuleLogic {
   }
 
   static getNeighbours(board: Board, field: Coordinates): Field[] {
-    console.log("DEBUG: getting Neighbours of, from board", field, board)
     let tmp = []
 
     for (let c of this.getDirections(field)) {
       if (board.getField(c) == null) {
         continue
       }
-      console.log("Nachbar: ", board.getField(c))
       tmp.push(board.getField(c))
     }
 
-    console.log("Nachbarn sind: ", tmp)
     return tmp
   }
 
@@ -147,7 +144,6 @@ export class GameRuleLogic {
     let tiles = []
     board.fields.forEach((row, i) => row.forEach((field, ii) => {
       if (field != null && field.stack.length > 0 && !field.obstructed && (except == null || !except.equal(field.coordinates))) {
-        console.log("DEBUG: found piece on field", field)
         if (!field.coordinates.equal(new ArrayCoordinates(i, ii).boardCoordinates())) {
           console.log("Da ist was schief gegangen.... das Feld: ", field, " hat den Index [" + i + "][" + ii + "] im 2d-array, was den Coordinaten: ", new ArrayCoordinates(i, ii).boardCoordinates(), " entspricht, jedoch als Attribut einen abweichenden Wert")
         }
@@ -271,7 +267,7 @@ export class GameRuleLogic {
 
   static validateBeeMove(board: Board, from: Coordinates, to: Coordinates): boolean {
     if (board.getField(from).stack.length != 1 || board.getTopPiece(from).kind != 'BEE') {
-      // this is not a BEE!!!
+      console.log("Ein Feld wurde falscherweise für eine Bee gehalten: ", from)
       return false
     }
 
@@ -284,7 +280,7 @@ export class GameRuleLogic {
 
   static validateBeetleMove(board: Board, from: Coordinates, to: Coordinates): boolean {
     if (board.getField(from).stack.length < 1 || board.getTopPiece(from).kind != 'BEETLE') {
-      // this is not a BEETLE!!!
+      console.log("Ein Feld wurde falscherweise für eine Beetle gehalten: ", from)
       return false
     }
 
@@ -297,7 +293,7 @@ export class GameRuleLogic {
 
   static validateGrasshopperMove(board: Board, from: Coordinates, to: Coordinates): boolean {
     if (board.getField(from).stack.length != 1 || board.getTopPiece(from).kind != 'GRASSHOPPER') {
-      // this is not a GRASSHOPPER!!!
+      console.log("Ein Feld wurde falscherweise für einen Grasshopper gehalten: ", from)
       return false
     }
 
@@ -310,7 +306,7 @@ export class GameRuleLogic {
 
   static validateSpiderMove(board: Board, from: Coordinates, to: Coordinates): boolean {
     if (board.getField(from).stack.length != 1 || board.getTopPiece(from).kind != 'SPIDER') {
-      // this is not a SPIDER!!!
+      console.log("Ein Feld wurde falscherweise für eine Spider gehalten: ", from)
       return false
     }
 
@@ -336,6 +332,7 @@ export class GameRuleLogic {
       case 'ANT':
         for (let f of allFields) {
           if (this.validateAntMove(board, field, f.coordinates)) {
+            console.log("Valid move for ant found", f.coordinates)
             moves.push(f.coordinates)
           }
         }
@@ -343,6 +340,7 @@ export class GameRuleLogic {
       case 'BEE':
         for (let f of allFields) {
           if (this.validateBeeMove(board, field, f.coordinates)) {
+            console.log("Valid move for bee found", f.coordinates)
             moves.push(f.coordinates)
           }
         }
@@ -350,6 +348,7 @@ export class GameRuleLogic {
       case 'BEETLE':
         for (let f of allFields) {
           if (this.validateBeetleMove(board, field, f.coordinates)) {
+            console.log("Valid move for beetle found", f.coordinates)
             moves.push(f.coordinates)
           }
         }
@@ -357,6 +356,7 @@ export class GameRuleLogic {
       case 'GRASSHOPPER':
         for (let f of allFields) {
           if (this.validateGrasshopperMove(board, field, f.coordinates)) {
+            console.log("Valid move for grasshopper found", f.coordinates)
             moves.push(f.coordinates)
           }
         }
@@ -364,6 +364,7 @@ export class GameRuleLogic {
       case 'SPIDER':
         for (let f of allFields) {
           if (this.validateSpiderMove(board, field, f.coordinates)) {
+            console.log("Valid move for spider found", f.coordinates)
             moves.push(f.coordinates)
           }
         }
