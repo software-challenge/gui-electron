@@ -373,6 +373,20 @@ export class Board {
 
     return placedPieces
   }
+
+  countFields(): integer {
+    let occupiedFields = 0
+    for (let col of this.fields) {
+      for (let f of col) {
+        if (f == null) {
+          continue
+        }
+        occupiedFields += f.stack.length > 0 ? 1 : 0
+      }
+    }
+
+    return occupiedFields
+  }
 }
 
 export type PLAYERCOLOR = 'RED' | 'BLUE'

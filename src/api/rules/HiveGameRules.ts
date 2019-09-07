@@ -183,7 +183,31 @@ export class GameRuleLogic {
   }
 
   static isSwarmConnected(board: Board, from: Coordinates, to: Coordinates): boolean {
-    return false
+    let connected = this.getNeighbours(board, to).filter(e => e.stack.length > 0 && !e.coordinates.equal(from))
+    let currentField: Field = null
+    let visitedFields = [board.getField(to)]
+    let totalFields = board.countFields()
+
+    while (connected.length > 0 && connected.length + visitedFields.length < totalFields) {
+      currentField = connected.pop()
+      visitedFields.push(currentField)
+
+      for (let f of this.getNeighbours(board, currentField.coordinates).filter(e => e.stack.length > 0 && !e.coordinates.equal(from))) {
+        let visited = false
+
+        for (let v of visitedFields) {
+          if (v.coordinates.equal(f.coordinates)) {
+            visited = true
+            break
+          }
+        }
+        if (!visited) {
+          connected.push(f)
+        }
+      }
+    }
+
+    return connected.length + visitedFields.length < totalFields
   }
 
   static validateAntMove(board: Board, from: Coordinates, to: Coordinates): boolean {
@@ -246,7 +270,7 @@ export class GameRuleLogic {
   }
 
   static validateBeeMove(board: Board, from: Coordinates, to: Coordinates): boolean {
-    if (board.getField(from).stack.length < 1 || board.getTopPiece(from).kind != 'BEE') {
+    if (board.getField(from).stack.length != 1 || board.getTopPiece(from).kind != 'BEE') {
       // this is not a BEE!!!
       return false
     }
@@ -272,7 +296,7 @@ export class GameRuleLogic {
   }
 
   static validateGrasshopperMove(board: Board, from: Coordinates, to: Coordinates): boolean {
-    if (board.getField(from).stack.length < 1 || board.getTopPiece(from).kind != 'GRASSHOPPER') {
+    if (board.getField(from).stack.length != 1 || board.getTopPiece(from).kind != 'GRASSHOPPER') {
       // this is not a GRASSHOPPER!!!
       return false
     }
@@ -286,7 +310,7 @@ export class GameRuleLogic {
   }
 
   static validateSpiderMove(board: Board, from: Coordinates, to: Coordinates): boolean {
-    if (board.getField(from).stack.length < 1 || board.getTopPiece(from).kind != 'SPIDER') {
+    if (board.getField(from).stack.length != 1 || board.getTopPiece(from).kind != 'SPIDER') {
       // this is not a SPIDER!!!
       return false
     }
@@ -312,7 +336,6 @@ export class GameRuleLogic {
     switch (board.getTopPiece(field).kind) {
       case 'ANT':
         for (let f of allFields) {
-
           if (this.validateAntMove(board, field, f.coordinates)) {
             moves.push(f.coordinates)
           }
