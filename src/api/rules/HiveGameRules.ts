@@ -13,24 +13,6 @@ export class GameRuleLogic {
     ]
   }
 
-  static addBlockedFields(board: Board): Board {
-    let x, y = 0
-    console.log("Adding vogelnester", board)
-    for (let i = 0; i < 3; i++) {
-      do {
-        x = this.randomIntFromInterval(0, board.fields.length)
-        y = this.randomIntFromInterval(0, board.fields[x].length)
-      } while (board.fields[x][y] == null || board.fields[x][y].obstructed)
-      board.fields[x][y].obstructed = true
-    }
-
-    return board
-  }
-
-  static randomIntFromInterval(min: integer, max: integer): integer {
-    return Math.floor(Math.random() * (max - min + 1) + min)
-  }
-
   static getNeighbours(board: Board, field: Coordinates): Field[] {
     console.log("DEBUG: getting Neighbours of, from board", field, board)
     let tmp = []
@@ -39,6 +21,7 @@ export class GameRuleLogic {
       if (board.getField(c) == null) {
         continue
       }
+      console.log("Nachbar: ", board.getField(c))
       tmp.push(board.getField(c))
     }
 
