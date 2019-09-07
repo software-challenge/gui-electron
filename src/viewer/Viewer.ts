@@ -138,9 +138,12 @@ export class Viewer {
       if(firstAction instanceof FieldSelected) {
         let piece = firstAction.coordinates
         let possibleMoves = GameRuleLogic.possibleMoves(modified_gamestate.board, piece)
+        if (possibleMoves == null) {
+          return
+        }
         uiState = new SelectDragTargetField(
           piece,
-          possibleMoves // TODO: only select target fields of possible moves
+          possibleMoves
         )
       }
       if (firstAction instanceof UndeployedPieceSelected) {

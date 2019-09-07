@@ -300,6 +300,11 @@ export class GameRuleLogic {
   }
 
   static possibleMoves(board: Board, field: Coordinates): Coordinates[] {
+    if (board.getTopPiece(field) == null) {
+      console.log("Irgendwas ist schief gegangen, das Feld hat nämlich keine pieces: ", field, board)
+      return null
+    }
+
     let moves = []
     let allFields = this.getFieldsNextToSwarm(board, null)
 
@@ -307,6 +312,7 @@ export class GameRuleLogic {
     switch (board.getTopPiece(field).kind) {
       case 'ANT':
         for (let f of allFields) {
+
           if (this.validateAntMove(board, field, f.coordinates)) {
             moves.push(f.coordinates)
           }

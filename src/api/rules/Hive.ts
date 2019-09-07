@@ -270,16 +270,24 @@ export class Board {
   public fields: Field[][]
 
   static fromJSON(json: any): Board {
+    // weil ich die nulls brauche
     const b = new Board()
     b.fields = []
+    for (let t = 0; t < FIELDSIZE; t++) {
+      b.fields[t] = []
+      for (let tt = 0; tt < FIELDSIZE; tt++) {
+        b.fields[t].push(null)
+      }
+    }
+
     json.fields.forEach(row => {
       row.field.forEach(f => {
         let x: number = Number(f.$.x)
         let y: number = Number(f.$.y)
         let z: number = Number(f.$.z)
-        let obstructed = f.$.obstructed
-        if(b.fields[x+SHIFT] == null) {
-          b.fields[x+SHIFT] = []
+        let c: Coordinates = new Coordinates(x, y, z)
+        if(b.fields[c.arrayCoordinates().x] == null) {
+          b.fields[c.arrayCoordinates().x] = []
         }
         let stack = []
         if (f.piece) {
@@ -287,7 +295,8 @@ export class Board {
             stack.push(Piece.fromJSON(p))
           })
         }
-        b.fields[x+SHIFT][y+SHIFT] = new Field(stack, new Coordinates(x, y, z))
+        b.fields[c.arrayCoordinates().x][c.arrayCoordinates().y] = new Field(stack, c)
+        b.fields[c.arrayCoordinates().x][c.arrayCoordinates().y].obstructed = f.$.obstructed
       })
     })
     return b
@@ -355,6 +364,9 @@ export class Board {
     let placedPieces = 0
     for (let col of this.fields) {
       for (let f of col) {
+        if (f == null) {
+          continue
+        }
         placedPieces += f.stack.length
       }
     }
