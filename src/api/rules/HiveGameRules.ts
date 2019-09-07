@@ -2,6 +2,17 @@ import { Board, Coordinates, FIELDSIZE, PIECETYPE, Move, Player, PLAYERCOLOR, Fi
 
 export class GameRuleLogic {
 
+  static getDirections(c: Coordinates): Coordinates[] {
+    return[
+      new Coordinates(c.q + 1, c.r - 1, c.s + 0),
+      new Coordinates(c.q + 1, c.r + 0, c.s - 1),
+      new Coordinates(c.q + 0, c.r + 1, c.s - 1),
+      new Coordinates(c.q - 1, c.r + 1, c.s + 0),
+      new Coordinates(c.q - 1, c.r + 0, c.s + 1),
+      new Coordinates(c.q + 0, c.r - 1, c.s + 1)
+    ]
+  }
+
   static addBlockedFields(board: Board): Board {
     let x, y = 0
     console.log("Adding vogelnester", board)
@@ -23,16 +34,8 @@ export class GameRuleLogic {
   static getNeighbours(board: Board, field: Coordinates): Field[] {
     console.log("DEBUG: getting Neighbours of, from board", field, board)
     let tmp = []
-    let coords = [
-      new Coordinates(field.q + 1, field.r - 1, field.s + 0),
-      new Coordinates(field.q + 1, field.r + 0, field.s - 1),
-      new Coordinates(field.q + 0, field.r + 1, field.s - 1),
-      new Coordinates(field.q - 1, field.r + 1, field.s + 0),
-      new Coordinates(field.q - 1, field.r + 0, field.s + 1),
-      new Coordinates(field.q + 0, field.r - 1, field.s + 1)
-    ]
 
-    for (let c of coords) {
+    for (let c of this.getDirections(field)) {
       if (board.getField(c) == null) {
         continue
       }
@@ -44,9 +47,13 @@ export class GameRuleLogic {
   }
 
   static isNeighbour(a: Coordinates, b: Coordinates): boolean {
-    let ca = a.arrayCoordinates()
-    let cb = b.arrayCoordinates()
-    return ca.x == cb.x && ca.y == cb.y - 1 || ca.x == cb.x && ca.y == cb.y + 1 || ca.x == cb.x + 1 && ca.y == cb.y || ca.x == cb.x + 1 && ca.y == cb.y - 1 || ca.x == cb.x + 1 && ca.y == cb.y + 1 || ca.x == cb.x - 1 && ca.y == cb.y || ca.x == cb.x - 1 && ca.y == cb.y - 1 || ca.x == cb.x - 1 && ca.y == cb.y + 1
+    for (let t of this.getDirections(a)) {
+      if (b.equal(t)) {
+        return true
+      }
+    }
+
+    return false
   }
 
   static isQueenBlocked(board: Board, player: PLAYERCOLOR): boolean {
