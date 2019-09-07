@@ -251,9 +251,10 @@ export class Board {
           b.fields[x+SHIFT] = []
         }
         let stack = []
-        // TODO this should be a stack of pieces, not "f.piece"
         if (f.piece) {
-          stack.push(Piece.fromJSON(f.piece))
+          f.piece.forEach(p => {
+            stack.push(Piece.fromJSON(p))
+          })
         }
         b.fields[x+SHIFT][y+SHIFT] = new Field(stack, new Coordinates(x, y, z))
       })
