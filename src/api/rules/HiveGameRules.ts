@@ -91,7 +91,7 @@ export class GameRuleLogic {
     }
 
     let shared = this.sharedNeighboursOfTwoCoords(board, a, b)
-    // 2 benachbarte Felder m�ssen mindestens 1 und h�chstens 2 weiteren gemeinsamen Nachbarn haben
+    // 2 benachbarte Felder müssen mindestens 1 und höchstens 2 weiteren gemeinsamen Nachbarn haben
     if (shared.length > 2 && shared.length < 1) {
       console.log("Unerwartete Anzahl an gemeinsamen Nachbarfeldern von a, b, shared", a, b, shared)
       return true
@@ -305,7 +305,6 @@ export class GameRuleLogic {
       return false
     }
 
-    // TODO
     return from.isInLineWith(to)
   }
 
@@ -319,7 +318,7 @@ export class GameRuleLogic {
       return false
     }
 
-    // TODO..... ben�tigt wahrscheinlich eine Kombination von validateAntMove und einem Strecken-Counter
+    // TODO..... benötigt wahrscheinlich eine Kombination von validateAntMove und einem Strecken-Counter
     return false
   }
 
