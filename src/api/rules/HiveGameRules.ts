@@ -14,60 +14,36 @@ export class GameRuleLogic {
   }
 
   static getNeighbours(board: Board, field: Coordinates): Field[] {
-    let tmp = []
-
-    for (let c of this.getDirections(field)) {
-      if (board.getField(c) == null) {
-        continue
-      }
-      tmp.push(board.getField(c))
-    }
-
-    return tmp
+    return this.getDirections(field).filter(c => board.getField(c) != null).map(c => board.getField(c))
   }
 
   static isNeighbour(a: Coordinates, b: Coordinates): boolean {
-    for (let t of this.getDirections(a)) {
-      if (b.equal(t)) {
-        return true
-      }
-    }
-
-    return false
+    return this.getDirections(a).some(t => b.equal(t))
   }
 
   static isQueenBlocked(board: Board, player: PLAYERCOLOR): boolean {
-    let queen = this.findPiecesOfTypeAndPlayer(board, 'BEE', player)
+    let queen = this.findPiecesOfTypeAndPlayer(board, 'BEE', player).map(e => e.coordinates)
     if (queen.length == 0) {
       return false
     }
 
-    this.getNeighbours(board, queen[0]).forEach(field => {
-      if (field.stack == null) {
-        return false
-      }
-    })
-
-    return true
+    return !this.getNeighbours(board, queen[0]).some(field => field.stack == null)
   }
 
-  static findPiecesOfTypeAndPlayer(board: Board, type: PIECETYPE, player: PLAYERCOLOR): Coordinates[] {
-    let tmp = []
-    this.fieldsOwnedByPlayer(board, player).forEach((field) => {
-      if (field.stack[field.stack.length - 1].kind == type) {
-        tmp.push(field.coordinates)
-      }
-    })
-
-    return tmp
+  static findPiecesOfTypeAndPlayer(board: Board, type: PIECETYPE, player: PLAYERCOLOR): Field[] {
+    return this.fieldsOwnedByPlayer(board, player).filter(e => e.stack[e.stack.length - 1].kind == type)
   }
 
   static fieldsOwnedByPlayer(board: Board, color: PLAYERCOLOR): Field[] {
+    return this.getFieldsWithPiece(board).filter(e => e.stack[e.stack.length - 1].color == color)
+  }
+
+  static getFieldsWithPiece(board: Board): Field[] {
     let fields = []
 
     board.fields.forEach((row) => {
       row.forEach((field) => {
-        if (field != null && field.stack.length > 0 && field.stack[field.stack.length - 1].color == color) {
+        if (field != null && field.stack.length > 0) {
           fields.push(field)
         }
       })
@@ -119,14 +95,7 @@ export class GameRuleLogic {
    * @param except
    */
   static fieldNextToSwarm(board: Board, field: Coordinates, except: Coordinates): boolean {
-    let fields = this.getFieldsNextToSwarm(board, except)
-    for (let f of fields) {
-      if (field.equal(f.coordinates)) {
-        return true
-      }
-    }
-
-    return false
+    return this.getFieldsNextToSwarm(board, except).some(f => field.equal(f.coordinates))
   }
 
   /** returns all fields adjacent to the swarm.
@@ -136,30 +105,20 @@ export class GameRuleLogic {
    * @param except
    */
   static getFieldsNextToSwarm(board: Board, except: Coordinates): Field[] {
-    let tiles = []
-    board.fields.forEach((row, i) => row.forEach((field, ii) => {
-      if (field != null && field.stack.length > 0 && !field.obstructed && (except == null || !except.equal(field.coordinates))) {
-        if (!field.coordinates.equal(new ArrayCoordinates(i, ii).boardCoordinates())) {
-          console.log("Da ist was schief gegangen.... das Feld: ", field, " hat den Index [" + i + "][" + ii + "] im 2d-array, was den Coordinaten: ", new ArrayCoordinates(i, ii).boardCoordinates(), " entspricht, jedoch als Attribut einen abweichenden Wert")
-        }
+    let tiles: Field[] = []
 
+    this.getFieldsWithPiece(board).forEach(field => {
+      if (except == null || !except.equal(field.coordinates)) {
         this.getNeighbours(board, field.coordinates).forEach(f => {
           if (f.stack.length == 0 && !field.obstructed && (except == null || !except.equal(f.coordinates))) {
-            let bereitsEnthalten = false
-            for (let enthalten of tiles) {
-              if (f.coordinates.equal(enthalten.coordinates)) {
-                bereitsEnthalten = true
-                break
-              }
-            }
 
-            if (!bereitsEnthalten) {
+            if (!tiles.some(e => f.coordinates.equal(e.coordinates))) {
               tiles.push(f)
             }
           }
         })
       }
-    }))
+    })
 
     return tiles
   }
@@ -310,6 +269,7 @@ export class GameRuleLogic {
 
     let moves = []
     let allFields = this.getFieldsNextToSwarm(state.board, field)
+    this.
     console.log("Von den möglichen Felder zum ziehen, kommen in Frage: ", allFields)
 
     // fuers erste brute-force durch
