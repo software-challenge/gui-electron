@@ -107,17 +107,8 @@ export class GameRuleLogic {
   static getFieldsNextToSwarm(board: Board, except: Coordinates): Field[] {
     let tiles: Field[] = []
 
-    this.getFieldsWithPiece(board).forEach(field => {
-      if (except == null || !except.equal(field.coordinates)) {
-        this.getNeighbours(board, field.coordinates).forEach(f => {
-          if (f.stack.length == 0 && !field.obstructed && (except == null || !except.equal(f.coordinates))) {
-
-            if (!tiles.some(e => f.coordinates.equal(e.coordinates))) {
-              tiles.push(f)
-            }
-          }
-        })
-      }
+    this.getFieldsWithPiece(board).filter(e => except == null || !except.equal(e.coordinates)).forEach(field => {
+      tiles = tiles.concat(this.getNeighbours(board, field.coordinates).filter(e => e.stack.length == 0 && !e.obstructed && (except == null || !except.equal(e.coordinates)) && !tiles.some(f => e.coordinates.equal(f.coordinates))))
     })
 
     return tiles
@@ -268,8 +259,7 @@ export class GameRuleLogic {
     }
 
     let moves = []
-    let allFields = this.getFieldsNextToSwarm(state.board, field)
-    this.
+    let allFields = this.getFieldsNextToSwarm(state.board, field).concat(this.getFieldsWithPiece(state.board))
     console.log("Von den möglichen Felder zum ziehen, kommen in Frage: ", allFields)
 
     // fuers erste brute-force durch
