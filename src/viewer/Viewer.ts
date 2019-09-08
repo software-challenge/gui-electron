@@ -136,12 +136,8 @@ export class Viewer {
        * 7  blue  # 4
        */
       if (!beePlaced && state.turn > 5) {
-        if (state.currentPlayerColor == 'RED') {
-          ownPieceFields = [] // state.undeployedRedPieces.filter(e => e.kind == 'BEE').map(e => e.)
-        }
-        else {
-          ownPieceFields = [] // state.undeployedBluePieces.filter(e => e.kind == 'BEE').map(e => e.)
-        }
+        console.log("BEE-Zwang")
+        ownPieceFields = []
       }
 
       uiState = new SelectPiece(ownPieceFields, state.currentPlayerColor)
@@ -190,6 +186,7 @@ export class Viewer {
       throw 'we should not interact at all'
     }
 
+    console.log("Nach allem kommt es zu: ", uiState)
     // render gamestate with interactions
     this.render(new RenderState(this.applyInteractions(state, actions), uiState))
     // keep original gamestate in callback

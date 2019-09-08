@@ -62,11 +62,12 @@ export class GameRuleLogic {
     return tmp
   }
 
-  static fieldsOwnedByPlayer(board: Board, player: PLAYERCOLOR): Field[] {
-    let fields= []
+  static fieldsOwnedByPlayer(board: Board, color: PLAYERCOLOR): Field[] {
+    let fields = []
+
     board.fields.forEach((row) => {
       row.forEach((field) => {
-        if (field != null && field.owner.toString() == player) {
+        if (field != null && field.stack.length > 0 && field.stack[field.stack.length - 1].color == color) {
           fields.push(field)
         }
       })
