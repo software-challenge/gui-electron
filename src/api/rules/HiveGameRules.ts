@@ -319,58 +319,72 @@ export class GameRuleLogic {
     return false
   }
 
-  static possibleMoves(board: Board, field: Coordinates): Coordinates[] {
-    if (board.getTopPiece(field) == null) {
-      console.log("Irgendwas ist schief gegangen, das Feld hat nämlich keine pieces: ", field, board)
+  static possibleMoves(state: GameState, field: Coordinates): Coordinates[] {
+    console.log("Versuche possibleMoves herauszufinden für: ", field)
+    if (state.board.getTopPiece(field) == null) {
+      console.log("Irgendwas ist schief gegangen, das Feld hat nämlich keine pieces: ", field, state.board)
       return null
     }
 
     let moves = []
-    let allFields = this.getFieldsNextToSwarm(board, null)
+    let allFields = this.getFieldsNextToSwarm(state.board, field)
+    console.log("Von den möglichen Felder zum ziehen, kommen in Frage: ", allFields)
 
     // fuers erste brute-force durch
-    switch (board.getTopPiece(field).kind) {
+    switch (state.board.getTopPiece(field).kind) {
       case 'ANT':
+        console.log("Es ist eine Ameise")
+
         for (let f of allFields) {
-          if (this.validateAntMove(board, field, f.coordinates)) {
+          if (this.validateAntMove(state.board, field, f.coordinates)) {
             console.log("Valid move for ant found", f.coordinates)
             moves.push(f.coordinates)
           }
         }
         break
       case 'BEE':
+        console.log("Es ist eine Biene")
+
         for (let f of allFields) {
-          if (this.validateBeeMove(board, field, f.coordinates)) {
+          if (this.validateBeeMove(state.board, field, f.coordinates)) {
             console.log("Valid move for bee found", f.coordinates)
             moves.push(f.coordinates)
           }
         }
         break
       case 'BEETLE':
+        console.log("Es ist ein Käfer")
+
         for (let f of allFields) {
-          if (this.validateBeetleMove(board, field, f.coordinates)) {
+          if (this.validateBeetleMove(state.board, field, f.coordinates)) {
             console.log("Valid move for beetle found", f.coordinates)
             moves.push(f.coordinates)
           }
         }
         break
       case 'GRASSHOPPER':
+        console.log("Es ist ein Grashüpfer")
+
         for (let f of allFields) {
-          if (this.validateGrasshopperMove(board, field, f.coordinates)) {
+          if (this.validateGrasshopperMove(state.board, field, f.coordinates)) {
             console.log("Valid move for grasshopper found", f.coordinates)
             moves.push(f.coordinates)
           }
         }
         break
       case 'SPIDER':
+        console.log("Es ist eine Spider")
+
         for (let f of allFields) {
-          if (this.validateSpiderMove(board, field, f.coordinates)) {
+          if (this.validateSpiderMove(state.board, field, f.coordinates)) {
             console.log("Valid move for spider found", f.coordinates)
             moves.push(f.coordinates)
           }
         }
         break
     }
+
+    console.log("Possible Moves outcome: ", moves)
     return moves
   }
 }

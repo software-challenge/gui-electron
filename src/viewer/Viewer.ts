@@ -145,7 +145,7 @@ export class Viewer {
       let firstAction = actions[0]
       if (firstAction instanceof FieldSelected) {
         let piece = firstAction.coordinates
-        let possibleMoves = GameRuleLogic.possibleMoves(state.board, piece)
+        let possibleMoves = GameRuleLogic.possibleMoves(state, piece)
         if (possibleMoves == null) {
           return
         }
@@ -171,11 +171,19 @@ export class Viewer {
             ).reduce((a, c) => a.concat(c))
           )
         }
-        else {
+        // Blau hat die freie Wahl um den 1. Stein
+        else if (state.board.countPieces() == 1) {
           uiState = new SelectSetTargetField(
             firstAction.color,
             firstAction.index,
             GameRuleLogic.getFieldsNextToSwarm(state.board, null).map(f => f.coordinates)
+          )
+        }
+        else {
+          uiState = new SelectSetTargetField(
+            firstAction.color,
+            firstAction.index,
+            GameRuleLogic.getFieldsNextToSwarm(state.board, null).map(f => f.coordinates).filter(f => GameRuleLogic.getNeighbours(state.board, f).some(e => e.owner() == state.currentPlayerColor))
           )
         }
       }
