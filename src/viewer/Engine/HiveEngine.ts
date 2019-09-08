@@ -41,6 +41,7 @@ export class SimpleScene extends Phaser.Scene {
     this.load.image('beetle', 'resources/hive/beetle.png')
     this.load.image('spider', 'resources/hive/spider.png')
     this.load.image('grasshopper', 'resources/hive/grasshopper.png')
+    this.load.image('obstructed1', 'resources/hive/obstructed1.png')
     this.load.image('red', 'resources/hive/red.png')
     this.load.image('blue', 'resources/hive/blue.png')
     this.load.image('marker', 'resources/hive/highlight.png')
@@ -69,7 +70,7 @@ export class SimpleScene extends Phaser.Scene {
     })
   }
 
-  createFieldGraphic(coordinates: ScreenCoordinates, ownerColor: PLAYERCOLOR, kind: PIECETYPE): FieldGraphics {
+  createFieldGraphic(coordinates: ScreenCoordinates, obstructed: boolean, ownerColor: PLAYERCOLOR, kind: PIECETYPE): FieldGraphics {
     let background = null
     let sprite = null
     let color = null
@@ -86,6 +87,18 @@ export class SimpleScene extends Phaser.Scene {
     background.depth = 10
     this.allObjects.push(background)
 
+    if (obstructed) {
+      sprite = this.make.sprite(
+        {
+          key: 'obstructed1',
+          x: sx,
+          y: sy,
+          scale: 0.09,
+        },
+      )
+      sprite.depth = 20
+      sprite.setData('obstructed', true)
+    }
     if (kind != null) {
       let key: string
       let scale: number
@@ -170,7 +183,11 @@ export class SimpleScene extends Phaser.Scene {
           let text = this.add.text(sx, sy, `(${field.coordinates.q},${field.coordinates.r})`, coordTextStyle).setOrigin(0.5)
           text.depth = 60
 
-          return this.createFieldGraphic(new ScreenCoordinates(sx, sy), ownerColor, kind)
+          if (field.obstructed) {
+            return this.createFieldGraphic(new ScreenCoordinates(sx, sy), true, null, null)
+          } else {
+            return this.createFieldGraphic(new ScreenCoordinates(sx, sy), false, ownerColor, kind)
+          }
         }
       })
     })
@@ -180,11 +197,11 @@ export class SimpleScene extends Phaser.Scene {
     let undeployedPieceGraphics: FieldGraphics[][] = []
     undeployedPieceGraphics['RED'] = []
     undeployedRedPieces.forEach((p, i) => {
-      undeployedPieceGraphics['RED'].push(this.createFieldGraphic(new ScreenCoordinates(60, 90 + 64*i), 'RED', p.kind))
+      undeployedPieceGraphics['RED'].push(this.createFieldGraphic(new ScreenCoordinates(60, 90 + 64*i), false, 'RED', p.kind))
     })
     undeployedPieceGraphics['BLUE'] = []
     undeployedBluePieces.forEach((p, i) => {
-      undeployedPieceGraphics['BLUE'].push(this.createFieldGraphic(new ScreenCoordinates(740, 90 + 64*i), 'BLUE', p.kind))
+      undeployedPieceGraphics['BLUE'].push(this.createFieldGraphic(new ScreenCoordinates(740, 90 + 64*i), false, 'BLUE', p.kind))
     })
     return undeployedPieceGraphics
   }
@@ -409,6 +426,7 @@ export class HiveEngine {
       width: 800,
       height: 800,
       pixelArt: false,
+      transparent: true,
       canvas: this.element,
       fps: {
         target: 10,
