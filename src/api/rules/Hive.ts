@@ -243,7 +243,6 @@ export class Piece {
 export class Field {
   stack: Piece[]
   coordinates: Coordinates
-  // Vogelnest Y/N
   obstructed: boolean
 
   constructor(stack: Piece[], coordinates: Coordinates) {
@@ -258,7 +257,10 @@ export class Field {
     that.stack.forEach(p => {
       stack.push(new Piece(p.kind, p.color))
     })
-    return new Field(stack, c)
+
+    let tmp = new Field(stack, c)
+    tmp.obstructed = that.obstructed
+    return tmp
   }
 
   owner(): PLAYERCOLOR {
