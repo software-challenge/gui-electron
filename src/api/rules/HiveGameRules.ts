@@ -83,7 +83,7 @@ export class GameRuleLogic {
    * @param b
    */
   static isNeighbourObstructed(board: Board, a: Coordinates, b: Coordinates): boolean {
-    if (this.isNeighbour(a, b)) {
+    if (!this.isNeighbour(a, b)) {
       console.log("Feld a ist kein Nachbar von b", a, b)
       return true
     }
@@ -183,9 +183,9 @@ export class GameRuleLogic {
     let connected = this.getNeighbours(board, to).filter(e => e.stack.length > 0 && !e.coordinates.equal(from))
     let currentField: Field = null
     let visitedFields = [board.getField(to)]
-    let totalFields = board.countFields()
+    let totalPieces = board.countPieces()
 
-    while (connected.length > 0 && connected.length + visitedFields.length < totalFields) {
+    while (connected.length > 0 && connected.reduce((prev, e) => prev + e.stack.length, 0) + visitedFields.reduce((prev, e) => prev + e.stack.length, 0) < totalPieces) {
       currentField = connected.pop()
       visitedFields.push(currentField)
 
@@ -204,7 +204,7 @@ export class GameRuleLogic {
       }
     }
 
-    return connected.length + visitedFields.length < totalFields
+    return connected.reduce((prev, e) => prev + e.stack.length, 0) + visitedFields.reduce((prev, e) => prev + e.stack.length, 0) < totalPieces
   }
 
   static validateAntMove(board: Board, from: Coordinates, to: Coordinates): boolean {
@@ -273,6 +273,7 @@ export class GameRuleLogic {
     }
 
     if (!this.fieldNextToSwarm(board, to, from) || !this.isSwarmConnected(board, from, to)) {
+      console.log("Ungültiges Feld, da !fielNextToSwarm ", !this.fieldNextToSwarm(board, to, from), " oder !isSwarmConnected ", !this.isSwarmConnected(board, from, to))
       return false
     }
 
@@ -286,6 +287,7 @@ export class GameRuleLogic {
     }
 
     if (!this.fieldNextToSwarm(board, to, from) || !this.isSwarmConnected(board, from, to)) {
+      console.log("Ungültiges Feld, da !fielNextToSwarm ", !this.fieldNextToSwarm(board, to, from), " oder !isSwarmConnected ", !this.isSwarmConnected(board, from, to))
       return false
     }
 
@@ -299,6 +301,7 @@ export class GameRuleLogic {
     }
 
     if (!this.fieldNextToSwarm(board, to, from) || !this.isSwarmConnected(board, from, to)) {
+      console.log("Ungültiges Feld, da !fielNextToSwarm ", !this.fieldNextToSwarm(board, to, from), " oder !isSwarmConnected ", !this.isSwarmConnected(board, from, to))
       return false
     }
 
@@ -312,6 +315,7 @@ export class GameRuleLogic {
     }
 
     if (!this.fieldNextToSwarm(board, to, from) || !this.isSwarmConnected(board, from, to)) {
+      console.log("Ungültiges Feld, da !fielNextToSwarm ", !this.fieldNextToSwarm(board, to, from), " oder !isSwarmConnected ", !this.isSwarmConnected(board, from, to))
       return false
     }
 
