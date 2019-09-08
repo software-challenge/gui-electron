@@ -123,7 +123,7 @@ export class Viewer {
     let uiState: UiState
     if (shouldSelectPiece) {
       let ownPieceFields = GameRuleLogic.fieldsOwnedByPlayer(state.board, state.currentPlayerColor).map(e => e.coordinates)
-      let beePlaced = ownPieceFields.some(e => state.board.getTopPiece(e).kind == 'BEE')
+      let beePlaced = GameRuleLogic.getQueen(state.board, state.currentPlayerColor) != null
 
       // Zwinge den Nutzer die Biene zu waehlen, falls noetig
       /** turn | color | move of color

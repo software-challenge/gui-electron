@@ -21,21 +21,25 @@ export class GameRuleLogic {
     return this.getDirections(a).some(t => b.equal(t))
   }
 
-  static isQueenBlocked(board: Board, player: PLAYERCOLOR): boolean {
-    let queen = this.findPiecesOfTypeAndPlayer(board, 'BEE', player).map(e => e.coordinates)
+  static getQueen(board: Board, color: PLAYERCOLOR): Field {
+    let queen = this.findPiecesOfTypeAndPlayer(board, 'BEE', color)
     if (queen.length == 0) {
-      return false
+      return null
     }
-
-    return !this.getNeighbours(board, queen[0]).some(field => field.stack == null)
+    return queen[0]
   }
 
-  static findPiecesOfTypeAndPlayer(board: Board, type: PIECETYPE, player: PLAYERCOLOR): Field[] {
-    return this.fieldsOwnedByPlayer(board, player).filter(e => e.stack[e.stack.length - 1].kind == type)
+  static isQueenBlocked(board: Board, color: PLAYERCOLOR): boolean {
+    return !this.getNeighbours(board, this.getQueen(board, color).coordinates).some(field => field.stack == null)
+  }
+
+
+  static findPiecesOfTypeAndPlayer(board: Board, type: PIECETYPE, color: PLAYERCOLOR): Field[] {
+    return this.getFieldsWithPiece(board).filter(e => e.stack.some(p => p.kind == type && p.color == color))
   }
 
   static fieldsOwnedByPlayer(board: Board, color: PLAYERCOLOR): Field[] {
-    return this.getFieldsWithPiece(board).filter(e => e.stack[e.stack.length - 1].color == color)
+    return this.getFieldsWithPiece(board).filter(e => e.owner() == color)
   }
 
   static getFieldsWithPiece(board: Board): Field[] {
@@ -121,7 +125,7 @@ export class GameRuleLogic {
   static isSwarmConnected(board: Board, from: Coordinates, to: Coordinates): boolean {
     let connected = this.getNeighbours(board, to).filter(e => e.stack.length > 0 && !e.coordinates.equal(from))
     let currentField: Field = null
-    let visitedFields = [board.getField(from)]
+    let visitedFields = [board.getField(from), board.getField(to)]
     let totalPieces = board.countPieces()
 
     while (connected.length > 0 && connected.reduce((prev, e) => prev + e.stack.length, 0) + visitedFields.reduce((prev, e) => prev + e.stack.length, 0) < totalPieces) {
@@ -269,10 +273,13 @@ export class GameRuleLogic {
       return null
     }
 
+    if (this.getQueen(state.board, state.currentPlayerColor) == null) {
+      console.log("Ohne Queen geht hier nichts...")
+      return []
+    }
+
     let moves = []
-    console.log("Felder mit pieces: ", this.getFieldsWithPiece(state.board))
-    console.log("Felder am Schwarmrand: ", this.getFieldsNextToSwarm(state.board, field))
-    let allFields = this.getFieldsNextToSwarm(state.board, field).concat(this.getFieldsWithPiece(state.board))
+    let allFields = this.getFieldsNextToSwarm(state.board, field).concat(this.getFieldsWithPiece(state.board).filter(e => !e.coordinates.equal(state.board.getField(field).coordinates)))
     console.log("Von den möglichen Felder zum ziehen, kommen in Frage: ", allFields)
 
     // fuers erste brute-force durch
