@@ -179,7 +179,7 @@ export class SimpleScene extends Phaser.Scene {
           }
 
           // labels, TODO, move into createFieldLabels
-          const coordTextStyle = {fontFamily: 'Arial', fontSize: 15, color: '#ffffff'}
+          const coordTextStyle = {fontFamily: 'Arial', fontSize: 15, color: '#777777'}
           let text = this.add.text(sx, sy, `(${field.coordinates.q},${field.coordinates.r})`, coordTextStyle).setOrigin(0.5)
           text.depth = 60
 
