@@ -45,10 +45,10 @@ export class Viewer {
   }
 
   render(state: RenderState) {
-    if(this.engine == null) {
+    if (this.engine == null) {
       return
     }
-    if(this.currentState && this.currentState.equals(state)) {
+    if (this.currentState && this.currentState.equals(state)) {
       console.log('should render same state, doing nothing')
       return
     } else {
@@ -56,8 +56,8 @@ export class Viewer {
     }
 
     this.engine.clearUI()
-    if(this.animateMoves) {
-      if(state.gameState.lastMove &&
+    if (this.animateMoves) {
+      if (state.gameState.lastMove &&
         this.currentState &&
         // !this.engine.animating() &&
         (state.gameState.turn === this.currentState.gameState.turn + 1) &&
@@ -79,10 +79,11 @@ export class Viewer {
   // user interacted somehow
   userHasInteracted(state: GameState, actions: InteractionEvent[], move_callback: (move: Move) => void, interaction: InteractionEvent) {
     actions = actions.concat(interaction)
-    if(interaction == 'cancelled') {
+
+    if (interaction == 'cancelled') {
       // remove all interactions and request new input
       this.requestUserInteraction(state, [], move_callback)
-    } else if(actions.length == 2) {
+    } else if (actions.length == 2) {
       // create move and send it
       let move = this.interactionsToMove(actions)
       move_callback(move)
@@ -95,10 +96,10 @@ export class Viewer {
   interactionsToMove(interactions: InteractionEvent[]): Move {
     let fromFieldOrPiece = interactions[0]
     let toField = interactions[1]
-    if(fromFieldOrPiece instanceof FieldSelected && toField instanceof FieldSelected) {
+    if (fromFieldOrPiece instanceof FieldSelected && toField instanceof FieldSelected) {
       // DragMove
       return new Move(fromFieldOrPiece.coordinates, toField.coordinates)
-    } else if(fromFieldOrPiece instanceof UndeployedPieceSelected && toField instanceof FieldSelected) {
+    } else if (fromFieldOrPiece instanceof UndeployedPieceSelected && toField instanceof FieldSelected) {
       // SetMove
       return new Move(fromFieldOrPiece.kind, toField.coordinates)
     } else {
@@ -117,27 +118,38 @@ export class Viewer {
     // figure out which interactions are currently needed and put them into uistate
     let shouldSelectPiece: boolean = actions.length == 0
     let shouldSelectTarget: boolean = actions.length == 1
-    let cancellable: boolean = shouldSelectTarget
-    let modified_gamestate = this.applyInteractions(state, actions)
 
     // XXX TODO interaction logic
     let uiState: UiState
-    if(shouldSelectPiece) {
-      let ownPieceFields = state.board.fields.map(col => {
-        return col.map(field => {
-          if(field.owner() == state.currentPlayerColor) {
-            return field.coordinates
-          } else {
-            return null
-          }
-        })
-      }).reduce((a, c) => a.concat(c)).filter(e => e != null)
+    if (shouldSelectPiece) {
+      let ownPieceFields = GameRuleLogic.fieldsOwnedByPlayer(state.board, state.currentPlayerColor).map(e => e.coordinates)
+      let beePlaced = ownPieceFields.some(e => state.board.getTopPiece(e).kind == 'BEE')
+
+      // Zwinge den Nutzer die Biene zu waehlen, falls noetig
+      /** turn | color | move of color
+       * 0  red   # 1
+       * 1  blue  # 1
+       * 2  red   # 2
+       * 3  blue  # 2
+       * ...
+       * 6  red   # 4
+       * 7  blue  # 4
+       */
+      if (!beePlaced && state.turn > 5) {
+        if (state.currentPlayerColor == 'RED') {
+          ownPieceFields = [] // state.undeployedRedPieces.filter(e => e.kind == 'BEE').map(e => e.)
+        }
+        else {
+          ownPieceFields = [] // state.undeployedBluePieces.filter(e => e.kind == 'BEE').map(e => e.)
+        }
+      }
+
       uiState = new SelectPiece(ownPieceFields, state.currentPlayerColor)
-    } else if(shouldSelectTarget) {
+    } else if (shouldSelectTarget) {
       let firstAction = actions[0]
-      if(firstAction instanceof FieldSelected) {
+      if (firstAction instanceof FieldSelected) {
         let piece = firstAction.coordinates
-        let possibleMoves = GameRuleLogic.possibleMoves(modified_gamestate.board, piece)
+        let possibleMoves = GameRuleLogic.possibleMoves(state.board, piece)
         if (possibleMoves == null) {
           return
         }
@@ -154,11 +166,11 @@ export class Viewer {
         }
 
         // Falls noch keine Spielfigur platziert wurde
-        if (modified_gamestate.board.countPieces() == 0) {
+        if (state.board.countPieces() == 0) {
           uiState = new SelectSetTargetField(
             firstAction.color,
             firstAction.index,
-            modified_gamestate.board.fields.map(
+            state.board.fields.map(
               col => col.map(field => field.coordinates)
             ).reduce((a, c) => a.concat(c))
           )
@@ -167,7 +179,7 @@ export class Viewer {
           uiState = new SelectSetTargetField(
             firstAction.color,
             firstAction.index,
-            GameRuleLogic.getFieldsNextToSwarm(modified_gamestate.board, null).map(f => f.coordinates)
+            GameRuleLogic.getFieldsNextToSwarm(state.board, null).map(f => f.coordinates)
           )
         }
       }
@@ -177,8 +189,9 @@ export class Viewer {
     } else {
       throw 'we should not interact at all'
     }
+
     // render gamestate with interactions
-    this.render(new RenderState(modified_gamestate, uiState))
+    this.render(new RenderState(this.applyInteractions(state, actions), uiState))
     // keep original gamestate in callback
     this.engine.interact((interaction) => this.userHasInteracted(state, actions, move_callback, interaction))
   }

@@ -66,7 +66,7 @@ export class GameRuleLogic {
     let fields= []
     board.fields.forEach((row) => {
       row.forEach((field) => {
-        if (field.owner.toString() == player) {
+        if (field != null && field.owner.toString() == player) {
           fields.push(field)
         }
       })

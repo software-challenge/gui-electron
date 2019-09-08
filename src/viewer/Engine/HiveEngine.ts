@@ -24,7 +24,7 @@ export class SimpleScene extends Phaser.Scene {
   public graphics: FieldGraphics[][] // graphics to render the board
   public undeployedPieceGraphics: FieldGraphics[][] // graphics to render pieces not on the board
   public markers: Phaser.GameObjects.Sprite[] // graphics to mark fields
-  public selectedPiece: Coordinates // currently selected fish (if any)
+  public selectedPiece: Coordinates // currently selected piece (if any)
   public fieldClickHandler: (c: Coordinates) => void = (_) => {}
   public undeployedClickHandler: (color: PLAYERCOLOR, index: number) => void = (_) => {}
   public animationTime: number = 200
@@ -410,6 +410,11 @@ export class SimpleScene extends Phaser.Scene {
     */
     return false
   }
+}
+
+export interface SelectableUndeployed {
+  color: PLAYERCOLOR
+  kind: PIECETYPE[]
 }
 
 export class HiveEngine {
