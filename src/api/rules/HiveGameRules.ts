@@ -140,8 +140,7 @@ export class GameRuleLogic {
   }
 
   static validateMove(board: Board, from: Coordinates, to: Coordinates): boolean {
-    console.log("%cHa ", 'color: #f00')
-    console.log("Validiere move from: ", from, " to: ", to)
+    console.log("%cValidiere move from: ", 'color: #f00', "", from, " to: ", to)
     if (!this.isOnBoard(from) || !this.isOnBoard(to)) {
       console.log("Korrumpierte Koordinaten gegeben (out of board): ", from, to)
       return false
@@ -156,8 +155,20 @@ export class GameRuleLogic {
       return false
     }
 
-    if (!this.fieldNextToSwarm(board, to, from) || !this.isSwarmConnected(board, from, to)) {
-      console.log("Das Feld ist nicht neben dem Schwarm: ", !this.fieldNextToSwarm(board, to, from), " oder nicht als 1 Schwarm verbunden: ", !this.isSwarmConnected(board, from, to))
+    // Beetle darf drauf
+    if (board.getTopPiece(from).kind == 'BEETLE') {
+      if (!this.getFieldsWithPiece(board).some(e => e.coordinates.equal(to)) && !this.fieldNextToSwarm(board, to, from)) {
+        console.log("Das Ziel des Beetles ist weder auf einem anderen Insekt, noch neben dem Schwarm")
+        return false
+      }
+    }
+    else if (!this.fieldNextToSwarm(board, to, from)) {
+      console.log("Das Feld ist nicht neben dem Schwarm: ", !this.fieldNextToSwarm(board, to, from))
+      return false
+    }
+
+    if (!this.isSwarmConnected(board, from, to)) {
+      console.log("Das Feld ist nicht als 1 Schwarm verbunden: ", !this.isSwarmConnected(board, from, to))
       return false
     }
 
@@ -259,6 +270,8 @@ export class GameRuleLogic {
     }
 
     let moves = []
+    console.log("Felder mit pieces: ", this.getFieldsWithPiece(state.board))
+    console.log("Felder am Schwarmrand: ", this.getFieldsNextToSwarm(state.board, field))
     let allFields = this.getFieldsNextToSwarm(state.board, field).concat(this.getFieldsWithPiece(state.board))
     console.log("Von den möglichen Felder zum ziehen, kommen in Frage: ", allFields)
 
