@@ -279,17 +279,28 @@ export class SimpleScene extends Phaser.Scene {
     })
   }
 
-  markUndeployed(color: PLAYERCOLOR) {
+  markUndeployed(state: GameState, color: PLAYERCOLOR) {
     let x = color == 'RED' ? 60 : 740
-    this.undeployedPieceGraphics[color].forEach((_u: FieldGraphics, i: number) => {
+    if (state.turn > 5 && (color == 'RED' ? state.undeployedRedPieces.some(e => e.kind == "BEE") : state.undeployedBluePieces.some(e => e.kind == 'BEE'))) {
       this.markers.push(this.make.sprite({
         key: 'marker',
         x: x,
-        y: 90 + i * 64,
+        y: 90,
         scale: 1,
         depth: 50,
       }))
-    })
+    }
+    else {
+      this.undeployedPieceGraphics[color].forEach((_u: FieldGraphics, i: number) => {
+        this.markers.push(this.make.sprite({
+          key: 'marker',
+          x: x,
+          y: 90 + i * 64,
+          scale: 1,
+          depth: 50,
+        }))
+      })
+    }
   }
 
   deselectFields() {
@@ -459,7 +470,7 @@ export class HiveEngine {
     this.scene.deselectFields()
     if(state.uiState instanceof SelectPiece) {
       this.selectableFields = state.uiState.selectableFieldCoordinates
-      this.scene.markUndeployed(state.uiState.undeployedColor)
+      this.scene.markUndeployed(state.gameState, state.uiState.undeployedColor)
     } else if(state.uiState instanceof SelectSetTargetField) {
       this.selectableFields = state.uiState.selectableFields
     } else if(state.uiState instanceof SelectDragTargetField) {
