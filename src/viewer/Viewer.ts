@@ -84,9 +84,14 @@ export class Viewer {
       // remove all interactions and request new input
       this.requestUserInteraction(state, [], move_callback)
     } else if (actions.length == 2) {
-      // create move and send it
-      let move = this.interactionsToMove(actions)
-      move_callback(move)
+      if (actions[0] instanceof UndeployedPieceSelected && actions[1] instanceof UndeployedPieceSelected) {
+        this.requestUserInteraction(state, [], move_callback)
+      }
+      else {
+        // create move and send it
+        let move = this.interactionsToMove(actions)
+        move_callback(move)
+      }
     } else {
       // we need more input to get a complete move
       this.requestUserInteraction(state, actions, move_callback)
