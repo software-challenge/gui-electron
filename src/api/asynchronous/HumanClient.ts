@@ -27,7 +27,9 @@ export class HumanClient extends GenericPlayer implements GameClient {
     })
     this.on('moverequest', this.handleMoveRequest)
     this.on('state', s => this.state = s)
-    //this.on('error', error => dialog.showErrorBox("Fehler menschlicher Spieler", error));
+    this.on('error', error => {
+      Logger.getLogger().log('HumanClient', 'Message-Handler', "Fehler menschlicher Spieler")
+    })
   }
 
   handleMoveRequest = async function() {

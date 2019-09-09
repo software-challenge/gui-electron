@@ -128,6 +128,7 @@ export class LiveGame extends Game {
                   .then(() => {
                     Logger.log('LiveGame is live!')
                     this.is_live = true
+                    return reservation.roomId
                   })
                   .catch(reason => gameStartError(reason))
               })
