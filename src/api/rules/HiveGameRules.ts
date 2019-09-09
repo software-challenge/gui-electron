@@ -82,7 +82,8 @@ export class GameRuleLogic {
       }
     }
 
-    return shared.length - blocked == 0
+    // verhindere dass er sich nicht am rand des schwarms bewegt und beispielsweise "jumpt"
+    return shared.length - blocked == 0 || !shared.some(e => e.stack.length > 0)
   }
 
   /** Validates whether nor not the path to the neighbour via adjacent tiles is obstructed or not
@@ -112,7 +113,8 @@ export class GameRuleLogic {
       }
     }
 
-    return shared.length - blocked == 0
+    // verhindere dass er sich nicht am rand des schwarms bewegt und beispielsweise "jumpt"
+    return shared.length - blocked == 0 || !shared.some(e => e.stack.length > 0)
   }
 
   static sharedNeighboursOfTwoCoords(board: Board, a: Coordinates, b: Coordinates): Field[] {
@@ -281,7 +283,7 @@ export class GameRuleLogic {
   }
 
   static validateBeetleMove(board: Board, from: Coordinates, to: Coordinates): boolean {
-    return this.isNeighbour(from, to)
+    return this.isNeighbour(from, to) && this.sharedNeighboursOfTwoCoords(board, from, to).some(e => e.stack.length > 0)
   }
 
   static validateGrasshopperMove(board: Board, from: Coordinates, to: Coordinates): boolean {
