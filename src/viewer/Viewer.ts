@@ -122,7 +122,7 @@ export class Viewer {
     // XXX TODO interaction logic
     let uiState: UiState
     if (shouldSelectPiece) {
-      let ownPieceFields = GameRuleLogic.fieldsOwnedByPlayer(state.board, state.currentPlayerColor).map(e => e.coordinates)
+      let ownPieceFields = GameRuleLogic.fieldsOwnedByPlayer(state.board, state.currentPlayerColor).map(e => e.coordinates).filter(e => GameRuleLogic.possibleMoves(state, e).length > 0)
       let beePlaced = GameRuleLogic.getQueen(state.board, state.currentPlayerColor) != null
 
       // Zwinge den Nutzer die Biene zu waehlen, falls noetig
