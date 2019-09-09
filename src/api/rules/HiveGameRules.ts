@@ -85,6 +85,36 @@ export class GameRuleLogic {
     return shared.length - blocked == 0
   }
 
+  /** Validates whether nor not the path to the neighbour via adjacent tiles is obstructed or not
+   * 
+   * @param board
+   * @param a
+   * @param b
+   * @param except
+   */
+  static isPathToNeighbourObstructedExcept(board: Board, a: Coordinates, b: Coordinates, except: Coordinates): boolean {
+    if (!this.isNeighbour(a, b)) {
+      console.log("Feld a ist kein Nachbar von b", a, b)
+      return true
+    }
+
+    let shared = this.sharedNeighboursOfTwoCoords(board, a, b)
+    // 2 benachbarte Felder müssen mindestens 1 und höchstens 2 weiteren gemeinsamen Nachbarn haben
+    if (shared.length > 2 || shared.length < 1) {
+      console.log("Unerwartete Anzahl an gemeinsamen Nachbarfeldern von a, b, shared", a, b, shared)
+      return true
+    }
+
+    let blocked = 0
+    for (let tile of shared) {
+      if (tile.obstructed || tile.stack.length > 0 && !except.equal(tile.coordinates)) {
+        blocked++
+      }
+    }
+
+    return shared.length - blocked == 0
+  }
+
   static sharedNeighboursOfTwoCoords(board: Board, a: Coordinates, b: Coordinates): Field[] {
     let nb = this.getNeighbours(board, b)
 
@@ -259,7 +289,19 @@ export class GameRuleLogic {
   }
 
   static validateSpiderMove(board: Board, from: Coordinates, to: Coordinates): boolean {
-    // TODO..... benötigt wahrscheinlich eine Kombination von validateAntMove und einem Strecken-Counter
+    // aber jetzt mal so richtig inperformant... :D
+    let swarm = this.getFieldsNextToSwarm(board, from)
+    // 1. Schritt
+    for (let depth1 of this.getNeighbours(board, from).filter(e => !e.obstructed && e.stack.length == 0).map(e => e.coordinates).filter(e => swarm.some(s => e.equal(s.coordinates)) && !this.isPathToNeighbourObstructedExcept(board, from, e, from) && this.isSwarmConnected(board, from, e))) {
+      // 2. Schritt
+      for (let depth2 of this.getNeighbours(board, depth1).filter(e => !e.obstructed && e.stack.length == 0).map(e => e.coordinates).filter(e => !e.equal(from) && swarm.some(s => e.equal(s.coordinates)) && !this.isPathToNeighbourObstructedExcept(board, depth1, e, from) && this.isSwarmConnected(board, from, e))) {
+        // Ist 3. Schritt = Ziel
+        if (this.getNeighbours(board, depth2).filter(e => !e.obstructed && e.stack.length == 0).map(e => e.coordinates).filter(e => !e.equal(from) && !e.equal(depth1) && swarm.some(s => e.equal(s.coordinates)) && !this.isPathToNeighbourObstructedExcept(board, depth2, e, from) && this.isSwarmConnected(board, from, e)).some(e => e.equal(to))) {
+          return true
+        }
+      }
+    }
+
     return false
   }
 
