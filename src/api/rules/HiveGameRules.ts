@@ -220,53 +220,25 @@ export class GameRuleLogic {
   }
 
   static validateAntMove(board: Board, from: Coordinates, to: Coordinates): boolean {
-    // A-Star modified
-    let fields = this.getFieldsNextToSwarm(board, from)
-    let visitedFields = []
-    let touchedFields = []
-    let currentField = from
-    let target = to.arrayCoordinates()
+    let swarm = this.getFieldsNextToSwarm(board, from)
+    let visitedFields: Field[] = [board.getField(from)]
+    let touchedFields: Field[] = this.getNeighbours(board, from).filter(e => swarm.some(f => e.coordinates.equal(f.coordinates)))
+    let currentField: Coordinates = from
 
-    while (currentField.equal(from) || visitedFields.length < fields.length && touchedFields.length > 0 && !currentField.equal(to)) {
-      visitedFields.push({
-        c: currentField,
-        dist: Math.sqrt(Math.pow(target.x - currentField.arrayCoordinates().x, 2) + Math.pow(target.y - currentField.arrayCoordinates().y, 2))
-      })
-      let i = touchedFields.findIndex(e => e.c.equal(currentField))
-      if (i || i == 0) {
-        delete touchedFields[i]
-      }
-
-      // find all valid adjacent fields
-      for (let f of fields) {
-        if (this.isNeighbour(f.coordinates, currentField) && !this.isPathToNeighbourObstructed(board, f.coordinates, currentField)) {
-          let tmp = {
-            c: f.coordinates,
-            dist: Math.sqrt(Math.pow(target.x - f.coordinates.arrayCoordinates().x, 2) + Math.pow(target.y - f.coordinates.arrayCoordinates().y, 2))
-          }
-
-          // prevent double-entrys
-          if (!touchedFields.find(e => e.c === f.coordinates) && !visitedFields.find(e => e.c === f.coordinates)) {
-            touchedFields.push(tmp)
-          }
+    // es ist fields.length <= swarm, da from manuell hinzugefügt wurde (+1)
+    while (visitedFields.length + touchedFields.length <= swarm.length && touchedFields.length > 0 && !currentField.equal(to) && !touchedFields.some(e => e.coordinates.equal(to))) {
+      for (let f of this.getNeighbours(board, currentField).filter(e => swarm.some(f => e.coordinates.equal(f.coordinates)))) {
+        if (!visitedFields.some(e => f.coordinates.equal(e.coordinates)) && !touchedFields.some(e => f.coordinates.equal(e.coordinates))) {
+          touchedFields.push(f)
         }
       }
 
-      // select cheapest cost
-      let minCost = null
-      for (let n of touchedFields) {
-        if (minCost == null) {
-          minCost = n
-        }
-        else if (minCost.dist > n.dist) {
-          minCost = n
-        }
-      }
-
-      currentField = minCost
+      let newField = touchedFields.pop()
+      visitedFields.push(newField)
+      currentField = newField.coordinates
     }
 
-    return currentField.equal(to)
+    return currentField.equal(to) || touchedFields.some(e => e.coordinates.equal(to))
   }
 
   static validateBeeMove(board: Board, from: Coordinates, to: Coordinates): boolean {
@@ -299,7 +271,7 @@ export class GameRuleLogic {
     }
 
     let moves = []
-    let allFields = this.getFieldsNextToSwarm(state.board, field).concat(this.getFieldsWithPiece(state.board).filter(e => !e.coordinates.equal(state.board.getField(field).coordinates)))
+    let allFields = state.board.getTopPiece(field).kind == 'BEETLE' ? this.getFieldsNextToSwarm(state.board, field).concat(this.getFieldsWithPiece(state.board).filter(e => !e.coordinates.equal(state.board.getField(field).coordinates))) : this.getFieldsNextToSwarm(state.board, field)
     console.log("Von den möglichen Felder zum ziehen, kommen in Frage: ", allFields)
 
     // fuers erste brute-force durch
