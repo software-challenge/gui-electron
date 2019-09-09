@@ -25,8 +25,8 @@ export class SimpleScene extends Phaser.Scene {
   public undeployedPieceGraphics: FieldGraphics[][] // graphics to render pieces not on the board
   public markers: Phaser.GameObjects.Sprite[] // graphics to mark fields
   public selectedPiece: Coordinates // currently selected piece (if any)
-  public fieldClickHandler: (c: Coordinates) => void = (_) => {}
-  public undeployedClickHandler: (color: PLAYERCOLOR, index: number) => void = (_) => {}
+  public fieldClickHandler: (c: Coordinates) => void = (_) => { }
+  public undeployedClickHandler: (targets: Undeployed) => void = (_) => { }
   public animationTime: number = 200
   public animateWater: boolean
 
@@ -218,7 +218,7 @@ export class SimpleScene extends Phaser.Scene {
     return (Math.abs(c.q) <= SHIFT && Math.abs(c.r) <= SHIFT)
   }
 
-  undeployedPiece(x: number, y: number) {
+  undeployedPiece(x: number, y: number): Undeployed {
     let color = null
     let index = null
     if (x > 28 && x < 92) {
@@ -246,7 +246,7 @@ export class SimpleScene extends Phaser.Scene {
     }
     let up = this.undeployedPiece(event.position.x, event.position.y)
     if (up !== null) {
-      this.undeployedClickHandler(up.color, up.index)
+      this.undeployedClickHandler(up)
     }
   }
 
@@ -330,10 +330,6 @@ export class SimpleScene extends Phaser.Scene {
       duration: 300,
       ease: Phaser.Math.Easing.Back.In,
     })
-  }
-
-  selectUndeployedPiece(color, index) {
-
   }
 
   updateBoard(gameState: GameState, move: Move) {
@@ -423,9 +419,9 @@ export class SimpleScene extends Phaser.Scene {
   }
 }
 
-export interface SelectableUndeployed {
+export interface Undeployed {
   color: PLAYERCOLOR
-  kind: PIECETYPE[]
+  index: integer
 }
 
 export class HiveEngine {
@@ -434,6 +430,7 @@ export class HiveEngine {
   scene: SimpleScene
   created: boolean = false
   selectableFields: Coordinates[] = []
+  selectableUndeployed: Undeployed[] = []
   uiState: UiState
 
   constructor(element: HTMLCanvasElement) {
@@ -467,10 +464,19 @@ export class HiveEngine {
     this.scene.updateUndeployedPieces(state.gameState.undeployedRedPieces, state.gameState.undeployedBluePieces)
     this.scene.unmarkFields()
     this.selectableFields = []
+    this.selectableUndeployed = []
     this.scene.deselectFields()
     if(state.uiState instanceof SelectPiece) {
       this.selectableFields = state.uiState.selectableFieldCoordinates
       this.scene.markUndeployed(state.gameState, state.uiState.undeployedColor)
+      if (state.gameState.turn > 5 && (state.uiState.undeployedColor == 'RED' ? state.gameState.undeployedRedPieces.some(e => e.kind == "BEE") : state.gameState.undeployedBluePieces.some(e => e.kind == 'BEE'))) {
+        this.selectableUndeployed = [{ color: state.gameState.currentPlayerColor, index: 0 }]
+      }
+      else {
+        this.scene.undeployedPieceGraphics[state.gameState.currentPlayerColor].forEach((_u: FieldGraphics, i: number) => {
+          this.selectableUndeployed.push({ color: state.gameState.currentPlayerColor, index: i })
+        })
+      }
     } else if(state.uiState instanceof SelectSetTargetField) {
       this.selectableFields = state.uiState.selectableFields
     } else if(state.uiState instanceof SelectDragTargetField) {
@@ -505,13 +511,15 @@ export class HiveEngine {
     // activate callbacks...
     this.scene.fieldClickHandler = (target: Coordinates) => {
       console.log("clicked on", target)
-      callback(this.selectableFields.some(s => s.q == target.q && s.r == target.r)
+      callback(this.selectableFields.some(s => target.equal(s))
         ? new FieldSelected(target)
         : 'cancelled')
     }
-    this.scene.undeployedClickHandler = (color: PLAYERCOLOR, index: number) => {
-      console.log("clicked undeployed", color, index)
-      callback(new UndeployedPieceSelected(color, index))
+    this.scene.undeployedClickHandler = (target: Undeployed) => {
+      console.log("clicked undeployed", target)
+      callback(this.selectableUndeployed.some(s => s.color == target.color && target.index == s.index)
+        ? new UndeployedPieceSelected(target)
+        : 'cancelled')
     }
 
   }

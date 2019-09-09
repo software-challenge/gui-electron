@@ -1,5 +1,6 @@
 import * as deepEqual from 'deep-equal'
 import { GameRuleLogic } from './HiveGameRules';
+import { Undeployed } from '../../viewer/Engine/HiveEngine';
 
 export type LineDirection = 'HORIZONTAL' | 'VERTICAL' | 'RISING_DIAGONAL' | 'FALLING_DIAGONAL';
 export const ALL_DIRECTIONS: LineDirection[] = ['HORIZONTAL', 'VERTICAL', 'RISING_DIAGONAL', 'FALLING_DIAGONAL']
@@ -588,9 +589,9 @@ export class UndeployedPieceSelected {
   readonly index: number
   kind: PIECETYPE
 
-  constructor(color: PLAYERCOLOR, index: number) {
-    this.color = color
-    this.index = index
+  constructor(target: Undeployed) {
+    this.color = target.color
+    this.index = target.index
   }
 
   setKind(kind: PIECETYPE) {
