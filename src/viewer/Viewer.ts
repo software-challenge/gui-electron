@@ -188,7 +188,7 @@ export class Viewer {
           uiState = new SelectSetTargetField(
             firstAction.color,
             firstAction.index,
-            GameRuleLogic.getFieldsNextToSwarm(state.board, null).map(f => f.coordinates).filter(f => GameRuleLogic.getNeighbours(state.board, f).some(e => e.owner() == state.currentPlayerColor))
+            GameRuleLogic.getFieldsNextToSwarm(state.board, null).map(f => f.coordinates).filter(f => GameRuleLogic.getNeighbours(state.board, f).some(e => e.owner() == state.currentPlayerColor) && !GameRuleLogic.getNeighbours(state.board, f).some(e => e.owner() == state.getOtherPlayer().color))
           )
         }
       }

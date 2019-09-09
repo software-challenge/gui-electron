@@ -174,25 +174,24 @@ export class GameRuleLogic {
     return tmp.map(e => board.getField(e))
   }
 
-  static isSwarmConnected(board: Board, from: Coordinates, to: Coordinates): boolean {
-    let connected = this.getNeighbours(board, to).filter(e => e.stack.length > 0 && !e.coordinates.equal(from))
-    let currentField: Field = null
-    let visitedFields = [board.getField(from), board.getField(to)]
-    let totalPieces = board.countPieces()
-
-    while (connected.length > 0 && connected.reduce((prev, e) => prev + e.stack.length, 0) + visitedFields.reduce((prev, e) => prev + e.stack.length, 0) < totalPieces) {
-      currentField = connected.pop()
-      visitedFields.push(currentField)
-
-      for (let f of this.getNeighbours(board, currentField.coordinates).filter(e => e.stack.length > 0 && !e.coordinates.equal(from))) {
-        // no duplicated fields please
-        if (!visitedFields.some(e => e.coordinates.equal(f.coordinates)) && !connected.some(e => e.coordinates.equal(f.coordinates))) {
-          connected.push(f)
-        }
-      }
+  static isSwarmConnected(board: Board): boolean {
+    if (this.getFieldsWithPiece(board).length == 0) {
+      return true
     }
 
-    return connected.reduce((prev, e) => prev + e.stack.length, 0) + visitedFields.reduce((prev, e) => prev + e.stack.length, 0) == totalPieces
+    let visitedFields = [this.getFieldsWithPiece(board)[0]]
+    let totalPieces = board.countPieces()
+    let index = 0
+
+    do {
+      visitedFields = visitedFields.concat(this.getNeighbours(board, visitedFields[index].coordinates).filter(e => e.stack.length > 0 && !visitedFields.some(f => f.coordinates.equal(e.coordinates))))
+
+      if (visitedFields.reduce((prev, e) => prev + e.stack.length, 0) == totalPieces) {
+        return true
+      }
+    } while (index++ < visitedFields.length)
+
+    return false
   }
 
   static validateMove(board: Board, from: Coordinates, to: Coordinates): boolean {
@@ -223,8 +222,10 @@ export class GameRuleLogic {
       return false
     }
 
-    if (!this.isSwarmConnected(board, from, to)) {
-      console.log("Das Feld ist nicht als 1 Schwarm verbunden: ", !this.isSwarmConnected(board, from, to))
+    let clone = board.clone()
+    clone.getField(from).stack.pop()
+    if (!this.isSwarmConnected(clone)) {
+      console.log("Das Feld ist nicht als 1 Schwarm verbunden")
       return false
     }
 
@@ -257,11 +258,6 @@ export class GameRuleLogic {
     let touchedFields: Field[] = this.getNeighbours(board, from).filter(e => swarm.some(f => e.coordinates.equal(f.coordinates)))
     let currentField: Coordinates = from
 
-    // darf sich die Ameise überhaupt weg bewegen?
-    if (touchedFields.some(f => !this.isSwarmConnected(board, currentField, f.coordinates) || this.isPathToNeighbourObstructed(board, currentField, f.coordinates))) {
-      return false
-    }
-
     // es ist fields.length <= swarm, da from manuell hinzugefügt wurde (+1)
     while (visitedFields.length + touchedFields.length <= swarm.length && touchedFields.length > 0 && !currentField.equal(to) && !touchedFields.some(e => e.coordinates.equal(to))) {
       for (let f of this.getNeighbours(board, currentField).filter(e => swarm.some(f => e.coordinates.equal(f.coordinates)))) {
@@ -293,12 +289,13 @@ export class GameRuleLogic {
   static validateSpiderMove(board: Board, from: Coordinates, to: Coordinates): boolean {
     // aber jetzt mal so richtig inperformant... :D
     let swarm = this.getFieldsNextToSwarm(board, from)
+
     // 1. Schritt
-    for (let depth1 of this.getNeighbours(board, from).filter(e => !e.obstructed && e.stack.length == 0).map(e => e.coordinates).filter(e => swarm.some(s => e.equal(s.coordinates)) && !this.isPathToNeighbourObstructedExcept(board, from, e, from) && this.isSwarmConnected(board, from, e))) {
+    for (let depth1 of this.getNeighbours(board, from).filter(e => !e.obstructed && e.stack.length == 0).map(e => e.coordinates).filter(e => swarm.some(s => e.equal(s.coordinates)) && !this.isPathToNeighbourObstructedExcept(board, from, e, from))) {
       // 2. Schritt
-      for (let depth2 of this.getNeighbours(board, depth1).filter(e => !e.obstructed && e.stack.length == 0).map(e => e.coordinates).filter(e => !e.equal(from) && swarm.some(s => e.equal(s.coordinates)) && !this.isPathToNeighbourObstructedExcept(board, depth1, e, from) && this.isSwarmConnected(board, from, e))) {
+      for (let depth2 of this.getNeighbours(board, depth1).filter(e => !e.obstructed && e.stack.length == 0).map(e => e.coordinates).filter(e => !e.equal(from) && swarm.some(s => e.equal(s.coordinates)) && !this.isPathToNeighbourObstructedExcept(board, depth1, e, from))) {
         // Ist 3. Schritt = Ziel
-        if (this.getNeighbours(board, depth2).filter(e => !e.obstructed && e.stack.length == 0).map(e => e.coordinates).filter(e => !e.equal(from) && !e.equal(depth1) && swarm.some(s => e.equal(s.coordinates)) && !this.isPathToNeighbourObstructedExcept(board, depth2, e, from) && this.isSwarmConnected(board, from, e)).some(e => e.equal(to))) {
+        if (this.getNeighbours(board, depth2).filter(e => !e.obstructed && e.stack.length == 0).map(e => e.coordinates).filter(e => !e.equal(from) && !e.equal(depth1) && swarm.some(s => e.equal(s.coordinates)) && !this.isPathToNeighbourObstructedExcept(board, depth2, e, from)).some(e => e.equal(to))) {
           return true
         }
       }

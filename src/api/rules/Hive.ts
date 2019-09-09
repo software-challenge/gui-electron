@@ -212,6 +212,10 @@ export class Coordinates {
   isInLineWith(c: Coordinates): boolean {
     return this.q - c.q == - this.r + c.r && this.s == c.s || this.q - c.q == - this.s + c.s && this.r == c.r || this.s - c.s == - this.r + c.r && this.q == c.q
   }
+
+  clone(): Coordinates {
+    return new Coordinates(this.q, this.r, this.s)
+  }
 }
 
 export type PIECETYPE = 'ANT' | 'BEE' | 'BEETLE' | 'GRASSHOPPER' | 'SPIDER'
@@ -262,6 +266,12 @@ export class Field {
     let tmp = new Field(stack, c)
     tmp.obstructed = that.obstructed
     return tmp
+  }
+
+  clone(): Field {
+    let f = new Field([], this.coordinates.clone())
+    this.stack.forEach(e => f.stack.push(new Piece(e.kind, e.color)))
+    return f
   }
 
   owner(): PLAYERCOLOR {
@@ -331,7 +341,7 @@ export class Board {
         clonedFields[x] = []
       }
       row.forEach(f => {
-        clonedFields[x].push(f)
+        clonedFields[x].push(f.clone())
       })
     })
     clone.fields = clonedFields
