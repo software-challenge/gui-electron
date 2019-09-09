@@ -281,7 +281,7 @@ export class GameRuleLogic {
   }
 
   static validateBeetleMove(board: Board, from: Coordinates, to: Coordinates): boolean {
-    return this.isNeighbour(from, to) && !this.isPathToNeighbourObstructed(board, from, to)
+    return this.isNeighbour(from, to)
   }
 
   static validateGrasshopperMove(board: Board, from: Coordinates, to: Coordinates): boolean {
