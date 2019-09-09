@@ -225,6 +225,11 @@ export class GameRuleLogic {
     let touchedFields: Field[] = this.getNeighbours(board, from).filter(e => swarm.some(f => e.coordinates.equal(f.coordinates)))
     let currentField: Coordinates = from
 
+    // darf sich die Ameise überhaupt weg bewegen?
+    if (touchedFields.some(f => !this.isSwarmConnected(board, currentField, f.coordinates) || this.isPathToNeighbourObstructed(board, currentField, f.coordinates))) {
+      return false
+    }
+
     // es ist fields.length <= swarm, da from manuell hinzugefügt wurde (+1)
     while (visitedFields.length + touchedFields.length <= swarm.length && touchedFields.length > 0 && !currentField.equal(to) && !touchedFields.some(e => e.coordinates.equal(to))) {
       for (let f of this.getNeighbours(board, currentField).filter(e => swarm.some(f => e.coordinates.equal(f.coordinates)))) {
