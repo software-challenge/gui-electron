@@ -98,7 +98,7 @@ export class GameRuleLogic {
    * @param field
    * @param except
    */
-  static fieldNextToSwarm(board: Board, field: Coordinates, except: Coordinates): boolean {
+  static isFieldNextToSwarm(board: Board, field: Coordinates, except: Coordinates): boolean {
     return this.getFieldsNextToSwarm(board, except).some(f => field.equal(f.coordinates))
   }
 
@@ -120,6 +120,26 @@ export class GameRuleLogic {
 
   static isOnBoard(coord: Coordinates): boolean {
     return -SHIFT <= coord.q && coord.q <= SHIFT && -SHIFT <= coord.r && coord.r <= SHIFT && -SHIFT <= coord.s && coord.s <= SHIFT
+  }
+
+  static getLineBetweenCoords(board: Board, a: Coordinates, b: Coordinates): Field[] {
+    if (!a.isInLineWith(b)) {
+      console.log("Feld a ", a, " ist nicht mit Feld b ", b, " in einer Reihe, kann daher nicht die Coordinaten dazwischen bekommen")
+      return []
+    }
+
+    // get diff between 2 coords
+    let d_q = a.q - b.q
+    let d_r = a.r - b.r
+    let d_s = a.s - b.s
+    let d = d_q == 0 ? Math.abs(d_r) : Math.abs(d_q)
+    let tmp: Coordinates[] = []
+
+    for (let i = 1; i < d; i++) {
+      tmp.push(new Coordinates(b.q + (d_q > 0 ? 1 : d_q < 0 ? -1 : 0) * i, b.r + (d_r > 0 ? 1 : d_r < 0 ? -1 : 0) * i, b.s + (d_s > 0 ? 1 : d_s < 0 ? -1 : 0) * i))
+    }
+
+    return tmp.map(e => board.getField(e))
   }
 
   static isSwarmConnected(board: Board, from: Coordinates, to: Coordinates): boolean {
@@ -161,13 +181,13 @@ export class GameRuleLogic {
 
     // Beetle darf drauf
     if (board.getTopPiece(from).kind == 'BEETLE') {
-      if (!this.getFieldsWithPiece(board).some(e => e.coordinates.equal(to)) && !this.fieldNextToSwarm(board, to, from)) {
+      if (!this.getFieldsWithPiece(board).some(e => e.coordinates.equal(to)) && !this.isFieldNextToSwarm(board, to, from)) {
         console.log("Das Ziel des Beetles ist weder auf einem anderen Insekt, noch neben dem Schwarm")
         return false
       }
     }
-    else if (!this.fieldNextToSwarm(board, to, from)) {
-      console.log("Das Feld ist nicht neben dem Schwarm: ", !this.fieldNextToSwarm(board, to, from))
+    else if (!this.isFieldNextToSwarm(board, to, from)) {
+      console.log("Das Feld ist nicht neben dem Schwarm: ", !this.isFieldNextToSwarm(board, to, from))
       return false
     }
 
@@ -258,7 +278,7 @@ export class GameRuleLogic {
   }
 
   static validateGrasshopperMove(board: Board, from: Coordinates, to: Coordinates): boolean {
-    return from.isInLineWith(to)
+    return from.isInLineWith(to) && this.getLineBetweenCoords(board, from, to).some(e => e.stack.length > 0)
   }
 
   static validateSpiderMove(board: Board, from: Coordinates, to: Coordinates): boolean {

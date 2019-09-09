@@ -209,7 +209,7 @@ export class Coordinates {
   }
 
   isInLineWith(c: Coordinates): boolean {
-    return this.q - c.q == -this.r - c.r && this.s == c.s || this.q - c.q == -this.s - c.s && this.r == c.r || this.s - c.s == -this.r - c.r && this.q == c.q
+    return this.q - c.q == - this.r + c.r && this.s == c.s || this.q - c.q == - this.s + c.s && this.r == c.r || this.s - c.s == - this.r + c.r && this.q == c.q
   }
 }
 
