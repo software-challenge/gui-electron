@@ -170,7 +170,7 @@ export class SimpleScene extends Phaser.Scene {
     let ux = coordinates.x - 64/3
     for (var i = 0; i < underlying.length; i++) {
       let u = underlying[i]
-      let piece = this.createPieceSprite(new ScreenCoordinates(ux + (i*(64/3)), uy) , u[1], u[0], 0.4, 3)
+      let piece = this.createPieceSprite(new ScreenCoordinates(ux + (i*(64/3) * 2/3), uy) , u[1], u[0], 0.4, 3)
       this.allObjects.push(piece[0])
       this.allObjects.push(piece[1])
     }
