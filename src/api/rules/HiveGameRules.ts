@@ -83,11 +83,11 @@ export class GameRuleLogic {
     }
 
     // verhindere dass er sich nicht am rand des schwarms bewegt und beispielsweise "jumpt"
-    return blocked < 2 || !shared.some(e => e.stack.length > 0)
+    return !((blocked == 1 || shared.some(e => e.stack.length == 0)) && shared.some(e => e.stack.length > 0))
   }
 
   /** Validates whether nor not the path to the neighbour via adjacent tiles is obstructed or not
-   * 
+   *
    * @param board
    * @param a
    * @param b
