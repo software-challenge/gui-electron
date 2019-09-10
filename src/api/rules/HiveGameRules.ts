@@ -150,8 +150,8 @@ export class GameRuleLogic {
     return tiles
   }
 
-  static isOnBoard(coord: Coordinates): boolean {
-    return -SHIFT <= coord.q && coord.q <= SHIFT && -SHIFT <= coord.r && coord.r <= SHIFT && -SHIFT <= coord.s && coord.s <= SHIFT
+  static isOnBoard(c: Coordinates): boolean {
+    return (Math.abs(c.q) <= SHIFT && Math.abs(c.r) <= SHIFT && Math.abs(c.s) <= SHIFT)
   }
 
   static getLineBetweenCoords(board: Board, a: Coordinates, b: Coordinates): Field[] {

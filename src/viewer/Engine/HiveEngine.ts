@@ -238,10 +238,6 @@ x) => {
     this.graphics = this.createBoardGraphics(board)
   }
 
-  insideBoard(c: Coordinates) {
-    return (Math.abs(c.q) <= SHIFT && Math.abs(c.r) <= SHIFT && Math.abs(c.s) <= SHIFT)
-  }
-
   undeployedPiece(x: number, y: number): Undeployed {
     let color = null
     let index = null
@@ -266,7 +262,7 @@ x) => {
     let pos = new ScreenCoordinates(event.position.x - offsetX, event.position.y - offsetY)
     let target = pos.boardCoordinates()
     let up = this.undeployedPiece(event.position.x, event.position.y)
-    if (this.insideBoard(target)) {
+    if (GameRuleLogic.isOnBoard(target)) {
       this.fieldClickHandler(target)
     } else if (up !== null) {
       this.undeployedClickHandler(up)
