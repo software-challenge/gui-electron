@@ -284,7 +284,7 @@ export class GameRuleLogic {
   }
 
   static validateGrasshopperMove(board: Board, from: Coordinates, to: Coordinates): boolean {
-    return from.isInLineWith(to) && !this.getLineBetweenCoords(board, from, to).some(e => e.stack.length == 0)
+    return from.isInLineWith(to) && !this.getLineBetweenCoords(board, from, to).some(e => e.stack.length == 0) && !this.isNeighbour(from, to)
   }
 
   static validateSpiderMove(board: Board, from: Coordinates, to: Coordinates): boolean {
