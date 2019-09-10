@@ -27,6 +27,7 @@ export class SimpleScene extends Phaser.Scene {
   public selectedPiece: Coordinates // currently selected piece (if any)
   public fieldClickHandler: (c: Coordinates) => void = (_) => { }
   public undeployedClickHandler: (targets: Undeployed) => void = (_) => { }
+  public outsideClickHandler: (c: Coordinates) => void = (_) => { }
   public animationTime: number = 200
   public animateWater: boolean
 
@@ -247,6 +248,9 @@ export class SimpleScene extends Phaser.Scene {
     let up = this.undeployedPiece(event.position.x, event.position.y)
     if (up !== null) {
       this.undeployedClickHandler(up)
+    }
+    else {
+      this.outsideClickHandler(target)
     }
   }
 
@@ -507,6 +511,7 @@ export class HiveEngine {
 
   interact(callback: (interaction: InteractionEvent) => void) {
     // interaction requested
+    console.log("%cInteraction happend!", "color: #006400")
 
     // activate callbacks...
     this.scene.fieldClickHandler = (target: Coordinates) => {
@@ -520,6 +525,10 @@ export class HiveEngine {
       callback(this.selectableUndeployed.some(s => s.color == target.color && target.index == s.index)
         ? new UndeployedPieceSelected(target)
         : 'cancelled')
+    }
+    this.scene.outsideClickHandler = (target: Coordinates) => {
+      console.log("clicked outside of field", target)
+      callback('cancelled')
     }
 
   }
