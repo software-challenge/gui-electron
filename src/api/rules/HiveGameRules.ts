@@ -57,7 +57,7 @@ export class GameRuleLogic {
   }
 
   /** Validates whether nor not the path to the neighbour via adjacent tiles is obstructed or not
-   * 
+   *
    * @param board
    * @param a
    * @param b
@@ -125,7 +125,7 @@ export class GameRuleLogic {
 
   /** Determines whether or not given coordinate is adjacent to the swarm
    * if except is != null, the field of except will not be counted as part of the swarm
-   * 
+   *
    * @param board
    * @param field
    * @param except
@@ -136,7 +136,7 @@ export class GameRuleLogic {
 
   /** returns all fields adjacent to the swarm.
    * If except is != null the field of except is not counted as the swarm and fields only adjacent to this perticular field wont be listed within the return value
-   * 
+   *
    * @param board
    * @param except
    */
@@ -189,7 +189,7 @@ export class GameRuleLogic {
       if (visitedFields.reduce((prev, e) => prev + e.stack.length, 0) == totalPieces) {
         return true
       }
-    } while (index++ < visitedFields.length)
+    } while (++index < visitedFields.length)
 
     return false
   }
@@ -223,6 +223,7 @@ export class GameRuleLogic {
     }
 
     let clone = board.clone()
+    console.log("connected", clone, clone.getField(from))
     clone.getField(from).stack.pop()
     if (!this.isSwarmConnected(clone)) {
       console.log("Das Feld ist nicht als 1 Schwarm verbunden")
@@ -327,7 +328,7 @@ export class GameRuleLogic {
         moves.push(f.coordinates)
       }
     }
-    
+
     console.log("Possible Moves outcome: ", moves)
     return moves
   }
