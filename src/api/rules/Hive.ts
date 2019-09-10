@@ -8,6 +8,7 @@ export const ALL_DIRECTIONS: LineDirection[] = ['HORIZONTAL', 'VERTICAL', 'RISIN
 export const FIELDSIZE = 9 // diameter of the hexagon board
 export const SHIFT = 4 // floor(FIELDSIZE/2)
 export const FIELDPIXELWIDTH = 34
+export const STARTING_PIECES = "QSSSGGBBAAA"
 
 export class GameState {
   // REMEMBER to extend clone method when adding attributes here!
@@ -29,6 +30,8 @@ export class GameState {
     this.currentPlayerColor = 'RED'
     this.turn = 0
     this.board = new Board()
+    this.undeployedRedPieces = Array.from(STARTING_PIECES).map(c => GameState.parsePiece('RED', c))
+    this.undeployedBluePieces = Array.from(STARTING_PIECES).map(c => GameState.parsePiece('BLUE', c))
     this.has_result = false
   }
 
@@ -55,6 +58,17 @@ export class GameState {
       gs.lastMove = Move.fromJSON(json.lastMove[0])
     }
     return gs
+  }
+
+  static parsePiece(pc: PLAYERCOLOR, c: String): Piece {
+    switch(c) {
+      case 'Q': return new Piece('BEE', pc)
+      case 'B': return new Piece('BEETLE', pc)
+      case 'G': return new Piece('GRASSHOPPER', pc)
+      case 'S': return new Piece('SPIDER', pc)
+      case 'A': return new Piece('ANT', pc)
+      default: throw "Expected piecetype character to be one of Q,B,G,S or A, was: $c"
+    }
   }
 
   clone(): GameState {
@@ -371,6 +385,19 @@ export class Board {
 
   getTopPiece(c: Coordinates): Piece {
     return this.fields[c.arrayCoordinates().x][c.arrayCoordinates().y].stack[this.fields[c.arrayCoordinates().x][c.arrayCoordinates().y].stack.length - 1]
+  }
+
+  getPiecesFor(color: PLAYERCOLOR) {
+    let pieces: Piece[] = []
+    for (let col of this.fields) {
+      for (let f of col) {
+        if (f == null) {
+          continue
+        }
+        pieces.concat(f.stack.filter(p => p.color == color))
+      }
+    }
+    return pieces
   }
 
   countPieces(): integer {

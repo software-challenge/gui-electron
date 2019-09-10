@@ -18,7 +18,8 @@
   "include": [
     "src/api/**/*",
     "src/gui/**/*",
-    "src/viewer/**/*"
+    "src/viewer/**/*",
+    "tests/**/*"
   ],
   "exclude": [
   ],

@@ -152,7 +152,9 @@ export class Viewer {
       let firstAction = actions[0]
       if (firstAction instanceof FieldSelected) {
         let piece = firstAction.coordinates
+        console.log("Get possible moves of selected field", piece)
         let possibleMoves = GameRuleLogic.possibleMoves(state, piece)
+        console.log("result", possibleMoves)
         if (possibleMoves == null) {
           return
         }
