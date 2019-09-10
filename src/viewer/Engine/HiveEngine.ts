@@ -216,7 +216,7 @@ export class SimpleScene extends Phaser.Scene {
   }
 
   insideBoard(c: Coordinates) {
-    return (Math.abs(c.q) <= SHIFT && Math.abs(c.r) <= SHIFT)
+    return (Math.abs(c.q) <= SHIFT && Math.abs(c.r) <= SHIFT && Math.abs(c.s) <= SHIFT)
   }
 
   undeployedPiece(x: number, y: number): Undeployed {
