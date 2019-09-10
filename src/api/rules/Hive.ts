@@ -261,6 +261,10 @@ export class Piece {
       )
     }
   }
+
+  clone() {
+    return new Piece(this.kind, this.color)
+  }
 }
 
 export class Field {
@@ -351,14 +355,15 @@ export class Board {
   clone(): Board {
     let clone = new Board()
     let clonedFields: Field[][] = []
-    this.fields.forEach((row, x) => {
-      if(clonedFields[x] == null) {
-        clonedFields[x] = []
+    for (var x: number = -SHIFT; x <= SHIFT; x++) {
+      clonedFields[x+SHIFT] = []
+      for (var y: number = Math.max(-SHIFT, -x-SHIFT); y <= Math.min(SHIFT, -x+SHIFT); y++) {
+        let field = this.fields[x+SHIFT][y+SHIFT]
+        let clonedStack = []
+        field.stack.forEach(p => clonedStack.push(p.clone()))
+        clonedFields[x+SHIFT][y+SHIFT] = new Field(clonedStack, field.coordinates, field.obstructed)
       }
-      row.forEach(f => {
-        clonedFields[x].push(f != null ? f.clone(): null)
-      })
-    })
+    }
     clone.fields = clonedFields
     return clone
   }

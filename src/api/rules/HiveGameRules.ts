@@ -223,7 +223,6 @@ export class GameRuleLogic {
     }
 
     let clone = board.clone()
-    console.log("connected", clone, clone.getField(from))
     clone.getField(from).stack.pop()
     if (!this.isSwarmConnected(clone)) {
       console.log("Das Feld ist nicht als 1 Schwarm verbunden")
