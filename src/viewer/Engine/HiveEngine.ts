@@ -71,7 +71,60 @@ export class SimpleScene extends Phaser.Scene {
     })
   }
 
-  createFieldGraphic(coordinates: ScreenCoordinates, obstructed: boolean, ownerColor: PLAYERCOLOR, kind: PIECETYPE): FieldGraphics {
+  createPieceSprite(coordinates: ScreenCoordinates, ownerColor: PLAYERCOLOR, kind: PIECETYPE, factor = 1, lift = 0): Phaser.GameObjects.Sprite[] {
+    let sprite = null
+    let color = null
+    let key: string
+    let scale: number
+    let sx = coordinates.x
+    let sy = coordinates.y
+    switch(kind) {
+      case 'ANT':
+        key = 'ant'
+        scale = 0.08
+        break
+      case 'BEE':
+        key = 'bee'
+        scale = 0.1
+        break
+      case 'BEETLE':
+        key = 'beetle'
+        scale = 0.06
+        break
+      case 'GRASSHOPPER':
+        key = 'grasshopper'
+        scale = 0.18
+        break
+      case 'SPIDER':
+        key = 'spider'
+        scale = 0.12
+        break
+    }
+    sprite = this.make.sprite(
+      {
+        key: key,
+        x: sx,
+        y: sy,
+        scale: scale * factor,
+      },
+    )
+    sprite.depth = 20 + lift
+    sprite.setData('fieldType', kind)
+
+    color = this.make.sprite(
+      {
+        key: ownerColor == 'RED' ? 'red' : 'blue',
+        x: sx,
+        y: sy,
+        scale: factor,
+      },
+    )
+    color.depth = 19 + lift
+
+    return [color, sprite]
+  }
+
+  createFieldGraphic(coordinates: ScreenCoordinates, obstructed: boolean, ownerColor: PLAYERCOLOR, kind: PIECETYPE, underlying: [PIECETYPE, PLAYERCOLOR][]): FieldGraphics {
     let background = null
     let sprite = null
     let color = null
@@ -101,50 +154,9 @@ export class SimpleScene extends Phaser.Scene {
       sprite.setData('obstructed', true)
     }
     if (kind != null) {
-      let key: string
-      let scale: number
-      switch(kind) {
-        case 'ANT':
-          key = 'ant'
-          scale = 0.08
-          break
-        case 'BEE':
-          key = 'bee'
-          scale = 0.1
-          break
-        case 'BEETLE':
-          key = 'beetle'
-          scale = 0.06
-          break
-        case 'GRASSHOPPER':
-          key = 'grasshopper'
-          scale = 0.18
-          break
-        case 'SPIDER':
-          key = 'spider'
-          scale = 0.12
-          break
-      }
-      sprite = this.make.sprite(
-        {
-          key: key,
-          x: sx,
-          y: sy,
-          scale: scale,
-        },
-      )
-      sprite.depth = 20
-      sprite.setData('fieldType', kind)
-
-      color = this.make.sprite(
-        {
-          key: ownerColor == 'RED' ? 'red' : 'blue',
-          x: sx,
-          y: sy,
-          scale: 1,
-        },
-      )
-      color.depth = 19
+      let piece = this.createPieceSprite(coordinates, ownerColor, kind)
+      color = piece[0]
+      sprite = piece[1]
     }
 
     if(sprite) {
@@ -152,6 +164,15 @@ export class SimpleScene extends Phaser.Scene {
     }
     if (color) {
       this.allObjects.push(color)
+    }
+
+    let uy = coordinates.y + 64/3
+    let ux = coordinates.x - 64/3
+    for (var i = 0; i < underlying.length; i++) {
+      let u = underlying[i]
+      let piece = this.createPieceSprite(new ScreenCoordinates(ux + (i*(64/3)), uy) , u[1], u[0], 0.4, 3)
+      this.allObjects.push(piece[0])
+      this.allObjects.push(piece[1])
     }
 
 
@@ -165,7 +186,9 @@ export class SimpleScene extends Phaser.Scene {
   // creates needed graphic objects to display the given board and associates them with the board fields.
   createBoardGraphics(board: Board): FieldGraphics[][] {
     // TODO: use map instead of Array.from
-    return Array.from(board.fields, (col, x) => {
+    return Array.from(board.fields, (col,
+
+x) => {
       return Array.from(col, (field, y) => {
         if (field != null) {
           let kind = null
@@ -185,9 +208,9 @@ export class SimpleScene extends Phaser.Scene {
           text.depth = 60
 
           if (field.obstructed) {
-            return this.createFieldGraphic(new ScreenCoordinates(sx, sy), true, null, null)
+            return this.createFieldGraphic(new ScreenCoordinates(sx, sy), true, null, null, [])
           } else {
-            return this.createFieldGraphic(new ScreenCoordinates(sx, sy), false, ownerColor, kind)
+            return this.createFieldGraphic(new ScreenCoordinates(sx, sy), false, ownerColor, kind, field.stack.slice(0, -1).map(p => [p.kind, p.color]))
           }
         }
       })
@@ -198,11 +221,11 @@ export class SimpleScene extends Phaser.Scene {
     let undeployedPieceGraphics: FieldGraphics[][] = []
     undeployedPieceGraphics['RED'] = []
     undeployedRedPieces.forEach((p, i) => {
-      undeployedPieceGraphics['RED'].push(this.createFieldGraphic(new ScreenCoordinates(60, 90 + 64*i), false, 'RED', p.kind))
+      undeployedPieceGraphics['RED'].push(this.createFieldGraphic(new ScreenCoordinates(60, 90 + 64*i), false, 'RED', p.kind, []))
     })
     undeployedPieceGraphics['BLUE'] = []
     undeployedBluePieces.forEach((p, i) => {
-      undeployedPieceGraphics['BLUE'].push(this.createFieldGraphic(new ScreenCoordinates(740, 90 + 64*i), false, 'BLUE', p.kind))
+      undeployedPieceGraphics['BLUE'].push(this.createFieldGraphic(new ScreenCoordinates(740, 90 + 64*i), false, 'BLUE', p.kind, []))
     })
     return undeployedPieceGraphics
   }
