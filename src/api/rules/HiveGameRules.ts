@@ -3,7 +3,7 @@ import { ArrayCoordinates, Board, Coordinates, Field, GameState, Move, PIECETYPE
 export class GameRuleLogic {
 
   static getDirections(c: Coordinates): Coordinates[] {
-    return[
+    return [
       new Coordinates(c.q + 1, c.r - 1, c.s + 0),
       new Coordinates(c.q + 1, c.r + 0, c.s - 1),
       new Coordinates(c.q + 0, c.r + 1, c.s - 1),
@@ -83,7 +83,7 @@ export class GameRuleLogic {
     }
 
     // verhindere dass er sich nicht am rand des schwarms bewegt und beispielsweise "jumpt"
-    return shared.length - blocked == 0 || !shared.some(e => e.stack.length > 0)
+    return blocked < 2 || !shared.some(e => e.stack.length > 0)
   }
 
   /** Validates whether nor not the path to the neighbour via adjacent tiles is obstructed or not
@@ -114,7 +114,7 @@ export class GameRuleLogic {
     }
 
     // verhindere dass er sich nicht am rand des schwarms bewegt und beispielsweise "jumpt"
-    return shared.length - blocked == 0 || !shared.some(e => e.stack.length > 0)
+    return blocked < 2 || !shared.some(e => e.stack.length > 0)
   }
 
   static sharedNeighboursOfTwoCoords(board: Board, a: Coordinates, b: Coordinates): Field[] {
