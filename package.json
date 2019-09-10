@@ -7,7 +7,7 @@
   "main": "main.js",
   "scripts": {
     "pretest": "rimraf out && tsc -p tests",
-    "test": "jasmine --config=jasmine.json",
+    "test": "jasmine --config=jasmine.json --reporter=jasmine-ts-console-reporter",
     "start": "yarn install && yarn compile && (test -d server || yarn update-server) && electron .",
     "start-dev": "yarn install && yarn compile && electron . --dev",
     "update-server": "git submodule update --remote && yarn compile-server",
@@ -98,6 +98,7 @@
     "electron-builder": "^20.44.4",
     "jasmine": "^3.4.0",
     "jasmine-console-reporter": "^3.1.0",
+    "jasmine-ts-console-reporter": "^3.1.1",
     "mocha": "^6.2.0",
     "rimraf": "^2.7.1",
     "ts-node": "^8.3.0",
