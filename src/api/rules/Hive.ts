@@ -250,10 +250,10 @@ export class Field {
   coordinates: Coordinates
   obstructed: boolean
 
-  constructor(stack: Piece[], coordinates: Coordinates) {
+  constructor(stack: Piece[], coordinates: Coordinates, obstructed: boolean = false) {
     this.stack = stack
     this.coordinates = coordinates
-    this.obstructed = false
+    this.obstructed = obstructed
   }
 
   static lift(that: any) {
@@ -312,8 +312,7 @@ export class Board {
             stack.push(Piece.fromJSON(p))
           })
         }
-        b.fields[c.arrayCoordinates().x][c.arrayCoordinates().y] = new Field(stack, c)
-        b.fields[c.arrayCoordinates().x][c.arrayCoordinates().y].obstructed = f.$.obstructed
+        b.fields[c.arrayCoordinates().x][c.arrayCoordinates().y] = new Field(stack, c, f.$.isObstructed == "true")
       })
     })
     return b
