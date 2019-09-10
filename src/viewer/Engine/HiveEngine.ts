@@ -242,14 +242,12 @@ export class SimpleScene extends Phaser.Scene {
   handleClick(event: any) {
     let pos = new ScreenCoordinates(event.position.x - offsetX, event.position.y - offsetY)
     let target = pos.boardCoordinates()
+    let up = this.undeployedPiece(event.position.x, event.position.y)
     if (this.insideBoard(target)) {
       this.fieldClickHandler(target)
-    }
-    let up = this.undeployedPiece(event.position.x, event.position.y)
-    if (up !== null) {
+    } else if (up !== null) {
       this.undeployedClickHandler(up)
-    }
-    else {
+    } else {
       this.outsideClickHandler(target)
     }
   }
