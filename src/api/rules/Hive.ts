@@ -152,10 +152,12 @@ export class ScreenCoordinates {
     // calculate axial coordinates
     let aq = ( Math.sqrt(3)/3 * this.x - 1./3 * this.y ) / FIELDPIXELWIDTH
     let ar = (                           2./3 * this.y ) / FIELDPIXELWIDTH
+    // convert to cube coordinates
     let x = aq
     let z = ar
     let y = -x-z
     let cube = new Coordinates(x, y, z)
+    // round to whole integers
     return ScreenCoordinates.round(cube.q, cube.r, cube.s)
   }
 
