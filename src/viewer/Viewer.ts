@@ -78,6 +78,8 @@ export class Viewer {
 
   // user interacted somehow
   userHasInteracted(state: GameState, actions: InteractionEvent[], move_callback: (move: Move) => void, interaction: InteractionEvent) {
+    console.log("%cUser interacted", "color: #006400")
+
     actions = actions.concat(interaction)
 
     if (interaction == 'cancelled') {
@@ -119,7 +121,7 @@ export class Viewer {
 
   // initialize ui to show the user where interaction is possible
   requestUserInteraction(state: GameState, actions: InteractionEvent[], move_callback: (move: Move) => void) {
-
+    console.log("%cRequesting User-Interaction", "color: #006400")
     // figure out which interactions are currently needed and put them into uistate
     let shouldSelectPiece: boolean = actions.length == 0
     let shouldSelectTarget: boolean = actions.length == 1

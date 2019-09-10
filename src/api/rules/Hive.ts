@@ -182,7 +182,6 @@ export class Coordinates {
     }
     if (!GameRuleLogic.isOnBoard(this)) {
       console.log("Given coordinates are out of field: {q: " + q + ", r: " + r + ", s: " + s + "}")
-      return null
     }
   }
 
@@ -263,13 +262,11 @@ export class Field {
       stack.push(new Piece(p.kind, p.color))
     })
 
-    let tmp = new Field(stack, c)
-    tmp.obstructed = that.obstructed
-    return tmp
+    return new Field(stack, c, that.obstructed)
   }
 
   clone(): Field {
-    let f = new Field([], this.coordinates.clone())
+    let f = new Field([], this.coordinates.clone(), this.obstructed)
     this.stack.forEach(e => f.stack.push(new Piece(e.kind, e.color)))
     return f
   }
@@ -340,7 +337,7 @@ export class Board {
         clonedFields[x] = []
       }
       row.forEach(f => {
-        clonedFields[x].push(f.clone())
+        clonedFields[x].push(f != null ? f.clone(): null)
       })
     })
     clone.fields = clonedFields
