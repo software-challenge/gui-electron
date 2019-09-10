@@ -253,25 +253,26 @@ export class GameRuleLogic {
   }
 
   static validateAntMove(board: Board, from: Coordinates, to: Coordinates): boolean {
+    console.log("Ant move validation")
     let swarm = this.getFieldsNextToSwarm(board, from)
-    let visitedFields: Field[] = [board.getField(from)]
-    let touchedFields: Field[] = this.getNeighbours(board, from).filter(e => swarm.some(f => e.coordinates.equal(f.coordinates)))
-    let currentField: Coordinates = from
+    let visitedFields = [board.getField(from)]
+    let index = 0
+    console.log("Felder next 2 swarm: ", swarm)
 
-    // es ist fields.length <= swarm, da from manuell hinzugefügt wurde (+1)
-    while (visitedFields.length + touchedFields.length <= swarm.length && touchedFields.length > 0 && !currentField.equal(to) && !touchedFields.some(e => e.coordinates.equal(to))) {
-      for (let f of this.getNeighbours(board, currentField).filter(e => swarm.some(f => e.coordinates.equal(f.coordinates)))) {
-        if (!visitedFields.some(e => f.coordinates.equal(e.coordinates)) && !touchedFields.some(e => f.coordinates.equal(e.coordinates))) {
-          touchedFields.push(f)
-        }
+    do {
+      visitedFields = visitedFields.concat(this.getNeighbours(board, visitedFields[index].coordinates).filter(e => !visitedFields.some(f => f.coordinates.equal(e.coordinates))
+        && swarm.some(f => e.coordinates.equal(f.coordinates))
+        && !this.isPathToNeighbourObstructed(board, visitedFields[index].coordinates, e.coordinates)))
+      if (visitedFields.some(e => e.coordinates.equal(to))) {
+        console.log("Gültig")
+        return true
       }
+    } while (++index < visitedFields.length)
 
-      let newField = touchedFields.pop()
-      visitedFields.push(newField)
-      currentField = newField.coordinates
-    }
+    console.log("Abbruchbedingung!")
+    console.log("index: ", index, " visitedFields: ", visitedFields)
 
-    return currentField.equal(to) || touchedFields.some(e => e.coordinates.equal(to))
+    return false
   }
 
   static validateBeeMove(board: Board, from: Coordinates, to: Coordinates): boolean {
