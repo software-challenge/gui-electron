@@ -3,15 +3,15 @@ import { GameState, Board, GameRuleLogic, Coordinates } from '../src/api/rules/C
 import { TestHelper } from './testHelper'
 
 describe('logic', function() {
-  it('swarm connect on empty field', function() {
+  it('swarm connect on board with swarm separated by obstructed field', function() {
     let gs = new GameState()
     TestHelper.updateGamestateWithBoard(gs, "" +
                                         "    ----------" +
                                         "   ------------" +
                                         "  --------------" +
                                         " RGBG------------" +
-                                        "--------BQ--------" +
-                                        " ----------------" +
+                                        "----OO--BQ--------" +
+                                        " ----RBRG--------" +
                                         "  --------------" +
                                         "   ------------" +
                                         "    ----------")

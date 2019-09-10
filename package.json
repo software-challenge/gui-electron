@@ -6,7 +6,7 @@
   "repository": "https://github.com/CAU-Kiel-Tech-Inf/socha-gui",
   "main": "main.js",
   "scripts": {
-    "pretest": "yarn compile",
+    "pretest": "rimraf out && tsc -p tests",
     "test": "jasmine --config=jasmine.json",
     "start": "yarn install && yarn compile && (test -d server || yarn update-server) && electron .",
     "start-dev": "yarn install && yarn compile && electron . --dev",

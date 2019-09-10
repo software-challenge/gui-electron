@@ -6,7 +6,7 @@
     "moduleResolution": "node",
     "preserveConstEnums": true,
     "sourceMap": true,
-    "outDir": "out",
+    "outDir": "../out",
     "checkJs": true,
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
@@ -16,9 +16,10 @@
     "noImplicitAny": false
   },
   "include": [
-    "src/api/**/*",
-    "src/gui/**/*",
-    "src/viewer/**/*"
+    "../src/api/**/*",
+    "../src/gui/**/*",
+    "../src/viewer/**/*",
+    "./**/*"
   ],
   "exclude": [
   ],
