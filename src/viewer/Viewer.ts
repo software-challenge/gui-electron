@@ -174,7 +174,7 @@ export class Viewer {
             firstAction.color,
             firstAction.index,
             state.board.fields.map(
-              col => col.map(field => field.coordinates)
+              col => col.filter(f => !f.obstructed).map(field => field.coordinates)
             ).reduce((a, c) => a.concat(c))
           )
         }
@@ -183,14 +183,14 @@ export class Viewer {
           uiState = new SelectSetTargetField(
             firstAction.color,
             firstAction.index,
-            GameRuleLogic.getFieldsNextToSwarm(state.board, null).map(f => f.coordinates)
+            GameRuleLogic.getFieldsNextToSwarm(state.board, null).filter(f => !f.obstructed).map(f => f.coordinates)
           )
         }
         else {
           uiState = new SelectSetTargetField(
             firstAction.color,
             firstAction.index,
-            GameRuleLogic.getFieldsNextToSwarm(state.board, null).map(f => f.coordinates).filter(f => GameRuleLogic.getNeighbours(state.board, f).some(e => e.owner() == state.currentPlayerColor) && !GameRuleLogic.getNeighbours(state.board, f).some(e => e.owner() == state.getOtherPlayer().color))
+            GameRuleLogic.getFieldsNextToSwarm(state.board, null).filter(f => !f.obstructed).map(f => f.coordinates).filter(f => GameRuleLogic.getNeighbours(state.board, f).some(e => e.owner() == state.currentPlayerColor) && !GameRuleLogic.getNeighbours(state.board, f).some(e => e.owner() == state.getOtherPlayer().color))
           )
         }
       }
