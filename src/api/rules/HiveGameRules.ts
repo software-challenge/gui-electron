@@ -75,15 +75,8 @@ export class GameRuleLogic {
       return true
     }
 
-    let blocked = 0
-    for (let tile of shared) {
-      if (tile.obstructed || tile.stack.length > 0) {
-        blocked++
-      }
-    }
-
     // verhindere dass er sich nicht am rand des schwarms bewegt und beispielsweise "jumpt"
-    return !((blocked == 1 || shared.some(e => e.stack.length == 0)) && shared.some(e => e.stack.length > 0))
+    return !(shared.some(e => e.stack.length == 0 && !e.obstructed) && shared.some(e => e.stack.length > 0))
   }
 
   /** Validates whether nor not the path to the neighbour via adjacent tiles is obstructed or not
@@ -106,15 +99,8 @@ export class GameRuleLogic {
       return true
     }
 
-    let blocked = 0
-    for (let tile of shared) {
-      if (tile.obstructed || tile.stack.length > 0 && !except.equal(tile.coordinates)) {
-        blocked++
-      }
-    }
-
     // verhindere dass er sich nicht am rand des schwarms bewegt und beispielsweise "jumpt"
-    return blocked < 2 || !shared.some(e => e.stack.length > 0)
+    return !(shared.some(e => e.stack.length == 0 && !e.obstructed) && shared.some(e => e.stack.length > 0))
   }
 
   static sharedNeighboursOfTwoCoords(board: Board, a: Coordinates, b: Coordinates): Field[] {
