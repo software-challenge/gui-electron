@@ -41,13 +41,13 @@ export class HumanClient extends GenericPlayer implements GameClient {
       if(move.moveType == 'DRAG') {
         xml = xml +
           '<data class="dragmove">' +
-          '<start><x>' + move.fromField.q + '</x><y>' + move.fromField.r + '</y><z>' + move.fromField.s + '</z></start>' +
-          '<destination><x>' + move.toField.q + '</x><y>' + move.toField.r + '</y><z>' + move.toField.s + '</z></destination>'
+          '<start x="' + move.fromField.q + '" y="' + move.fromField.r + '" z="' + move.fromField.s + '"></start>' +
+          '<destination x="' + move.toField.q + '" y="' + move.toField.r + '" z="' + move.toField.s + '"></destination>'
       } else {
         xml = xml +
           '<data class="setmove">' +
           '<piece owner="' + this.state.currentPlayerColor + '" type="' + move.undeployedPiece + '" />' +
-          '<destination><x>' + move.toField.q + '</x><y>' + move.toField.r + '</y><z>' + move.toField.s + '</z></destination>'
+          '<destination x="' + move.toField.q + '" y="' + move.toField.r + '" z="' + move.toField.s + '"></destination>'
       }
       xml = xml + '</data></room>'
       Logger.getLogger().log('HumanClient', 'handleMoveRequest', 'Sending move ' + xml)

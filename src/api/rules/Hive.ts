@@ -348,10 +348,6 @@ export class Board {
     }
   }
 
-  field(c: Coordinates) {
-    return this.fields[c.q][c.r]
-  }
-
   clone(): Board {
     let clone = new Board()
     let clonedFields: Field[][] = []
