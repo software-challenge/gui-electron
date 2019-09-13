@@ -98,7 +98,7 @@ export class GameRuleLogic {
     }
 
     // verhindere dass er sich nicht am rand des schwarms bewegt und beispielsweise "jumpt"
-    return !((shared.some(e => e.stack.length == 0 && !e.obstructed) || shared.length == 1) && shared.some(e => e.stack.length > 0)) || shared.some(e => except.equal(e.coordinates))
+    return !((shared.some(e => e.stack.length == 0 && !e.obstructed) || shared.length == 1) && shared.some(e => e.stack.length > 0)) && !shared.some(e => except.equal(e.coordinates))
   }
 
   static sharedNeighboursOfTwoCoords(board: Board, a: Coordinates, b: Coordinates): Field[] {
@@ -267,20 +267,15 @@ export class GameRuleLogic {
     let swarm = this.getFieldsNextToSwarm(board, from)
     let visitedFields = [board.getField(from)]
     let index = 0
-    console.log("Felder next 2 swarm: ", swarm)
 
     do {
       visitedFields = visitedFields.concat(this.getNeighbours(board, visitedFields[index].coordinates).filter(e => !visitedFields.some(f => f.coordinates.equal(e.coordinates))
         && swarm.some(f => e.coordinates.equal(f.coordinates))
-        && !this.isPathToNeighbourObstructed(board, visitedFields[index].coordinates, e.coordinates)))
+        && !this.isPathToNeighbourObstructedExcept(board, visitedFields[index].coordinates, e.coordinates, from)))
       if (visitedFields.some(e => e.coordinates.equal(to))) {
-        console.log("Gültig")
         return true
       }
     } while (++index < visitedFields.length)
-
-    console.log("Abbruchbedingung!")
-    console.log("index: ", index, " visitedFields: ", visitedFields)
 
     return false
   }
