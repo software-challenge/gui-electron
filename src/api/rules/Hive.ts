@@ -5,8 +5,8 @@ import { Undeployed } from '../../viewer/Engine/HiveEngine';
 export type LineDirection = 'HORIZONTAL' | 'VERTICAL' | 'RISING_DIAGONAL' | 'FALLING_DIAGONAL';
 export const ALL_DIRECTIONS: LineDirection[] = ['HORIZONTAL', 'VERTICAL', 'RISING_DIAGONAL', 'FALLING_DIAGONAL']
 
-export const FIELDSIZE = 9 // diameter of the hexagon board
-export const SHIFT = 4 // floor(FIELDSIZE/2)
+export const FIELDSIZE = 11 // diameter of the hexagon board
+export const SHIFT = 5 // floor(FIELDSIZE/2)
 export const FIELDPIXELWIDTH = 34
 export const STARTING_PIECES = "QSSSGGBBAAA"
 
@@ -47,13 +47,17 @@ export class GameState {
     gs.blue = Player.fromJSON(json.blue[0])
     gs.board = Board.fromJSON(json.board[0])
     gs.undeployedRedPieces = []
-    json.undeployedRedPieces[0].piece.forEach(p => {
-      gs.undeployedRedPieces.push(Piece.fromJSON(p));
-    })
+    if (json.undeployedRedPieces[0].piece != null && typeof json.undeployedRedPieces[0].piece != "undefined") {
+      json.undeployedRedPieces[0].piece.forEach(p => {
+        gs.undeployedRedPieces.push(Piece.fromJSON(p));
+      })
+    }
     gs.undeployedBluePieces = []
-    json.undeployedBluePieces[0].piece.forEach(p => {
-      gs.undeployedBluePieces.push(Piece.fromJSON(p));
-    })
+    if (json.undeployedBluePieces[0].piece != null && typeof json.undeployedRedPieces[0].piece != "undefined") {
+      json.undeployedBluePieces[0].piece.forEach(p => {
+        gs.undeployedBluePieces.push(Piece.fromJSON(p));
+      })
+    }
     if (json.lastMove) {
       gs.lastMove = Move.fromJSON(json.lastMove[0])
     }
@@ -356,6 +360,9 @@ export class Board {
       clonedFields[x + SHIFT] = []
       for (var y: number = Math.max(-SHIFT, -x - SHIFT); y <= Math.min(SHIFT, -x + SHIFT); y++) {
         let field = this.fields[x + SHIFT][y + SHIFT]
+        if (field == null) {
+          continue
+        }
         let clonedStack = []
         field.stack.forEach(p => clonedStack.push(p.clone()))
         clonedFields[x + SHIFT][y + SHIFT] = new Field(clonedStack, field.coordinates, field.obstructed)
