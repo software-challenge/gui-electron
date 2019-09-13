@@ -1,5 +1,5 @@
 require('hazardous')
-const {app, BrowserWindow} = require('electron')
+const { app, BrowserWindow, ipcMain } = require('electron')
 //Ignore warning about third-party AMD drivers on linux
 app.commandLine.appendSwitch('ignore-gpu-blacklist', 'true')
 const path = require('path')
@@ -99,3 +99,8 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.B
+ipcMain.on("showErrorBox", (event, title, message) => {
+  const { dialog } = require('electron')
+  console.log(title, message)
+  dialog.showErrorBox(title, message)
+})

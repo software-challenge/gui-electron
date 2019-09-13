@@ -24,7 +24,7 @@ export class GameManagerWorkerInterface {
     const fork: any = child_process.fork  //disable typechecking, one faulty line causes everything to fail
     console.log('SGC_LOG_PATH:' + process.env.SGC_LOG_PATH)
     //this.worker = child_process.spawn(process.execPath, [path.join(__dirname, '/../asynchronous/GameManagerWorker.js')], { env: { "SGC_LOG_PATH": process.env.SGC_LOG_PATH } })
-    this.backend = portfinder.getPortPromise({port: 12000})
+    this.backend = portfinder.getPortPromise({ port: 12000 })
       .then((port) => {
         return new Backend(port)
       })
@@ -54,9 +54,9 @@ export class GameManagerWorkerInterface {
         .then(r => r.json())
         .catch(retry)
     }, {
-      minTimeout: 150,
-      retries: retries,
-    }).catch(e => Logger.getLogger().logError('GameManagerWorkerInterface', 'getListOfGames', 'Error getting list of games: ' + e, e))
+        minTimeout: 150,
+        retries: retries,
+      }).catch(e => Logger.getLogger().logError('GameManagerWorkerInterface', 'getListOfGames', 'Error getting list of games: ' + e, e))
   }
 
   /**
@@ -73,7 +73,7 @@ export class GameManagerWorkerInterface {
       }),
     }).then(r => {
       return r.json().catch(() => r.text()).then(c => {
-        if(r.ok)
+        if (r.ok)
           return c
         else
           throw c
@@ -92,7 +92,7 @@ export class GameManagerWorkerInterface {
     console.log('Saving replay of game with id ' + gameId + ' to ' + path)
     this.fetchBackend('save-replay', {
       method: 'POST',
-      body: JSON.stringify({gameId: gameId, path: path}),
+      body: JSON.stringify({ gameId: gameId, path: path }),
       headers: new Headers({
         'Content-Type': 'application/json',
       }),
@@ -106,7 +106,7 @@ export class GameManagerWorkerInterface {
    */
   getState(gameId: number, turn: number) {
     return this.fetchBackend(`state?id=${gameId}&turn=${turn}`)
-      .then(r => { let json = r.json(); console.log("DEBUG", r, json); return json  })
+      .then(r => { let json = r.json(); console.log("DEBUG", r, json); return json })
       .then(state => {
         console.log("with state: ", state)
         let gs = GameState.lift(state)
@@ -138,13 +138,22 @@ export class GameManagerWorkerInterface {
         'Content-Type': 'application/json',
       }),
     }).then(response => {
-      Logger.getLogger().log('GameManagerWorkerInterface', 'sendMove', 'Server response: ' + response.text())
+      let text = response.text()
+      Logger.getLogger().log('GameManagerWorkerInterface', 'sendMove', 'Server response: ' + text)
+      text.then(value => {
+        this.getGameServerStatus().then(serverStatus => {
+          if (serverStatus.status == ExecutableStatus.Status.ERROR) {
+            const ipc = require('electron').ipcRenderer
+            ipc.send("showErrorBox", "Server Error", "Nach senden des Moves: \n\n" + value + "\n\nkam es zu folgendem Fehler:\n\n" + serverStatus.error)
+          }
+        })
+      })
       return gameId
     })
   }
 
   stop() {
-    return this.fetchBackend('stop', {method: 'POST'})
+    return this.fetchBackend('stop', { method: 'POST' })
       .then(t => t.text())
       .then(t => Logger.getLogger().log('GameManagerWorkerInterface', 'stop', 'received server message: ' + t))
       .catch(e => Logger.getLogger().logError('GameManagerWorkerInterface', 'stop', 'Error stopping backend: ' + e, e))
