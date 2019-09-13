@@ -1,0 +1,8 @@
+version: 20.0.0
+files:
+  - url: Software-Challenge-GUI-win-20.0.0.exe
+    sha512: 3sW07H6AiPh1PzyJow7KCp5H3ATvFLU/9x8bRFaUYPdfSOo4JOYrku9P4/yyUCNfzEad+d6oce+KM3IKNmKAQA==
+    size: 50913327
+path: Software-Challenge-GUI-win-20.0.0.exe
+sha512: 3sW07H6AiPh1PzyJow7KCp5H3ATvFLU/9x8bRFaUYPdfSOo4JOYrku9P4/yyUCNfzEad+d6oce+KM3IKNmKAQA==
+releaseDate: '2019-09-13T18:04:27.603Z'
