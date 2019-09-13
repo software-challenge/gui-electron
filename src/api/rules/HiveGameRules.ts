@@ -178,8 +178,34 @@ export class GameRuleLogic {
     return false
   }
 
-  static validateMove(board: Board, from: Coordinates, to: Coordinates): boolean {
-    console.log("%cValidiere move from: ", 'color: #f00', "", from, " to: ", to)
+  static validateMove(board: Board, from: Coordinates = null, to: Coordinates = null, state: GameState = null, move: Move = null): boolean {
+    if (move != null) {
+      if (state == null) {
+        console.log("%cValidate SET-Move with insufficient parameters, state required!", 'color: #f00')
+        return false
+      }
+      from = move.fromField
+      to = move.toField
+      board = state.board
+
+      if (move.moveType == "SET") {
+        console.log("%cValidiere SET-move: ", 'color: #f00', move.undeployedPiece, " to: ", to)
+        switch (state.board.countPieces()) {
+          case 0:
+            return this.isOnBoard(to)
+          case 1:
+            return this.getFieldsNextToSwarm(state.board, null).some(e => e.coordinates.equal(to))
+          default:
+            return this.getNeighbours(state.board, to).some(e => e.owner() == state.currentPlayerColor) && !this.getNeighbours(state.board, to).some(e => e.owner() == state.getOtherPlayer().color)
+        }
+      }
+    }
+    else if (from == null || to == null) {
+      console.log("%cValidate Move with insufficient parameters", 'color: #f00')
+      return false
+    }
+
+    console.log("%cValidiere DRAG-move from: ", 'color: #f00', from, " to: ", to)
     if (!this.isOnBoard(from) || !this.isOnBoard(to)) {
       console.log("Korrumpierte Koordinaten gegeben (out of board): ", from, to)
       return false

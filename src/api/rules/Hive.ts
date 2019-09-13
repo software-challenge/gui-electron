@@ -193,11 +193,11 @@ export class Coordinates {
     this.r = r
     this.s = s
     if (Math.round(q + r + s) != 0) {
-      console.log("Given coordinates are corrupted: {q: " + q + ", r: " + r + ", s: " + s + "}")
+      console.log("Given coordinates are corrupted: " + this)
       return null
     }
     if (!GameRuleLogic.isOnBoard(this)) {
-      console.log("Given coordinates are out of field: {q: " + q + ", r: " + r + ", s: " + s + "}")
+      console.log("Given coordinates are out of field: " + this)
     }
   }
 
@@ -230,6 +230,10 @@ export class Coordinates {
 
   clone(): Coordinates {
     return new Coordinates(this.q, this.r, this.s)
+  }
+
+  toString(): string {
+    return "{ q: " + this.q + ", r: " + this.r + ", s: " + this.s + " }"
   }
 }
 
