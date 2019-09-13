@@ -54,14 +54,14 @@ export class GameState {
     json.undeployedBluePieces[0].piece.forEach(p => {
       gs.undeployedBluePieces.push(Piece.fromJSON(p));
     })
-    if(json.lastMove) {
+    if (json.lastMove) {
       gs.lastMove = Move.fromJSON(json.lastMove[0])
     }
     return gs
   }
 
   static parsePiece(pc: PLAYERCOLOR, c: String): Piece {
-    switch(c) {
+    switch (c) {
       case 'Q': return new Piece('BEE', pc)
       case 'B': return new Piece('BEETLE', pc)
       case 'G': return new Piece('GRASSHOPPER', pc)
@@ -92,7 +92,7 @@ export class GameState {
     clone.red = Player.lift(clone.red)
     clone.blue = Player.lift(clone.blue)
     clone.board = Board.lift(clone.board)
-    if(clone.lastMove)
+    if (clone.lastMove)
       clone.lastMove = Move.lift(clone.lastMove)
     return clone
   }
@@ -106,7 +106,7 @@ export class GameState {
   }
 
   getPlayerByColor(color: PLAYERCOLOR) {
-    if(color == 'RED') {
+    if (color == 'RED') {
       return this.red
     } else {
       return this.blue
@@ -119,7 +119,6 @@ export class GameState {
 }
 
 export class ScreenCoordinates {
-
   x: number
   y: number
 
@@ -138,11 +137,11 @@ export class ScreenCoordinates {
     let z_diff = Math.abs(rz - s)
 
     if (x_diff > y_diff && x_diff > z_diff) {
-      rx = -ry-rz
+      rx = -ry - rz
     } else if (y_diff > z_diff) {
-      ry = -rx-rz
+      ry = -rx - rz
     } else {
-      rz = -rx-ry
+      rz = -rx - ry
     }
 
     return new Coordinates(rx, ry, rz)
@@ -150,12 +149,12 @@ export class ScreenCoordinates {
 
   boardCoordinates(): Coordinates {
     // calculate axial coordinates
-    let aq = ( Math.sqrt(3)/3 * this.x - 1./3 * this.y ) / FIELDPIXELWIDTH
-    let ar = (                           2./3 * this.y ) / FIELDPIXELWIDTH
+    let aq = (Math.sqrt(3) / 3 * this.x - 1. / 3 * this.y) / FIELDPIXELWIDTH
+    let ar = (2. / 3 * this.y) / FIELDPIXELWIDTH
     // convert to cube coordinates
     let x = aq
     let z = ar
-    let y = -x-z
+    let y = -x - z
     let cube = new Coordinates(x, y, z)
     // round to whole integers
     return ScreenCoordinates.round(cube.q, cube.r, cube.s)
@@ -167,7 +166,6 @@ export class ScreenCoordinates {
 }
 
 export class ArrayCoordinates {
-
   x: number // first index
   y: number // 2. index of 2d-array representation
 
@@ -181,12 +179,11 @@ export class ArrayCoordinates {
   }
 
   boardCoordinates(): Coordinates {
-    return new Coordinates(this.x - SHIFT, this.y - SHIFT, -(this.x - SHIFT)-(this.y - SHIFT))
+    return new Coordinates(this.x - SHIFT, this.y - SHIFT, -(this.x - SHIFT) - (this.y - SHIFT))
   }
 }
 
 export class Coordinates {
-
   q: number
   r: number
   s: number
@@ -209,8 +206,8 @@ export class Coordinates {
       q: this.q,
       r: this.s
     }
-    let x = FIELDPIXELWIDTH * (Math.sqrt(3.0) * axial.q + Math.sqrt(3.0)/2 * axial.r)
-    let y = FIELDPIXELWIDTH * ( 3.0/2 *           axial.r)
+    let x = FIELDPIXELWIDTH * (Math.sqrt(3.0) * axial.q + Math.sqrt(3.0) / 2 * axial.r)
+    let y = FIELDPIXELWIDTH * (3.0 / 2 * axial.r)
 
     return new ScreenCoordinates(x, y)
   }
@@ -323,7 +320,7 @@ export class Board {
         let y: number = Number(f.$.y)
         let z: number = Number(f.$.z)
         let c: Coordinates = new Coordinates(x, y, z)
-        if(b.fields[c.arrayCoordinates().x] == null) {
+        if (b.fields[c.arrayCoordinates().x] == null) {
           b.fields[c.arrayCoordinates().x] = []
         }
         let stack = []
@@ -341,9 +338,9 @@ export class Board {
   constructor() {
     this.fields = []
     for (var x: number = -SHIFT; x <= SHIFT; x++) {
-      this.fields[x+SHIFT] = []
-      for (var y: number = Math.max(-SHIFT, -x-SHIFT); y <= Math.min(SHIFT, -x+SHIFT); y++) {
-        this.fields[x+SHIFT][y+SHIFT] = new Field([], new Coordinates(x, y, -x-y))
+      this.fields[x + SHIFT] = []
+      for (var y: number = Math.max(-SHIFT, -x - SHIFT); y <= Math.min(SHIFT, -x + SHIFT); y++) {
+        this.fields[x + SHIFT][y + SHIFT] = new Field([], new Coordinates(x, y, -x - y))
       }
     }
   }
@@ -352,12 +349,12 @@ export class Board {
     let clone = new Board()
     let clonedFields: Field[][] = []
     for (var x: number = -SHIFT; x <= SHIFT; x++) {
-      clonedFields[x+SHIFT] = []
-      for (var y: number = Math.max(-SHIFT, -x-SHIFT); y <= Math.min(SHIFT, -x+SHIFT); y++) {
-        let field = this.fields[x+SHIFT][y+SHIFT]
+      clonedFields[x + SHIFT] = []
+      for (var y: number = Math.max(-SHIFT, -x - SHIFT); y <= Math.min(SHIFT, -x + SHIFT); y++) {
+        let field = this.fields[x + SHIFT][y + SHIFT]
         let clonedStack = []
         field.stack.forEach(p => clonedStack.push(p.clone()))
-        clonedFields[x+SHIFT][y+SHIFT] = new Field(clonedStack, field.coordinates, field.obstructed)
+        clonedFields[x + SHIFT][y + SHIFT] = new Field(clonedStack, field.coordinates, field.obstructed)
       }
     }
     clone.fields = clonedFields
@@ -369,7 +366,7 @@ export class Board {
     let clone = new Board()
     let clonedFields: Field[][] = []
     that.fields.forEach((row, x) => {
-      if(clonedFields[x] == null) {
+      if (clonedFields[x] == null) {
         clonedFields[x] = []
       }
       row.forEach((f, y) => {
@@ -437,17 +434,16 @@ export class Board {
 
 export type PLAYERCOLOR = 'RED' | 'BLUE'
 
-
 export class Player {
   // REMEMBER to extend clone method when adding attributes here!
   displayName: string
   color: PLAYERCOLOR
 
   static ColorFromString(s: string): PLAYERCOLOR {
-    if(s.match(/RED/i)) {
+    if (s.match(/RED/i)) {
       return 'RED'
     }
-    if(s.match(/BLUE/i)) {
+    if (s.match(/BLUE/i)) {
       return 'BLUE'
     }
     throw 'Unknown color value: ' + s
@@ -504,8 +500,8 @@ export class Move {
     let q = parseInt(json.$.x)
     let r = parseInt(json.$.y)
     return new Move(
-      new Coordinates(q, r, Coordinates.calcS(q,r)),
-      new Coordinates(q, r, Coordinates.calcS(q,r)),
+      new Coordinates(q, r, Coordinates.calcS(q, r)),
+      new Coordinates(q, r, Coordinates.calcS(q, r)),
     )
   }
 
@@ -579,7 +575,6 @@ export class SelectSetTargetField extends MoveInput {
     this.selectableFields = selectable
   }
 }
-
 
 // user has completed the input of a move and may start over or send the move
 export class FinishMove extends MoveInput {

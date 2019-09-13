@@ -4,7 +4,6 @@ import { GenericPlayer } from './PlayerClient'
 
 import { AsyncApi } from './AsyncApi'
 
-
 import { Logger } from '../Logger'
 
 //const dialog = remote.dialog;
@@ -32,13 +31,13 @@ export class HumanClient extends GenericPlayer implements GameClient {
     })
   }
 
-  handleMoveRequest = async function() {
+  handleMoveRequest = async function () {
     Logger.getLogger().log('HumanClient', 'handleMoveRequest', 'handling move request')
     console.log('move request for game', this.gameId)
 
     AsyncApi.lodgeActionRequest(this.gameId, this.state.clone(), (move: Move) => {
       var xml: string = '<room roomId="' + this.roomId + '">'
-      if(move.moveType == 'DRAG') {
+      if (move.moveType == 'DRAG') {
         xml = xml +
           '<data class="dragmove">' +
           '<start x="' + move.fromField.q + '" y="' + move.fromField.r + '" z="' + move.fromField.s + '"></start>' +
@@ -61,7 +60,7 @@ export class HumanClient extends GenericPlayer implements GameClient {
   }
 
   stop() {
-    const stop = async function() {
+    const stop = async function () {
       Logger.getLogger().log('HumanClient', 'stop', 'Human player stopped')
     }.bind(this)
     return stop()

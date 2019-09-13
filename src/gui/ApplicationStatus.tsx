@@ -35,13 +35,13 @@ export class ApplicationStatus extends React.Component<{}, State> {
   }
 
   private updateCheckStatus(newStatus: CheckStatus): void {
-    this.setState({checkStatus: newStatus})
+    this.setState({ checkStatus: newStatus })
   }
 
   startCheck(): void {
     this.updateCheckStatus('Checking')
     this.checkServer().then(result => {
-      this.setState({serverReachable: result})
+      this.setState({ serverReachable: result })
       this.updateCheckStatus('Completed')
     }).catch(error => {
       this.pushError('Error while checking: ' + error)
@@ -52,7 +52,7 @@ export class ApplicationStatus extends React.Component<{}, State> {
   checkServer(): Promise<boolean> {
     console.log('checking server')
     return Api.getGameManager().getGameServerStatus().then(serverInfo => {
-      if(serverInfo.status != ExecutableStatus.Status.RUNNING) {
+      if (serverInfo.status != ExecutableStatus.Status.RUNNING) {
         this.pushError(serverInfo)
         return false
       } else {

@@ -46,7 +46,7 @@ export class Server extends EventEmitter {
     this.port = port
     this.logbuffer = ''
     setInterval(() => {
-      if(this.logbuffer != '') {
+      if (this.logbuffer != '') {
         Logger.getLogger().log('server', 'stdout', this.logbuffer)
         this.logbuffer = ''
       }
@@ -57,21 +57,21 @@ export class Server extends EventEmitter {
       try {
         this.on('stdout', s => {
           this.logbuffer += s + '\n'
-          if(/ClientManager running/.test(s)) {
+          if (/ClientManager running/.test(s)) {
             log('Server ready')
             resolve()
           }
 
-          if(/sc.server.network.NewClientListener/.test(s)) {
+          if (/sc.server.network.NewClientListener/.test(s)) {
             this.emit('newclient')
           }
         })
-      } catch(e) {
+      } catch (e) {
         reject(e)
       }
     })
 
-    if(autostart) {
+    if (autostart) {
       this.start()
     }
   }
@@ -93,7 +93,7 @@ export class Server extends EventEmitter {
     // NOTE that the path will be different when the app is distributed!
     const cwd = path.join(__dirname, '..', '..', '..', SERVER_CWD)
     Logger.getLogger().log('Server', 'start', 'starting ' + SERVER_NAME + ' in ' + cwd + ', Port: ' + this.port)
-    this.process = child_process.spawn('java', ['-jar', SERVER_NAME, '--port', this.port.toString()], {cwd: cwd})
+    this.process = child_process.spawn('java', ['-jar', SERVER_NAME, '--port', this.port.toString()], { cwd: cwd })
     this.process.stderr.on('data', (data) => {
       log('Server stderr: ' + data)
       this.stderr.push(data)
@@ -115,7 +115,7 @@ export class Server extends EventEmitter {
   }
 
   stop() {
-    if(this.process != null) {
+    if (this.process != null) {
       Logger.getLogger().log('Server', 'stop', 'Stopping server. Current Status: ' + ExecutableStatus.toString(this.getStatus()) + ' current pid: ' + this.process.pid)
 
       this.process.stdin.pause()
@@ -127,7 +127,6 @@ export class Server extends EventEmitter {
       treekill(pid)
 
       this.setStatus(ExecutableStatus.Status.EXITED)
-
 
       this.process = null
       Logger.getLogger().log('Server', 'stop', 'terminated')
@@ -146,5 +145,4 @@ export class Server extends EventEmitter {
   getStatus(): ExecutableStatus.Status {
     return this.status
   }
-
 }

@@ -1,7 +1,6 @@
 import { ArrayCoordinates, Board, Coordinates, Field, GameState, Move, PIECETYPE, PLAYERCOLOR, SHIFT } from './Hive'
 
 export class GameRuleLogic {
-
   static getDirections(c: Coordinates): Coordinates[] {
     return [
       new Coordinates(c.q + 1, c.r - 1, c.s + 0),
@@ -32,7 +31,6 @@ export class GameRuleLogic {
   static isQueenBlocked(board: Board, color: PLAYERCOLOR): boolean {
     return !this.getNeighbours(board, this.getQueen(board, color).coordinates).some(field => field.stack == null)
   }
-
 
   static findPiecesOfTypeAndPlayer(board: Board, type: PIECETYPE, color: PLAYERCOLOR): Field[] {
     return this.getFieldsWithPiece(board).filter(e => e.stack.some(p => p.kind == type && p.color == color))

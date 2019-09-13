@@ -52,7 +52,7 @@ export class Viewer {
       console.log('should render same state, doing nothing')
       return
     } else {
-      console.log('rendering new state', {ui: state.uiState, turn: state.gameState.turn})
+      console.log('rendering new state', { ui: state.uiState, turn: state.gameState.turn })
     }
 
     this.engine.clearUI()

@@ -116,7 +116,6 @@ export class GameManagerWorkerInterface {
       })
   }
 
-
   /**
    * Requests the status of a given game
    */
@@ -170,5 +169,4 @@ export class GameManagerWorkerInterface {
         return Promise.reject(e)
       })
   }
-
 }
