@@ -27,6 +27,7 @@ script:
 
 before_deploy:
   - yarn compile-server
+  - yarn version --patch
   - yarn release
 
 deploy:
