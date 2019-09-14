@@ -84,6 +84,10 @@ export class ObserverClient extends GenericClient {
               switch(decoded.room.data[0]['$'].class) {
                 case 'memento':
                   const state = decoded.room.data[0].state[0]
+                  if (state == null || typeof state == "undefined") {
+                    const ipc = require('electron').ipcRenderer
+                    ipc.send("showErrorBox", "Server antwortet nicht", "Der Server hat eine ungültige Antwort gesendet, wahrscheinlich ist er gestorben...")
+                  }
                   const gs = GameState.fromJSON(state)
                   this.emit('state', gs)
                   break

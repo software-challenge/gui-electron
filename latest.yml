@@ -1,0 +1,8 @@
+version: 20.0.0-beta
+files:
+  - url: Software-Challenge-GUI-win-20.0.0-beta.exe
+    sha512: f9bbXEL0ABruPaRMTAZhofp6B9OesM8vj7L2KsPcubdIoB14LPIwDukkQ+e9Q8qkr8+UEqkpZx9RcIjV81/Acg==
+    size: 50924736
+path: Software-Challenge-GUI-win-20.0.0-beta.exe
+sha512: f9bbXEL0ABruPaRMTAZhofp6B9OesM8vj7L2KsPcubdIoB14LPIwDukkQ+e9Q8qkr8+UEqkpZx9RcIjV81/Acg==
+releaseDate: '2019-09-14T07:26:59.856Z'

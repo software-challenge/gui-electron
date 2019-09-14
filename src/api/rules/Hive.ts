@@ -1,11 +1,14 @@
 import * as deepEqual from 'deep-equal'
+import { GameRuleLogic } from './HiveGameRules';
+import { Undeployed } from '../../viewer/Engine/HiveEngine';
 
 export type LineDirection = 'HORIZONTAL' | 'VERTICAL' | 'RISING_DIAGONAL' | 'FALLING_DIAGONAL';
 export const ALL_DIRECTIONS: LineDirection[] = ['HORIZONTAL', 'VERTICAL', 'RISING_DIAGONAL', 'FALLING_DIAGONAL']
 
-export const FIELDSIZE = 9 // diameter of the hexagon board
-export const SHIFT = 4 // floor(FIELDSIZE/2)
+export const FIELDSIZE = 11 // diameter of the hexagon board
+export const SHIFT = 5 // floor(FIELDSIZE/2)
 export const FIELDPIXELWIDTH = 34
+export const STARTING_PIECES = "QSSSGGBBAAA"
 
 export class GameState {
   // REMEMBER to extend clone method when adding attributes here!
@@ -17,6 +20,8 @@ export class GameState {
   board: Board
   has_result: boolean
   lastMove: Move
+  undeployedRedPieces: Piece[]
+  undeployedBluePieces: Piece[]
 
   constructor() {
     this.red = new Player('RED')
@@ -25,6 +30,8 @@ export class GameState {
     this.currentPlayerColor = 'RED'
     this.turn = 0
     this.board = new Board()
+    this.undeployedRedPieces = Array.from(STARTING_PIECES).map(c => GameState.parsePiece('RED', c))
+    this.undeployedBluePieces = Array.from(STARTING_PIECES).map(c => GameState.parsePiece('BLUE', c))
     this.has_result = false
   }
 
@@ -39,10 +46,33 @@ export class GameState {
     gs.red = Player.fromJSON(json.red[0])
     gs.blue = Player.fromJSON(json.blue[0])
     gs.board = Board.fromJSON(json.board[0])
-    if(json.lastMove) {
+    gs.undeployedRedPieces = []
+    if (json.undeployedRedPieces[0].piece != null && typeof json.undeployedRedPieces[0].piece != "undefined") {
+      json.undeployedRedPieces[0].piece.forEach(p => {
+        gs.undeployedRedPieces.push(Piece.fromJSON(p));
+      })
+    }
+    gs.undeployedBluePieces = []
+    if (json.undeployedBluePieces[0].piece != null && typeof json.undeployedRedPieces[0].piece != "undefined") {
+      json.undeployedBluePieces[0].piece.forEach(p => {
+        gs.undeployedBluePieces.push(Piece.fromJSON(p));
+      })
+    }
+    if (json.lastMove) {
       gs.lastMove = Move.fromJSON(json.lastMove[0])
     }
     return gs
+  }
+
+  static parsePiece(pc: PLAYERCOLOR, c: String): Piece {
+    switch (c) {
+      case 'Q': return new Piece('BEE', pc)
+      case 'B': return new Piece('BEETLE', pc)
+      case 'G': return new Piece('GRASSHOPPER', pc)
+      case 'S': return new Piece('SPIDER', pc)
+      case 'A': return new Piece('ANT', pc)
+      default: throw "Expected piecetype character to be one of Q,B,G,S or A, was: $c"
+    }
   }
 
   clone(): GameState {
@@ -53,6 +83,8 @@ export class GameState {
     clone.red = this.red.clone()
     clone.blue = this.blue.clone()
     clone.board = this.board.clone()
+    clone.undeployedRedPieces = this.undeployedRedPieces
+    clone.undeployedBluePieces = this.undeployedBluePieces
     clone.has_result = this.has_result
     return clone
   }
@@ -64,7 +96,7 @@ export class GameState {
     clone.red = Player.lift(clone.red)
     clone.blue = Player.lift(clone.blue)
     clone.board = Board.lift(clone.board)
-    if(clone.lastMove)
+    if (clone.lastMove)
       clone.lastMove = Move.lift(clone.lastMove)
     return clone
   }
@@ -78,7 +110,7 @@ export class GameState {
   }
 
   getPlayerByColor(color: PLAYERCOLOR) {
-    if(color == 'RED') {
+    if (color == 'RED') {
       return this.red
     } else {
       return this.blue
@@ -91,7 +123,6 @@ export class GameState {
 }
 
 export class ScreenCoordinates {
-
   x: number
   y: number
 
@@ -110,25 +141,53 @@ export class ScreenCoordinates {
     let z_diff = Math.abs(rz - s)
 
     if (x_diff > y_diff && x_diff > z_diff) {
-      rx = -ry-rz
+      rx = -ry - rz
     } else if (y_diff > z_diff) {
-      ry = -rx-rz
+      ry = -rx - rz
     } else {
-      rz = -rx-ry
+      rz = -rx - ry
     }
 
     return new Coordinates(rx, ry, rz)
   }
 
   boardCoordinates(): Coordinates {
-    var q = ( 2./3 * this.x                        ) / FIELDPIXELWIDTH
-    var r = (-1./3 * this.x  +  Math.sqrt(3)/3 * this.y) / FIELDPIXELWIDTH
-    return ScreenCoordinates.round(q, r, Coordinates.calcS(q, r))
+    // calculate axial coordinates
+    let aq = (Math.sqrt(3) / 3 * this.x - 1. / 3 * this.y) / FIELDPIXELWIDTH
+    let ar = (2. / 3 * this.y) / FIELDPIXELWIDTH
+    // convert to cube coordinates
+    let x = aq
+    let z = ar
+    let y = -x - z
+    let cube = new Coordinates(x, y, z)
+    // round to whole integers
+    return ScreenCoordinates.round(cube.q, cube.r, cube.s)
+  }
+
+  arrayCoordinates(): ArrayCoordinates {
+    return this.boardCoordinates().arrayCoordinates()
+  }
+}
+
+export class ArrayCoordinates {
+  x: number // first index
+  y: number // 2. index of 2d-array representation
+
+  constructor(x: number, y: number) {
+    if (x < 0 || y < 0 || x > FIELDSIZE - 1 || y > FIELDSIZE - 1) {
+      console.log("Given 2d-coordinates are corrupted: {x: " + x + ", y: " + y + "}")
+      return null
+    }
+    this.x = x
+    this.y = y
+  }
+
+  boardCoordinates(): Coordinates {
+    return new Coordinates(this.x - SHIFT, this.y - SHIFT, -(this.x - SHIFT) - (this.y - SHIFT))
   }
 }
 
 export class Coordinates {
-
   q: number
   r: number
   s: number
@@ -137,16 +196,48 @@ export class Coordinates {
     this.q = q
     this.r = r
     this.s = s
+    if (Math.round(q + r + s) != 0) {
+      console.log("Given coordinates are corrupted: " + this)
+      return null
+    }
+    if (!GameRuleLogic.isOnBoard(this)) {
+      console.log("Given coordinates are out of field: " + this)
+    }
   }
 
   screenCoordinates(): ScreenCoordinates {
-    let x = FIELDPIXELWIDTH * (Math.sqrt(3.0)/2 * this.q - Math.sqrt(3.0)/2 * this.r)
-    let y = FIELDPIXELWIDTH * (-3.0/2 * this.q -  3.0/2 * this.r)
+    let axial = {
+      q: this.q,
+      r: this.s
+    }
+    let x = FIELDPIXELWIDTH * (Math.sqrt(3.0) * axial.q + Math.sqrt(3.0) / 2 * axial.r)
+    let y = FIELDPIXELWIDTH * (3.0 / 2 * axial.r)
+
     return new ScreenCoordinates(x, y)
+  }
+
+  arrayCoordinates(): ArrayCoordinates {
+    return new ArrayCoordinates(this.q + SHIFT, this.r + SHIFT)
   }
 
   static calcS(q: number, r: number): number {
     return -q - r
+  }
+
+  equal(c: Coordinates): boolean {
+    return this.q == c.q && this.r == c.r && this.s == c.s
+  }
+
+  isInLineWith(c: Coordinates): boolean {
+    return this.q - c.q == - this.r + c.r && this.s == c.s || this.q - c.q == - this.s + c.s && this.r == c.r || this.s - c.s == - this.r + c.r && this.q == c.q
+  }
+
+  clone(): Coordinates {
+    return new Coordinates(this.q, this.r, this.s)
+  }
+
+  toString(): string {
+    return "{ q: " + this.q + ", r: " + this.r + ", s: " + this.s + " }"
   }
 }
 
@@ -160,15 +251,36 @@ export class Piece {
     this.kind = kind
     this.color = color
   }
+
+  static fromJSON(json: any): Piece {
+    // TODO its with $ when in gamestate and without when in move...? make consistent!
+    if (json['$']) {
+      return new Piece(
+        json['$']['type'],
+        json['$']['owner']
+      )
+    } else {
+      return new Piece(
+        json['type'],
+        json['owner']
+      )
+    }
+  }
+
+  clone() {
+    return new Piece(this.kind, this.color)
+  }
 }
 
 export class Field {
   stack: Piece[]
   coordinates: Coordinates
+  obstructed: boolean
 
-  constructor(stack: Piece[], coordinates: Coordinates) {
+  constructor(stack: Piece[], coordinates: Coordinates, obstructed: boolean = false) {
     this.stack = stack
     this.coordinates = coordinates
+    this.obstructed = obstructed
   }
 
   static lift(that: any) {
@@ -177,7 +289,21 @@ export class Field {
     that.stack.forEach(p => {
       stack.push(new Piece(p.kind, p.color))
     })
-    return new Field(stack, c)
+
+    return new Field(stack, c, that.obstructed)
+  }
+
+  clone(): Field {
+    let f = new Field([], this.coordinates.clone(), this.obstructed)
+    this.stack.forEach(e => f.stack.push(new Piece(e.kind, e.color)))
+    return f
+  }
+
+  owner(): PLAYERCOLOR {
+    if (this.stack.length == 0) {
+      return null
+    }
+    return this.stack[this.stack.length - 1].color
   }
 }
 
@@ -186,22 +312,32 @@ export class Board {
   public fields: Field[][]
 
   static fromJSON(json: any): Board {
+    // weil ich die nulls brauche
     const b = new Board()
     b.fields = []
+    for (let t = 0; t < FIELDSIZE; t++) {
+      b.fields[t] = []
+      for (let tt = 0; tt < FIELDSIZE; tt++) {
+        b.fields[t].push(null)
+      }
+    }
+
     json.fields.forEach(row => {
       row.field.forEach(f => {
         let x: number = Number(f.$.x)
         let y: number = Number(f.$.y)
         let z: number = Number(f.$.z)
-        let obstructed = f.$.obstructed
-        if(b.fields[x+SHIFT] == null) {
-          b.fields[x+SHIFT] = []
+        let c: Coordinates = new Coordinates(x, y, z)
+        if (b.fields[c.arrayCoordinates().x] == null) {
+          b.fields[c.arrayCoordinates().x] = []
         }
         let stack = []
         if (f.piece) {
-          stack.push(new Piece('BEE', 'RED'))
+          f.piece.forEach(p => {
+            stack.push(Piece.fromJSON(p))
+          })
         }
-        b.fields[x+SHIFT][y+SHIFT] = new Field(stack, new Coordinates(x, y, z))
+        b.fields[c.arrayCoordinates().x][c.arrayCoordinates().y] = new Field(stack, c, f.$.isObstructed == "true")
       })
     })
     return b
@@ -210,28 +346,28 @@ export class Board {
   constructor() {
     this.fields = []
     for (var x: number = -SHIFT; x <= SHIFT; x++) {
-      this.fields[x+SHIFT] = []
-      for (var y: number = Math.max(-SHIFT, -x-SHIFT); y <= Math.min(SHIFT, -x+SHIFT); y++) {
-        this.fields[x+SHIFT][y+SHIFT] = new Field([], new Coordinates(x, y, -x-y))
+      this.fields[x + SHIFT] = []
+      for (var y: number = Math.max(-SHIFT, -x - SHIFT); y <= Math.min(SHIFT, -x + SHIFT); y++) {
+        this.fields[x + SHIFT][y + SHIFT] = new Field([], new Coordinates(x, y, -x - y))
       }
     }
-  }
-
-  field(c: Coordinates) {
-    return this.fields[c.q][c.r]
   }
 
   clone(): Board {
     let clone = new Board()
     let clonedFields: Field[][] = []
-    this.fields.forEach((row, x) => {
-      if(clonedFields[x] == null) {
-        clonedFields[x] = []
+    for (var x: number = -SHIFT; x <= SHIFT; x++) {
+      clonedFields[x + SHIFT] = []
+      for (var y: number = Math.max(-SHIFT, -x - SHIFT); y <= Math.min(SHIFT, -x + SHIFT); y++) {
+        let field = this.fields[x + SHIFT][y + SHIFT]
+        if (field == null) {
+          continue
+        }
+        let clonedStack = []
+        field.stack.forEach(p => clonedStack.push(p.clone()))
+        clonedFields[x + SHIFT][y + SHIFT] = new Field(clonedStack, field.coordinates, field.obstructed)
       }
-      row.forEach(f => {
-        clonedFields[x].push(f)
-      })
-    })
+    }
     clone.fields = clonedFields
     return clone
   }
@@ -241,7 +377,7 @@ export class Board {
     let clone = new Board()
     let clonedFields: Field[][] = []
     that.fields.forEach((row, x) => {
-      if(clonedFields[x] == null) {
+      if (clonedFields[x] == null) {
         clonedFields[x] = []
       }
       row.forEach((f, y) => {
@@ -253,10 +389,61 @@ export class Board {
     clone.fields = clonedFields
     return clone
   }
+
+  getField(c: Coordinates): Field {
+    if (!GameRuleLogic.isOnBoard(c) || this.fields.length <= c.arrayCoordinates().x || c.arrayCoordinates().x < 0 || this.fields[c.arrayCoordinates().x].length <= c.arrayCoordinates().y || c.arrayCoordinates().y < 0) {
+      return null
+    }
+    return this.fields[c.arrayCoordinates().x][c.arrayCoordinates().y]
+  }
+
+  getTopPiece(c: Coordinates): Piece {
+    return this.fields[c.arrayCoordinates().x][c.arrayCoordinates().y].stack[this.fields[c.arrayCoordinates().x][c.arrayCoordinates().y].stack.length - 1]
+  }
+
+  getPiecesFor(color: PLAYERCOLOR) {
+    let pieces: Piece[] = []
+    for (let col of this.fields) {
+      for (let f of col) {
+        if (f == null) {
+          continue
+        }
+        pieces.concat(f.stack.filter(p => p.color == color))
+      }
+    }
+    return pieces
+  }
+
+  countPieces(): integer {
+    let placedPieces = 0
+    for (let col of this.fields) {
+      for (let f of col) {
+        if (f == null) {
+          continue
+        }
+        placedPieces += f.stack.length
+      }
+    }
+
+    return placedPieces
+  }
+
+  countFields(): integer {
+    let occupiedFields = 0
+    for (let col of this.fields) {
+      for (let f of col) {
+        if (f == null) {
+          continue
+        }
+        occupiedFields += f.stack.length > 0 ? 1 : 0
+      }
+    }
+
+    return occupiedFields
+  }
 }
 
 export type PLAYERCOLOR = 'RED' | 'BLUE'
-
 
 export class Player {
   // REMEMBER to extend clone method when adding attributes here!
@@ -264,10 +451,10 @@ export class Player {
   color: PLAYERCOLOR
 
   static ColorFromString(s: string): PLAYERCOLOR {
-    if(s.match(/RED/i)) {
+    if (s.match(/RED/i)) {
       return 'RED'
     }
-    if(s.match(/BLUE/i)) {
+    if (s.match(/BLUE/i)) {
       return 'BLUE'
     }
     throw 'Unknown color value: ' + s
@@ -301,14 +488,21 @@ export class Player {
   }
 }
 
-export type Direction = 'UP' | 'UP_RIGHT' | 'RIGHT' | 'DOWN_RIGHT' | 'DOWN' | 'DOWN_LEFT' | 'LEFT' | 'UP_LEFT';
-
+export type MOVETYPE = 'SET' | 'DRAG'
 export class Move {
   readonly fromField: Coordinates
+  readonly undeployedPiece: PIECETYPE
   readonly toField: Coordinates
+  readonly moveType: MOVETYPE
 
-  constructor(fromField: Coordinates, toField: Coordinates) {
-    this.fromField = fromField
+  constructor(fromFieldOrPiece: Coordinates | PIECETYPE, toField: Coordinates) {
+    if (fromFieldOrPiece instanceof Coordinates) {
+      this.moveType = 'DRAG'
+      this.fromField = fromFieldOrPiece
+    } else {
+      this.moveType = 'SET'
+      this.undeployedPiece = fromFieldOrPiece
+    }
     this.toField = toField
   }
 
@@ -317,8 +511,8 @@ export class Move {
     let q = parseInt(json.$.x)
     let r = parseInt(json.$.y)
     return new Move(
-      new Coordinates(q, r, Coordinates.calcS(q,r)),
-      new Coordinates(q, r, Coordinates.calcS(q,r)),
+      new Coordinates(q, r, Coordinates.calcS(q, r)),
+      new Coordinates(q, r, Coordinates.calcS(q, r)),
     )
   }
 
@@ -355,30 +549,41 @@ class MoveInput {
   }
 }
 
-// user should select a fish, this is the first thing to input a new move
-export class SelectFish extends MoveInput {
+// user should select a piece, this is the first thing to input a new move
+export class SelectPiece extends MoveInput {
   readonly selectableFieldCoordinates: Coordinates[]
+  readonly undeployedColor: PLAYERCOLOR
 
-  constructor(selectable: Coordinates[]) {
+  constructor(selectable: Coordinates[], color: PLAYERCOLOR) {
     super(false, false)
     this.selectableFieldCoordinates = selectable
+    this.undeployedColor = color
   }
 }
 
-export interface DirectionWithCoordinates {
-  direction: Direction
-  target: Coordinates
-}
-
-// user should select a target direction to move, this is the second thing to input a new move
-export class SelectTargetDirection extends MoveInput {
+// user should select a target field to move a piece which is already on the board
+export class SelectDragTargetField extends MoveInput {
   readonly origin: Coordinates
-  readonly selectableDirections: DirectionWithCoordinates[]
+  readonly selectableFields: Coordinates[]
 
-  constructor(o: Coordinates, selectable: DirectionWithCoordinates[]) {
+  constructor(o: Coordinates, selectable: Coordinates[]) {
     super(false, false)
     this.origin = o
-    this.selectableDirections = selectable
+    this.selectableFields = selectable
+  }
+}
+
+// user should select a target field to put a piece from the undeployed pieces
+export class SelectSetTargetField extends MoveInput {
+  readonly color: PLAYERCOLOR
+  readonly index: number
+  readonly selectableFields: Coordinates[]
+
+  constructor(color: PLAYERCOLOR, index: number, selectable: Coordinates[]) {
+    super(false, false)
+    this.color = color
+    this.index = index
+    this.selectableFields = selectable
   }
 }
 
@@ -392,7 +597,7 @@ export class FinishMove extends MoveInput {
 export type None = 'none';
 export type Skip = 'skip'
 
-export type UiState = SelectFish | SelectTargetDirection | FinishMove | Skip | None;
+export type UiState = SelectPiece | SelectSetTargetField | SelectDragTargetField | FinishMove | Skip | None;
 
 // describes a gamestate and possible interactions, the gamestate may be modified to represent an incomplete move
 export class RenderState {
@@ -410,7 +615,7 @@ export class RenderState {
 }
 
 // describes a interface action the user has performed, will be returned by the viewer if the user clicks on something interactive
-export type InteractionEvent = FieldSelected | Sent | Cancelled | Skipped;
+export type InteractionEvent = FieldSelected | UndeployedPieceSelected | Sent | Cancelled | Skipped;
 
 export type Sent = 'sent';
 export type Cancelled = 'cancelled';
@@ -421,5 +626,20 @@ export class FieldSelected {
 
   constructor(c: Coordinates) {
     this.coordinates = c
+  }
+}
+
+export class UndeployedPieceSelected {
+  readonly color: PLAYERCOLOR
+  readonly index: number
+  kind: PIECETYPE
+
+  constructor(target: Undeployed) {
+    this.color = target.color
+    this.index = target.index
+  }
+
+  setKind(kind: PIECETYPE) {
+    this.kind = kind
   }
 }

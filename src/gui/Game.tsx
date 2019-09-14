@@ -1,5 +1,5 @@
 import { remote } from 'electron'
-import { GameResult, GameState, Player, RenderState } from '../api/rules/CurrentGame'
+import { GameResult, GameState, Player, RenderState, GameRuleLogic } from '../api/rules/CurrentGame'
 import * as React from 'react'
 import { Viewer } from '../viewer/Viewer'
 import { Api } from '../api/Api'
@@ -27,7 +27,6 @@ interface State {
 const MAX_PAUSE = 3000
 
 export class Game extends React.Component<{ gameId: number, name: string, isReplay: boolean, settings: AppSettings }, State> {
-
   private viewer: Viewer
   private viewerElement: Element
 
@@ -48,7 +47,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   }
 
   private startViewer(e) {
-    if(!this.viewer) {
+    if (!this.viewer) {
       this.viewer = Api.getViewer()
       this.viewer.animateMoves = this.props.settings.animateMoves
       this.viewer.engine.scene.animateWater = this.props.settings.animateWater
@@ -67,17 +66,17 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   private updateViewer() {
     Api.getGameManager().getGameStatus(this.props.gameId).then(status => {
       const gameOver = this.isGameOver(status)
-      if(gameOver != this.state.isGameOver)
+      if (gameOver != this.state.isGameOver)
         ReactDOM.unstable_batchedUpdates(() => {
-          if(gameOver) {
+          if (gameOver) {
             this.deactivatePlayback(this.state)
-            this.setState({playbackStatus: 'pause'})
+            this.setState({ playbackStatus: 'pause' })
           }
-          this.setState({isGameOver: gameOver, gameResult: status.gameResult})
+          this.setState({ isGameOver: gameOver, gameResult: status.gameResult })
         })
 
       Api.getGameManager().getGameState(this.props.gameId, this.state.turnActive).then((gameState) => {
-        if(this.state.waitingForInput) {
+        if (this.state.waitingForInput) {
           this.interact(status)
         } else {
           this.viewer.render(new RenderState(gameState, 'none'))
@@ -87,7 +86,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   }
 
   componentWillUnmount() {
-    if(this.viewer) {
+    if (this.viewer) {
       this.viewer.stop()
       this.viewer.undock()
     }
@@ -99,7 +98,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
      * from the game manager. This should be the only place where the displayed
      * turn number is received from the game manager. While the component is
      * active, the current turn is stored in the turnActive state. */
-    this.setState({turnActive: Api.getGameManager().getCurrentDisplayStateOnGame(this.props.gameId)})
+    this.setState({ turnActive: Api.getGameManager().getCurrentDisplayStateOnGame(this.props.gameId) })
     this.autoPlay()
     setTimeout(() => this.autoPlay(), 100)
   }
@@ -110,7 +109,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
   private autoPlay() {
     Api.getGameManager().getGameStatus(this.props.gameId).then((status) => {
-      if(!this.isPlaying() && status.gameStatus == 'REQUIRES INPUT') {
+      if (!this.isPlaying() && status.gameStatus == 'REQUIRES INPUT') {
         console.log('Player input required! Automatically starting game...')
         this.playPause()
       }
@@ -122,16 +121,22 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
     this.viewer.requestUserInteraction(state, [], (move) => {
       Logger.getLogger().log('Game', 'interact', `Sending move`)
-      Api.getGameManager().sendMove(this.props.gameId, status.moveRequest.id, move).then(() => {
-        // after sending the move, we want to render it as soon as the server gives out the new game state (because the user should have direct feedback on his move)
-        this.waitForNextStatus(status.numberOfStates, () => this.nextTurn())
-      })
+      if (GameRuleLogic.validateMove(null, null, null, state, move)) {
+        Api.getGameManager().sendMove(this.props.gameId, status.moveRequest.id, move).then(() => {
+          // after sending the move, we want to render it as soon as the server gives out the new game state (because the user should have direct feedback on his move)
+          this.waitForNextStatus(status.numberOfStates, () => this.nextTurn())
+        })
+      }
+      else {
+        const ipc = require('electron').ipcRenderer
+        ipc.send("showErrorBox", "Ungültiger Zug", "Der Zug von " + move.fromField + " nach " + move.toField + " ist ungültig!")
+      }
     })
   }
 
   private waitForNextStatus(currentNumberOfStates: number, callback: () => void) {
     Api.getGameManager().getGameStatus(this.props.gameId).then((status) => {
-      if(status.numberOfStates > currentNumberOfStates) {
+      if (status.numberOfStates > currentNumberOfStates) {
         callback()
       } else {
         setTimeout(() => this.waitForNextStatus(currentNumberOfStates, callback), 100)
@@ -153,18 +158,18 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
         break
       }
     }
-    this.setState({waitingForInput: false, hideStartButton: true, turnActive: newTurn, turnTotal: maxTurn})
+    this.setState({ waitingForInput: false, hideStartButton: true, turnActive: newTurn, turnTotal: maxTurn })
   }
 
   nextTurn(numberOfTurns?: number) {
     const delta = numberOfTurns || 1
     Api.getGameManager().getGameStatus(this.props.gameId).then((status) => {
       ReactDOM.unstable_batchedUpdates(() => {
-        if(status.numberOfStates > this.state.turnActive + 1) {
+        if (status.numberOfStates > this.state.turnActive + 1) {
           this.updateTurn(this.state.turnActive + delta, status.numberOfStates - 1)
         } else {
-          if(this.state.turnActive == status.numberOfStates - 1 && status.gameStatus == 'REQUIRES INPUT' && !this.state.waitingForInput)
-            this.setState({waitingForInput: true})
+          if (this.state.turnActive == status.numberOfStates - 1 && status.gameStatus == 'REQUIRES INPUT' && !this.state.waitingForInput)
+            this.setState({ waitingForInput: true })
         }
       })
     })
@@ -176,10 +181,10 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
   playPause() {
     this.setState(prev => {
-      const next = {...prev}
+      const next = { ...prev }
       next.hideStartButton = true
       next.playbackStatus = this.isPlaying() ? 'pause' : 'play'
-      if(next.playbackStatus == 'play') {
+      if (next.playbackStatus == 'play') {
         this.activatePlayback(next)
       } else {
         this.deactivatePlayback(next)
@@ -191,13 +196,13 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   /** Activates playback on this state
    * NOTE: has to be called inside a setState! */
   activatePlayback(state: State) {
-    if(state.playbackIntervalID)
+    if (state.playbackIntervalID)
       clearInterval(state.playbackIntervalID)
     state.playbackIntervalID = window.setInterval(() => this.nextTurn(), state.playbackSpeed)
   }
 
   deactivatePlayback(state: State) {
-    if(state.playbackIntervalID != null) {
+    if (state.playbackIntervalID != null) {
       clearInterval(state.playbackIntervalID)
       state.playbackIntervalID = null
     }
@@ -209,8 +214,8 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
   setSpeed(newValue: number) {
     this.setState(prev => {
-      let next = {...prev, playbackSpeed: newValue}
-      if(prev.playbackIntervalID)
+      let next = { ...prev, playbackSpeed: newValue }
+      if (prev.playbackIntervalID)
         this.activatePlayback(next)
       // TODO: Pass animationTime to viewer when viewer is react component.
       this.viewer.engine.scene.animationTime = newValue
@@ -219,16 +224,16 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   }
 
   saveReplay() {
-    if(!this.props.isReplay) {
+    if (!this.props.isReplay) {
       dialog.showSaveDialog(
         {
           title: 'Wähle einen Ort zum Speichern des Replays',
           defaultPath: this.props.name + '.xml',
-          filters: [{name: 'Replay-Dateien', extensions: ['xml']}],
+          filters: [{ name: 'Replay-Dateien', extensions: ['xml'] }],
         },
         filename => {
           // dialog returns undefined when user clicks cancel or an array of strings (paths) if user selected a file
-          if(filename) {
+          if (filename) {
             console.log('Attempting to save', filename)
             Api.getGameManager().saveReplayOfGame(this.props.gameId, filename)
           }
@@ -237,51 +242,50 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
     }
   }
 
-
   render() {
-    const {turnActive, turnTotal, playbackSpeed, isGameOver, gameResult, hideStartButton} = this.state
+    const { turnActive, turnTotal, playbackSpeed, isGameOver, gameResult, hideStartButton } = this.state
     this.updateViewer()
 
     return <div id='replay-viewer' ref={(elem) => { this.viewerElement = elem }}>
       {!hideStartButton && !isGameOver &&
-      <GameButton className='overlay' id='start-button' title='Los' onClick={this.playPause.bind(this)} resource='play'/>}
+        <GameButton className='overlay' id='start-button' title='Los' onClick={this.playPause.bind(this)} resource='play' />}
       {isGameOver &&
-      <div className='overlay' id='endscreen'>
-        <h1>Spiel vorbei</h1>
-        <h2>{gameResult.reason}</h2>
-        <h3>{gameResult.winner ?
-          `Gewinner: ${gameResult.winner.displayName} (${gameResult.winner.color == 'RED' ? 'Rot' : 'Blau'})` :
-          'Unentschieden!'}</h3>
-      </div>}
+        <div className='overlay' id='endscreen'>
+          <h1>Spiel vorbei</h1>
+          <h2>{gameResult.reason}</h2>
+          <h3>{gameResult.winner ?
+            `Gewinner: ${gameResult.winner.displayName} (${gameResult.winner.color == 'RED' ? 'Rot' : 'Blau'})` :
+            'Unentschieden!'}</h3>
+        </div>}
       <div className='replay-controls'>
         <div className='button-container'>
           <GameButton title={this.isPlaying() ? 'Pause' : 'Los'} resource={this.isPlaying() ? 'pause' : 'play'}
-                      onClick={this.playPause.bind(this)}/>
+            onClick={this.playPause.bind(this)} />
           <GameButton title='Zug zurück' resource='step-backward' disabled={turnActive < 1}
-                      onClick={e => this.previousTurn(e.shiftKey ? 5 : 1)}/>
+            onClick={e => this.previousTurn(e.shiftKey ? 5 : 1)} />
           <GameButton title='Zug vor' resource='step-forward'
-                      onClick={e => this.nextTurn(e.shiftKey ? 5 : 1)}/>
+            onClick={e => this.nextTurn(e.shiftKey ? 5 : 1)} />
 
           <span className='current-turn'>Zug: {turnActive}</span>
           <input title='Zug'
-                 type='range'
-                 min='0'
-                 max={turnTotal}
-                 value={turnActive}
-                 step='1'
-                 onChange={e => this.updateTurn(Number(e.target.value))}/>
+            type='range'
+            min='0'
+            max={turnTotal}
+            value={turnActive}
+            step='1'
+            onChange={e => this.updateTurn(Number(e.target.value))} />
 
-          <img alt='speed-icon' className='svg-icon speed-icon' src='resources/tachometer.svg'/>
+          <img alt='speed-icon' className='svg-icon speed-icon' src='resources/tachometer.svg' />
           <input title='Abspielgeschwindigkeit'
-                 type='range'
-                 min='0'
-                 max={MAX_PAUSE}
-                 value={MAX_PAUSE - playbackSpeed}
-                 step='100'
-                 onChange={e => this.setSpeed(MAX_PAUSE - Number(e.target.value))}/>
+            type='range'
+            min='0'
+            max={MAX_PAUSE}
+            value={MAX_PAUSE - playbackSpeed}
+            step='100'
+            onChange={e => this.setSpeed(MAX_PAUSE - Number(e.target.value))} />
 
           <GameButton title='Replay speichern' resource='arrow-to-bottom' onClick={this.saveReplay.bind(this)}
-                      className='save'/>
+            className='save' />
         </div>
       </div>
     </div>
@@ -289,8 +293,8 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 }
 
 const GameButton: React.FunctionComponent<React.ButtonHTMLAttributes<HTMLButtonElement> & { resource: string }> = props => {
-  const {resource, ...otherProps} = props
+  const { resource, ...otherProps } = props
   return <button {...otherProps}>
-    <img alt={props.title} className='svg-icon' src={`resources/${resource}.svg`}/>
+    <img alt={props.title} className='svg-icon' src={`resources/${resource}.svg`} />
   </button>
 }

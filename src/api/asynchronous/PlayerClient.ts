@@ -35,6 +35,10 @@ export class GenericPlayer extends GenericClient {
       switch(decoded.room.data[0]['$'].class.trim()) {//Sometimes, extra linebreaks end up here
         case 'memento':
           const state = decoded.room.data[0].state[0]
+          if (state == null || typeof state == "undefined") {
+            const ipc = require('electron').ipcRenderer
+            ipc.send("showErrorBox", "Server antwortet nicht", "Der Server hat eine ungültige Antwort gesendet, wahrscheinlich ist er gestorben...")
+          }
           const gs = GameState.fromJSON(state)
           console.log('handleMessage gameState:', gs)
           this.emit('state', gs)

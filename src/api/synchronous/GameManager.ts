@@ -28,7 +28,7 @@ export class GameManager {
   }
 
   public getGameId(gameName: string): number {
-    this.gameInfos.forEach((value, key, map) => { if(value.name == gameName) return key })
+    this.gameInfos.forEach((value, key, map) => { if (value.name == gameName) return key })
     throw Error('A Game with name \'' + gameName + '\' does not exist!')
   }
 
@@ -103,5 +103,4 @@ export class GameManager {
   public getGameServerStatus() {
     return this.gmwi.getGameServerStatus()
   }
-
 }

@@ -4,7 +4,6 @@ import { GenericPlayer } from './PlayerClient'
 
 import { AsyncApi } from './AsyncApi'
 
-
 import { Logger } from '../Logger'
 
 //const dialog = remote.dialog;
@@ -27,17 +26,30 @@ export class HumanClient extends GenericPlayer implements GameClient {
     })
     this.on('moverequest', this.handleMoveRequest)
     this.on('state', s => this.state = s)
-    //this.on('error', error => dialog.showErrorBox("Fehler menschlicher Spieler", error));
+    this.on('error', error => {
+      Logger.getLogger().log('HumanClient', 'Message-Handler', "Fehler menschlicher Spieler")
+    })
   }
 
-  handleMoveRequest = async function() {
+  handleMoveRequest = async function () {
     Logger.getLogger().log('HumanClient', 'handleMoveRequest', 'handling move request')
     console.log('move request for game', this.gameId)
 
     AsyncApi.lodgeActionRequest(this.gameId, this.state.clone(), (move: Move) => {
-      let xml: string = '<room roomId="' + this.roomId + '">' +
-        '<data class="move" x="' + move.fromField.q + '" y="' + move.fromField.r + '">' +
-        '</data></room>'
+      var xml: string = '<room roomId="' + this.roomId + '">'
+      if (move.moveType == 'DRAG') {
+        xml = xml +
+          '<data class="dragmove">' +
+          '<start x="' + move.fromField.q + '" y="' + move.fromField.r + '" z="' + move.fromField.s + '"></start>' +
+          '<destination x="' + move.toField.q + '" y="' + move.toField.r + '" z="' + move.toField.s + '"></destination>'
+      } else {
+        xml = xml +
+          '<data class="setmove">' +
+          '<piece owner="' + this.state.currentPlayerColor + '" type="' + move.undeployedPiece + '" />' +
+          '<destination x="' + move.toField.q + '" y="' + move.toField.r + '" z="' + move.toField.s + '"></destination>'
+      }
+      xml = xml + '</data></room>'
+      Logger.getLogger().log('HumanClient', 'handleMoveRequest', 'Sending move ' + xml)
       this.writeData(xml)
     })
   }
@@ -48,7 +60,7 @@ export class HumanClient extends GenericPlayer implements GameClient {
   }
 
   stop() {
-    const stop = async function() {
+    const stop = async function () {
       Logger.getLogger().log('HumanClient', 'stop', 'Human player stopped')
     }.bind(this)
     return stop()

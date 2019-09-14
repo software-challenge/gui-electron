@@ -6,7 +6,8 @@ import { Button, ButtonGroup, NavGroup, NavItem, NavTitle, Pane, PaneGroup, Retr
 import { UnicodeIcon } from './generic-components/Components'
 import { Administration } from './Administration'
 import { GameCreation } from './GameCreation'
-import { GameCreationOptions, GameType, Replay } from '../api/rules/GameCreationOptions'
+// XXX only for testing, remove
+import { GameCreationOptions, GameType, PlayerType, Replay } from '../api/rules/GameCreationOptions'
 import { Game } from './Game'
 import { LogConsole } from './LogConsole'
 import { Logger } from '../api/Logger'
@@ -17,9 +18,6 @@ import { loadFromStorage, saveToStorage } from '../helpers/Cache'
 import { GameInfo } from '../api/synchronous/GameInfo'
 import { ExecutableStatus } from '../api/rules/ExecutableStatus'
 import promiseRetry = require('promise-retry')
-
-// XXX only for testing, remove
-import { PlayerType } from '../api/rules/GameCreationOptions'
 
 const dialog = remote.dialog
 const shell = remote.shell
@@ -71,10 +69,10 @@ export class App extends React.Component<any, State> {
         animateWater: v.Type(Boolean),
         logDir: v.Type(String),
       }, {
-        animateMoves: true,
-        animateWater: true,
-        logDir: '.',
-      }),
+          animateMoves: true,
+          animateWater: true,
+          logDir: '.',
+        }),
     }
     Hotfix.init(gco => this.startGameWithOptions(gco))
 
@@ -106,19 +104,19 @@ export class App extends React.Component<any, State> {
       },
       (filenames) => {
         // dialog returns undefined when user clicks cancel or an array of strings (paths) if user selected a file
-        if(filenames && filenames.length > 0 && filenames[0]) {
+        if (filenames && filenames.length > 0 && filenames[0]) {
           //window.localStorage[localStorageProgramPath] = filenames[0]
           console.log('Attempting to load ' + filenames[0])
           let liofs = filenames[0].lastIndexOf('/')
-          if(liofs == -1) {
+          if (liofs == -1) {
             liofs = filenames[0].lastIndexOf('\\')
           }
           let replayName = filenames[0]
-          if(liofs != -1) {
+          if (liofs != -1) {
             replayName = replayName.substring(liofs + 1)
           }
           const liofp = replayName.lastIndexOf('.')
-          if(liofp != -1) {
+          if (liofp != -1) {
             replayName = replayName.substring(0, liofp)
           }
           let gco: Replay = {
@@ -144,11 +142,11 @@ export class App extends React.Component<any, State> {
   }
 
   private toggleMenu() {
-    this.setState({menuRetracted: !this.state.menuRetracted})
+    this.setState({ menuRetracted: !this.state.menuRetracted })
   }
 
   private toggleConsole() {
-    this.setState({consoleRetracted: !this.state.consoleRetracted})
+    this.setState({ consoleRetracted: !this.state.consoleRetracted })
   }
 
   private showGame(gameId: number) {
@@ -182,8 +180,8 @@ export class App extends React.Component<any, State> {
 
   componentDidMount() {
     promiseRetry(retry => Api.getGameManager().getGameServerStatus().then(info => {
-      this.setState({serverPort: info.port})
-      if(info.status == ExecutableStatus.Status.ERROR || info.status == ExecutableStatus.Status.EXITED) {
+      this.setState({ serverPort: info.port })
+      if (info.status == ExecutableStatus.Status.ERROR || info.status == ExecutableStatus.Status.EXITED) {
         Logger.getLogger().logError('App', 'server', 'Server status ' + info.status.toString() + ': ' + info.error, info.error)
         alert('Es gab einen Fehler beim Starten des Game-Servers, das Programm wird wahrscheinlich nicht funktionieren!\n' +
           'Fehler: ' + info.error)
@@ -192,7 +190,7 @@ export class App extends React.Component<any, State> {
   }
 
   changeGameName(e) {
-    if(e.keyCode == 13) {
+    if (e.keyCode == 13) {
       e.preventDefault()
       const newGameName = document.getElementById('game-name').innerText.trim()
       console.log('changing Game name:', newGameName)
@@ -207,46 +205,46 @@ export class App extends React.Component<any, State> {
   }
 
   showHtml(url: string) {
-    return <div style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
+    return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <button className="top-wide" onClick={() => shell.openExternal(url)}>Extern öffnen</button>
-      <iframe style={{flex: 1, border: 0}} src={url}/>
+      <iframe style={{ flex: 1, border: 0 }} src={url} />
     </div>
   }
 
   render() {
     let mainPaneContent
-    switch(this.state.contentState) {
+    switch (this.state.contentState) {
       case AppContent.Administration:
         mainPaneContent =
           <Administration settings={this.state.settings} setter={(newSettings: Partial<AppSettings>) => {
-            this.setState({settings: {...this.state.settings, ...newSettings}},
+            this.setState({ settings: { ...this.state.settings, ...newSettings } },
               () => saveToStorage(appSettingsKey, this.state.settings))
-            if(newSettings.logDir != null)
+            if (newSettings.logDir != null)
               window.localStorage['logDir'] = newSettings.logDir
-          }}/>
+          }} />
         break
       case AppContent.GameCreation:
         mainPaneContent =
-          <GameCreation serverPort={this.state.serverPort} createGame={o => this.startGameWithOptions(o)}/>
+          <GameCreation serverPort={this.state.serverPort} createGame={o => this.startGameWithOptions(o)} />
         break
       case AppContent.GameLive:
         console.log('activeGameId: ' + this.state.activeGameId)
         mainPaneContent =
           <Game gameId={this.state.activeGameId} name={Api.getGameManager().getGameInfo(this.state.activeGameId).name}
-                isReplay={Api.getGameManager().getGameInfo(this.state.activeGameId).isReplay}
-                settings={this.state.settings}/>
+            isReplay={Api.getGameManager().getGameInfo(this.state.activeGameId).isReplay}
+            settings={this.state.settings} />
         break
       case AppContent.Blank:
-        mainPaneContent = <div/>
+        mainPaneContent = <div />
         break
       case AppContent.Error:
-        mainPaneContent = <ErrorPage Title="Schlimmer Fehler" Message="Das Programm ist kaputt."/>
+        mainPaneContent = <ErrorPage Title="Schlimmer Fehler" Message="Das Programm ist kaputt." />
         break
       case AppContent.Rules:
         mainPaneContent = this.showHtml('https://cau-kiel-tech-inf.github.io/socha-enduser-docs/spiele/piranhas/')
         break
       case AppContent.Help:
-        mainPaneContent = this.showHtml('https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che')
+        mainPaneContent = this.showHtml('https://cau-kiel-tech-inf.github.io/socha-enduser-docs/server.html#die-programmoberfl%C3%A4che')
         break
       case AppContent.Quickstart:
         mainPaneContent = this.showHtml('https://cau-kiel-tech-inf.github.io/socha-enduser-docs/getting-started')
@@ -256,7 +254,7 @@ export class App extends React.Component<any, State> {
         break
       case AppContent.Log:
         const logger = Logger.getLogger()
-        mainPaneContent = <div style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
+        mainPaneContent = <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           <button className="top-wide" onClick={() => {
             logger.clearLog()
             this.refreshContent()
@@ -268,15 +266,15 @@ export class App extends React.Component<any, State> {
             width: 'calc(100% - 230px)',
             backgroundColor: '#eee',
           }}>Logdatei: {logger.getLogFilePath()}</div>
-          <iframe style={{flex: 1, border: 0, overflow: 'scroll'}}
-                  src={logger.getLogFilePath()}
-                  onLoad={() => {document.querySelector('iframe').contentWindow.document.querySelector('body').style.overflowY = 'scroll'}}/>
+          <iframe style={{ flex: 1, border: 0, overflow: 'scroll' }}
+            src={logger.getLogFilePath()}
+            onLoad={() => { document.querySelector('iframe').contentWindow.document.querySelector('body').style.overflowY = 'scroll' }} />
         </div>
         break
       case AppContent.GameWaiting:
         mainPaneContent = <div>
           <h1>Warte auf Spielstart</h1>
-          <div id="errors"/>
+          <div id="errors" />
         </div>
         break
       default:
@@ -289,7 +287,7 @@ export class App extends React.Component<any, State> {
                 Discord. Hinweise zur Ursache von Fehlern finden sich im Log, aufrufbar über "Programm-Log" auf der
                 linken Seite.</p>
               <p><a href="https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che"
-                    target="_blank">Bedienungsanleitung (aus der allgemeinen Dokumentation)</a></p>
+                target="_blank">Bedienungsanleitung (aus der allgemeinen Dokumentation)</a></p>
             </div>
           </div>
         break
@@ -301,67 +299,67 @@ export class App extends React.Component<any, State> {
         <Toolbar>
           <ToolbarActions>
             <ButtonGroup>
-              <Button icon="menu" onClick={() => { this.toggleMenu() }} active={!this.state.menuRetracted}/>
+              <Button icon="menu" onClick={() => { this.toggleMenu() }} active={!this.state.menuRetracted} />
             </ButtonGroup>
             {this.state.contentState == AppContent.GameLive ?
               <span id="game-name" contentEditable={/*!Api.getGameManager().isReplay(this.state.activeGame)*/ true}
-                    onKeyDown={this.changeGameName.bind(this)}/> : null}
+                onKeyDown={this.changeGameName.bind(this)} /> : null}
             {this.state.contentState == AppContent.GameLive ?
               <button title="Close Game" className="svg-button close-game"
-                      onClick={() => this.closeGame(this.state.activeGameId)}>
-                <img className="svg-icon" src="resources/x-circled.svg"/>
+                onClick={() => this.closeGame(this.state.activeGameId)}>
+                <img className="svg-icon" src="resources/x-circled.svg" />
               </button> : null}
-            <Button icon="doc-text" onClick={() => { this.toggleConsole() }} pullRight={true}/>
+            <Button icon="doc-text" onClick={() => { this.toggleConsole() }} pullRight={true} />
           </ToolbarActions>
         </Toolbar>
         <Content>
           <PaneGroup>
             <RetractableSidebar retracted={this.state.menuRetracted}>
               <NavGroup>
-                <NavTitle title="Spiele"/>
+                <NavTitle title="Spiele" />
                 <NavItem key="new" onClick={() => this.show(AppContent.GameCreation)}
-                         active={this.state.contentState == AppContent.GameCreation}>
-                  <UnicodeIcon icon="+"/>Neues Spiel
+                  active={this.state.contentState == AppContent.GameCreation}>
+                  <UnicodeIcon icon="+" />Neues Spiel
                 </NavItem>
                 <NavItem key="replay" onClick={() => this.loadReplay()}>
-                  <UnicodeIcon icon="↥"/>Replay laden
+                  <UnicodeIcon icon="↥" />Replay laden
                 </NavItem>
                 {Api.getGameManager().getGameInfos().map(
                   t => (<NavItem key={t.id} onClick={() => this.showGame(t.id)}
-                                 active={this.state.contentState == AppContent.GameLive && this.state.activeGameId == t.id}>
-                      <UnicodeIcon icon="🎳" /><span className="navbarGameTurn" contentEditable={true}>Zug {t.currentTurn} - </span><span className="navbarGameName">{t.name}</span> <span className="navbarGameId">({t.id})</span>
-                      <span className="close-button-container">
+                    active={this.state.contentState == AppContent.GameLive && this.state.activeGameId == t.id}>
+                    <UnicodeIcon icon="🎳" /><span className="navbarGameTurn" contentEditable={true}>Zug {t.currentTurn} - </span><span className="navbarGameName">{t.name}</span> <span className="navbarGameId">({t.id})</span>
+                    <span className="close-button-container">
                       <button title="Close Game" className="svg-button close-game" onClick={e => {
                         this.closeGame(t.id)
                         e.stopPropagation()
                       }}>
-                        <img className="svg-icon" src="resources/x-circled.svg"/></button></span></NavItem>
+                        <img className="svg-icon" src="resources/x-circled.svg" /></button></span></NavItem>
                   ))}
 
-                <NavTitle title="Informationen"/>
+                <NavTitle title="Informationen" />
                 <NavItem key="settings" onClick={() => this.show(AppContent.Administration)}
-                         active={this.state.contentState == AppContent.Administration}>
-                  <UnicodeIcon icon="⚙"/>Einstellungen
+                  active={this.state.contentState == AppContent.Administration}>
+                  <UnicodeIcon icon="⚙" />Einstellungen
                 </NavItem>
                 <NavItem key="rules" onClick={() => this.show(AppContent.Rules)}
-                         active={this.state.contentState == AppContent.Rules}>
-                  <UnicodeIcon icon="❔"/>Spielregeln
+                  active={this.state.contentState == AppContent.Rules}>
+                  <UnicodeIcon icon="❔" />Spielregeln
                 </NavItem>
                 <NavItem key="help" onClick={() => this.show(AppContent.Help)}
-                         active={this.state.contentState == AppContent.Help}>
-                  <UnicodeIcon icon="❔"/>Hilfe
+                  active={this.state.contentState == AppContent.Help}>
+                  <UnicodeIcon icon="❔" />Hilfe
                 </NavItem>
                 <NavItem key="quickstart" onClick={() => this.show(AppContent.Quickstart)}
-                         active={this.state.contentState == AppContent.Quickstart}>
-                  <UnicodeIcon icon="❔"/>Getting Started
+                  active={this.state.contentState == AppContent.Quickstart}>
+                  <UnicodeIcon icon="❔" />Getting Started
                 </NavItem>
                 <NavItem key="javadocs" onClick={() => this.show(AppContent.JavaDocs)}
-                         active={this.state.contentState == AppContent.JavaDocs}>
-                  <UnicodeIcon icon="❔"/>JavaDocs
+                  active={this.state.contentState == AppContent.JavaDocs}>
+                  <UnicodeIcon icon="❔" />JavaDocs
                 </NavItem>
                 <NavItem key="log" onClick={() => this.show(AppContent.Log)}
-                         active={this.state.contentState == AppContent.Log}>
-                  <UnicodeIcon icon="📜"/>Programm-Log
+                  active={this.state.contentState == AppContent.Log}>
+                  <UnicodeIcon icon="📜" />Programm-Log
                 </NavItem>
               </NavGroup>
             </RetractableSidebar>
@@ -369,7 +367,7 @@ export class App extends React.Component<any, State> {
               {mainPaneContent}
             </Pane>
             <RetractableSidebar className="wide" retracted={this.state.consoleRetracted}>
-              {this.state.activeGameId ? <LogConsole gameId={this.state.activeGameId}/> : <div/>}
+              {this.state.activeGameId ? <LogConsole gameId={this.state.activeGameId} /> : <div />}
             </RetractableSidebar>
           </PaneGroup>
         </Content>

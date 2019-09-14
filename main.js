@@ -1,15 +1,62 @@
 require('hazardous')
-const {app, BrowserWindow} = require('electron')
-//Ignore warning about third-party AMD drivers on linux
+const { app, BrowserWindow, ipcMain, dialog } = require('electron')
+const { autoUpdater } = require('electron-updater')
+// Ignore warning about third-party AMD drivers on linux
 app.commandLine.appendSwitch('ignore-gpu-blacklist', 'true')
 const path = require('path')
 const url = require('url')
 const fs = require('fs')
+
+autoUpdater.autoDownload = false
+
+function appUpdater() {
+  autoUpdater.on('error', (error) => {
+    dialog.showErrorBox('Error: ', error == null ? "unknown" : (error.stack || error).toString())
+  })
+
+  autoUpdater.on('checking-for-update', () => console.log('checking-for-update'));
+
+  autoUpdater.on('update-available', () => {
+    dialog.showMessageBox({
+      type: 'info',
+      title: 'Update verfügbar',
+      message: 'Es wurde ein Update gefunden, welches neue Features oder Bugfixes enthalten kann.\nMehr Informationen sind unter https://github.com/CAU-Kiel-Tech-Inf/socha-gui/releases/latest verfügbar',
+      buttons: ['Sure', 'No']
+    }, (buttonIndex) => {
+      if (buttonIndex === 0) {
+        autoUpdater.downloadUpdate()
+      }
+    })
+  })
+
+  autoUpdater.on('update-not-available', () => {
+    dialog.showMessageBox({
+      title: 'Version aktuell',
+      message: 'Die momentan installierte Version ist bereits auf dem neustem Stand der Dinge'
+    })
+  })
+
+  autoUpdater.on('update-downloaded', () => {
+    dialog.showMessageBox({
+      type: 'question',
+      buttons: ['Jetzt installieren und neustarten', 'Später'],
+      message: 'Das Update wurde erfolgreich geladen und kann jetzt installiert werden'
+    }, response => {
+      if (response === 0) {
+        setTimeout(() => autoUpdater.quitAndInstall(), 1);
+      }
+    });
+  })
+
+  // init for updates
+  autoUpdater.checkForUpdates();
+}
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win
 
-//Set log path
+// Set log path
 
 // enable tracing of unhandled promise rejections
 const process = require('process')
@@ -38,7 +85,7 @@ function createWindow() {
   let appDir = app.getAppPath()
   // application path may be a directory (in dev mode) or a file (when distributed)
   // .asar files are identified as directories, but are not directories in the filesystem
-  if(fs.lstatSync(appDir).isDirectory() && !appDir.endsWith('.asar')) {
+  if (fs.lstatSync(appDir).isDirectory() && !appDir.endsWith('.asar')) {
     console.log('Application directory', appDir)
     logDir = appDir
   } else {
@@ -52,18 +99,21 @@ function createWindow() {
     protocol: 'file:',
     slashes: true,
   }) + '?dirname=' + encodeURIComponent(logDir), {
-    //WebGL needs to be forced on with older radeon cards
-    webgl: true,
-    //Some extra features to speed up canvas/GL operations
-    experimentalFeatures: true,
-    experimentalCanvasFeatures: true,
-    //Enable offscreen rendering
-    offscreen: true,
-  })
+      //WebGL needs to be forced on with older radeon cards
+      webgl: true,
+      //Some extra features to speed up canvas/GL operations
+      experimentalFeatures: true,
+      experimentalCanvasFeatures: true,
+      //Enable offscreen rendering
+      offscreen: true,
+    })
 
   // Open the DevTools.
-  if(isDev)
+  if (isDev) {
     win.webContents.openDevTools()
+  } else {
+    appUpdater()
+  }
 
   // Emitted when the window is closed.
   win.on('closed', () => {
@@ -72,7 +122,6 @@ function createWindow() {
     // when you should delete the corresponding element.
     win = null
   })
-
 }
 
 // This method will be called when Electron has finished
@@ -84,7 +133,7 @@ app.on('ready', createWindow)
 app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
-  if(process.platform !== 'darwin') {
+  if (process.platform !== 'darwin') {
     app.quit()
   }
 })
@@ -92,10 +141,15 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if(win === null) {
+  if (win === null) {
     createWindow()
   }
 })
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.B
+ipcMain.on("showErrorBox", (event, title, message) => {
+  const { dialog } = require('electron')
+  console.log(title, message)
+  dialog.showErrorBox(title, message)
+})
