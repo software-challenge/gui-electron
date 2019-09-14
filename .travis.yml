@@ -38,6 +38,7 @@ deploy:
     - dist/*.AppImage
     - dist/*.exe
     - dist/*.zip
+    - dist/latest*.yml
   skip_cleanup: true
   on:
     tag: false
