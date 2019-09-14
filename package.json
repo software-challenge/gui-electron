@@ -3,7 +3,6 @@
   "productName": "Software-Challenge-GUI",
   "version": "20.0.0-beta.1",
   "description": "GUI für die Software-Challenge",
-  "repository": "https://github.com/CAU-Kiel-Tech-Inf/socha-gui",
   "main": "main.js",
   "scripts": {
     "pretest": "rimraf out && tsc -p tests",
@@ -17,8 +16,21 @@
     "compile": "rimraf out && tsc",
     "clean": "rimraf out; rimraf dist; rimraf server; rimraf socha; rimraf defaultplayer.jar; rimraf *.log.html"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CAU-Kiel-Tech-Inf/socha-gui"
+  },
   "author": "Software-Challenge Team",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CAU-Kiel-Tech-Inf/socha-gui/issues"
+  },
+  "homepage": "https://www.software-challenge.de/",
+  "files": [
+    "dist/*.AppImage",
+    "dist/*.exe",
+    "dist/*.zip",
+  ],
   "build": {
     "publish": [
       {
