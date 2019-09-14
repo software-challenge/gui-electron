@@ -26,11 +26,6 @@
     "url": "https://github.com/CAU-Kiel-Tech-Inf/socha-gui/issues"
   },
   "homepage": "https://www.software-challenge.de/",
-  "files": [
-    "dist/*.AppImage",
-    "dist/*.exe",
-    "dist/*.zip"
-  ],
   "build": {
     "publish": [
       {
@@ -56,7 +51,7 @@
       "buildResources": "assets/build-resources"
     },
     "win": {
-      "icon": "assets/build-resources/icon.png",
+      "icon": "assets/build-resources/icon512x512.png",
       "target": [
         {
           "target": "nsis",
@@ -80,7 +75,7 @@
       ]
     },
     "linux": {
-      "icon": "assets/build-resources/icon64x64.png",
+      "icon": "assets/build-resources/icon512x512.png",
       "target": [
         "AppImage"
       ]
