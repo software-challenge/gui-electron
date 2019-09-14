@@ -12,7 +12,7 @@
     "update-server": "git submodule update --remote && yarn compile-server",
     "compile-server": "cd socha && ./gradlew :server:deploy -q && cd .. && rimraf server && cp -r socha/server/build/runnable server && cp socha/player/build/libs/defaultplayer.jar .",
     "dist": "yarn install && yarn compile && electron-builder",
-    "dist-all": "rimraf dist && yarn dist -mwl",
+    "release": "rimraf dist && yarn dist -mwl --publish=always",
     "compile": "rimraf out && tsc",
     "clean": "rimraf out; rimraf dist; rimraf server; rimraf socha; rimraf defaultplayer.jar; rimraf *.log.html"
   },
