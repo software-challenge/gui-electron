@@ -29,7 +29,7 @@
   "files": [
     "dist/*.AppImage",
     "dist/*.exe",
-    "dist/*.zip",
+    "dist/*.zip"
   ],
   "build": {
     "publish": [
