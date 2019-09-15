@@ -9,7 +9,6 @@ env:
     - NODE_VERSION=8
     - ELECTRON_CACHE=$HOME/caches/electron
     - ELECTRON_BUILDER_CACHE=$HOME/caches/electron-builder
-    - GIT_TAG=$(sed -nE 's/^\s*"version": "(.*?)",$/\1/p' package.json)
 
 cache:
   yarn: true
@@ -25,10 +24,16 @@ install:
 
 script:
   - yarn
+  - |
+    v=$(node -p "require('./package.json').version")
+    export GIT_TAG="v$v"
+  - echo "Wow.... $GIT_TAG"
 
 before_deploy:
   - yarn compile-server
-  - bash ./git-tag.sh
+  - |
+    git tag $GIT_TAG -a -m "Setze den git-tag $GIT_TAG";
+    git push origin master && git push origin master --tags;
   - yarn release
 
 deploy:

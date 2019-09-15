@@ -19,9 +19,9 @@ function appUpdater() {
   autoUpdater.on('update-available', () => {
     dialog.showMessageBox({
       type: 'info',
-      title: 'Update verfügbar',
-      message: 'Es wurde ein Update gefunden, welches neue Features oder Bugfixes enthalten kann.\nMehr Informationen sind unter https://github.com/CAU-Kiel-Tech-Inf/socha-gui/releases/latest verfügbar',
-      buttons: ['Sure', 'No']
+      title: 'Update verfÃ¼gbar',
+      message: 'Es wurde ein Update gefunden, welches neue Features oder Bugfixes enthalten kann.\nMehr Informationen sind unter https://github.com/CAU-Kiel-Tech-Inf/socha-gui/releases/latest verfÃ¼gbar',
+      buttons: ['Jetzt herunterladen', 'Vielleicht wann anders']
     }, (buttonIndex) => {
       if (buttonIndex === 0) {
         autoUpdater.downloadUpdate()
@@ -39,7 +39,7 @@ function appUpdater() {
   autoUpdater.on('update-downloaded', () => {
     dialog.showMessageBox({
       type: 'question',
-      buttons: ['Jetzt installieren und neustarten', 'Später'],
+      buttons: ['Jetzt installieren und neustarten', 'SpÃ¤ter'],
       message: 'Das Update wurde erfolgreich geladen und kann jetzt installiert werden'
     }, response => {
       if (response === 0) {
