@@ -9,6 +9,7 @@ env:
     - NODE_VERSION=8
     - ELECTRON_CACHE=$HOME/caches/electron
     - ELECTRON_BUILDER_CACHE=$HOME/caches/electron-builder
+    - GIT_TAG=$(node -p "require('./package.json').version")
 
 cache:
   yarn: true
@@ -24,7 +25,6 @@ install:
 
 script:
   - yarn
-  - export GIT_TAG=$(node -p "require('./package.json').version")
   - echo "Wow.... $GIT_TAG"
 
 before_deploy:
