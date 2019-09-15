@@ -9,7 +9,7 @@ env:
     - NODE_VERSION=8
     - ELECTRON_CACHE=$HOME/caches/electron
     - ELECTRON_BUILDER_CACHE=$HOME/caches/electron-builder
-    - GIT_TAG=$(node -p "require('./package.json').version")
+    - GIT_TAG=$(node -p \"require('./package.json').version\")
 
 cache:
   yarn: true
