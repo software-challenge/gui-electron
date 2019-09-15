@@ -25,11 +25,12 @@ install:
 script:
   - yarn
   - export GIT_TAG=$(node -p "require('./package.json').version")
-  - echo "Wow.... $GIT_TAG"
+  - echo "Version: $GIT_TAG"
 
 before_deploy:
   - yarn compile-server
-  - echo "Wow.... $GIT_TAG"
+  - export GIT_TAG=$(node -p "require('./package.json').version")
+  - echo "Version to be deployed: $GIT_TAG"
   - yarn version --new-version $GIT_TAG # see: https://yarnpkg.com/lang/en/docs/cli/version/#toc-yarn-version-new-version
   - yarn release
 
