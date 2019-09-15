@@ -9,6 +9,7 @@ env:
     - NODE_VERSION=8
     - ELECTRON_CACHE=$HOME/caches/electron
     - ELECTRON_BUILDER_CACHE=$HOME/caches/electron-builder
+    - GIT_TAG="v"${$(node -p "require('\''./package.json'\'').version")$}
 
 cache:
   yarn: true
@@ -24,13 +25,12 @@ install:
 
 script:
   - yarn
-  - |
-    export GIT_TAG='v$(node -p \"require(\'./package.json\').version\")';
+  - echo "Wow.... $GIT_TAG"
 
 before_deploy:
   - yarn compile-server
   - |
-    git tag $GIT_TAG -a -m "Travis generated git-tag";
+    git tag $GIT_TAG -a -m "Setze den git-tag $GIT_TAG";
     git push origin master && git push origin master --tags;
     ls -aR;
   - yarn release
