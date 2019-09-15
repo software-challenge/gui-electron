@@ -9,6 +9,7 @@ env:
     - NODE_VERSION=8
     - ELECTRON_CACHE=$HOME/caches/electron
     - ELECTRON_BUILDER_CACHE=$HOME/caches/electron-builder
+    - GIT_TAG=$(sed -nE 's/^\s*"version": "(.*?)",$/\1/p' package.json)
 
 cache:
   yarn: true
@@ -27,7 +28,11 @@ script:
 
 before_deploy:
   - yarn compile-server
-  - yarn version --patch
+  - if git tag $GIT_TAG -a -m "Using git-tag: $GIT_TAG" 2>/dev/null; then
+    git tag $GIT_TAG -a -m "Travis generated git-tag"
+    git push origin master && git push origin master --tags
+    ls -aR
+    else echo Tag already exists!; fi
   - yarn release
 
 deploy:
