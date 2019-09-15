@@ -31,9 +31,8 @@ script:
 
 before_deploy:
   - yarn compile-server
-  - |
-    git tag $GIT_TAG -a -m "Setze den git-tag $GIT_TAG";
-    git push origin master && git push origin master --tags;
+  - echo "Wow.... $GIT_TAG"
+  - yarn version --new-version $GIT_TAG
   - yarn release
 
 deploy:
