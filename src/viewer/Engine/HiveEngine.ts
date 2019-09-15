@@ -30,6 +30,7 @@ export class SimpleScene extends Phaser.Scene {
   public outsideClickHandler: (c: Coordinates) => void = (_) => { }
   public animationTime: number = 200
   public animateWater: boolean
+  public labelsCreated: boolean
 
   constructor() {
     super({ key: 'simple' })
@@ -55,18 +56,17 @@ export class SimpleScene extends Phaser.Scene {
     this.markers = []
     this.allObjects = []
     this.selectedPiece = null
-    this.createFieldLabels()
+    this.labelsCreated = false
   }
 
-  createFieldLabels() {
-    const coordTextStyle = { fontFamily: 'Arial', fontSize: 15, color: '#aaaaaa' }
-    const labelTextStyle = { fontFamily: 'Arial', fontSize: 20, color: '#aaaaaa' }
-    const textOffset = 50
-    const characters = 'ABCDEFGHIJ'
-    Array.from(Array(FIELDSIZE), (_, x) => {
-      Array.from(Array(FIELDSIZE), (_, y) => {
-        // TODO
-        //  this.add.text(fieldCoordinates.x - textOffset * 1.2, fieldCoordinates.y, `y = ${y}`, coordTextStyle).setOrigin(0.5)
+  createFieldLabels(board: Board) {
+    board.fields.forEach(col => {
+      col.forEach(field => {
+        let sx = field.coordinates.screenCoordinates().x + offsetX
+        let sy = field.coordinates.screenCoordinates().y + offsetY
+        const coordTextStyle = { fontFamily: 'Arial', fontSize: 15, color: '#777777' }
+        let text = this.add.text(sx, sy, `(${field.coordinates.q},${field.coordinates.r})`, coordTextStyle).setOrigin(0.5)
+        text.depth = 60
       })
     })
   }
@@ -185,6 +185,10 @@ export class SimpleScene extends Phaser.Scene {
 
   // creates needed graphic objects to display the given board and associates them with the board fields.
   createBoardGraphics(board: Board): FieldGraphics[][] {
+    if (!this.labelsCreated) {
+      this.createFieldLabels(board)
+      this.labelsCreated = true
+    }
     // TODO: use map instead of Array.from
     return Array.from(board.fields, (col,
 
@@ -201,11 +205,6 @@ export class SimpleScene extends Phaser.Scene {
             kind = upmostPiece.kind
             ownerColor = upmostPiece.color
           }
-
-          // labels, TODO, move into createFieldLabels
-          const coordTextStyle = { fontFamily: 'Arial', fontSize: 15, color: '#777777' }
-          let text = this.add.text(sx, sy, `(${field.coordinates.q},${field.coordinates.r})`, coordTextStyle).setOrigin(0.5)
-          text.depth = 60
 
           if (field.obstructed) {
             return this.createFieldGraphic(new ScreenCoordinates(sx, sy), true, null, null, [])

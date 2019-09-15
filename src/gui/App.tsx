@@ -6,8 +6,7 @@ import { Button, ButtonGroup, NavGroup, NavItem, NavTitle, Pane, PaneGroup, Retr
 import { UnicodeIcon } from './generic-components/Components'
 import { Administration } from './Administration'
 import { GameCreation } from './GameCreation'
-// XXX only for testing, remove
-import { GameCreationOptions, GameType, PlayerType, Replay } from '../api/rules/GameCreationOptions'
+import { GameCreationOptions, GameType, Replay } from '../api/rules/GameCreationOptions'
 import { Game } from './Game'
 import { LogConsole } from './LogConsole'
 import { Logger } from '../api/Logger'
@@ -75,25 +74,6 @@ export class App extends React.Component<any, State> {
         }),
     }
     Hotfix.init(gco => this.startGameWithOptions(gco))
-
-    // XXX only for testing, remove
-    window.setTimeout(() => {
-      this.startGameWithOptions({
-        kind: GameType.Versus,
-        gameName: "Test",
-        gameId: Api.getGameManager().createGameId("Test", false),
-        firstPlayer: {
-          kind: PlayerType.Human,
-          name: "Spieler 1",
-          timeoutPossible: false,
-        },
-        secondPlayer: {
-          kind: PlayerType.Human,
-          name: "Spieler 1",
-          timeoutPossible: false,
-        }
-      })
-    }, 2000);
   }
 
   private loadReplay() {
