@@ -21,7 +21,7 @@ function appUpdater() {
       type: 'info',
       title: 'Update verfügbar',
       message: 'Es wurde ein Update gefunden, welches neue Features oder Bugfixes enthalten kann.\nMehr Informationen sind unter https://github.com/CAU-Kiel-Tech-Inf/socha-gui/releases/latest verfügbar',
-      buttons: ['Sure', 'No']
+      buttons: ['Jetzt herunterladen', 'Vielleicht wann anders']
     }, (buttonIndex) => {
       if (buttonIndex === 0) {
         autoUpdater.downloadUpdate()
