@@ -24,17 +24,15 @@ install:
 
 script:
   - yarn
+  - |
+    export GIT_TAG='v$(node -p \"require(\'./package.json\').version\")';
 
 before_deploy:
   - yarn compile-server
   - |
-    export GIT_TAG='v$(node -p \"require(\'./package.json\').version\")';
-    if git tag $GIT_TAG -a -m "Using git-tag: $GIT_TAG" 2>/dev/null; then
-      git tag $GIT_TAG -a -m "Travis generated git-tag";
-      git push origin master && git push origin master --tags;
-      ls -aR;
-    else echo Tag already exists!; fi
-  - bash ./git-tag.sh
+    git tag $GIT_TAG -a -m "Travis generated git-tag";
+    git push origin master && git push origin master --tags;
+    ls -aR;
   - yarn release
 
 deploy:
