@@ -25,7 +25,7 @@ install:
 script:
   - yarn
   - |
-    v=node -p "require('./package.json').version"
+    v=$(node -p "require('./package.json').version")
     export GIT_TAG="v$v"
   - echo "Wow.... $GIT_TAG"
 
