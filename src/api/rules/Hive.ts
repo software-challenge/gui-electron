@@ -5,7 +5,7 @@ import { Undeployed } from '../../viewer/Engine/HiveEngine';
 export type LineDirection = 'HORIZONTAL' | 'VERTICAL' | 'RISING_DIAGONAL' | 'FALLING_DIAGONAL';
 export const ALL_DIRECTIONS: LineDirection[] = ['HORIZONTAL', 'VERTICAL', 'RISING_DIAGONAL', 'FALLING_DIAGONAL']
 
-export const FIELDSIZE = 11 // diameter of the hexagon board
+export const FIELDSIZE = 9 // diameter of the hexagon board
 export const SHIFT = 5 // floor(FIELDSIZE/2)
 export const FIELDPIXELWIDTH = 34
 export const STARTING_PIECES = "QSSSGGBBAAA"
