@@ -29,13 +29,6 @@ function appUpdater() {
     })
   })
 
-  autoUpdater.on('update-not-available', () => {
-    dialog.showMessageBox({
-      title: 'Version aktuell',
-      message: 'Die momentan installierte Version ist bereits auf dem neustem Stand der Dinge'
-    })
-  })
-
   autoUpdater.on('update-downloaded', () => {
     dialog.showMessageBox({
       type: 'question',

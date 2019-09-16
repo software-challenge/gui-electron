@@ -31,7 +31,7 @@ describe('logic', function() {
                                         "  --------------" +
                                         "   ------------" +
                                         "    ----------")
-    expect(GameRuleLogic.possibleMoves(gs, new Coordinates(-3, 4, -1)).length).toBe(2);
+    expect(GameRuleLogic.possibleMoves(gs, new Coordinates(-3, 4, -1)).length).toBe(3);
   });
 });
 
