@@ -21,9 +21,10 @@ install:
   - nvm install $NODE_VERSION
   - nvm use $NODE_VERSION
   - npm install -g yarn
+  - yarn
+  - yarn test
 
 script:
-  - yarn
   - GIT_TAG=$(node -p "require('./package.json').version")
   - echo "Build-Version $GIT_TAG"
 
