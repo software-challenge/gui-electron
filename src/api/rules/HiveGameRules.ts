@@ -98,7 +98,16 @@ export class GameRuleLogic {
     }
 
     // verhindere dass er sich nicht am rand des schwarms bewegt und beispielsweise "jumpt"
-    return !((shared.some(e => e.stack.length == 0 && !e.obstructed) || shared.length == 1) && shared.some(e => e.stack.length > 0)) || shared.some(e => except.equal(e.coordinates)) && shared.filter(e => e.stack.length > 0).length == 1
+    // Falls der einzige Schwarmnachbar except ist
+    if (shared.some(e => except.equal(e.coordinates)) && shared.filter(e => e.stack.length > 0).length == 1) {
+      return true
+    }
+    // Falls es keinen Schwarmnachbar gibt
+    if (!shared.some(e => e.stack.length > 0)) {
+      return true
+    }
+    // ist platz zum laufen?
+    return !((shared.some(e => e.stack.length == 0 && !e.obstructed && except.equal(e.coordinates)) || shared.length == 1)
   }
 
   static sharedNeighboursOfTwoCoords(board: Board, a: Coordinates, b: Coordinates): Field[] {
