@@ -107,7 +107,7 @@ export class GameRuleLogic {
       return true
     }
     // ist platz zum laufen?
-    return !((shared.some(e => e.stack.length == 0 && !e.obstructed || except.equal(e.coordinates)) || shared.length == 1)
+    return !((shared.some(e => e.stack.length == 0 && !e.obstructed || except.equal(e.coordinates)) || shared.length == 1))
   }
 
   static sharedNeighboursOfTwoCoords(board: Board, a: Coordinates, b: Coordinates): Field[] {
