@@ -6,6 +6,7 @@ import { Board, Piece, Coordinates, FieldSelected, FIELDSIZE, SHIFT, PLAYERCOLOR
 
 const dialog = remote.dialog
 
+
 //const initialBoard = GameRuleLogic.addBlockedFields(new Board())
 
 interface FieldGraphics {
@@ -17,6 +18,10 @@ interface FieldGraphics {
 // offsets for placing the board on the game canvas
 const offsetX = 400
 const offsetY = 400
+
+const UNDEPLOYED_RED_PIECES_MARGIN = 40
+const UNDEPLOYED_BLUE_PIECES_MARGIN = 760
+const UNDEPLOYED_PIECES_TOP_MARGIN = 70
 
 export class SimpleScene extends Phaser.Scene {
 
@@ -64,9 +69,26 @@ export class SimpleScene extends Phaser.Scene {
       col.forEach(field => {
         let sx = field.coordinates.screenCoordinates().x + offsetX
         let sy = field.coordinates.screenCoordinates().y + offsetY
-        const coordTextStyle = { fontFamily: 'Arial', fontSize: 15, color: '#777777' }
-        let text = this.add.text(sx, sy, `(${field.coordinates.q},${field.coordinates.r})`, coordTextStyle).setOrigin(0.5)
-        text.depth = 60
+        const coordTextStyle = { fontFamily: 'Arial', fontSize: 14, color: '#000000' }
+        let lx
+        let ly
+        let lz
+        if (field.coordinates.q == 0 && field.coordinates.r == 0 && field.coordinates.s == 0) {
+          lx = 'x'
+          ly = 'y'
+          lz = 'z'
+        } else {
+          lx = field.coordinates.q
+          ly = field.coordinates.r
+          lz = field.coordinates.s
+        }
+        let tx = this.add.text(sx - 15, sy - 10, lx, coordTextStyle).setOrigin(0.5)
+        let ty = this.add.text(sx, sy + 15, ly, coordTextStyle).setOrigin(0.5)
+        let tz = this.add.text(sx + 15, sy - 10, lz, coordTextStyle).setOrigin(0.5)
+        Array(tx, ty, tz).forEach(t => {
+          t.depth = 60
+          t.setStroke('#FFFFFF', 3)
+        })
       })
     })
   }
@@ -220,11 +242,11 @@ export class SimpleScene extends Phaser.Scene {
     let undeployedPieceGraphics: FieldGraphics[][] = []
     undeployedPieceGraphics['RED'] = []
     undeployedRedPieces.forEach((p, i) => {
-      undeployedPieceGraphics['RED'].push(this.createFieldGraphic(new ScreenCoordinates(60, 90 + 64 * i), false, 'RED', p.kind, []))
+      undeployedPieceGraphics['RED'].push(this.createFieldGraphic(new ScreenCoordinates(UNDEPLOYED_RED_PIECES_MARGIN, UNDEPLOYED_PIECES_TOP_MARGIN + 64 * i), false, 'RED', p.kind, []))
     })
     undeployedPieceGraphics['BLUE'] = []
     undeployedBluePieces.forEach((p, i) => {
-      undeployedPieceGraphics['BLUE'].push(this.createFieldGraphic(new ScreenCoordinates(740, 90 + 64 * i), false, 'BLUE', p.kind, []))
+      undeployedPieceGraphics['BLUE'].push(this.createFieldGraphic(new ScreenCoordinates(UNDEPLOYED_BLUE_PIECES_MARGIN, UNDEPLOYED_PIECES_TOP_MARGIN + 64 * i), false, 'BLUE', p.kind, []))
     })
     return undeployedPieceGraphics
   }
@@ -240,13 +262,13 @@ export class SimpleScene extends Phaser.Scene {
   undeployedPiece(x: number, y: number): Undeployed {
     let color = null
     let index = null
-    if (x > 28 && x < 92) {
+    if (x > UNDEPLOYED_RED_PIECES_MARGIN - (64 / 2) && x < UNDEPLOYED_RED_PIECES_MARGIN + (64 / 2)) {
       color = 'RED'
-    } else if (x > 708 && x < 772) {
+    } else if (x > UNDEPLOYED_BLUE_PIECES_MARGIN - (64 / 2) && x < UNDEPLOYED_BLUE_PIECES_MARGIN + (64 / 2)) {
       color = 'BLUE'
     }
     if (color) {
-      let i = Math.round((y - 90) / 64)
+      let i = Math.round((y - UNDEPLOYED_PIECES_TOP_MARGIN) / 64)
       if (i >= 0 && i < this.undeployedPieceGraphics[color].length) {
         index = i
       }
@@ -300,12 +322,12 @@ export class SimpleScene extends Phaser.Scene {
   }
 
   markUndeployed(state: GameState, color: PLAYERCOLOR) {
-    let x = color == 'RED' ? 60 : 740
+    let x = color == 'RED' ? UNDEPLOYED_RED_PIECES_MARGIN : UNDEPLOYED_BLUE_PIECES_MARGIN
     if (state.turn > 5 && (color == 'RED' ? state.undeployedRedPieces.some(e => e.kind == "BEE") : state.undeployedBluePieces.some(e => e.kind == 'BEE'))) {
       this.markers.push(this.make.sprite({
         key: 'marker',
         x: x,
-        y: 90,
+        y: UNDEPLOYED_PIECES_TOP_MARGIN,
         scale: 1,
         depth: 50,
       }))
@@ -315,7 +337,7 @@ export class SimpleScene extends Phaser.Scene {
         this.markers.push(this.make.sprite({
           key: 'marker',
           x: x,
-          y: 90 + i * 64,
+          y: UNDEPLOYED_PIECES_TOP_MARGIN + i * 64,
           scale: 1,
           depth: 50,
         }))
