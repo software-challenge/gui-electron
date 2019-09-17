@@ -2,24 +2,57 @@ import "jasmine"
 import { GameState, Board, GameRuleLogic, Coordinates } from '../src/api/rules/CurrentGame'
 import { TestHelper } from './testHelper'
 
-describe('logic', function() {
-  it('swarm connect on board with swarm separated by obstructed field', function() {
+describe('Game-Logic', function () {
+  // testing isSwarmConnected
+  it('swarm separated by obstructed field', function () {
     let gs = new GameState()
     TestHelper.updateGamestateWithBoard(gs, "" +
-                                        "    ----------" +
-                                        "   ------------" +
-                                        "  --------------" +
-                                        " RGBG------------" +
-                                        "----OO--BQ--------" +
-                                        " ----RBRG--------" +
-                                        "  --------------" +
-                                        "   ------------" +
-                                        "    ----------")
-    expect(gs.board.getField(new Coordinates(-3, 4, -1)).stack.length).toBe(1)
+      "    ----------" +
+      "   ------------" +
+      "  --------------" +
+      " RGBG------------" +
+      "----OO--BQ--------" +
+      " ----RBRG--------" +
+      "  --------------" +
+      "   ------------" +
+      "    ----------")
     expect(GameRuleLogic.isSwarmConnected(gs.board)).toBe(false);
   });
+  it('without being connected', function () {
+    let gs = new GameState()
+    TestHelper.updateGamestateWithBoard(gs, "" +
+      "    ----------" +
+      "   ------------" +
+      "  --------------" +
+      " RGBG------------" +
+      "--------BQ--------" +
+      " ----RBRG--------" +
+      "  --------------" +
+      "   ------------" +
+      "    ----------")
+    expect(GameRuleLogic.isSwarmConnected(gs.board)).toBe(false);
+  });
+  it('swarm connected', function () {
+    let gs = new GameState()
+    TestHelper.updateGamestateWithBoard(gs, "" +
+      "    ----------" +
+      "   ------------" +
+      "  --------------" +
+      " RGBG------------" +
+      "----RG--BQ--------" +
+      " ----RBRG--------" +
+      "  --------------" +
+      "   ------------" +
+      "    ----------")
+    expect(GameRuleLogic.isSwarmConnected(gs.board)).toBe(true);
+  });
 
-  it('possible moves', function() {
+  // testing ...
+});
+
+describe('Possible moves', function () {
+  // testing possible moves
+  it('Bee possible moves', function() {
     let gs = new GameState()
     TestHelper.updateGamestateWithBoard(gs, "" +
                                         "    ----------" +
@@ -37,7 +70,7 @@ describe('logic', function() {
 
 describe('data structures', function() {
   describe('board', function() {
-    it('clones correctly', function() {
+    it('clones board correctly', function() {
       let gs = new GameState()
       TestHelper.updateGamestateWithBoard(gs, "" +
                                           "    ----------" +
