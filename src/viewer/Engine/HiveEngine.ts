@@ -2,9 +2,7 @@
 
 import 'phaser'
 import { remote } from 'electron'
-import { Board, Piece, Coordinates, FieldSelected, FIELDSIZE, SHIFT, PLAYERCOLOR, PIECETYPE, FIELDPIXELWIDTH, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectPiece, UndeployedPieceSelected, SelectDragTargetField, SelectSetTargetField, UiState, ScreenCoordinates } from '../../api/rules/CurrentGame'
-
-const dialog = remote.dialog
+import { Board, Piece, Coordinates, FieldSelected, FIELDSIZE, SHIFT, PLAYERCOLOR, PIECETYPE, FIELDPIXELWIDTH, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectPiece, UndeployedPieceSelected, SelectDragTargetField, SelectSetTargetField, UiState, ScreenCoordinates, SelectMiss, MissSelected } from '../../api/rules/CurrentGame'
 
 //const initialBoard = GameRuleLogic.addBlockedFields(new Board())
 
@@ -25,9 +23,11 @@ export class SimpleScene extends Phaser.Scene {
   public undeployedPieceGraphics: FieldGraphics[][] // graphics to render pieces not on the board
   public markers: Phaser.GameObjects.Sprite[] // graphics to mark fields
   public selectedPiece: Coordinates // currently selected piece (if any)
+  public missMoveButton: Phaser.GameObjects.Sprite //
   public fieldClickHandler: (c: Coordinates) => void = (_) => { }
   public undeployedClickHandler: (targets: Undeployed) => void = (_) => { }
   public outsideClickHandler: (c: Coordinates) => void = (_) => { }
+  public missClickHandler: (c: Coordinates) => void = (_) => { }
   public animationTime: number = 200
   public animateWater: boolean
 
@@ -46,6 +46,7 @@ export class SimpleScene extends Phaser.Scene {
     this.load.image('red', 'resources/hive/red.png')
     this.load.image('blue', 'resources/hive/blue.png')
     this.load.image('marker', 'resources/hive/highlight.png')
+    this.load.image('missButton', 'resources/hive/aussetzen.png')
   }
 
   create() {
@@ -259,6 +260,7 @@ export class SimpleScene extends Phaser.Scene {
   }
 
   handleClick(event: any) {
+    console.log("Clicked: (X: ", event.position.x, ", Y: ", event.position.y, ")")
     let pos = new ScreenCoordinates(event.position.x - offsetX, event.position.y - offsetY)
     let target = pos.boardCoordinates()
     let up = this.undeployedPiece(event.position.x, event.position.y)
@@ -266,6 +268,8 @@ export class SimpleScene extends Phaser.Scene {
       this.fieldClickHandler(target)
     } else if (up !== null) {
       this.undeployedClickHandler(up)
+    } else if (this.missMoveButton != null && event.position.y > 675 && event.position.y < 725 && (event.position.x > 120 && event.position.x < 240 || event.position.x > 560 && event.position.x < 680)) {
+      this.missClickHandler(target)
     } else {
       this.outsideClickHandler(target)
     }
@@ -276,6 +280,7 @@ export class SimpleScene extends Phaser.Scene {
       obj.destroy()
     })
     this.allObjects = []
+    this.missMoveButton == null
   }
 
   unmarkFields() {
@@ -475,6 +480,7 @@ export class HiveEngine {
     if (this.scene) {
       this.scene.deselectFields()
       this.scene.unmarkFields()
+      this.scene.missMoveButton == null
     }
   }
 
@@ -487,7 +493,14 @@ export class HiveEngine {
     this.selectableFields = []
     this.selectableUndeployed = []
     this.scene.deselectFields()
-    if (state.uiState instanceof SelectPiece) {
+    if (state.uiState instanceof SelectMiss) {
+      this.scene.missMoveButton = this.scene.make.sprite({
+        key: 'missButton',
+        x: state.gameState.currentPlayerColor == 'RED' ? 180 : 620,
+        y: 700,
+        scale: 0.4
+      })
+    } else if (state.uiState instanceof SelectPiece) {
       this.selectableFields = state.uiState.selectableFieldCoordinates
       this.scene.markUndeployed(state.gameState, state.uiState.undeployedColor)
       if (state.gameState.turn > 5 && (state.uiState.undeployedColor == 'RED' ? state.gameState.undeployedRedPieces.some(e => e.kind == "BEE") : state.gameState.undeployedBluePieces.some(e => e.kind == 'BEE'))) {
@@ -547,7 +560,10 @@ export class HiveEngine {
       console.log("clicked outside of field", target)
       callback('cancelled')
     }
-
+    this.scene.missClickHandler = (target: Coordinates) => {
+      console.log("clicked Zug aussetzen", target)
+      callback(new MissSelected())
+    }
   }
 
   resize() {

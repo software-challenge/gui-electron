@@ -1,5 +1,5 @@
 import { HiveEngine } from './Engine/HiveEngine'
-import { Coordinates, FieldSelected, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectPiece, UndeployedPieceSelected, SelectSetTargetField, SelectDragTargetField, UiState } from '../api/rules/CurrentGame'
+import { Coordinates, FieldSelected, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectPiece, UndeployedPieceSelected, SelectSetTargetField, SelectDragTargetField, UiState, SelectMiss, MissSelected } from '../api/rules/CurrentGame'
 
 export class Viewer {
   //DOM Elements
@@ -94,7 +94,12 @@ export class Viewer {
         let move = this.interactionsToMove(actions)
         move_callback(move)
       }
-    } else {
+    } else if (interaction instanceof MissSelected) {
+      // create move and send it
+      let move = this.interactionsToMove(actions)
+      move_callback(move)
+    }
+    else {
       // we need more input to get a complete move
       this.requestUserInteraction(state, actions, move_callback)
     }
@@ -102,6 +107,9 @@ export class Viewer {
 
   interactionsToMove(interactions: InteractionEvent[]): Move {
     let fromFieldOrPiece = interactions[0]
+    if (fromFieldOrPiece instanceof MissSelected) {
+      return new Move(null, null)
+    }
     let toField = interactions[1]
     if (fromFieldOrPiece instanceof FieldSelected && toField instanceof FieldSelected) {
       // DragMove
@@ -129,7 +137,7 @@ export class Viewer {
     // XXX TODO interaction logic
     let uiState: UiState
     if (shouldSelectPiece) {
-      let ownPieceFields = GameRuleLogic.fieldsOwnedByPlayer(state.board, state.currentPlayerColor).map(e => e.coordinates).filter(e => GameRuleLogic.possibleMoves(state, e).length > 0)
+      let ownPieceFields: Coordinates[] = []
       let beePlaced = GameRuleLogic.getQueen(state.board, state.currentPlayerColor) != null
 
       // Zwinge den Nutzer die Biene zu waehlen, falls noetig
@@ -146,8 +154,22 @@ export class Viewer {
         console.log("BEE-Zwang")
         ownPieceFields = []
       }
+      else {
+        ownPieceFields = GameRuleLogic.fieldsOwnedByPlayer(state.board, state.currentPlayerColor).map(e => e.coordinates).filter(e => GameRuleLogic.possibleMoves(state, e).length > 0)
+      }
 
-      uiState = new SelectPiece(ownPieceFields, state.currentPlayerColor)
+      // Kann neue Figur platziert werden?
+      if (!beePlaced && GameRuleLogic.fieldsOwnedByPlayer(state.board, state.currentPlayerColor).length > 0 && !GameRuleLogic.getFieldsNextToSwarm(state.board, null).some(e => !GameRuleLogic.getNeighbours(state.board, e.coordinates).some(other => other.owner() == state.getOtherPlayer().color))) {
+        console.log("Es kann keine weitere Figur platziert werden, da kein Feld frei ist")
+        uiState = new SelectMiss(state.currentPlayerColor)
+      }
+      else if (state.currentPlayerColor == 'RED' ? state.undeployedRedPieces.length == 0 : state.undeployedBluePieces.length == 0 && ownPieceFields.length == 0) {
+        console.log("Es kann keine Figur mehr bewegt werden und alle Figuren sind bereits platziert")
+        uiState = new SelectMiss(state.currentPlayerColor)
+      }
+      else {
+        uiState = new SelectPiece(ownPieceFields, state.currentPlayerColor)
+      }
     } else if (shouldSelectTarget) {
       let firstAction = actions[0]
       if (firstAction instanceof FieldSelected) {
@@ -176,7 +198,7 @@ export class Viewer {
             firstAction.color,
             firstAction.index,
             state.board.fields.map(
-              col => col.filter(f => !f.obstructed).map(field => field.coordinates)
+              col => col.map(field => field.coordinates)
             ).reduce((a, c) => a.concat(c))
           )
         }
@@ -185,14 +207,14 @@ export class Viewer {
           uiState = new SelectSetTargetField(
             firstAction.color,
             firstAction.index,
-            GameRuleLogic.getFieldsNextToSwarm(state.board, null).filter(f => !f.obstructed).map(f => f.coordinates)
+            GameRuleLogic.getFieldsNextToSwarm(state.board, null).map(f => f.coordinates)
           )
         }
         else {
           uiState = new SelectSetTargetField(
             firstAction.color,
             firstAction.index,
-            GameRuleLogic.getFieldsNextToSwarm(state.board, null).filter(f => !f.obstructed).map(f => f.coordinates).filter(f => GameRuleLogic.getNeighbours(state.board, f).some(e => e.owner() == state.currentPlayerColor) && !GameRuleLogic.getNeighbours(state.board, f).some(e => e.owner() == state.getOtherPlayer().color))
+            GameRuleLogic.getFieldsNextToSwarm(state.board, null).map(f => f.coordinates).filter(f => GameRuleLogic.getNeighbours(state.board, f).some(e => e.owner() == state.currentPlayerColor) && !GameRuleLogic.getNeighbours(state.board, f).some(e => e.owner() == state.getOtherPlayer().color))
           )
         }
       }

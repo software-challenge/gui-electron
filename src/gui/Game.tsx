@@ -121,7 +121,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
     this.viewer.requestUserInteraction(state, [], (move) => {
       Logger.getLogger().log('Game', 'interact', `Sending move`)
-      if (GameRuleLogic.validateMove(null, null, null, state, move)) {
+      if (move.moveType == "MISS" || GameRuleLogic.validateMove(null, null, null, state, move)) {
         Api.getGameManager().sendMove(this.props.gameId, status.moveRequest.id, move).then(() => {
           // after sending the move, we want to render it as soon as the server gives out the new game state (because the user should have direct feedback on his move)
           this.waitForNextStatus(status.numberOfStates, () => this.nextTurn())

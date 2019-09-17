@@ -5,7 +5,7 @@ import { Undeployed } from '../../viewer/Engine/HiveEngine';
 export type LineDirection = 'HORIZONTAL' | 'VERTICAL' | 'RISING_DIAGONAL' | 'FALLING_DIAGONAL';
 export const ALL_DIRECTIONS: LineDirection[] = ['HORIZONTAL', 'VERTICAL', 'RISING_DIAGONAL', 'FALLING_DIAGONAL']
 
-export const FIELDSIZE = 9 // diameter of the hexagon board
+export const FIELDSIZE = 11 // diameter of the hexagon board
 export const SHIFT = 5 // floor(FIELDSIZE/2)
 export const FIELDPIXELWIDTH = 34
 export const STARTING_PIECES = "QSSSGGBBAAA"
@@ -488,18 +488,21 @@ export class Player {
   }
 }
 
-export type MOVETYPE = 'SET' | 'DRAG'
+export type MOVETYPE = 'SET' | 'DRAG' | 'MISS'
 export class Move {
   readonly fromField: Coordinates
   readonly undeployedPiece: PIECETYPE
   readonly toField: Coordinates
   readonly moveType: MOVETYPE
 
-  constructor(fromFieldOrPiece: Coordinates | PIECETYPE, toField: Coordinates) {
+  constructor(fromFieldOrPiece: Coordinates | PIECETYPE | null, toField: Coordinates) {
     if (fromFieldOrPiece instanceof Coordinates) {
       this.moveType = 'DRAG'
       this.fromField = fromFieldOrPiece
-    } else {
+    } else if (typeof fromFieldOrPiece == 'undefined' || fromFieldOrPiece == null) {
+      this.moveType = 'MISS'
+    }
+    else {
       this.moveType = 'SET'
       this.undeployedPiece = fromFieldOrPiece
     }
@@ -517,7 +520,7 @@ export class Move {
   }
 
   static lift(that: any) {
-    let clone = new Move(that.fromField, that.direction)
+    let clone = new Move(that.fromField, that.toField)
     Object.assign<Move, Move>(clone, that)
     return clone
   }
@@ -558,6 +561,16 @@ export class SelectPiece extends MoveInput {
     super(false, false)
     this.selectableFieldCoordinates = selectable
     this.undeployedColor = color
+  }
+}
+
+// user should select
+export class SelectMiss extends MoveInput {
+  readonly color: PLAYERCOLOR
+
+  constructor(color: PLAYERCOLOR) {
+    super(false, false)
+    this.color = color
   }
 }
 
@@ -615,7 +628,7 @@ export class RenderState {
 }
 
 // describes a interface action the user has performed, will be returned by the viewer if the user clicks on something interactive
-export type InteractionEvent = FieldSelected | UndeployedPieceSelected | Sent | Cancelled | Skipped;
+export type InteractionEvent = FieldSelected | UndeployedPieceSelected | MissSelected | Sent | Cancelled | Skipped;
 
 export type Sent = 'sent';
 export type Cancelled = 'cancelled';
@@ -642,4 +655,8 @@ export class UndeployedPieceSelected {
   setKind(kind: PIECETYPE) {
     this.kind = kind
   }
+}
+
+export class MissSelected {
+
 }
