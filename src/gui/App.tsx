@@ -74,26 +74,7 @@ export class App extends React.Component<any, State> {
           logDir: '.',
         }),
     }
-    Hotfix.init(gco => this.startGameWithOptions(gco))
-
-    // XXX only for testing, remove
-    window.setTimeout(() => {
-      this.startGameWithOptions({
-        kind: GameType.Versus,
-        gameName: "Test",
-        gameId: Api.getGameManager().createGameId("Test", false),
-        firstPlayer: {
-          kind: PlayerType.Human,
-          name: "Spieler 1",
-          timeoutPossible: false,
-        },
-        secondPlayer: {
-          kind: PlayerType.Human,
-          name: "Spieler 1",
-          timeoutPossible: false,
-        }
-      })
-    }, 2000);
+    // Hotfix.init(gco => this.startGameWithOptions(gco))
   }
 
   private loadReplay() {
