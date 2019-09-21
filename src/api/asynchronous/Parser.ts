@@ -1,5 +1,5 @@
 import { parseString } from 'xml2js'
-import { Logger } from '../Logger'
+import { Logger }      from '../Logger'
 
 export module Parser {
 
@@ -7,13 +7,13 @@ export module Parser {
 
     //Workaround until I fix or replace the SAX parser
     xml = xml.trim()
-    if(!xml.startsWith('<')) {
+    if (!xml.startsWith('<')) {
       xml = '<' + xml
     }
 
     return new Promise((res, rej) => {
       parseString(xml, function(err, result) {
-        if(err) {
+        if (err) {
           Logger.getLogger().log('Parser', 'getJSONFromXML', 'Error parsing xml:\n\n' + xml)
           rej(err)
         } else {

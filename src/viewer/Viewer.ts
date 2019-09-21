@@ -1,4 +1,4 @@
-import { HiveEngine } from './Engine/HiveEngine'
+import { HiveEngine }                                                                                                                                                                                                      from './Engine/HiveEngine'
 import { Coordinates, FieldSelected, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectPiece, UndeployedPieceSelected, SelectSetTargetField, SelectDragTargetField, UiState, SelectMiss, MissSelected } from '../api/rules/CurrentGame'
 
 export class Viewer {
@@ -48,6 +48,7 @@ export class Viewer {
     if (this.engine == null) {
       return
     }
+    console.log('Current ui-state: ', this.currentState, ' invoced render with state: ', state)
     if (this.currentState && this.currentState.equals(state)) {
       console.log('should render same state, doing nothing')
       return
@@ -63,22 +64,20 @@ export class Viewer {
         (state.gameState.turn === this.currentState.gameState.turn + 1) &&
         this.engine.scene.boardEqualsView(this.currentState.gameState.board)) {
         this.engine.animateMove(this.currentState.gameState, state.gameState.lastMove)
-        this.currentState = state
       } else {
         this.engine.finishAnimations()
         this.engine.scene.tweens.killAll()
         this.engine.draw(state)
-        this.currentState = state
       }
     } else {
       this.engine.draw(state)
-      this.currentState = state
     }
+    this.currentState = state
   }
 
   // user interacted somehow
   userHasInteracted(state: GameState, actions: InteractionEvent[], move_callback: (move: Move) => void, interaction: InteractionEvent) {
-    console.log("%cUser interacted", "color: #006400")
+    console.log('%cUser interacted', 'color: #006400')
 
     actions = actions.concat(interaction)
 
@@ -88,8 +87,7 @@ export class Viewer {
     } else if (actions.length == 2) {
       if (actions[0] instanceof UndeployedPieceSelected && actions[1] instanceof UndeployedPieceSelected) {
         this.requestUserInteraction(state, [], move_callback)
-      }
-      else {
+      } else {
         // create move and send it
         let move = this.interactionsToMove(actions)
         move_callback(move)
@@ -98,8 +96,7 @@ export class Viewer {
       // create move and send it
       let move = this.interactionsToMove(actions)
       move_callback(move)
-    }
-    else {
+    } else {
       // we need more input to get a complete move
       this.requestUserInteraction(state, actions, move_callback)
     }
@@ -129,7 +126,7 @@ export class Viewer {
 
   // initialize ui to show the user where interaction is possible
   requestUserInteraction(state: GameState, actions: InteractionEvent[], move_callback: (move: Move) => void) {
-    console.log("%cRequesting User-Interaction", "color: #006400")
+    console.log('%cRequesting User-Interaction', 'color: #006400')
     // figure out which interactions are currently needed and put them into uistate
     let shouldSelectPiece: boolean = actions.length == 0
     let shouldSelectTarget: boolean = actions.length == 1
@@ -151,38 +148,38 @@ export class Viewer {
        * 7  blue  # 4
        */
       if (!beePlaced && state.turn > 5) {
-        console.log("BEE-Zwang")
+        console.log('BEE-Zwang')
         ownPieceFields = []
-      }
-      else {
-        ownPieceFields = GameRuleLogic.fieldsOwnedByPlayer(state.board, state.currentPlayerColor).map(e => e.coordinates).filter(e => GameRuleLogic.possibleMoves(state, e).length > 0)
+      } else {
+        ownPieceFields = GameRuleLogic.fieldsOwnedByPlayer(state.board, state.currentPlayerColor)
+          .map(e => e.coordinates)
+          .filter(e => GameRuleLogic.possibleMoves(state, e).length > 0)
       }
 
       // Kann neue Figur platziert werden?
-      if (!beePlaced && GameRuleLogic.fieldsOwnedByPlayer(state.board, state.currentPlayerColor).length > 0 && !GameRuleLogic.getFieldsNextToSwarm(state.board, null).some(e => !GameRuleLogic.getNeighbours(state.board, e.coordinates).some(other => other.owner() == state.getOtherPlayer().color))) {
-        console.log("Es kann keine weitere Figur platziert werden, da kein Feld frei ist")
+      if (!beePlaced && GameRuleLogic.fieldsOwnedByPlayer(state.board, state.currentPlayerColor).length > 0 && !GameRuleLogic.getFieldsNextToSwarm(state.board, null)
+        .some(e => !GameRuleLogic.getNeighbours(state.board, e.coordinates).some(other => other.owner() == state.getOtherPlayer().color))) {
+        console.log('Es kann keine weitere Figur platziert werden, da kein Feld frei ist')
         uiState = new SelectMiss(state.currentPlayerColor)
-      }
-      else if (state.currentPlayerColor == 'RED' ? state.undeployedRedPieces.length == 0 : state.undeployedBluePieces.length == 0 && ownPieceFields.length == 0) {
-        console.log("Es kann keine Figur mehr bewegt werden und alle Figuren sind bereits platziert")
+      } else if (state.currentPlayerColor == 'RED' ? state.undeployedRedPieces.length == 0 : state.undeployedBluePieces.length == 0 && ownPieceFields.length == 0) {
+        console.log('Es kann keine Figur mehr bewegt werden und alle Figuren sind bereits platziert')
         uiState = new SelectMiss(state.currentPlayerColor)
-      }
-      else {
+      } else {
         uiState = new SelectPiece(ownPieceFields, state.currentPlayerColor)
       }
     } else if (shouldSelectTarget) {
       let firstAction = actions[0]
       if (firstAction instanceof FieldSelected) {
         let piece = firstAction.coordinates
-        console.log("Get possible moves of selected field", piece)
+        console.log('Get possible moves of selected field', piece)
         let possibleMoves = GameRuleLogic.possibleMoves(state, piece)
-        console.log("result", possibleMoves)
+        console.log('result', possibleMoves)
         if (possibleMoves == null) {
           return
         }
         uiState = new SelectDragTargetField(
           piece,
-          possibleMoves
+          possibleMoves,
         )
       }
       if (firstAction instanceof UndeployedPieceSelected) {
@@ -198,8 +195,8 @@ export class Viewer {
             firstAction.color,
             firstAction.index,
             state.board.fields.map(
-              col => col.map(field => field.coordinates)
-            ).reduce((a, c) => a.concat(c))
+              col => col.map(field => field.coordinates),
+            ).reduce((a, c) => a.concat(c)),
           )
         }
         // Blau hat die freie Wahl um den 1. Stein
@@ -207,14 +204,17 @@ export class Viewer {
           uiState = new SelectSetTargetField(
             firstAction.color,
             firstAction.index,
-            GameRuleLogic.getFieldsNextToSwarm(state.board, null).map(f => f.coordinates)
+            GameRuleLogic.getFieldsNextToSwarm(state.board, null).map(f => f.coordinates),
           )
-        }
-        else {
+        } else {
           uiState = new SelectSetTargetField(
             firstAction.color,
             firstAction.index,
-            GameRuleLogic.getFieldsNextToSwarm(state.board, null).map(f => f.coordinates).filter(f => GameRuleLogic.getNeighbours(state.board, f).some(e => e.owner() == state.currentPlayerColor) && !GameRuleLogic.getNeighbours(state.board, f).some(e => e.owner() == state.getOtherPlayer().color))
+            GameRuleLogic.getFieldsNextToSwarm(state.board, null)
+              .map(f => f.coordinates)
+              .filter(f => GameRuleLogic.getNeighbours(state.board, f)
+                .some(e => e.owner() == state.currentPlayerColor) && !GameRuleLogic.getNeighbours(state.board, f)
+                .some(e => e.owner() == state.getOtherPlayer().color)),
           )
         }
       }
@@ -225,7 +225,7 @@ export class Viewer {
       throw 'we should not interact at all'
     }
 
-    console.log("Nach allem kommt es zu: ", uiState)
+    console.log('Nach allem kommt es zu: ', uiState)
     // render gamestate with interactions
     this.render(new RenderState(this.applyInteractions(state, actions), uiState))
     // keep original gamestate in callback

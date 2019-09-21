@@ -1,6 +1,6 @@
-import { EventEmitter } from 'events'
+import { EventEmitter }          from 'events'
 import { GameResult, GameState } from './CurrentGame'
-import { ConsoleMessage } from './ConsoleMessage'
+import { ConsoleMessage }        from './ConsoleMessage'
 
 export abstract class Game extends EventEmitter {
   id: number

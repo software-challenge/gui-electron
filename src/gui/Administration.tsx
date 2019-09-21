@@ -1,17 +1,17 @@
-import * as React from 'react'
-import { Logger } from '../api/Logger'
+import * as React                  from 'react'
+import { Logger }                  from '../api/Logger'
 import { Button, CheckBox, Input } from './photon-fix/Components'
-import { AppSettings } from './App'
-import { useValue } from '../helpers/Controls'
+import { AppSettings }             from './App'
+import { useValue }                from '../helpers/Controls'
 
-const {app} = require('electron').remote
+const { app } = require('electron').remote
 
 
 export class Administration extends React.Component<{ settings: AppSettings, setter: (settings: Partial<AppSettings>) => any }, AppSettings> {
 
   setValue(key: string): (event: any) => void {
     return useValue(value => {
-      this.props.setter({[key]: value})
+      this.props.setter({ [key]: value })
     })
   }
 

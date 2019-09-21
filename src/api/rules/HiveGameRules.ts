@@ -8,7 +8,7 @@ export class GameRuleLogic {
       new Coordinates(c.q + 0, c.r + 1, c.s - 1),
       new Coordinates(c.q - 1, c.r + 1, c.s + 0),
       new Coordinates(c.q - 1, c.r + 0, c.s + 1),
-      new Coordinates(c.q + 0, c.r - 1, c.s + 1)
+      new Coordinates(c.q + 0, c.r - 1, c.s + 1),
     ]
   }
 
@@ -62,14 +62,14 @@ export class GameRuleLogic {
    */
   static isPathToNeighbourObstructed(board: Board, a: Coordinates, b: Coordinates): boolean {
     if (!this.isNeighbour(a, b)) {
-      console.log("Feld a ist kein Nachbar von b", a, b)
+      console.log('Feld a ist kein Nachbar von b', a, b)
       return true
     }
 
     let shared = this.sharedNeighboursOfTwoCoords(board, a, b)
     // 2 benachbarte Felder müssen mindestens 1 und höchstens 2 weiteren gemeinsamen Nachbarn haben
     if (shared.length > 2 || shared.length < 1) {
-      console.log("Unerwartete Anzahl an gemeinsamen Nachbarfeldern von a, b, shared", a, b, shared)
+      console.log('Unerwartete Anzahl an gemeinsamen Nachbarfeldern von a, b, shared', a, b, shared)
       return true
     }
 
@@ -86,14 +86,14 @@ export class GameRuleLogic {
    */
   static isPathToNeighbourObstructedExcept(board: Board, a: Coordinates, b: Coordinates, except: Coordinates): boolean {
     if (!this.isNeighbour(a, b)) {
-      console.log("Feld a ist kein Nachbar von b", a, b)
+      console.log('Feld a ist kein Nachbar von b', a, b)
       return true
     }
 
     let shared = this.sharedNeighboursOfTwoCoords(board, a, b)
     // 2 benachbarte Felder müssen mindestens 1 und höchstens 2 weiteren gemeinsamen Nachbarn haben
     if (shared.length > 2 || shared.length < 1) {
-      console.log("Unerwartete Anzahl an gemeinsamen Nachbarfeldern von a, b, shared", a, b, shared)
+      console.log('Unerwartete Anzahl an gemeinsamen Nachbarfeldern von a, b, shared', a, b, shared)
       return true
     }
 
@@ -137,7 +137,8 @@ export class GameRuleLogic {
     let tiles: Field[] = []
 
     this.getFieldsWithPiece(board).filter(e => except == null || !except.equal(e.coordinates)).forEach(field => {
-      tiles = tiles.concat(this.getNeighbours(board, field.coordinates).filter(e => e.stack.length == 0 && !e.obstructed && (except == null || !except.equal(e.coordinates)) && !tiles.some(f => e.coordinates.equal(f.coordinates))))
+      tiles = tiles.concat(this.getNeighbours(board, field.coordinates)
+        .filter(e => e.stack.length == 0 && !e.obstructed && (except == null || !except.equal(e.coordinates)) && !tiles.some(f => e.coordinates.equal(f.coordinates))))
     })
 
     return tiles
@@ -149,7 +150,7 @@ export class GameRuleLogic {
 
   static getLineBetweenCoords(board: Board, a: Coordinates, b: Coordinates): Field[] {
     if (!a.isInLineWith(b)) {
-      console.log("Feld a ", a, " ist nicht mit Feld b ", b, " in einer Reihe, kann daher nicht die Coordinaten dazwischen bekommen")
+      console.log('Feld a ', a, ' ist nicht mit Feld b ', b, ' in einer Reihe, kann daher nicht die Coordinaten dazwischen bekommen')
       return []
     }
 
@@ -177,7 +178,8 @@ export class GameRuleLogic {
     let index = 0
 
     do {
-      visitedFields = visitedFields.concat(this.getNeighbours(board, visitedFields[index].coordinates).filter(e => e.stack.length > 0 && !visitedFields.some(f => f.coordinates.equal(e.coordinates))))
+      visitedFields = visitedFields.concat(this.getNeighbours(board, visitedFields[index].coordinates)
+        .filter(e => e.stack.length > 0 && !visitedFields.some(f => f.coordinates.equal(e.coordinates))))
 
       if (visitedFields.reduce((prev, e) => prev + e.stack.length, 0) == totalPieces) {
         return true
@@ -190,97 +192,97 @@ export class GameRuleLogic {
   static validateMove(board: Board, from: Coordinates = null, to: Coordinates = null, state: GameState = null, move: Move = null): boolean {
     if (move != null) {
       if (state == null) {
-        console.log("%cValidate SET-Move with insufficient parameters, state required!", 'color: #f00')
+        console.log('%cValidate SET-Move with insufficient parameters, state required!', 'color: #f00')
         return false
       }
       from = move.fromField
       to = move.toField
       board = state.board
 
-      if (move.moveType == "SET") {
-        console.log("%cValidiere SET-move: ", 'color: #f00', move.undeployedPiece, " to: ", to)
+      if (move.moveType == 'SET') {
+        console.log('%cValidiere SET-move: ', 'color: #f00', move.undeployedPiece, ' to: ', to)
         switch (state.board.countPieces()) {
           case 0:
             return this.isOnBoard(to)
           case 1:
             return this.getFieldsNextToSwarm(state.board, null).some(e => e.coordinates.equal(to))
           default:
-            return this.getNeighbours(state.board, to).some(e => e.owner() == state.currentPlayerColor) && !this.getNeighbours(state.board, to).some(e => e.owner() == state.getOtherPlayer().color)
+            return this.getNeighbours(state.board, to)
+              .some(e => e.owner() == state.currentPlayerColor) && !this.getNeighbours(state.board, to)
+              .some(e => e.owner() == state.getOtherPlayer().color)
         }
       }
-    }
-    else if (from == null || to == null) {
-      console.log("%cValidate Move with insufficient parameters", 'color: #f00')
+    } else if (from == null || to == null) {
+      console.log('%cValidate Move with insufficient parameters', 'color: #f00')
       return false
     }
 
-    console.log("%cValidiere DRAG-move from: ", 'color: #f00', from, " to: ", to)
+    console.log('%cValidiere DRAG-move from: ', 'color: #f00', from, ' to: ', to)
     if (!this.isOnBoard(from) || !this.isOnBoard(to)) {
-      console.log("Korrumpierte Koordinaten gegeben (out of board): ", from, to)
+      console.log('Korrumpierte Koordinaten gegeben (out of board): ', from, to)
       return false
     }
 
     if (board.getField(from).stack.length < 1) {
-      console.log("Keine zu ziehende Figur auf dem Feld gefunden: ", from)
+      console.log('Keine zu ziehende Figur auf dem Feld gefunden: ', from)
       return false
-    }
-    else if (board.getField(from).stack.length > 1 && board.getTopPiece(from).kind != 'BEETLE') {
-      console.log("Beim Stack mit mehr als 1 piece auf dem Feld: ", board.getField(from), " ist das oberste Piece kein BEETLE!!")
+    } else if (board.getField(from).stack.length > 1 && board.getTopPiece(from).kind != 'BEETLE') {
+      console.log('Beim Stack mit mehr als 1 piece auf dem Feld: ', board.getField(from), ' ist das oberste Piece kein BEETLE!!')
       return false
     }
 
     // Beetle darf drauf
     if (board.getTopPiece(from).kind == 'BEETLE') {
       if (!this.getFieldsWithPiece(board).some(e => e.coordinates.equal(to)) && !this.isFieldNextToSwarm(board, to, from)) {
-        console.log("Das Ziel des Beetles ist weder auf einem anderen Insekt, noch neben dem Schwarm")
+        console.log('Das Ziel des Beetles ist weder auf einem anderen Insekt, noch neben dem Schwarm')
         return false
       }
-    }
-    else if (!this.isFieldNextToSwarm(board, to, from)) {
-      console.log("Das Feld ist nicht neben dem Schwarm: ", !this.isFieldNextToSwarm(board, to, from))
+    } else if (!this.isFieldNextToSwarm(board, to, from)) {
+      console.log('Das Feld ist nicht neben dem Schwarm: ', !this.isFieldNextToSwarm(board, to, from))
       return false
     }
 
     let clone = board.clone()
     clone.getField(from).stack.pop()
     if (!this.isSwarmConnected(clone)) {
-      console.log("Das Feld ist nicht als 1 Schwarm verbunden")
+      console.log('Das Feld ist nicht als 1 Schwarm verbunden')
       return false
     }
 
     switch (board.getTopPiece(from).kind) {
       case 'ANT':
-        console.log("Es ist eine Ameise")
+        console.log('Es ist eine Ameise')
         return this.validateAntMove(board, from, to)
       case 'BEE':
-        console.log("Es ist eine Biene")
+        console.log('Es ist eine Biene')
         return this.validateBeeMove(board, from, to)
       case 'BEETLE':
-        console.log("Es ist ein Käfer")
+        console.log('Es ist ein Käfer')
         return this.validateBeetleMove(board, from, to)
       case 'GRASSHOPPER':
-        console.log("Es ist ein Grashüpfer")
+        console.log('Es ist ein Grashüpfer')
         return this.validateGrasshopperMove(board, from, to)
       case 'SPIDER':
-        console.log("Es ist eine Spider")
+        console.log('Es ist eine Spider')
         return this.validateSpiderMove(board, from, to)
       default:
-        console.log("%cDa ist aber wirklich ordentlich was schief gegangen.... unbekannter typ: ", 'color: #f00')
+        console.log('%cDa ist aber wirklich ordentlich was schief gegangen.... unbekannter typ: ', 'color: #f00')
         console.log(board.getTopPiece(from).kind)
         return false
     }
   }
 
   static validateAntMove(board: Board, from: Coordinates, to: Coordinates): boolean {
-    console.log("Ant move validation")
+    console.log('Ant move validation')
     let swarm = this.getFieldsNextToSwarm(board, from)
     let visitedFields = [board.getField(from)]
     let index = 0
 
     do {
-      visitedFields = visitedFields.concat(this.getNeighbours(board, visitedFields[index].coordinates).filter(e => !visitedFields.some(f => f.coordinates.equal(e.coordinates))
-        && swarm.some(f => e.coordinates.equal(f.coordinates))
-        && !this.isPathToNeighbourObstructedExcept(board, visitedFields[index].coordinates, e.coordinates, from)))
+      visitedFields = visitedFields.concat(this.getNeighbours(board, visitedFields[index].coordinates)
+        .filter(e => !visitedFields.some(f => f.coordinates.equal(e.coordinates))
+          && swarm.some(f => e.coordinates.equal(f.coordinates))
+          && !this.isPathToNeighbourObstructedExcept(board, visitedFields[index].coordinates, e.coordinates, from)))
       if (visitedFields.some(e => e.coordinates.equal(to))) {
         return true
       }
@@ -294,11 +296,13 @@ export class GameRuleLogic {
   }
 
   static validateBeetleMove(board: Board, from: Coordinates, to: Coordinates): boolean {
-    return this.isNeighbour(from, to) && (this.sharedNeighboursOfTwoCoords(board, from, to).some(e => e.stack.length > 0) || board.getField(to).stack.length > 0 || board.getField(from).stack.length > 0)
+    return this.isNeighbour(from, to) && (this.sharedNeighboursOfTwoCoords(board, from, to)
+      .some(e => e.stack.length > 0) || board.getField(to).stack.length > 0 || board.getField(from).stack.length > 0)
   }
 
   static validateGrasshopperMove(board: Board, from: Coordinates, to: Coordinates): boolean {
-    return from.isInLineWith(to) && !this.getLineBetweenCoords(board, from, to).some(e => e.stack.length == 0) && !this.isNeighbour(from, to)
+    return from.isInLineWith(to) && !this.getLineBetweenCoords(board, from, to)
+      .some(e => e.stack.length == 0) && !this.isNeighbour(from, to)
   }
 
   static validateSpiderMove(board: Board, from: Coordinates, to: Coordinates): boolean {
@@ -306,11 +310,21 @@ export class GameRuleLogic {
     let swarm = this.getFieldsNextToSwarm(board, from)
 
     // 1. Schritt
-    for (let depth1 of this.getNeighbours(board, from).filter(e => !e.obstructed && e.stack.length == 0).map(e => e.coordinates).filter(e => swarm.some(s => e.equal(s.coordinates)) && !this.isPathToNeighbourObstructedExcept(board, from, e, from))) {
+    for (let depth1 of this.getNeighbours(board, from)
+      .filter(e => !e.obstructed && e.stack.length == 0)
+      .map(e => e.coordinates)
+      .filter(e => swarm.some(s => e.equal(s.coordinates)) && !this.isPathToNeighbourObstructedExcept(board, from, e, from))) {
       // 2. Schritt
-      for (let depth2 of this.getNeighbours(board, depth1).filter(e => !e.obstructed && e.stack.length == 0).map(e => e.coordinates).filter(e => !e.equal(from) && swarm.some(s => e.equal(s.coordinates)) && !this.isPathToNeighbourObstructedExcept(board, depth1, e, from))) {
+      for (let depth2 of this.getNeighbours(board, depth1)
+        .filter(e => !e.obstructed && e.stack.length == 0)
+        .map(e => e.coordinates)
+        .filter(e => !e.equal(from) && swarm.some(s => e.equal(s.coordinates)) && !this.isPathToNeighbourObstructedExcept(board, depth1, e, from))) {
         // Ist 3. Schritt = Ziel
-        if (this.getNeighbours(board, depth2).filter(e => !e.obstructed && e.stack.length == 0).map(e => e.coordinates).filter(e => !e.equal(from) && !e.equal(depth1) && swarm.some(s => e.equal(s.coordinates)) && !this.isPathToNeighbourObstructedExcept(board, depth2, e, from)).some(e => e.equal(to))) {
+        if (this.getNeighbours(board, depth2)
+          .filter(e => !e.obstructed && e.stack.length == 0)
+          .map(e => e.coordinates)
+          .filter(e => !e.equal(from) && !e.equal(depth1) && swarm.some(s => e.equal(s.coordinates)) && !this.isPathToNeighbourObstructedExcept(board, depth2, e, from))
+          .some(e => e.equal(to))) {
           return true
         }
       }
@@ -320,30 +334,32 @@ export class GameRuleLogic {
   }
 
   static possibleMoves(state: GameState, field: Coordinates): Coordinates[] {
-    console.log("Versuche possibleMoves herauszufinden für: ", field)
+    console.log('Versuche possibleMoves herauszufinden für: ', field)
     if (state.board.getTopPiece(field) == null) {
-      console.log("Irgendwas ist schief gegangen, das Feld hat nämlich keine pieces: ", field, state.board)
+      console.log('Irgendwas ist schief gegangen, das Feld hat nämlich keine pieces: ', field, state.board)
       return null
     }
 
     if (this.getQueen(state.board, state.currentPlayerColor) == null) {
-      console.log("Ohne Queen geht hier nichts...")
+      console.log('Ohne Queen geht hier nichts...')
       return []
     }
 
     let moves = []
-    let allFields = state.board.getTopPiece(field).kind == 'BEETLE' ? this.getFieldsNextToSwarm(state.board, field).concat(this.getFieldsWithPiece(state.board).filter(e => !e.coordinates.equal(state.board.getField(field).coordinates))) : this.getFieldsNextToSwarm(state.board, field)
-    console.log("Von den möglichen Felder zum ziehen, kommen in Frage: ", allFields)
+    let allFields = state.board.getTopPiece(field).kind == 'BEETLE' ? this.getFieldsNextToSwarm(state.board, field)
+      .concat(this.getFieldsWithPiece(state.board)
+        .filter(e => !e.coordinates.equal(state.board.getField(field).coordinates))) : this.getFieldsNextToSwarm(state.board, field)
+    console.log('Von den möglichen Felder zum ziehen, kommen in Frage: ', allFields)
 
     // fuers erste brute-force durch
     for (let f of allFields) {
       if (this.validateMove(state.board, field, f.coordinates)) {
-        console.log("Valid move found", f.coordinates)
+        console.log('Valid move found', f.coordinates)
         moves.push(f.coordinates)
       }
     }
 
-    console.log("Possible Moves outcome: ", moves)
+    console.log('Possible Moves outcome: ', moves)
     return moves
   }
 }

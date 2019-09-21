@@ -1,15 +1,16 @@
-import * as fs from 'fs'
+import * as fs   from 'fs'
 import * as path from 'path'
-import { log } from '../helpers/Utils'
+import { log }   from '../helpers/Utils'
 
 export class Logger {
   private static logger: Logger
 
   public static getLogger() {
-    if(!this.logger) {
+    if (!this.logger) {
       let logPath = process.env.SGC_LOG_PATH
-      if(!fs.existsSync(logPath))
+      if (!fs.existsSync(logPath)) {
         fs.mkdirSync(logPath)
+      }
       const d = new Date()
       let logFile = path.join(logPath, `software-challenge-gui-${d.getFullYear()}.${d.getUTCMonth() + 1}.${d.getUTCDate()}.log`)
       log('logging to ' + logFile)
@@ -25,7 +26,7 @@ export class Logger {
   private static StringToColor = (str: string) => {
     const colours = 32
     let clr = 0
-    for(let i = 0; i < str.length; i++) {
+    for (let i = 0; i < str.length; i++) {
       clr += str.charCodeAt(i)
       clr %= colours
     }
@@ -36,18 +37,18 @@ export class Logger {
     this.logToHTML = logToHTML
     this.logFile = logFile
     this.logToConsole = logToConsole
-    if(logToHTML) {
+    if (logToHTML) {
       this.logFile = this.logFile + '.html'
     }
     try {
-      if(!fs.existsSync(this.logFile)) {
+      if (!fs.existsSync(this.logFile)) {
         this.createLogFile()
       } else {
-        if(!fs.existsSync(this.logFile)) {
+        if (!fs.existsSync(this.logFile)) {
           fs.writeFileSync(this.logFile, '')
         }
       }
-    } catch(err) {
+    } catch (err) {
       console.log('Could not create log file, falling back to console logging.')
       this.logToHTML = false
       this.logFile = null
@@ -56,11 +57,11 @@ export class Logger {
   }
 
   private __log(timestamp: string, actor: string, focus: string, message: string) {
-    if(this.logToConsole) {
+    if (this.logToConsole) {
       console.log(`[${timestamp}] ${actor}:${focus}:\n${message}\n\n`)
     }
-    if(this.logFile) {
-      if(this.logToHTML) {
+    if (this.logFile) {
+      if (this.logToHTML) {
         fs.appendFile(this.logFile, `
           <div class="message" actor="${actor.replace(/\W/g, '')}" focus="${focus.replace(/\W/g, '')}">
             <div class="header" style="color: ${Logger.StringToColor(actor)};">
@@ -70,9 +71,9 @@ export class Logger {
             </div>
             <pre class="message-content">${(message + '').replace(/\</g, '&lt;').replace(/\>/g, '&gt;').trim()}</pre>
           </div>
-        `, (err) => { if(err) { console.error(err) } })
+        `, (err) => { if (err) { console.error(err) } })
       } else {
-        fs.appendFile(this.logFile, message, (err) => { if(err) { console.error(err) } })
+        fs.appendFile(this.logFile, message, (err) => { if (err) { console.error(err) } })
       }
     }
   }
@@ -96,7 +97,7 @@ export class Logger {
   }
 
   public focus(actor: string, focus: string) {
-    return {log: (message) => this.log(actor, focus, message)}
+    return { log: (message) => this.log(actor, focus, message) }
   }
 
   public getLogFilePath(): string {
@@ -104,7 +105,7 @@ export class Logger {
   }
 
   public getCompleteLog(): string {
-    if(this.logFile) {
+    if (this.logFile) {
       return fs.readFileSync(this.logFile).toString()
     } else {
       return ''

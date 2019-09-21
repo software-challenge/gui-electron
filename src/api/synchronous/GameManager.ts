@@ -1,7 +1,7 @@
-import { GameCreationOptions } from '../rules/GameCreationOptions'
+import { GameCreationOptions }        from '../rules/GameCreationOptions'
 import { GameManagerWorkerInterface } from './GameManagerWorkerInterface'
-import { Move } from '../rules/CurrentGame'
-import { GameInfo } from './GameInfo'
+import { Move }                       from '../rules/CurrentGame'
+import { GameInfo }                   from './GameInfo'
 
 export class GameManager {
   private gmwi: GameManagerWorkerInterface
@@ -18,9 +18,9 @@ export class GameManager {
   public createGameId(gameName: string, isReplay: boolean): number {
     let newGameId = this.nextID++
     this.gameInfos.set(newGameId, {
-      id: newGameId,
-      name: gameName,
-      isReplay: isReplay,
+      id:          newGameId,
+      name:        gameName,
+      isReplay:    isReplay,
       currentTurn: 0,
     })
     console.log('Created game', newGameId, this.getGameInfo(newGameId))
@@ -28,7 +28,11 @@ export class GameManager {
   }
 
   public getGameId(gameName: string): number {
-    this.gameInfos.forEach((value, key, map) => { if (value.name == gameName) return key })
+    this.gameInfos.forEach((value, key, map) => {
+      if (value.name == gameName) {
+        return key
+      }
+    })
     throw Error('A Game with name \'' + gameName + '\' does not exist!')
   }
 

@@ -1,7 +1,7 @@
 /// <reference path="phaser.d.ts"/>
 
 import 'phaser'
-import { remote } from 'electron'
+import { remote }                                                                                                                                                                                                                                                                                                      from 'electron'
 import { Board, Piece, Coordinates, FieldSelected, FIELDSIZE, SHIFT, PLAYERCOLOR, PIECETYPE, FIELDPIXELWIDTH, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectPiece, UndeployedPieceSelected, SelectDragTargetField, SelectSetTargetField, UiState, ScreenCoordinates, SelectMiss, MissSelected } from '../../api/rules/CurrentGame'
 
 //const initialBoard = GameRuleLogic.addBlockedFields(new Board())
@@ -103,9 +103,9 @@ export class SimpleScene extends Phaser.Scene {
     }
     sprite = this.make.sprite(
       {
-        key: key,
-        x: sx,
-        y: sy,
+        key:   key,
+        x:     sx,
+        y:     sy,
         scale: scale * factor,
       },
     )
@@ -114,9 +114,9 @@ export class SimpleScene extends Phaser.Scene {
 
     color = this.make.sprite(
       {
-        key: ownerColor == 'RED' ? 'red' : 'blue',
-        x: sx,
-        y: sy,
+        key:   ownerColor == 'RED' ? 'red' : 'blue',
+        x:     sx,
+        y:     sy,
         scale: factor,
       },
     )
@@ -133,9 +133,9 @@ export class SimpleScene extends Phaser.Scene {
     let sy = coordinates.y
     background = this.make.sprite(
       {
-        key: 'field',
-        x: sx,
-        y: sy,
+        key:   'field',
+        x:     sx,
+        y:     sy,
         scale: 1,
       },
     )
@@ -145,9 +145,9 @@ export class SimpleScene extends Phaser.Scene {
     if (obstructed) {
       sprite = this.make.sprite(
         {
-          key: 'obstructed1',
-          x: sx,
-          y: sy,
+          key:   'obstructed1',
+          x:     sx,
+          y:     sy,
           scale: 0.09,
         },
       )
@@ -179,7 +179,7 @@ export class SimpleScene extends Phaser.Scene {
 
     return {
       background: background,
-      color: color,
+      color:      color,
       foreground: sprite,
     }
   }
@@ -188,7 +188,6 @@ export class SimpleScene extends Phaser.Scene {
   createBoardGraphics(board: Board): FieldGraphics[][] {
     // TODO: use map instead of Array.from
     return Array.from(board.fields, (col,
-
       x) => {
       return Array.from(col, (field, y) => {
         if (field != null) {
@@ -211,7 +210,8 @@ export class SimpleScene extends Phaser.Scene {
           if (field.obstructed) {
             return this.createFieldGraphic(new ScreenCoordinates(sx, sy), true, null, null, [])
           } else {
-            return this.createFieldGraphic(new ScreenCoordinates(sx, sy), false, ownerColor, kind, field.stack.slice(0, -1).map(p => [p.kind, p.color]))
+            return this.createFieldGraphic(new ScreenCoordinates(sx, sy), false, ownerColor, kind, field.stack.slice(0, -1)
+              .map(p => [p.kind, p.color]))
           }
         }
       })
@@ -260,7 +260,7 @@ export class SimpleScene extends Phaser.Scene {
   }
 
   handleClick(event: any) {
-    console.log("Clicked: (X: ", event.position.x, ", Y: ", event.position.y, ")")
+    console.log('Clicked: (X: ', event.position.x, ', Y: ', event.position.y, ')')
     let pos = new ScreenCoordinates(event.position.x - offsetX, event.position.y - offsetY)
     let target = pos.boardCoordinates()
     let up = this.undeployedPiece(event.position.x, event.position.y)
@@ -296,9 +296,9 @@ export class SimpleScene extends Phaser.Scene {
     fields.forEach(f => {
       let c = f.screenCoordinates()
       this.markers.push(this.make.sprite({
-        key: 'marker',
-        x: c.x + offsetX,
-        y: c.y + offsetY,
+        key:   'marker',
+        x:     c.x + offsetX,
+        y:     c.y + offsetY,
         scale: 1,
         depth: 50,
       }))
@@ -307,21 +307,20 @@ export class SimpleScene extends Phaser.Scene {
 
   markUndeployed(state: GameState, color: PLAYERCOLOR) {
     let x = color == 'RED' ? 60 : 740
-    if (state.turn > 5 && (color == 'RED' ? state.undeployedRedPieces.some(e => e.kind == "BEE") : state.undeployedBluePieces.some(e => e.kind == 'BEE'))) {
+    if (state.turn > 5 && (color == 'RED' ? state.undeployedRedPieces.some(e => e.kind == 'BEE') : state.undeployedBluePieces.some(e => e.kind == 'BEE'))) {
       this.markers.push(this.make.sprite({
-        key: 'marker',
-        x: x,
-        y: 90,
+        key:   'marker',
+        x:     x,
+        y:     90,
         scale: 1,
         depth: 50,
       }))
-    }
-    else {
+    } else {
       this.undeployedPieceGraphics[color].forEach((_u: FieldGraphics, i: number) => {
         this.markers.push(this.make.sprite({
-          key: 'marker',
-          x: x,
-          y: 90 + i * 64,
+          key:   'marker',
+          x:     x,
+          y:     90 + i * 64,
           scale: 1,
           depth: 50,
         }))
@@ -349,12 +348,12 @@ export class SimpleScene extends Phaser.Scene {
     let coordinates = this.selectedPiece
     let sprite = this.graphics[coordinates.q + SHIFT][coordinates.r + SHIFT].foreground
     this.tweens.add({
-      targets: [sprite],
-      y: sprite.y - 20,
-      repeat: -1, // infinite loop
-      yoyo: true,
+      targets:  [sprite],
+      y:        sprite.y - 20,
+      repeat:   -1, // infinite loop
+      yoyo:     true,
       duration: 300,
-      ease: Phaser.Math.Easing.Back.In,
+      ease:     Phaser.Math.Easing.Back.In,
     })
   }
 
@@ -374,10 +373,10 @@ export class SimpleScene extends Phaser.Scene {
       this.graphics[move.toField.screenCoordinates().x][move.toField.screenCoordinates().y].foreground = this.graphics[move.fromField.screenCoordinates().x][move.fromField.screenCoordinates().y].foreground
       this.graphics[move.fromField.screenCoordinates().x][move.fromField.screenCoordinates().y].foreground = null
       this.tweens.add({
-        targets: [spriteToMove],
-        x: move.toField.screenCoordinates().x,
-        y: move.toField.screenCoordinates().y,
-        duration: this.animationTime,
+        targets:    [spriteToMove],
+        x:          move.toField.screenCoordinates().x,
+        y:          move.toField.screenCoordinates().y,
+        duration:   this.animationTime,
         onComplete: () => {
           if (targetGraphic != null) {
             targetGraphic.destroy()
@@ -405,42 +404,42 @@ export class SimpleScene extends Phaser.Scene {
    */
   boardEqualsView(board: Board) {
     /*
-    let statesDoMatch = true
-    let keyToFieldType = {
-      'red': Board.Fieldtype.red,
-      'blue': Board.Fieldtype.blue,
-      'rock': Board.Fieldtype.obstructed,
-    }
-    this.graphics.forEach((col, x) => {
-      col.forEach((field, y) => {
-        let actual: FIELDTYPE
-        if(field.foreground == null) {
-          actual = Board.Fieldtype.empty
-        } else {
-          actual = field.foreground.getData('fieldType')
-        }
-        let expected = board.fields[x][y]
-        if(actual != expected) {
-          statesDoMatch = false
-          console.warn(`got field difference on (${x},${y})`, {actual: actual, expected: expected})
-        }
-        let expectedCoordinates: Coordinates = this.fieldCoordinates({x: x, y: y})
-        if(field.foreground != null) {
-          if(expectedCoordinates.x != field.foreground.x || expectedCoordinates.y != field.foreground.y) {
-            // NOTE that we are ignoring not matching coordinates (only logging
-            //them) because the sprite may be on its way to the final position.
-            //This enables adding animations on already animating sprites and
-            //resolves the problem where an animation is nearly not finished but
-            //the board has to be rendered for the next state, canceling all
-            //animations.
-            console.warn(`sprite was not on it's place on (${x},${y})`, field.foreground)
-          }
-        }
-      })
-    })
-    return statesDoMatch
-    TODO
-    */
+     let statesDoMatch = true
+     let keyToFieldType = {
+     'red': Board.Fieldtype.red,
+     'blue': Board.Fieldtype.blue,
+     'rock': Board.Fieldtype.obstructed,
+     }
+     this.graphics.forEach((col, x) => {
+     col.forEach((field, y) => {
+     let actual: FIELDTYPE
+     if(field.foreground == null) {
+     actual = Board.Fieldtype.empty
+     } else {
+     actual = field.foreground.getData('fieldType')
+     }
+     let expected = board.fields[x][y]
+     if(actual != expected) {
+     statesDoMatch = false
+     console.warn(`got field difference on (${x},${y})`, {actual: actual, expected: expected})
+     }
+     let expectedCoordinates: Coordinates = this.fieldCoordinates({x: x, y: y})
+     if(field.foreground != null) {
+     if(expectedCoordinates.x != field.foreground.x || expectedCoordinates.y != field.foreground.y) {
+     // NOTE that we are ignoring not matching coordinates (only logging
+     //them) because the sprite may be on its way to the final position.
+     //This enables adding animations on already animating sprites and
+     //resolves the problem where an animation is nearly not finished but
+     //the board has to be rendered for the next state, canceling all
+     //animations.
+     console.warn(`sprite was not on it's place on (${x},${y})`, field.foreground)
+     }
+     }
+     })
+     })
+     return statesDoMatch
+     TODO
+     */
     return false
   }
 }
@@ -462,12 +461,12 @@ export class HiveEngine {
   constructor(element: HTMLCanvasElement) {
     this.element = element
     let gameConfig = {
-      width: 800,
-      height: 800,
-      pixelArt: false,
+      width:       800,
+      height:      800,
+      pixelArt:    false,
       transparent: true,
-      canvas: this.element,
-      fps: {
+      canvas:      this.element,
+      fps:         {
         target: 10,
       },
     }
@@ -495,18 +494,17 @@ export class HiveEngine {
     this.scene.deselectFields()
     if (state.uiState instanceof SelectMiss) {
       this.scene.missMoveButton = this.scene.make.sprite({
-        key: 'missButton',
-        x: state.gameState.currentPlayerColor == 'RED' ? 180 : 620,
-        y: 700,
-        scale: 0.4
+        key:   'missButton',
+        x:     state.gameState.currentPlayerColor == 'RED' ? 180 : 620,
+        y:     700,
+        scale: 0.4,
       })
     } else if (state.uiState instanceof SelectPiece) {
       this.selectableFields = state.uiState.selectableFieldCoordinates
       this.scene.markUndeployed(state.gameState, state.uiState.undeployedColor)
-      if (state.gameState.turn > 5 && (state.uiState.undeployedColor == 'RED' ? state.gameState.undeployedRedPieces.some(e => e.kind == "BEE") : state.gameState.undeployedBluePieces.some(e => e.kind == 'BEE'))) {
+      if (state.gameState.turn > 5 && (state.uiState.undeployedColor == 'RED' ? state.gameState.undeployedRedPieces.some(e => e.kind == 'BEE') : state.gameState.undeployedBluePieces.some(e => e.kind == 'BEE'))) {
         this.selectableUndeployed = [{ color: state.gameState.currentPlayerColor, index: 0 }]
-      }
-      else {
+      } else {
         this.scene.undeployedPieceGraphics[state.gameState.currentPlayerColor].forEach((_u: FieldGraphics, i: number) => {
           this.selectableUndeployed.push({ color: state.gameState.currentPlayerColor, index: i })
         })
@@ -541,27 +539,27 @@ export class HiveEngine {
 
   interact(callback: (interaction: InteractionEvent) => void) {
     // interaction requested
-    console.log("%cInteraction happend!", "color: #006400")
+    console.log('%cInteraction happend!', 'color: #006400')
 
     // activate callbacks...
     this.scene.fieldClickHandler = (target: Coordinates) => {
-      console.log("clicked on", target)
+      console.log('clicked on', target)
       callback(this.selectableFields.some(s => target.equal(s))
         ? new FieldSelected(target)
         : 'cancelled')
     }
     this.scene.undeployedClickHandler = (target: Undeployed) => {
-      console.log("clicked undeployed", target)
+      console.log('clicked undeployed', target)
       callback(this.selectableUndeployed.some(s => s.color == target.color && target.index == s.index)
         ? new UndeployedPieceSelected(target)
         : 'cancelled')
     }
     this.scene.outsideClickHandler = (target: Coordinates) => {
-      console.log("clicked outside of field", target)
+      console.log('clicked outside of field', target)
       callback('cancelled')
     }
     this.scene.missClickHandler = (target: Coordinates) => {
-      console.log("clicked Zug aussetzen", target)
+      console.log('clicked Zug aussetzen', target)
       callback(new MissSelected())
     }
   }

@@ -1,6 +1,6 @@
 // this is forked from the main node process in GameManagerWorkerInterface.ts
 import { AsyncApi } from './AsyncApi'
-import { Logger } from '../Logger'
+import { Logger }   from '../Logger'
 
 process.on('unhandledRejection', (reason, promise) => {
   // @ts-ignore

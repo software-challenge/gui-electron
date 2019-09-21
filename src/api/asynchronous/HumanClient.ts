@@ -1,6 +1,6 @@
 import { GameState, Move, PLAYERCOLOR } from '../rules/CurrentGame'
-import { GameClient } from './LiveGame'
-import { GenericPlayer } from './PlayerClient'
+import { GameClient }                   from './LiveGame'
+import { GenericPlayer }                from './PlayerClient'
 
 import { AsyncApi } from './AsyncApi'
 
@@ -27,11 +27,11 @@ export class HumanClient extends GenericPlayer implements GameClient {
     this.on('moverequest', this.handleMoveRequest)
     this.on('state', s => this.state = s)
     this.on('error', error => {
-      Logger.getLogger().log('HumanClient', 'Message-Handler', "Fehler menschlicher Spieler")
+      Logger.getLogger().log('HumanClient', 'Message-Handler', 'Fehler menschlicher Spieler')
     })
   }
 
-  handleMoveRequest = async function () {
+  handleMoveRequest = async function() {
     Logger.getLogger().log('HumanClient', 'handleMoveRequest', 'handling move request')
     console.log('move request for game', this.gameId)
 
@@ -47,12 +47,10 @@ export class HumanClient extends GenericPlayer implements GameClient {
           '<data class="setmove">' +
           '<piece owner="' + this.state.currentPlayerColor + '" type="' + move.undeployedPiece + '" />' +
           '<destination x="' + move.toField.q + '" y="' + move.toField.r + '" z="' + move.toField.s + '"></destination>'
-      }
-      else if (move.moveType == 'MISS') {
+      } else if (move.moveType == 'MISS') {
         xml = xml + '<data class="missmove">'
-      }
-      else {
-        throw "Unerwarteter MoveType"
+      } else {
+        throw 'Unerwarteter MoveType'
       }
       xml = xml + '</data></room>'
       Logger.getLogger().log('HumanClient', 'handleMoveRequest', 'Sending move ' + xml)
@@ -66,7 +64,7 @@ export class HumanClient extends GenericPlayer implements GameClient {
   }
 
   stop() {
-    const stop = async function () {
+    const stop = async function() {
       Logger.getLogger().log('HumanClient', 'stop', 'Human player stopped')
     }.bind(this)
     return stop()

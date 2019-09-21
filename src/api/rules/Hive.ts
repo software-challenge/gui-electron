@@ -1,6 +1,6 @@
-import * as deepEqual from 'deep-equal'
-import { GameRuleLogic } from './HiveGameRules';
-import { Undeployed } from '../../viewer/Engine/HiveEngine';
+import * as deepEqual    from 'deep-equal'
+import { GameRuleLogic } from './HiveGameRules'
+import { Undeployed }    from '../../viewer/Engine/HiveEngine'
 
 export type LineDirection = 'HORIZONTAL' | 'VERTICAL' | 'RISING_DIAGONAL' | 'FALLING_DIAGONAL';
 export const ALL_DIRECTIONS: LineDirection[] = ['HORIZONTAL', 'VERTICAL', 'RISING_DIAGONAL', 'FALLING_DIAGONAL']
@@ -8,7 +8,7 @@ export const ALL_DIRECTIONS: LineDirection[] = ['HORIZONTAL', 'VERTICAL', 'RISIN
 export const FIELDSIZE = 11 // diameter of the hexagon board
 export const SHIFT = 5 // floor(FIELDSIZE/2)
 export const FIELDPIXELWIDTH = 34
-export const STARTING_PIECES = "QSSSGGBBAAA"
+export const STARTING_PIECES = 'QSSSGGBBAAA'
 
 export class GameState {
   // REMEMBER to extend clone method when adding attributes here!
@@ -47,15 +47,15 @@ export class GameState {
     gs.blue = Player.fromJSON(json.blue[0])
     gs.board = Board.fromJSON(json.board[0])
     gs.undeployedRedPieces = []
-    if (json.undeployedRedPieces[0].piece != null && typeof json.undeployedRedPieces[0].piece != "undefined") {
+    if (json.undeployedRedPieces[0].piece != null && typeof json.undeployedRedPieces[0].piece != 'undefined') {
       json.undeployedRedPieces[0].piece.forEach(p => {
-        gs.undeployedRedPieces.push(Piece.fromJSON(p));
+        gs.undeployedRedPieces.push(Piece.fromJSON(p))
       })
     }
     gs.undeployedBluePieces = []
-    if (json.undeployedBluePieces[0].piece != null && typeof json.undeployedRedPieces[0].piece != "undefined") {
+    if (json.undeployedBluePieces[0].piece != null && typeof json.undeployedRedPieces[0].piece != 'undefined') {
       json.undeployedBluePieces[0].piece.forEach(p => {
-        gs.undeployedBluePieces.push(Piece.fromJSON(p));
+        gs.undeployedBluePieces.push(Piece.fromJSON(p))
       })
     }
     if (json.lastMove) {
@@ -66,12 +66,18 @@ export class GameState {
 
   static parsePiece(pc: PLAYERCOLOR, c: String): Piece {
     switch (c) {
-      case 'Q': return new Piece('BEE', pc)
-      case 'B': return new Piece('BEETLE', pc)
-      case 'G': return new Piece('GRASSHOPPER', pc)
-      case 'S': return new Piece('SPIDER', pc)
-      case 'A': return new Piece('ANT', pc)
-      default: throw "Expected piecetype character to be one of Q,B,G,S or A, was: $c"
+      case 'Q':
+        return new Piece('BEE', pc)
+      case 'B':
+        return new Piece('BEETLE', pc)
+      case 'G':
+        return new Piece('GRASSHOPPER', pc)
+      case 'S':
+        return new Piece('SPIDER', pc)
+      case 'A':
+        return new Piece('ANT', pc)
+      default:
+        throw 'Expected piecetype character to be one of Q,B,G,S or A, was: $c'
     }
   }
 
@@ -96,8 +102,9 @@ export class GameState {
     clone.red = Player.lift(clone.red)
     clone.blue = Player.lift(clone.blue)
     clone.board = Board.lift(clone.board)
-    if (clone.lastMove)
+    if (clone.lastMove) {
       clone.lastMove = Move.lift(clone.lastMove)
+    }
     return clone
   }
 
@@ -175,7 +182,7 @@ export class ArrayCoordinates {
 
   constructor(x: number, y: number) {
     if (x < 0 || y < 0 || x > FIELDSIZE - 1 || y > FIELDSIZE - 1) {
-      console.log("Given 2d-coordinates are corrupted: {x: " + x + ", y: " + y + "}")
+      console.log('Given 2d-coordinates are corrupted: {x: ' + x + ', y: ' + y + '}')
       return null
     }
     this.x = x
@@ -197,18 +204,18 @@ export class Coordinates {
     this.r = r
     this.s = s
     if (Math.round(q + r + s) != 0) {
-      console.log("Given coordinates are corrupted: " + this)
+      console.log('Given coordinates are corrupted: ' + this)
       return null
     }
     if (!GameRuleLogic.isOnBoard(this)) {
-      console.log("Given coordinates are out of field: " + this)
+      console.log('Given coordinates are out of field: ' + this)
     }
   }
 
   screenCoordinates(): ScreenCoordinates {
     let axial = {
       q: this.q,
-      r: this.s
+      r: this.s,
     }
     let x = FIELDPIXELWIDTH * (Math.sqrt(3.0) * axial.q + Math.sqrt(3.0) / 2 * axial.r)
     let y = FIELDPIXELWIDTH * (3.0 / 2 * axial.r)
@@ -229,7 +236,7 @@ export class Coordinates {
   }
 
   isInLineWith(c: Coordinates): boolean {
-    return this.q - c.q == - this.r + c.r && this.s == c.s || this.q - c.q == - this.s + c.s && this.r == c.r || this.s - c.s == - this.r + c.r && this.q == c.q
+    return this.q - c.q == -this.r + c.r && this.s == c.s || this.q - c.q == -this.s + c.s && this.r == c.r || this.s - c.s == -this.r + c.r && this.q == c.q
   }
 
   clone(): Coordinates {
@@ -237,7 +244,7 @@ export class Coordinates {
   }
 
   toString(): string {
-    return "{ q: " + this.q + ", r: " + this.r + ", s: " + this.s + " }"
+    return '{ q: ' + this.q + ', r: ' + this.r + ', s: ' + this.s + ' }'
   }
 }
 
@@ -257,12 +264,12 @@ export class Piece {
     if (json['$']) {
       return new Piece(
         json['$']['type'],
-        json['$']['owner']
+        json['$']['owner'],
       )
     } else {
       return new Piece(
         json['type'],
-        json['owner']
+        json['owner'],
       )
     }
   }
@@ -337,7 +344,7 @@ export class Board {
             stack.push(Piece.fromJSON(p))
           })
         }
-        b.fields[c.arrayCoordinates().x][c.arrayCoordinates().y] = new Field(stack, c, f.$.isObstructed == "true")
+        b.fields[c.arrayCoordinates().x][c.arrayCoordinates().y] = new Field(stack, c, f.$.isObstructed == 'true')
       })
     })
     return b
@@ -489,6 +496,7 @@ export class Player {
 }
 
 export type MOVETYPE = 'SET' | 'DRAG' | 'MISS'
+
 export class Move {
   readonly fromField: Coordinates
   readonly undeployedPiece: PIECETYPE
@@ -501,8 +509,7 @@ export class Move {
       this.fromField = fromFieldOrPiece
     } else if (typeof fromFieldOrPiece == 'undefined' || fromFieldOrPiece == null) {
       this.moveType = 'MISS'
-    }
-    else {
+    } else {
       this.moveType = 'SET'
       this.undeployedPiece = fromFieldOrPiece
     }

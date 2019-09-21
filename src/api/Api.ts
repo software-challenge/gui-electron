@@ -9,7 +9,7 @@ export class Api {
   private static viewer: Viewer
 
   static getGameManager(): GameManager {
-    if(!this.gameManager) {
+    if (!this.gameManager) {
       this.gameManager = new GameManager()
     }
     return this.gameManager
@@ -17,7 +17,7 @@ export class Api {
 
 
   static getViewer() {
-    if(!this.viewer) {
+    if (!this.viewer) {
       this.viewer = new Viewer()
     }
     return this.viewer

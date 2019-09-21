@@ -1,5 +1,5 @@
-import * as React from 'react'
-import { Api } from '../api/Api'
+import * as React           from 'react'
+import { Api }              from '../api/Api'
 import { ExecutableStatus } from '../api/rules/ExecutableStatus'
 
 type CheckStatus = 'Idle' | // check has not begun yet
@@ -17,9 +17,9 @@ export class ApplicationStatus extends React.Component<{}, State> {
   constructor() {
     super(null)
     this.state = {
-      checkStatus: 'Idle',
+      checkStatus:     'Idle',
       serverReachable: false,
-      errors: [],
+      errors:          [],
     }
   }
 

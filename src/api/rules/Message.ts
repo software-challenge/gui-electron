@@ -1,7 +1,7 @@
-import { GameCreationOptions } from './GameCreationOptions'
+import { GameCreationOptions }         from './GameCreationOptions'
 import { GameResult, GameState, Move } from './CurrentGame'
-import { GameStatus } from './GameStatus'
-import { TransferableMoveRequest } from './TransferableMoveRequest'
+import { GameStatus }                  from './GameStatus'
+import { TransferableMoveRequest }     from './TransferableMoveRequest'
 
 type request_type = 'list games' | 'start game' | 'get state' | 'report status' | 'send move' | 'stop';
 type response_type = 'games list' | 'game started' | 'gamestate' | 'status report' | 'move sent' | 'stopped' | 'error';

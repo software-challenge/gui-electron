@@ -1,9 +1,9 @@
 import { ExecutableStatus } from '../rules/ExecutableStatus'
-import { getLogLine, log } from '../../helpers/Utils'
-import { Logger } from '../Logger'
-import { EventEmitter } from 'events'
-import * as child_process from 'child_process'
-import * as treekill from 'tree-kill'
+import { getLogLine, log }  from '../../helpers/Utils'
+import { Logger }           from '../Logger'
+import { EventEmitter }     from 'events'
+import * as child_process   from 'child_process'
+import * as treekill        from 'tree-kill'
 import path = require('path')
 
 require('hazardous') // important to get the paths right in distributed app
@@ -116,7 +116,8 @@ export class Server extends EventEmitter {
 
   stop() {
     if (this.process != null) {
-      Logger.getLogger().log('Server', 'stop', 'Stopping server. Current Status: ' + ExecutableStatus.toString(this.getStatus()) + ' current pid: ' + this.process.pid)
+      Logger.getLogger()
+        .log('Server', 'stop', 'Stopping server. Current Status: ' + ExecutableStatus.toString(this.getStatus()) + ' current pid: ' + this.process.pid)
 
       this.process.stdin.pause()
       this.process.stdout.pause()

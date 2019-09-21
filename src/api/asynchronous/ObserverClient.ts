@@ -1,10 +1,10 @@
 ///<references path="../../node_modules/@types/node/index.d.ts" />
 
-import { GenericClient } from './GenericClient'
-import { PlayerClientOptions } from './PlayerClient'
-import { Parser } from './Parser'
+import { GenericClient }                          from './GenericClient'
+import { PlayerClientOptions }                    from './PlayerClient'
+import { Parser }                                 from './Parser'
 import { GAME_IDENTIFIER, GameResult, GameState } from '../rules/CurrentGame'
-import { Logger } from '../Logger'
+import { Logger }                                 from '../Logger'
 
 const PASSPHRASE = 'examplepassword' // TODO read from server.properties file (in server directory)
 
@@ -29,12 +29,12 @@ export class ObserverClient extends GenericClient {
 
       this.once('message', d => {
         d = d.toString() //Stringify buffer
-        if(/\<prepared/.test(d.toString())) { //Check if it's actually a message something was prepared
+        if (/\<prepared/.test(d.toString())) { //Check if it's actually a message something was prepared
           d = d.replace('<protocol>', '') //Strip unmatched protocol tag
           Parser.getJSONFromXML(d).then(res => {//Convert to JSON object
             res = res.prepared//strip outer tag
             resolve({//Resolve promise
-              roomId: res['$'].roomId,
+              roomId:       res['$'].roomId,
               reservation1: res.reservation[0],
               reservation2: res.reservation[1],
             })
@@ -51,7 +51,7 @@ export class ObserverClient extends GenericClient {
     return new Promise((res, rej) => {
       let l = (m) => {
         m = m.toString()
-        if(/joinedGameRoom/.test(m)) {
+        if (/joinedGameRoom/.test(m)) {
           this.removeListener('message', l)
           m = m.replace('<protocol>', '') //Strip unmatched protocol tag
           Parser.getJSONFromXML(m).then(result => {//Convert to JSON object
@@ -71,7 +71,7 @@ export class ObserverClient extends GenericClient {
       this.once('message', d => {//Wait for answer
         d = d.toString() //Stringify buffer
         Parser.getJSONFromXML(d).then(ans => {
-          if(ans.observed.$.roomId == roomId) {
+          if (ans.observed.$.roomId == roomId) {
             res()
           } else {
             rej(`Expected to observe room ${roomId} but got confirmation for room ${ans.observed.$.roomId}!`)
@@ -80,13 +80,13 @@ export class ObserverClient extends GenericClient {
           this.on('message', async function(msg) {
             // this.emit('message', msg);
             const decoded = await Parser.getJSONFromXML(msg)
-            if(decoded.room) {
-              switch(decoded.room.data[0]['$'].class) {
+            if (decoded.room) {
+              switch (decoded.room.data[0]['$'].class) {
                 case 'memento':
                   const state = decoded.room.data[0].state[0]
-                  if (state == null || typeof state == "undefined") {
+                  if (state == null || typeof state == 'undefined') {
                     const ipc = require('electron').ipcRenderer
-                    ipc.send("showErrorBox", "Server antwortet nicht", "Der Server hat eine ungültige Antwort gesendet, wahrscheinlich ist er gestorben...")
+                    ipc.send('showErrorBox', 'Server antwortet nicht', 'Der Server hat eine ungï¿½ltige Antwort gesendet, wahrscheinlich ist er gestorben...')
                   }
                   const gs = GameState.fromJSON(state)
                   this.emit('state', gs)
@@ -118,7 +118,8 @@ export class ObserverClient extends GenericClient {
   }
 
   setTimeoutEnabled(roomId: string, slot: 0 | 1, enabled: boolean) {
-    Logger.getLogger().log('ObserverClient', 'setTimeoutEnabled', `Setting timeout in ${roomId} and slot ${slot} to ${enabled ? 'enabled' : 'disabled'}`)
+    Logger.getLogger()
+      .log('ObserverClient', 'setTimeoutEnabled', `Setting timeout in ${roomId} and slot ${slot} to ${enabled ? 'enabled' : 'disabled'}`)
     this.writeData(`<timeout activate="${enabled}" roomId="${roomId}" slot="${slot}" />`)
   }
 

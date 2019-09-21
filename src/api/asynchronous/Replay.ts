@@ -1,8 +1,8 @@
-import { Game } from '../rules/Game'
+import { Game }                  from '../rules/Game'
 import { GameResult, GameState } from '../rules/CurrentGame'
-import { Replay as GCO_Replay } from '../rules/GameCreationOptions'
-import { Parser } from './Parser'
-import { Logger } from '../Logger'
+import { Replay as GCO_Replay }  from '../rules/GameCreationOptions'
+import { Parser }                from './Parser'
+import { Logger }                from '../Logger'
 
 export class Replay extends Game {
   constructor(replay: GCO_Replay) {
@@ -26,13 +26,13 @@ export class Replay extends Game {
           .on('end', function() { res(buf.join(''))})
       }).then(Parser.getJSONFromXML)
         .then(decoded => {
-          if(decoded.protocol) {
-            if(decoded.protocol.room) {
-              for(let room of decoded.protocol.room) {
-                if(room.data[0].state) {
+          if (decoded.protocol) {
+            if (decoded.protocol.room) {
+              for (let room of decoded.protocol.room) {
+                if (room.data[0].state) {
                   const state = room.data[0].state[0]
                   this.gameStates.push(GameState.fromJSON(state))
-                } else if(room.data[0].score) {
+                } else if (room.data[0].score) {
                   const result = room.data[0]
                   this.gameResult = GameResult.fromJSON(result)
                 }
@@ -46,7 +46,7 @@ export class Replay extends Game {
   }
 
   getState(n: number) {
-    if(n >= 0 && n < this.gameStates.length) {
+    if (n >= 0 && n < this.gameStates.length) {
       return Promise.resolve(this.gameStates[n])
     } else {
       return Promise.resolve(this.gameStates[this.gameStates.length - 1])

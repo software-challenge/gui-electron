@@ -1,12 +1,12 @@
-import { GameCreationOptions } from '../rules/GameCreationOptions'
+import { GameCreationOptions }    from '../rules/GameCreationOptions'
 import { GameState, Move, Piece } from '../rules/CurrentGame'
-import { MessageContent } from '../rules/Message'
-import { Logger } from '../Logger'
-import { Backend } from './Backend'
-import * as path from 'path'
-import * as portfinder from 'portfinder'
-import * as child_process from 'child_process'
-import { ExecutableStatus } from '../rules/ExecutableStatus'
+import { MessageContent }         from '../rules/Message'
+import { Logger }                 from '../Logger'
+import { Backend }                from './Backend'
+import * as path                  from 'path'
+import * as portfinder            from 'portfinder'
+import * as child_process         from 'child_process'
+import { ExecutableStatus }       from '../rules/ExecutableStatus'
 import promiseRetry = require('promise-retry')
 
 export interface GameServerInfo {
@@ -33,9 +33,9 @@ export class GameManagerWorkerInterface {
       this.worker = fork(
         path.join(__dirname, '/../asynchronous/GameManagerWorker.js'), {
           execArgv: process.execArgv,
-          stdio: ['inherit', 'inherit', 'inherit', 'ipc'],
-          env: {
-            'SGC_LOG_PATH': process.env.SGC_LOG_PATH,
+          stdio:    ['inherit', 'inherit', 'inherit', 'ipc'],
+          env:      {
+            'SGC_LOG_PATH':             process.env.SGC_LOG_PATH,
             'GAME_MANAGER_WORKER_PORT': backend.getPort(),
           },
         },
@@ -54,9 +54,9 @@ export class GameManagerWorkerInterface {
         .then(r => r.json())
         .catch(retry)
     }, {
-        minTimeout: 150,
-        retries: retries,
-      }).catch(e => Logger.getLogger().logError('GameManagerWorkerInterface', 'getListOfGames', 'Error getting list of games: ' + e, e))
+      minTimeout: 150,
+      retries:    retries,
+    }).catch(e => Logger.getLogger().logError('GameManagerWorkerInterface', 'getListOfGames', 'Error getting list of games: ' + e, e))
   }
 
   /**
@@ -66,17 +66,18 @@ export class GameManagerWorkerInterface {
   createGameWithOptions(options: GameCreationOptions) {
     console.log('Creating game ' + options.gameName + ' with id ' + options.gameId)
     return this.fetchBackend('start-game', {
-      method: 'POST',
-      body: JSON.stringify(options),
+      method:  'POST',
+      body:    JSON.stringify(options),
       headers: new Headers({
         'Content-Type': 'application/json',
       }),
     }).then(r => {
       return r.json().catch(() => r.text()).then(c => {
-        if (r.ok)
+        if (r.ok) {
           return c
-        else
+        } else {
           throw c
+        }
       })
     }).then(t => {
       console.log('Created game with id ' + t)
@@ -91,8 +92,8 @@ export class GameManagerWorkerInterface {
   saveReplayOfGame(gameId: number, path: string) {
     console.log('Saving replay of game with id ' + gameId + ' to ' + path)
     this.fetchBackend('save-replay', {
-      method: 'POST',
-      body: JSON.stringify({ gameId: gameId, path: path }),
+      method:  'POST',
+      body:    JSON.stringify({ gameId: gameId, path: path }),
       headers: new Headers({
         'Content-Type': 'application/json',
       }),
@@ -106,12 +107,16 @@ export class GameManagerWorkerInterface {
    */
   getState(gameId: number, turn: number) {
     return this.fetchBackend(`state?id=${gameId}&turn=${turn}`)
-      .then(r => { let json = r.json(); console.log("DEBUG", r, json); return json })
+      .then(r => {
+        let json = r.json()
+        console.log('DEBUG', r, json)
+        return json
+      })
       .then(state => {
-        console.log("with state: ", state)
+        console.log('with state: ', state)
         let gs = GameState.lift(state)
-        console.log("Got gamestate form backend", gs)
-        console.log("with state: ", state)
+        console.log('Got gamestate form backend', gs)
+        console.log('with state: ', state)
         return gs
       })
   }
@@ -131,8 +136,8 @@ export class GameManagerWorkerInterface {
    */
   sendMove(gameId: number, id: number, move: Move): Promise<number> {
     return this.fetchBackend(`send-move?id=${gameId}&moveId=${id}`, {
-      method: 'POST',
-      body: JSON.stringify(move),
+      method:  'POST',
+      body:    JSON.stringify(move),
       headers: new Headers({
         'Content-Type': 'application/json',
       }),
@@ -143,7 +148,7 @@ export class GameManagerWorkerInterface {
         this.getGameServerStatus().then(serverStatus => {
           if (serverStatus.status == ExecutableStatus.Status.ERROR) {
             const ipc = require('electron').ipcRenderer
-            ipc.send("showErrorBox", "Server Error", "Nach senden des Moves: \n\n" + value + "\n\nkam es zu folgendem Fehler:\n\n" + serverStatus.error)
+            ipc.send('showErrorBox', 'Server Error', 'Nach senden des Moves: \n\n' + value + '\n\nkam es zu folgendem Fehler:\n\n' + serverStatus.error)
           }
         })
       })

@@ -1,16 +1,16 @@
 import { GameCreationOptions, GameType } from '../rules/GameCreationOptions'
-import { Game } from '../rules/Game'
-import { LiveGame } from './LiveGame'
-import { Replay } from './Replay'
-import { AsyncApi } from './AsyncApi'
-import { GameStatus } from '../rules/GameStatus'
-import { TransferableMoveRequest } from '../rules/TransferableMoveRequest'
-import { Logger } from '../Logger'
-import { GameState, GameResult, Piece } from '../rules/CurrentGame'
-import * as express from 'express'
-import * as bodyParser from 'body-parser'
-import { log, stringify } from '../../helpers/Utils'
-import { GameServerInfo } from '../synchronous/GameManagerWorkerInterface'
+import { Game }                          from '../rules/Game'
+import { LiveGame }                      from './LiveGame'
+import { Replay }                        from './Replay'
+import { AsyncApi }                      from './AsyncApi'
+import { GameStatus }                    from '../rules/GameStatus'
+import { TransferableMoveRequest }       from '../rules/TransferableMoveRequest'
+import { Logger }                        from '../Logger'
+import { GameState, GameResult, Piece }  from '../rules/CurrentGame'
+import * as express                      from 'express'
+import * as bodyParser                   from 'body-parser'
+import { log, stringify }                from '../../helpers/Utils'
+import { GameServerInfo }                from '../synchronous/GameManagerWorkerInterface'
 
 
 export class AsyncGameManager {
@@ -37,7 +37,7 @@ export class AsyncGameManager {
           this.closer.close()
           res.send('server stopped')
         })
-      } catch(e) {
+      } catch (e) {
         // TODO extract exception handling (DRY)
         res.status(500).send(e)
       }
@@ -46,7 +46,7 @@ export class AsyncGameManager {
     this.server.get('/list-games', (req, res) => {
       try {
         res.json(Array.from(this.games.keys()))
-      } catch(e) {
+      } catch (e) {
         res.status(500).send(e)
       }
     })
@@ -63,7 +63,7 @@ export class AsyncGameManager {
           log('Error while waiting for game to ready: ' + stringify(e))
           res.status(500).send(e)
         })
-      } catch(e) {
+      } catch (e) {
         res.status(500).send(e.toString())
       }
     })
@@ -72,10 +72,10 @@ export class AsyncGameManager {
       try {
         let options = req.body
         let g: Game = this.games.get(options.gameId)
-        if(g instanceof LiveGame) {
+        if (g instanceof LiveGame) {
           g.saveReplay(options.path)
         }
-      } catch(e) {
+      } catch (e) {
         res.status(500).send(e.toString())
       }
     })
@@ -84,11 +84,11 @@ export class AsyncGameManager {
       try {
         let gameId = parseInt(req.query.id)
         let game: Game = this.games.get(gameId)
-        if(game instanceof LiveGame) {
+        if (game instanceof LiveGame) {
           game.cancel()
         }
         this.games.delete(gameId)
-      } catch(e) {
+      } catch (e) {
         res.status(500).send(e.toString())
       }
     })
@@ -96,13 +96,13 @@ export class AsyncGameManager {
     this.server.get('/status', (req, res) => {
       try {
         let gameId = parseInt(req.query.id)
-        if(this.games.has(gameId)) {//check if this game even exists
+        if (this.games.has(gameId)) {//check if this game even exists
           let game: any = this.games.get(gameId)//Fetch game, prepare answer
           res.send(this.report_status(game, gameId))
         } else {
           res.status(404).send('No game with id ' + gameId)
         }
-      } catch(e) {
+      } catch (e) {
         res.status(500).send(e)
       }
     })
@@ -111,14 +111,14 @@ export class AsyncGameManager {
       try {
         let gameId = parseInt(req.query.id)
         let turn = parseInt(req.query.turn)
-        if(this.games.has(gameId)) {
+        if (this.games.has(gameId)) {
           this.games.get(gameId).getState(turn).then(gs => {
             res.send(gs)
           })
         } else {
           res.status(404).send('No game with id ' + gameId)
         }
-      } catch(e) {
+      } catch (e) {
         res.status(500).send(e)
       }
     })
@@ -127,13 +127,13 @@ export class AsyncGameManager {
       try {
         let gameId = parseInt(req.query.id)
         let moveId = parseInt(req.query.moveId)
-        if(this.games.has(gameId)) {
+        if (this.games.has(gameId)) {
           AsyncApi.redeemMoveRequest(gameId, moveId, req.body)
           res.send(`Sent move with id ${moveId} for game ${gameId}`)
         } else {
           res.status(404).send('No game with id ' + gameId)
         }
-      } catch(e) {
+      } catch (e) {
         res.status(500).send(e)
       }
     })
@@ -143,8 +143,8 @@ export class AsyncGameManager {
         .then(server => {
           res.send({
             status: server.getStatus(),
-            port: server.getPort(),
-            error: server.stderr.join(),
+            port:   server.getPort(),
+            error:  server.stderr.join(),
           } as GameServerInfo)
         })
         .catch(e => res.status(500).send(e))
@@ -157,18 +157,18 @@ export class AsyncGameManager {
 
     resp.numberOfStates = game.getStateCount()
 
-    if(game.isReplay) {//Game is a replay, all states should be loaded, report so
+    if (game.isReplay) {//Game is a replay, all states should be loaded, report so
       resp.gameStatus = 'REPLAY'
       resp.gameResult = game.getResult()
-    } else if(game instanceof LiveGame) { //Game is a live game and might or might not be finished, let's find out
+    } else if (game instanceof LiveGame) { //Game is a live game and might or might not be finished, let's find out
       let lg: LiveGame = game
-      if(lg.isLive()) {
-        if(AsyncApi.hasMoveRequest(gameId)) {//If there's an action request currently lodged with the API
+      if (lg.isLive()) {
+        if (AsyncApi.hasMoveRequest(gameId)) {//If there's an action request currently lodged with the API
           resp.gameStatus = 'REQUIRES INPUT'
           let [id, mr] = AsyncApi.getMoveRequest(gameId)//Get the request and assemble the response. We can request this ActionRequest many times, but only redeem it once
           resp.moveRequest = {
             state: mr.state,
-            id: id,
+            id:    id,
           }
         } else { //Game is live, but doesn't require input
           resp.gameStatus = 'RUNNING'

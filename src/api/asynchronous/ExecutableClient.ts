@@ -1,8 +1,8 @@
-import { GameClient } from './LiveGame'
-import { ExecutableStatus } from '../rules/ExecutableStatus'
-import * as child_process from 'child_process'
-import { EventEmitter } from 'events'
-import { Logger } from '../Logger'
+import { GameClient }                from './LiveGame'
+import { ExecutableStatus }          from '../rules/ExecutableStatus'
+import * as child_process            from 'child_process'
+import { EventEmitter }              from 'events'
+import { Logger }                    from '../Logger'
 import { ComputerPlayer, StartType } from '../rules/GameCreationOptions'
 
 const pathLib = require('path')
@@ -21,7 +21,7 @@ export class ExecutableClient extends EventEmitter implements GameClient {
     /*program: string = 'java', options: string[] = ['-jar'], path: string, host: string = '127.0.0.1', port: number = 13050, reservation: string = ""*/
     super()
     this.workingDirectory = pathLib.dirname(player.path)
-    switch(player.startType) {
+    switch (player.startType) {
       case StartType.Java:
         this.program = 'java'
         this.arguments = ['-jar', player.path]
@@ -33,7 +33,7 @@ export class ExecutableClient extends EventEmitter implements GameClient {
     }
     this.arguments.push('--host', host)
     this.arguments.push('--port', port.toString())
-    if(reservation) {
+    if (reservation) {
       this.arguments.push('--reservation', reservation)
     }
     this.setStatus(ExecutableStatus.Status.NOT_STARTED)
@@ -43,7 +43,7 @@ export class ExecutableClient extends EventEmitter implements GameClient {
     this.ready = new Promise((res, rej) => {
       Logger.getLogger().log('ExecutableClient', 'spawn', `${this.program} ${this.arguments.join(' ')} (workdir: ${this.workingDirectory})`)
       let options = {
-        cwd: this.workingDirectory,
+        cwd:   this.workingDirectory,
         shell: false, /* do not set to true, security risk! */
       }
       this.process = child_process.spawn(this.program, this.arguments, options)
@@ -65,15 +65,16 @@ export class ExecutableClient extends EventEmitter implements GameClient {
       })
       this.emit('ready')
       setTimeout(() => {
-        if(this.status == ExecutableStatus.Status.RUNNING)
+        if (this.status == ExecutableStatus.Status.RUNNING) {
           res()
+        }
       }, 1000)
     })
     return this.ready
   }
 
   stop() {
-    if(this.process != null) {
+    if (this.process != null) {
       Logger.getLogger().log('ExecutableClient', 'stop', 'Stopping client')
       this.process.kill()
       this.setStatus(ExecutableStatus.Status.EXITED)

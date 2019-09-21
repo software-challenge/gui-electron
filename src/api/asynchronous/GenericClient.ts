@@ -1,7 +1,7 @@
 ///<references path="../../node_modules/@types/node/index.d.ts" />
 ///<references path="../../node_modules/@types/sax/index.d.ts" />
 const net = require('net')
-import * as events from 'events'
+import * as events   from 'events'
 import { SAXParser } from 'sax'
 
 export class GenericClient extends events.EventEmitter {
@@ -24,7 +24,7 @@ export class GenericClient extends events.EventEmitter {
     super()
     this.name = name
     this.clientSocket = net.createConnection(port, host, () => {
-      if(sendProtocol) {
+      if (sendProtocol) {
         this.writeData('<protocol>', () => {
           this.setStatus(ClientStatus.Status.CONNECTED) //NodeJS Sockets don't have flush, so this will have to do
         })
@@ -33,22 +33,22 @@ export class GenericClient extends events.EventEmitter {
       }
     })
     this.parser.onopentag = (tag) => {
-      if(tag.name != 'protocol') {
-        if(this.firstTagOfMessage == undefined) {
+      if (tag.name != 'protocol') {
+        if (this.firstTagOfMessage == undefined) {
           this.firstTagOfMessage = tag.name
           this.firstTagPosition = this.parser.startTagPosition - 1 // one character more for the <
           this.messageLevel = 0
         }
-        if(tag.name == this.firstTagOfMessage) {
+        if (tag.name == this.firstTagOfMessage) {
           this.messageLevel++
         }
       }
     }
     this.parser.onclosetag = (tagName) => {
-      if(tagName == this.firstTagOfMessage) {
+      if (tagName == this.firstTagOfMessage) {
         this.messageLevel--
       }
-      if(this.messageComplete()) {
+      if (this.messageComplete()) {
         const msg = this.dataSoFar.substring(this.firstTagPosition - this.offset, this.parser.position - this.offset)
         //Logger.getLogger().log(this.name ? this.name : "GenericClient", "emitMessage", msg);
         this.emit('message', msg)
@@ -72,7 +72,7 @@ export class GenericClient extends events.EventEmitter {
     this.ready = new Promise<void>((res, rej) => {
       this.on('status', s => {
         const clientName = this.name ? this.name : 'unnamed client'
-        if(s == ClientStatus.Status.CONNECTED) {
+        if (s == ClientStatus.Status.CONNECTED) {
           res()
         }
       })
@@ -107,7 +107,7 @@ export module ClientStatus {
   }
 
   export function toString(s: ClientStatus.Status): string {
-    switch(s) {
+    switch (s) {
       case ClientStatus.Status.NOT_CONNECTED:
         return 'NOT CONNECTED'
       case ClientStatus.Status.CONNECTED:

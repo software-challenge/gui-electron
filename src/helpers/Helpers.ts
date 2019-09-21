@@ -2,7 +2,7 @@ export namespace Helpers {
   export let ajax = function(url: string, callback: (result: string) => void): void {
     const xhttp = new XMLHttpRequest()
     xhttp.onreadystatechange = function() {
-      if(xhttp.readyState == 4 && xhttp.status == 200) {
+      if (xhttp.readyState == 4 && xhttp.status == 200) {
         callback(xhttp.responseText)
       }
     }

@@ -51,10 +51,10 @@ export class Sidebar extends React.Component {
 export class RetractableSidebar extends React.Component<{ retracted: boolean, id?: string, className?: string }, any> {
   render() {
     let cn = 'pane-sm sidebar retractable'
-    if(this.props.retracted) {
+    if (this.props.retracted) {
       cn += ' retracted'
     }
-    if(this.props.className) {
+    if (this.props.className) {
       cn += ' ' + this.props.className
     }
     return <div className={cn} id={this.props.id}> {this.props.children}</div>
@@ -86,21 +86,21 @@ export class Icon extends React.PureComponent<{ i: string }, any> {
 export class Button extends React.PureComponent<{ icon?: string, text?: string, onClick?: (e: any) => void, active?: boolean, enabled?: boolean, pullRight?: boolean }, any> {
   render() {
     let ic
-    if(this.props.icon) {
+    if (this.props.icon) {
       ic = <Icon i={this.props.icon}/>
     }
 
     let cn = 'btn btn-default'
-    if(this.props.active) {
+    if (this.props.active) {
       cn += ' active'
     }
 
-    if(this.props.pullRight) {
+    if (this.props.pullRight) {
       cn += ' pull-right'
     }
 
     let disabled = false
-    if(this.props.enabled === false) {
+    if (this.props.enabled === false) {
       disabled = true
     }
 
@@ -128,12 +128,12 @@ export class NavTitle extends React.PureComponent<{ title: string }, any> {
 export class NavItem extends React.PureComponent<{ icon?: string, text?: string, onClick?: (e: any) => void, active?: boolean }, any> {
   render() {
     let ic
-    if(this.props.icon) {
+    if (this.props.icon) {
       ic = <Icon i={this.props.icon}/>
     }
 
     let cn = 'nav-group-item'
-    if(this.props.active) {
+    if (this.props.active) {
       cn += ' active'
     }
 
@@ -165,7 +165,7 @@ export class SelectBox extends React.Component<{ value: string, items: SelectIte
 export class Input extends React.Component<{ value: string, onChange?: (e: any) => void, id?: string, invalid?: boolean }> {
   render() {
     const classes = ['form-control']
-    if(this.props.invalid) {
+    if (this.props.invalid) {
       classes.push('validation-errors')
     }
     return (

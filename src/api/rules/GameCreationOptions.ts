@@ -1,11 +1,11 @@
 export enum PlayerType {
-  Human = 'Human',
+  Human    = 'Human',
   Computer = 'Computer',
-  Manual = 'Manual'
+  Manual   = 'Manual'
 }
 
 export const enum StartType {
-  Java = 'Java',
+  Java   = 'Java',
   Direct = 'Direct'
 }
 

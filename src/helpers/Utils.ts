@@ -3,7 +3,7 @@ export function getReadableTimestamp(d: Date): string {
 }
 
 export function getLogLine(msg: string, time?) {
-  if(!time) {
+  if (!time) {
     time = new Date()
   }
   return `[${getReadableTimestamp(time)}] ${msg}`
@@ -18,7 +18,8 @@ export function awaitEventOnce(emitter: any, event: string): Promise<void> {
 }
 
 export function stringify(object: any) {
-  if(typeof object == 'string' || object instanceof Error)
+  if (typeof object == 'string' || object instanceof Error) {
     return object
+  }
   return JSON.stringify(object)
 }
