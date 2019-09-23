@@ -6,7 +6,6 @@ import { Button, ButtonGroup, NavGroup, NavItem, NavTitle, Pane, PaneGroup, Retr
 import { UnicodeIcon }                                                                                                            from './generic-components/Components'
 import { Administration }                                                                                                         from './Administration'
 import { GameCreation }                                                                                                           from './GameCreation'
-// XXX only for testing, remove
 import { GameCreationOptions, GameType, PlayerType, Replay }                                                                      from '../api/rules/GameCreationOptions'
 import { Game }                                                                                                                   from './Game'
 import { LogConsole }                                                                                                             from './LogConsole'

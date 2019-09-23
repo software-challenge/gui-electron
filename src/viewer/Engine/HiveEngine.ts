@@ -30,6 +30,7 @@ export class SimpleScene extends Phaser.Scene {
   public missClickHandler: (c: Coordinates) => void = (_) => { }
   public animationTime: number = 200
   public animateWater: boolean
+  public labelsCreated: boolean
 
   constructor() {
     super({ key: 'simple' })
@@ -56,18 +57,34 @@ export class SimpleScene extends Phaser.Scene {
     this.markers = []
     this.allObjects = []
     this.selectedPiece = null
-    this.createFieldLabels()
+    this.labelsCreated = false
   }
 
-  createFieldLabels() {
-    const coordTextStyle = { fontFamily: 'Arial', fontSize: 15, color: '#aaaaaa' }
-    const labelTextStyle = { fontFamily: 'Arial', fontSize: 20, color: '#aaaaaa' }
-    const textOffset = 50
-    const characters = 'ABCDEFGHIJ'
-    Array.from(Array(FIELDSIZE), (_, x) => {
-      Array.from(Array(FIELDSIZE), (_, y) => {
-        // TODO
-        //  this.add.text(fieldCoordinates.x - textOffset * 1.2, fieldCoordinates.y, `y = ${y}`, coordTextStyle).setOrigin(0.5)
+  createFieldLabels(board: Board) {
+    board.fields.forEach(col => {
+      col.forEach(field => {
+        let sx = field.coordinates.screenCoordinates().x + offsetX
+        let sy = field.coordinates.screenCoordinates().y + offsetY
+        const coordTextStyle = { fontFamily: 'Arial', fontSize: 14, color: '#000000' }
+        let lx: string
+        let ly: string
+        let lz: string
+        if (field.coordinates.q == 0 && field.coordinates.r == 0 && field.coordinates.s == 0) {
+          lx = 'x'
+          ly = 'y'
+          lz = 'z'
+        } else {
+          lx = field.coordinates.q.toString()
+          ly = field.coordinates.r.toString()
+          lz = field.coordinates.s.toString()
+        }
+        let tx = this.add.text(sx - 15, sy - 10, lx, coordTextStyle).setOrigin(0.5)
+        let ty = this.add.text(sx, sy + 15, ly, coordTextStyle).setOrigin(0.5)
+        let tz = this.add.text(sx + 15, sy - 10, lz, coordTextStyle).setOrigin(0.5)
+        Array(tx, ty, tz).forEach(t => {
+          t.depth = 60
+          t.setStroke('#FFFFFF', 3)
+        })
       })
     })
   }
@@ -186,6 +203,10 @@ export class SimpleScene extends Phaser.Scene {
 
   // creates needed graphic objects to display the given board and associates them with the board fields.
   createBoardGraphics(board: Board): FieldGraphics[][] {
+    if (!this.labelsCreated) {
+      this.createFieldLabels(board)
+      this.labelsCreated = true
+    }
     // TODO: use map instead of Array.from
     return Array.from(board.fields, (col,
       x) => {
@@ -202,11 +223,6 @@ export class SimpleScene extends Phaser.Scene {
             ownerColor = upmostPiece.color
           }
 
-          // labels, TODO, move into createFieldLabels
-          const coordTextStyle = { fontFamily: 'Arial', fontSize: 15, color: '#777777' }
-          let text = this.add.text(sx, sy, `(${field.coordinates.q},${field.coordinates.r})`, coordTextStyle).setOrigin(0.5)
-          text.depth = 60
-
           if (field.obstructed) {
             return this.createFieldGraphic(new ScreenCoordinates(sx, sy), true, null, null, [])
           } else {
@@ -222,11 +238,11 @@ export class SimpleScene extends Phaser.Scene {
     let undeployedPieceGraphics: FieldGraphics[][] = []
     undeployedPieceGraphics['RED'] = []
     undeployedRedPieces.forEach((p, i) => {
-      undeployedPieceGraphics['RED'].push(this.createFieldGraphic(new ScreenCoordinates(60, 90 + 64 * i), false, 'RED', p.kind, []))
+      undeployedPieceGraphics['RED'].push(this.createFieldGraphic(new ScreenCoordinates(UNDEPLOYED_RED_PIECES_MARGIN, UNDEPLOYED_PIECES_TOP_MARGIN + 64 * i), false, 'RED', p.kind, []))
     })
     undeployedPieceGraphics['BLUE'] = []
     undeployedBluePieces.forEach((p, i) => {
-      undeployedPieceGraphics['BLUE'].push(this.createFieldGraphic(new ScreenCoordinates(740, 90 + 64 * i), false, 'BLUE', p.kind, []))
+      undeployedPieceGraphics['BLUE'].push(this.createFieldGraphic(new ScreenCoordinates(UNDEPLOYED_BLUE_PIECES_MARGIN, UNDEPLOYED_PIECES_TOP_MARGIN + 64 * i), false, 'BLUE', p.kind, []))
     })
     return undeployedPieceGraphics
   }
@@ -242,13 +258,13 @@ export class SimpleScene extends Phaser.Scene {
   undeployedPiece(x: number, y: number): Undeployed {
     let color = null
     let index = null
-    if (x > 28 && x < 92) {
+    if (x > UNDEPLOYED_RED_PIECES_MARGIN - (64 / 2) && x < UNDEPLOYED_RED_PIECES_MARGIN + (64 / 2)) {
       color = 'RED'
-    } else if (x > 708 && x < 772) {
+    } else if (x > UNDEPLOYED_BLUE_PIECES_MARGIN - (64 / 2) && x < UNDEPLOYED_BLUE_PIECES_MARGIN + (64 / 2)) {
       color = 'BLUE'
     }
     if (color) {
-      let i = Math.round((y - 90) / 64)
+      let i = Math.round((y - UNDEPLOYED_PIECES_TOP_MARGIN) / 64)
       if (i >= 0 && i < this.undeployedPieceGraphics[color].length) {
         index = i
       }
@@ -260,7 +276,6 @@ export class SimpleScene extends Phaser.Scene {
   }
 
   handleClick(event: any) {
-    console.log('Clicked: (X: ', event.position.x, ', Y: ', event.position.y, ')')
     let pos = new ScreenCoordinates(event.position.x - offsetX, event.position.y - offsetY)
     let target = pos.boardCoordinates()
     let up = this.undeployedPiece(event.position.x, event.position.y)
@@ -309,18 +324,18 @@ export class SimpleScene extends Phaser.Scene {
     let x = color == 'RED' ? 60 : 740
     if (state.turn > 5 && (color == 'RED' ? state.undeployedRedPieces.some(e => e.kind == 'BEE') : state.undeployedBluePieces.some(e => e.kind == 'BEE'))) {
       this.markers.push(this.make.sprite({
-        key:   'marker',
-        x:     x,
-        y:     90,
+        key: 'marker',
+        x: x,
+        y: UNDEPLOYED_PIECES_TOP_MARGIN,
         scale: 1,
         depth: 50,
       }))
     } else {
       this.undeployedPieceGraphics[color].forEach((_u: FieldGraphics, i: number) => {
         this.markers.push(this.make.sprite({
-          key:   'marker',
-          x:     x,
-          y:     90 + i * 64,
+          key: 'marker',
+          x: x,
+          y: UNDEPLOYED_PIECES_TOP_MARGIN + i * 64,
           scale: 1,
           depth: 50,
         }))
@@ -404,42 +419,42 @@ export class SimpleScene extends Phaser.Scene {
    */
   boardEqualsView(board: Board) {
     /*
-     let statesDoMatch = true
-     let keyToFieldType = {
-     'red': Board.Fieldtype.red,
-     'blue': Board.Fieldtype.blue,
-     'rock': Board.Fieldtype.obstructed,
-     }
-     this.graphics.forEach((col, x) => {
-     col.forEach((field, y) => {
-     let actual: FIELDTYPE
-     if(field.foreground == null) {
-     actual = Board.Fieldtype.empty
-     } else {
-     actual = field.foreground.getData('fieldType')
-     }
-     let expected = board.fields[x][y]
-     if(actual != expected) {
-     statesDoMatch = false
-     console.warn(`got field difference on (${x},${y})`, {actual: actual, expected: expected})
-     }
-     let expectedCoordinates: Coordinates = this.fieldCoordinates({x: x, y: y})
-     if(field.foreground != null) {
-     if(expectedCoordinates.x != field.foreground.x || expectedCoordinates.y != field.foreground.y) {
-     // NOTE that we are ignoring not matching coordinates (only logging
-     //them) because the sprite may be on its way to the final position.
-     //This enables adding animations on already animating sprites and
-     //resolves the problem where an animation is nearly not finished but
-     //the board has to be rendered for the next state, canceling all
-     //animations.
-     console.warn(`sprite was not on it's place on (${x},${y})`, field.foreground)
-     }
-     }
-     })
-     })
-     return statesDoMatch
-     TODO
-     */
+    let statesDoMatch = true
+    let keyToFieldType = {
+      'red': Board.Fieldtype.red,
+      'blue': Board.Fieldtype.blue,
+      'rock': Board.Fieldtype.obstructed,
+    }
+    this.graphics.forEach((col, x) => {
+      col.forEach((field, y) => {
+        let actual: FIELDTYPE
+        if(field.foreground == null) {
+          actual = Board.Fieldtype.empty
+        } else {
+          actual = field.foreground.getData('fieldType')
+        }
+        let expected = board.fields[x][y]
+        if(actual != expected) {
+          statesDoMatch = false
+          console.warn(`got field difference on (${x},${y})`, {actual: actual, expected: expected})
+        }
+        let expectedCoordinates: Coordinates = this.fieldCoordinates({x: x, y: y})
+        if(field.foreground != null) {
+          if(expectedCoordinates.x != field.foreground.x || expectedCoordinates.y != field.foreground.y) {
+            // NOTE that we are ignoring not matching coordinates (only logging
+            //them) because the sprite may be on its way to the final position.
+            //This enables adding animations on already animating sprites and
+            //resolves the problem where an animation is nearly not finished but
+            //the board has to be rendered for the next state, canceling all
+            //animations.
+            console.warn(`sprite was not on it's place on (${x},${y})`, field.foreground)
+          }
+        }
+      })
+    })
+    return statesDoMatch
+    TODO
+    */
     return false
   }
 }
