@@ -4,8 +4,6 @@ import 'phaser'
 import { remote }                                                                                                                                                                                                                                                                                                      from 'electron'
 import { Board, Piece, Coordinates, FieldSelected, FIELDSIZE, SHIFT, PLAYERCOLOR, PIECETYPE, FIELDPIXELWIDTH, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectPiece, UndeployedPieceSelected, SelectDragTargetField, SelectSetTargetField, UiState, ScreenCoordinates, SelectMiss, MissSelected } from '../../api/rules/CurrentGame'
 
-//const initialBoard = GameRuleLogic.addBlockedFields(new Board())
-
 interface FieldGraphics {
   background: Phaser.GameObjects.Sprite;
   color: Phaser.GameObjects.Sprite;
@@ -15,6 +13,10 @@ interface FieldGraphics {
 // offsets for placing the board on the game canvas
 const offsetX = 400
 const offsetY = 400
+
+const UNDEPLOYED_RED_PIECES_MARGIN = 40
+const UNDEPLOYED_BLUE_PIECES_MARGIN = 760
+const UNDEPLOYED_PIECES_TOP_MARGIN = 70
 
 export class SimpleScene extends Phaser.Scene {
 
@@ -321,7 +323,7 @@ export class SimpleScene extends Phaser.Scene {
   }
 
   markUndeployed(state: GameState, color: PLAYERCOLOR) {
-    let x = color == 'RED' ? 60 : 740
+    let x = color == 'RED' ? UNDEPLOYED_RED_PIECES_MARGIN : UNDEPLOYED_BLUE_PIECES_MARGIN
     if (state.turn > 5 && (color == 'RED' ? state.undeployedRedPieces.some(e => e.kind == 'BEE') : state.undeployedBluePieces.some(e => e.kind == 'BEE'))) {
       this.markers.push(this.make.sprite({
         key: 'marker',
