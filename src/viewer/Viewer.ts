@@ -131,7 +131,6 @@ export class Viewer {
     let shouldSelectPiece: boolean = actions.length == 0
     let shouldSelectTarget: boolean = actions.length == 1
 
-    // XXX TODO interaction logic
     let uiState: UiState
     if (shouldSelectPiece) {
       let ownPieceFields: Coordinates[] = []
