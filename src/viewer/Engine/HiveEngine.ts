@@ -70,17 +70,17 @@ export class SimpleScene extends Phaser.Scene {
         let sx = field.coordinates.screenCoordinates().x + offsetX
         let sy = field.coordinates.screenCoordinates().y + offsetY
         const coordTextStyle = { fontFamily: 'Arial', fontSize: 14, color: '#000000' }
-        let lx
-        let ly
-        let lz
+        let lx: string
+        let ly: string
+        let lz: string
         if (field.coordinates.q == 0 && field.coordinates.r == 0 && field.coordinates.s == 0) {
           lx = 'x'
           ly = 'y'
           lz = 'z'
         } else {
-          lx = field.coordinates.q
-          ly = field.coordinates.r
-          lz = field.coordinates.s
+          lx = field.coordinates.q.toString()
+          ly = field.coordinates.r.toString()
+          lz = field.coordinates.s.toString()
         }
         let tx = this.add.text(sx - 15, sy - 10, lx, coordTextStyle).setOrigin(0.5)
         let ty = this.add.text(sx, sy + 15, ly, coordTextStyle).setOrigin(0.5)
