@@ -207,9 +207,9 @@ export class Coordinates {
       console.log('Given coordinates are corrupted: ' + this)
       return null
     }
-    if (!GameRuleLogic.isOnBoard(this)) {
-      console.log('Given coordinates are out of field: ' + this)
-    }
+    //if (!GameRuleLogic.isOnBoard(this)) {
+    //  console.log('Given coordinates are out of field: ' + this)
+    //}
   }
 
   screenCoordinates(): ScreenCoordinates {
@@ -237,6 +237,10 @@ export class Coordinates {
 
   isInLineWith(c: Coordinates): boolean {
     return this.q - c.q == -this.r + c.r && this.s == c.s || this.q - c.q == -this.s + c.s && this.r == c.r || this.s - c.s == -this.r + c.r && this.q == c.q
+  }
+
+  distanceTo(c: Coordinates): integer {
+    return Math.floor((Math.abs(c.q - this.q) + Math.abs(c.r - this.r) + Math.abs(c.s - this.s)) / 2)
   }
 
   clone(): Coordinates {
@@ -352,9 +356,9 @@ export class Board {
 
   constructor() {
     this.fields = []
-    for (var x: number = -SHIFT; x <= SHIFT; x++) {
+    for (let x: number = -SHIFT; x <= SHIFT; x++) {
       this.fields[x + SHIFT] = []
-      for (var y: number = Math.max(-SHIFT, -x - SHIFT); y <= Math.min(SHIFT, -x + SHIFT); y++) {
+      for (let y: number = Math.max(-SHIFT, -x - SHIFT); y <= Math.min(SHIFT, -x + SHIFT); y++) {
         this.fields[x + SHIFT][y + SHIFT] = new Field([], new Coordinates(x, y, -x - y))
       }
     }
@@ -363,9 +367,9 @@ export class Board {
   clone(): Board {
     let clone = new Board()
     let clonedFields: Field[][] = []
-    for (var x: number = -SHIFT; x <= SHIFT; x++) {
+    for (let x: number = -SHIFT; x <= SHIFT; x++) {
       clonedFields[x + SHIFT] = []
-      for (var y: number = Math.max(-SHIFT, -x - SHIFT); y <= Math.min(SHIFT, -x + SHIFT); y++) {
+      for (let y: number = Math.max(-SHIFT, -x - SHIFT); y <= Math.min(SHIFT, -x + SHIFT); y++) {
         let field = this.fields[x + SHIFT][y + SHIFT]
         if (field == null) {
           continue
@@ -405,7 +409,7 @@ export class Board {
   }
 
   getTopPiece(c: Coordinates): Piece {
-    return this.fields[c.arrayCoordinates().x][c.arrayCoordinates().y].stack[this.fields[c.arrayCoordinates().x][c.arrayCoordinates().y].stack.length - 1]
+    return this.fields[c.arrayCoordinates().x][c.arrayCoordinates().y].stack.length > 0 ? this.fields[c.arrayCoordinates().x][c.arrayCoordinates().y].stack[this.fields[c.arrayCoordinates().x][c.arrayCoordinates().y].stack.length - 1] : null
   }
 
   getPiecesFor(color: PLAYERCOLOR) {
@@ -447,6 +451,14 @@ export class Board {
     }
 
     return occupiedFields
+  }
+
+  toString(): string {
+    let text = 'Pieces:\n'
+    for (let f of GameRuleLogic.getFieldsWithPiece(this)) {
+      text += f.owner() + ':\t@' + f.coordinates + '\tPiece:\t' + f.stack[f.stack.length - 1].kind + '\n'
+    }
+    return text
   }
 }
 

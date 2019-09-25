@@ -200,7 +200,7 @@ export class GameRuleLogic {
       board = state.board
 
       if (move.moveType == 'SET') {
-        console.log('%cValidiere SET-move: ', 'color: #f00', move.undeployedPiece, ' to: ', to)
+        // console.log('%cValidiere SET-move: ', 'color: #f00', move.undeployedPiece, ' to: ', to)
         switch (state.board.countPieces()) {
           case 0:
             return this.isOnBoard(to)
@@ -217,7 +217,7 @@ export class GameRuleLogic {
       return false
     }
 
-    console.log('%cValidiere DRAG-move from: ', 'color: #f00', from, ' to: ', to)
+    // console.log('%cValidiere DRAG-move from: ', 'color: #f00', from, ' to: ', to)
     if (!this.isOnBoard(from) || !this.isOnBoard(to)) {
       console.log('Korrumpierte Koordinaten gegeben (out of board): ', from, to)
       return false
@@ -251,19 +251,19 @@ export class GameRuleLogic {
 
     switch (board.getTopPiece(from).kind) {
       case 'ANT':
-        console.log('Es ist eine Ameise')
+        // console.log('Es ist eine Ameise')
         return this.validateAntMove(board, from, to)
       case 'BEE':
-        console.log('Es ist eine Biene')
+        // console.log('Es ist eine Biene')
         return this.validateBeeMove(board, from, to)
       case 'BEETLE':
-        console.log('Es ist ein Käfer')
+        // console.log('Es ist ein Käfer')
         return this.validateBeetleMove(board, from, to)
       case 'GRASSHOPPER':
-        console.log('Es ist ein Grashüpfer')
+        // console.log('Es ist ein Grashüpfer')
         return this.validateGrasshopperMove(board, from, to)
       case 'SPIDER':
-        console.log('Es ist eine Spider')
+        // console.log('Es ist eine Spider')
         return this.validateSpiderMove(board, from, to)
       default:
         console.log('%cDa ist aber wirklich ordentlich was schief gegangen.... unbekannter typ: ', 'color: #f00')
@@ -273,7 +273,7 @@ export class GameRuleLogic {
   }
 
   static validateAntMove(board: Board, from: Coordinates, to: Coordinates): boolean {
-    console.log('Ant move validation')
+    // console.log('Ant move validation')
     let swarm = this.getFieldsNextToSwarm(board, from)
     let visitedFields = [board.getField(from)]
     let index = 0
@@ -334,9 +334,9 @@ export class GameRuleLogic {
   }
 
   static possibleMoves(state: GameState, field: Coordinates): Coordinates[] {
-    console.log('Versuche possibleMoves herauszufinden für: ', field)
+    // console.log('Versuche possibleMoves herauszufinden für: ', field)
     if (state.board.getTopPiece(field) == null) {
-      console.log('Irgendwas ist schief gegangen, das Feld hat nämlich keine pieces: ', field, state.board)
+      console.log('Irgendwas ist schief gegangen, das Feld hat nämlich keine pieces: ', field, state.board.toString())
       return null
     }
 
@@ -345,21 +345,21 @@ export class GameRuleLogic {
       return []
     }
 
-    let moves = []
-    let allFields = state.board.getTopPiece(field).kind == 'BEETLE' ? this.getFieldsNextToSwarm(state.board, field)
-      .concat(this.getFieldsWithPiece(state.board)
-        .filter(e => !e.coordinates.equal(state.board.getField(field).coordinates))) : this.getFieldsNextToSwarm(state.board, field)
-    console.log('Von den möglichen Felder zum ziehen, kommen in Frage: ', allFields)
-
-    // fuers erste brute-force durch
-    for (let f of allFields) {
-      if (this.validateMove(state.board, field, f.coordinates)) {
-        console.log('Valid move found', f.coordinates)
-        moves.push(f.coordinates)
-      }
+    let kind = state.board.getTopPiece(field).kind
+    if (kind == 'BEETLE' || kind == 'BEE') {
+      return this.getNeighbours(state.board, field).map(e => e.coordinates).filter(e => this.validateMove(state.board, field, e))
     }
 
-    console.log('Possible Moves outcome: ', moves)
-    return moves
+    let allFields = this.getFieldsNextToSwarm(state.board, field).map(e => e.coordinates)
+    if (kind == 'SPIDER') {
+      return allFields.filter(e => field.distanceTo(e) <= 3 && this.validateMove(state.board, field, e))
+    }
+
+    if (kind == 'GRASSHOPPER') {
+      return allFields.filter(e => field.isInLineWith(e) && this.validateMove(state.board, field, e))
+    }
+
+    // fürs erste brute-force durch
+    return allFields.filter(e => this.validateMove(state.board, field, e))
   }
 }
