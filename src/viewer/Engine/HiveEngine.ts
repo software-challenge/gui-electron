@@ -480,7 +480,6 @@ export class HiveEngine {
     let gameConfig = {
       width:       800,
       height:      800,
-      pixelArt:    false,
       transparent: true,
       canvas:      this.element,
       fps:         {
