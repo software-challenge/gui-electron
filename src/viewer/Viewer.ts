@@ -136,7 +136,7 @@ export class Viewer {
       let ownPieceFields: Coordinates[] = []
       let beePlaced = GameRuleLogic.getQueen(state.board, state.currentPlayerColor) != null
 
-      // Zwinge den Nutzer die Biene zu waehlen, falls noetig
+      // Zwinge den Nutzer die Biene zu wählen, falls nötig
       /** turn | color | move of color
        * 0  red   # 1
        * 1  blue  # 1
@@ -156,8 +156,10 @@ export class Viewer {
       }
 
       // Kann neue Figur platziert werden?
-      if (!beePlaced && GameRuleLogic.fieldsOwnedByPlayer(state.board, state.currentPlayerColor).length > 0 && !GameRuleLogic.getFieldsNextToSwarm(state.board, null)
-        .some(e => !GameRuleLogic.getNeighbours(state.board, e.coordinates).some(other => other.owner() == state.getOtherPlayer().color))) {
+      if (!beePlaced && GameRuleLogic.fieldsOwnedByPlayer(state.board, state.currentPlayerColor).length > 0 && GameRuleLogic.getFieldsNextToSwarm(state.board, null)
+        .some(e => GameRuleLogic.getNeighbours(state.board, e.coordinates)
+          .some(other => other.owner() == state.currentPlayerColor) && GameRuleLogic.getNeighbours(state.board, e.coordinates)
+          .every(other => other.owner() != state.getOtherPlayer().color))) {
         console.log('Es kann keine weitere Figur platziert werden, da kein Feld frei ist')
         uiState = new SelectMiss(state.currentPlayerColor)
       } else if (state.currentPlayerColor == 'RED' ? state.undeployedRedPieces.length == 0 : state.undeployedBluePieces.length == 0 && ownPieceFields.length == 0) {
