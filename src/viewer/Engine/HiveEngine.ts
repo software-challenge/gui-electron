@@ -476,50 +476,25 @@ export class HiveEngine {
   uiState: UiState
 
   constructor(element: HTMLCanvasElement) {
-    //element.style = 'border: 8px solid green';
-
-    //  It's important to set the WebGL context values that Phaser needs:
-    let contextCreationConfig = {
-      alpha: false,
-      depth: false,
-      antialias: true,
-      premultipliedAlpha: true,
-      stencil: true,
-      preserveDrawingBuffer: false,
-      failIfMajorPerformanceCaveat: false,
-      powerPreference: 'default'
-    };
-
-    let myCustomContext = element.getContext('webgl2', contextCreationConfig);
-
-    let gameConfig = {
-      type: Phaser.WEBGL,
-      parent: 'phaser-example',
-      width: 800,
-      height: 800,
-      canvas: element,
-     // context: myCustomContext,
-    };
-
     this.element = element
-    /*
     let gameConfig = {
+      type: Phaser.CANVAS,
+      /*
       scale: {
         width: 800,
         height: 800,
         mode: Phaser.Scale.ScaleModes.ENVELOP,
       },
+      */
       width: 800,
       height: 800,
-//      pixelArt:    false,
       transparent: true,
       canvas:      this.element,
-      //canvasStyle: "width: 100%; height: 100%; object-fit: contain;",
+      canvasStyle: "width: 100%; height: 100%; object-fit: contain;",
       fps:         {
         target: 10,
       },
     }
-    */
     this.game = new Phaser.Game(gameConfig)
     this.scene = new SimpleScene()
     this.game.scene.add('simple', this.scene, true)
