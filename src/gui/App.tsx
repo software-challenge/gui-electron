@@ -222,7 +222,7 @@ export class App extends React.Component<any, State> {
         mainPaneContent = <ErrorPage Title="Schlimmer Fehler" Message="Das Programm ist kaputt."/>
         break
       case AppContent.Rules:
-        mainPaneContent = this.showHtml('https://cau-kiel-tech-inf.github.io/socha-enduser-docs/spiele/piranhas/')
+        mainPaneContent = this.showHtml('https://cau-kiel-tech-inf.github.io/socha-enduser-docs/spiele/hive/')
         break
       case AppContent.Help:
         mainPaneContent = this.showHtml('https://cau-kiel-tech-inf.github.io/socha-enduser-docs/server.html#die-programmoberfl%C3%A4che')
