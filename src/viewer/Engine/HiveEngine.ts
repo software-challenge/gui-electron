@@ -478,11 +478,19 @@ export class HiveEngine {
   constructor(element: HTMLCanvasElement) {
     this.element = element
     let gameConfig = {
-      width:       800,
-      height:      800,
+      /*
+      scale: {
+        width: 800,
+        height: 800,
+        mode: Phaser.Scale.ScaleModes.ENVELOP,
+      },
+      */
+      width: 800,
+      height: 800,
       pixelArt:    false,
       transparent: true,
       canvas:      this.element,
+      //canvasStyle: "width: 100%; height: 100%; object-fit: contain;",
       fps:         {
         target: 10,
       },
