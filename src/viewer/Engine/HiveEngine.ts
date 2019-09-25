@@ -475,22 +475,23 @@ export class HiveEngine {
   selectableUndeployed: Undeployed[] = []
   uiState: UiState
 
-  constructor(element: HTMLCanvasElement) {
+  constructor(element: HTMLCanvasElement, parent: HTMLElement) {
     this.element = element
     let gameConfig = {
       type: Phaser.CANVAS,
-      /*
       scale: {
         width: 800,
         height: 800,
-        mode: Phaser.Scale.ScaleModes.ENVELOP,
+        mode: Phaser.Scale.ScaleModes.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
       },
-      */
+//      mode: Phaser.Scale.FIT,
       width: 800,
       height: 800,
       transparent: true,
       canvas:      this.element,
-      canvasStyle: "width: 100%; height: 100%; object-fit: contain;",
+      parent: parent,
+      //canvasStyle: "width: 100%; height: 100%; object-fit: contain;",
       fps:         {
         target: 10,
       },

@@ -29,7 +29,7 @@ export class Viewer {
     this.canvas.classList.add('viewerCanvas')
     this.element.appendChild(this.canvas)
 
-    this.engine = new HiveEngine(this.canvas)
+    this.engine = new HiveEngine(this.canvas, this.element)
   }
 
   getElement() {
