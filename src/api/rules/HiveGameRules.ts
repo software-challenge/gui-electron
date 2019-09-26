@@ -136,10 +136,10 @@ export class GameRuleLogic {
   static getFieldsNextToSwarm(board: Board, except: Coordinates): Field[] {
     let tiles: Field[] = []
 
-    this.getFieldsWithPiece(board).filter(e => except == null || !except.equal(e.coordinates)).forEach(field => {
+    for (let field of this.getFieldsWithPiece(board).filter(e => except == null || !except.equal(e.coordinates))) {
       tiles = tiles.concat(this.getNeighbours(board, field.coordinates)
         .filter(e => e.stack.length == 0 && !e.obstructed && (except == null || !except.equal(e.coordinates)) && !tiles.some(f => e.coordinates.equal(f.coordinates))))
-    })
+    }
 
     return tiles
   }
@@ -238,14 +238,14 @@ export class GameRuleLogic {
         return false
       }
     } else if (!this.isFieldNextToSwarm(board, to, from)) {
-      console.log('Das Feld ist nicht neben dem Schwarm: ', !this.isFieldNextToSwarm(board, to, from))
+      console.log('Das Feld ist nicht neben dem Schwarm: ', to)
       return false
     }
 
     let clone = board.clone()
     clone.getField(from).stack.pop()
     if (!this.isSwarmConnected(clone)) {
-      console.log('Das Feld ist nicht als 1 Schwarm verbunden')
+      console.log('Das Feld: ', from,' ist nicht als 1 Schwarm verbunden')
       return false
     }
 
@@ -342,6 +342,13 @@ export class GameRuleLogic {
 
     if (this.getQueen(state.board, state.currentPlayerColor) == null) {
       console.log('Ohne Queen geht hier nichts...')
+      return []
+    }
+
+    let clone = state.board.clone()
+    clone.getField(field).stack.pop()
+    if (!this.isSwarmConnected(clone)) {
+      console.log('Das Feld: ', field,' ist nicht als 1 Schwarm verbunden')
       return []
     }
 
