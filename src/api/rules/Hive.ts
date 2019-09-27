@@ -454,7 +454,48 @@ export class Board {
   }
 
   toString(): string {
-    let text = 'Pieces:\n'
+    let text = 'Board:\n'
+    for (let row = 0; row < this.fields.length; row++) {
+      for (let n = 0; n < Math.abs(SHIFT - row); n++) {
+        text += ' '
+      }
+
+      for (let field of this.fields[row].filter(e => e != null)) {
+        if (field.obstructed) {
+          text += 'OO'
+        }
+        else if (field.stack.length == 0) {
+          text += '--'
+        }
+        else {
+          let piece = field.stack[field.stack.length - 1]
+          switch (piece.kind) {
+            case 'ANT':
+              text += (piece.color == 'RED' ? 'R' : 'B') + 'A'
+              break
+            case 'BEE':
+              text += (piece.color == 'RED' ? 'R' : 'B') + 'Q'
+              break
+            case 'BEETLE':
+              text += (piece.color == 'RED' ? 'R' : 'B') + 'B'
+              break
+            case 'GRASSHOPPER':
+              text += (piece.color == 'RED' ? 'R' : 'B') + 'G'
+              break
+            case 'SPIDER':
+              text += (piece.color == 'RED' ? 'R' : 'B') + 'S'
+              break
+            default:
+              console.log("Unkown piece-type: ", piece.kind)
+              break
+          }
+        }
+
+        text += '\n'
+      }
+    }
+
+    text += '\n\nPieces:\n'
     for (let f of GameRuleLogic.getFieldsWithPiece(this)) {
       text += f.owner() + ':\t@' + f.coordinates + '\tPiece:\t' + f.stack[f.stack.length - 1].kind + '\n'
     }
