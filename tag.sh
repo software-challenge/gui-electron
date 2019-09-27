@@ -1,5 +1,7 @@
 #!/bin/bash
 
+git checkout origin/master
+
 #get highest tag number
 VERSION=$(git describe --abbrev=0 --tags)
 
