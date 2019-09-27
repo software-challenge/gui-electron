@@ -29,7 +29,7 @@ script:
   - echo "Version in package.json $GIT_TAG"
   - echo "Incrementiere automatisch zu nächstem Patch-level..."
   - yarn version --patch
-  - git push
+  - git push origin/master
 
 before_deploy:
   - yarn compile-server
