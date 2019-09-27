@@ -133,9 +133,8 @@ export class GameManagerWorkerInterface {
         'Content-Type': 'application/json',
       }),
     }).then(response => {
-      let text = response.text()
-      Logger.getLogger().log('GameManagerWorkerInterface', 'sendMove', 'Server response: ' + text)
-      text.then(value => {
+      response.text().then(value => {
+        Logger.getLogger().log('GameManagerWorkerInterface', 'sendMove', 'Server response: ' + value)
         this.getGameServerStatus().then(serverStatus => {
           if (serverStatus.status == ExecutableStatus.Status.ERROR) {
             const ipc = require('electron').ipcRenderer
