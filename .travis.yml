@@ -26,13 +26,14 @@ install:
 
 script:
   - GIT_TAG=$(node -p "require('./package.json').version")
-  - echo "Build-Version $GIT_TAG"
+  - echo "Version in package.json $GIT_TAG"
   - |
-    if [ $(git tag -l "$GIT_TAG") ]; then
-      echo "Kein neuer Tag..."
-    else
-      #git tag "v$GIT_TAG"
+    if [ $(git tag -l "v$GIT_TAG") ]; then
+      echo "Incrementiere automatisch zu nächstem Patch-level..."
       yarn version --patch
+    else
+      echo "Setze gefundene neue Version"
+      git tag "v$GIT_TAG"
     fi
 
 before_deploy:
