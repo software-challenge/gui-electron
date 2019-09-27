@@ -2,21 +2,22 @@ import { Api }                                                                  
 import * as React                                                                                                                 from 'react'
 import { remote }                                                                                                                 from 'electron'
 import { Content }                                                                                                                from 'react-photonkit'
-import { Button, ButtonGroup, NavGroup, NavItem, NavTitle, Pane, PaneGroup, RetractableSidebar, Toolbar, ToolbarActions, Window } from './photon-fix/Components'
+import { Button, ButtonGroup, Pane, PaneGroup, RetractableSidebar, Toolbar, ToolbarActions, Window } from './photon-fix/Components'
 import { UnicodeIcon }                                                                                                            from './generic-components/Components'
 import { Administration }                                                                                                         from './Administration'
 import { GameCreation }                                                                                                           from './GameCreation'
-import { GameCreationOptions, GameType, PlayerType, Replay }                                                                      from '../api/rules/GameCreationOptions'
+import { GameCreationOptions, GameType, Replay }                                                                                  from '../api/rules/GameCreationOptions'
 import { Game }                                                                                                                   from './Game'
 import { LogConsole }                                                                                                             from './LogConsole'
 import { Logger }                                                                                                                 from '../api/Logger'
 import { ErrorPage }                                                                                                              from './ErrorPage'
 import { Hotfix }                                                                                                                 from './Hotfix'
 import * as v                                                                                                                     from 'validate-typescript'
-import { loadFromStorage, saveToStorage }                                                                                         from '../helpers/Cache'
-import { GameInfo }                                                                                                               from '../api/synchronous/GameInfo'
-import { ExecutableStatus }                                                                                                       from '../api/rules/ExecutableStatus'
+import { loadFromStorage, saveToStorage } from '../helpers/Cache'
+import { GameInfo }                       from '../api/synchronous/GameInfo'
+import { ExecutableStatus }               from '../api/rules/ExecutableStatus'
 import promiseRetry = require('promise-retry')
+import { NavItem, NavTitle, NavGroup }              from './photon-fix/NavComponents'
 
 const dialog = remote.dialog
 const shell = remote.shell
@@ -279,86 +280,66 @@ export class App extends React.Component<any, State> {
         break
     }
 
-    //TODO: Fix renaming
-    return (
-      <Window>
-        <Toolbar>
-          <ToolbarActions>
-            <ButtonGroup>
-              <Button icon="menu" onClick={() => { this.toggleMenu() }} active={!this.state.menuRetracted}/>
-            </ButtonGroup>
-            {this.state.contentState == AppContent.GameLive ?
-              <span id="game-name" contentEditable={/*!Api.getGameManager().isReplay(this.state.activeGame)*/ true}
-                    onKeyDown={this.changeGameName.bind(this)}/> : null}
-            {this.state.contentState == AppContent.GameLive ?
-              <button title="Close Game" className="svg-button close-game"
-                      onClick={() => this.closeGame(this.state.activeGameId)}>
-                <img className="svg-icon" src="resources/x-circled.svg"/>
-              </button> : null}
-            <Button icon="doc-text" onClick={() => { this.toggleConsole() }} pullRight={true}/>
-          </ToolbarActions>
-        </Toolbar>
-        <Content>
-          <PaneGroup>
-            <RetractableSidebar retracted={this.state.menuRetracted}>
-              <NavGroup>
-                <NavTitle title="Spiele"/>
-                <NavItem key="new" onClick={() => this.show(AppContent.GameCreation)}
-                         active={this.state.contentState == AppContent.GameCreation}>
-                  <UnicodeIcon icon="+"/>Neues Spiel
-                </NavItem>
-                <NavItem key="replay" onClick={() => this.loadReplay()}>
-                  <UnicodeIcon icon="↥"/>Replay laden
-                </NavItem>
-                {Api.getGameManager().getGameInfos().map(
-                  t => (<NavItem key={t.id} onClick={() => this.showGame(t.id)}
-                                 active={this.state.contentState == AppContent.GameLive && this.state.activeGameId == t.id}>
-                      <UnicodeIcon icon="🎳"/><span className="navbarGameTurn" contentEditable={true}>Zug {t.currentTurn} - </span><span
-                      className="navbarGameName">{t.name}</span> <span className="navbarGameId">({t.id})</span>
-                      <span className="close-button-container">
+    const app = this
+    function ContentNavItem(props: { icon: string, text: string, content: AppContent }) {
+      return <NavItem icon={props.icon} text={props.text} onClick={() => app.show(props.content)}
+                      active={app.state.contentState == props.content}/>
+    }
+
+    return <Window>
+      <Toolbar>
+        <ToolbarActions>
+          <ButtonGroup>
+            <Button icon="menu" onClick={() => this.toggleMenu()} active={!this.state.menuRetracted}/>
+          </ButtonGroup>
+          {this.state.contentState == AppContent.GameLive ?
+            <span id="game-name" contentEditable={/*!Api.getGameManager().isReplay(this.state.activeGame)*/ true}
+                  onKeyDown={this.changeGameName.bind(this)}/> : null}
+          {this.state.contentState == AppContent.GameLive ?
+            <button title="Close Game" className="svg-button close-game"
+                    onClick={() => this.closeGame(this.state.activeGameId)}>
+              <img className="svg-icon" src={'resources/x-circled.svg'}/>
+            </button> : null}
+          <Button icon="doc-text" onClick={() => { this.toggleConsole() }} pullRight={true}/>
+        </ToolbarActions>
+      </Toolbar>
+      <Content>
+        <PaneGroup>
+          <RetractableSidebar retracted={this.state.menuRetracted}>
+            <NavGroup>
+              <NavTitle title="Spiele"/>
+              <ContentNavItem key="new" content={AppContent.GameCreation} icon="+" text='Neues Spiel'/>
+              <NavItem key="replay" onClick={() => this.loadReplay()} icon="↥" text='Replay laden'/>
+              {Api.getGameManager().getGameInfos().map(
+                t => (<NavItem key={t.id} onClick={() => this.showGame(t.id)}
+                               active={this.state.contentState == AppContent.GameLive && this.state.activeGameId == t.id}>
+                    <UnicodeIcon icon="🎳"/><span className="navbarGameTurn" contentEditable={true}>Zug {t.currentTurn} - </span><span
+                    className="navbarGameName">{t.name}</span> <span className="navbarGameId">({t.id})</span>
+                    <span className="close-button-container">
                       <button title="Close Game" className="svg-button close-game" onClick={e => {
                         this.closeGame(t.id)
                         e.stopPropagation()
                       }}>
-                        <img className="svg-icon" src="resources/x-circled.svg"/></button></span></NavItem>
-                  ))}
+                        <img className="svg-icon" src={'resources/x-circled.svg'}/></button></span></NavItem>
+                ))}
 
-                <NavTitle title="Informationen"/>
-                <NavItem key="settings" onClick={() => this.show(AppContent.Administration)}
-                         active={this.state.contentState == AppContent.Administration}>
-                  <UnicodeIcon icon="⚙"/>Einstellungen
-                </NavItem>
-                <NavItem key="rules" onClick={() => this.show(AppContent.Rules)}
-                         active={this.state.contentState == AppContent.Rules}>
-                  <UnicodeIcon icon="❔"/>Spielregeln
-                </NavItem>
-                <NavItem key="help" onClick={() => this.show(AppContent.Help)}
-                         active={this.state.contentState == AppContent.Help}>
-                  <UnicodeIcon icon="❔"/>Hilfe
-                </NavItem>
-                <NavItem key="quickstart" onClick={() => this.show(AppContent.Quickstart)}
-                         active={this.state.contentState == AppContent.Quickstart}>
-                  <UnicodeIcon icon="❔"/>Getting Started
-                </NavItem>
-                <NavItem key="javadocs" onClick={() => this.show(AppContent.JavaDocs)}
-                         active={this.state.contentState == AppContent.JavaDocs}>
-                  <UnicodeIcon icon="❔"/>JavaDocs
-                </NavItem>
-                <NavItem key="log" onClick={() => this.show(AppContent.Log)}
-                         active={this.state.contentState == AppContent.Log}>
-                  <UnicodeIcon icon="📜"/>Programm-Log
-                </NavItem>
-              </NavGroup>
-            </RetractableSidebar>
-            <Pane>
-              {mainPaneContent}
-            </Pane>
-            <RetractableSidebar className="wide" retracted={this.state.consoleRetracted}>
-              {this.state.activeGameId ? <LogConsole gameId={this.state.activeGameId}/> : <div/>}
-            </RetractableSidebar>
-          </PaneGroup>
-        </Content>
-      </Window>
-    )
+              <NavTitle title="Informationen"/>
+              <ContentNavItem key="settings" content={AppContent.Administration} icon="⚙" text="Einstellungen"/>
+              <ContentNavItem key="rules" content={AppContent.Rules} icon="❔" text="Spielregeln"/>
+              <ContentNavItem key="help" content={AppContent.Help} icon="❔" text="Hilfe"/>
+              <ContentNavItem key="quickstart" content={AppContent.Quickstart} icon="❔" text="Getting Started"/>
+              <ContentNavItem key="javadocs" content={AppContent.JavaDocs} icon="❔" text="JavaDocs"/>
+              <ContentNavItem key="log" content={AppContent.Log} icon="📜" text="Logs"/>
+            </NavGroup>
+          </RetractableSidebar>
+          <Pane>
+            {mainPaneContent}
+          </Pane>
+          <RetractableSidebar className="wide" retracted={this.state.consoleRetracted}>
+            {this.state.activeGameId ? <LogConsole gameId={this.state.activeGameId}/> : <div/>}
+          </RetractableSidebar>
+        </PaneGroup>
+      </Content>
+    </Window>
   }
 }
