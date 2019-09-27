@@ -152,8 +152,7 @@ describe('Possible moves', function() {
     expect(GameRuleLogic.possibleMoves(gs, new Coordinates(4, -4, 0)).length).toBe(0)
   })
 
-  // FIXME: Make this test pass! (disabled to make a release)
-  xit('Bee', function() {
+  it('Bee', function() {
     let gs = new GameState()
     TestHelper.updateGamestateWithBoard(gs, '' +
       '     ------------' +
@@ -167,6 +166,7 @@ describe('Possible moves', function() {
       '   ----------------' +
       '    --------------' +
       '     ------------')
+    gs.currentPlayerColor = 'BLUE'
     expect(GameRuleLogic.possibleMoves(gs, new Coordinates(-1, 1, 0)).length).toBe(2)
   })
   it('Bee v2', function() {
