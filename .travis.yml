@@ -27,15 +27,9 @@ install:
 script:
   - GIT_TAG=$(node -p "require('./package.json').version")
   - echo "Version in package.json $GIT_TAG"
-  - |
-    if [ $(git tag -l 'v$GIT_TAG') ]; then
-      echo "Incrementiere automatisch zu nächstem Patch-level..."
-      yarn version --patch
-      git push
-    else
-      echo "Setze gefundene neue Version"
-      git tag "v$GIT_TAG"
-    fi
+  - echo "Incrementiere automatisch zu nächstem Patch-level..."
+  - yarn version --patch
+  - git push
 
 before_deploy:
   - yarn compile-server
