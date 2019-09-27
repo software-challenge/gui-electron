@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #get highest tag number
-VERSION=`git describe --abbrev=0 --tags`
+VERSION=$(git describe --abbrev=0 --tags)
 
 #replace . with space so can split into an array
 VERSION_BITS=(${VERSION//./ })
@@ -18,12 +18,12 @@ NEW_TAG="$VNUM1.$VNUM2.$VNUM3"
 echo "Updating $VERSION to $NEW_TAG"
 
 #get current hash and see if it already has a tag
-GIT_COMMIT=`git rev-parse HEAD`
-NEEDS_TAG=`git describe --contains $GIT_COMMIT 2>/dev/null`
+GIT_COMMIT=$(git rev-parse HEAD)
+NEEDS_TAG=$(git describe --contains "$GIT_COMMIT" 2>/dev/null)
 
 #only tag if no tag already
 if [ -z "$NEEDS_TAG" ]; then
-    git tag $NEW_TAG
+    git tag "$NEW_TAG"
     echo "Tagged with $NEW_TAG"
     #git push --tags
 else
