@@ -27,6 +27,7 @@ install:
 script:
   - GIT_TAG=$(node -p "require('./package.json').version")
   - echo "Version in package.json $GIT_TAG"
+  - chmod rwx tag.sh
   - ./tag.sh
 
 before_deploy:
