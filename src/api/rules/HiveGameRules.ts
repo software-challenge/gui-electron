@@ -334,30 +334,30 @@ export class GameRuleLogic {
   }
 
   static possibleMoves(state: GameState, field: Coordinates): Coordinates[] {
-    // console.log('Versuche possibleMoves herauszufinden für: ', field)
-    if (state.board.getTopPiece(field) == null) {
-      console.log('Irgendwas ist schief gegangen, das Feld hat nämlich keine pieces: ', field, state.board.toString())
+    const topPiece = state.board.getTopPiece(field)
+    if (topPiece == null) {
+      console.warn('Das Startfeld ist leer: ', field, state.board.toString())
       return null
     }
 
-    if (this.getQueen(state.board, state.currentPlayerColor) == null) {
-      console.log('Ohne Queen geht hier nichts...')
+    if (this.getQueen(state.board, topPiece.color) == null) {
+      console.warn(topPiece.color, 'hat seine Biene noch nicht gesetzt')
       return []
     }
 
-    let clone = state.board.clone()
+    const clone = state.board.clone()
     clone.getField(field).stack.pop()
     if (!this.isSwarmConnected(clone)) {
-      console.log('Das Feld: ', field,' ist nicht als 1 Schwarm verbunden')
+      console.warn('Durch einen Zug von', field,'wäre der Schwarm nicht mehr verbunden')
       return []
     }
 
-    let kind = state.board.getTopPiece(field).kind
+    const kind = state.board.getTopPiece(field).kind
     if (kind == 'BEETLE' || kind == 'BEE') {
       return this.getNeighbours(state.board, field).map(e => e.coordinates).filter(e => this.validateMove(state.board, field, e))
     }
 
-    let allFields = this.getFieldsNextToSwarm(state.board, field).map(e => e.coordinates)
+    const allFields = this.getFieldsNextToSwarm(state.board, field).map(e => e.coordinates)
     if (kind == 'SPIDER') {
       return allFields.filter(e => field.distanceTo(e) <= 3 && this.validateMove(state.board, field, e))
     }
