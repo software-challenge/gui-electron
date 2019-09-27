@@ -1,7 +1,6 @@
 #!/bin/bash
 
-git checkout origin/master
-
+echo "Fetching highest tag-number"
 #get highest tag number
 VERSION=$(git describe --abbrev=0 --tags)
 
