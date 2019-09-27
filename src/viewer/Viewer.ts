@@ -227,7 +227,6 @@ export class Viewer {
       throw 'we should not interact at all'
     }
 
-    console.log('Nach allem kommt es zu: ', uiState)
     // render gamestate with interactions
     this.render(new RenderState(this.applyInteractions(state, actions), uiState))
     // keep original gamestate in callback

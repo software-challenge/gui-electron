@@ -1,12 +1,12 @@
-import { GameCreationOptions }    from '../rules/GameCreationOptions'
-import { GameState, Move, Piece } from '../rules/CurrentGame'
-import { MessageContent }         from '../rules/Message'
-import { Logger }                 from '../Logger'
-import { Backend }                from './Backend'
-import * as path                  from 'path'
-import * as portfinder            from 'portfinder'
-import * as child_process         from 'child_process'
-import { ExecutableStatus }       from '../rules/ExecutableStatus'
+import { GameCreationOptions } from '../rules/GameCreationOptions'
+import { GameState, Move }     from '../rules/CurrentGame'
+import { MessageContent }      from '../rules/Message'
+import { Logger }              from '../Logger'
+import { Backend }             from './Backend'
+import * as path               from 'path'
+import * as portfinder         from 'portfinder'
+import * as child_process      from 'child_process'
+import { ExecutableStatus }    from '../rules/ExecutableStatus'
 import promiseRetry = require('promise-retry')
 
 export interface GameServerInfo {
@@ -97,26 +97,17 @@ export class GameManagerWorkerInterface {
       headers: new Headers({
         'Content-Type': 'application/json',
       }),
-    }).then(r => {
-      r.json()
-    }).catch(e => Logger.getLogger().logError('GameManagerWorkerInterface', 'saveReplayOfGame', 'Error saving replay of a game: ' + e, e))
+    })
+      .catch(e => Logger.getLogger().logError('GameManagerWorkerInterface', 'saveReplayOfGame', 'Error saving replay of a game: ' + e, e))
   }
 
-  /**
-   * Requests the gameState for the given turn and game
-   */
+  /** Requests the gameState for the given turn and game. */
   getState(gameId: number, turn: number) {
     return this.fetchBackend(`state?id=${gameId}&turn=${turn}`)
-      .then(r => {
-        let json = r.json()
-        console.log('DEBUG', r, json)
-        return json
-      })
+      .then(r => r.json())
       .then(state => {
-        console.log('with state: ', state)
         let gs = GameState.lift(state)
-        console.log('Got gamestate form backend', gs)
-        console.log('with state: ', state)
+        console.log('Got gamestate from backend:', gs, 'Original:', state)
         return gs
       })
   }
