@@ -1,9 +1,9 @@
 {
    "spec_dir": "out/tests",
-   "spec_files": ["*[tT]est.js","**/*[tT]est.js"],
+   "spec_files": ["**/*[tT]est.js"],
    "helpers": [
      "../node_modules/ts-node/register/type-check.js"
    ],
    "stopSpecOnExpectationFailure": true,
-   "random": true
+   "random": false
 }

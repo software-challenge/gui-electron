@@ -3,7 +3,6 @@ import { GameState, Board, GameRuleLogic, Coordinates } from '../src/api/rules/C
 import { TestHelper }                                   from './testHelper'
 
 describe('Game-Logic', function() {
-  // testing isSwarmConnected
   it('swarm separated by obstructed field', function() {
     let gs = new GameState()
     TestHelper.updateGamestateWithBoard(gs, '' +
