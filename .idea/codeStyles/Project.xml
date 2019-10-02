@@ -5,7 +5,6 @@
     <option name="FORMATTER_TAGS_ENABLED" value="true" />
     <option name="SOFT_MARGINS" value="120" />
     <HTMLCodeStyleSettings>
-      <option name="HTML_QUOTE_STYLE" value="Single" />
       <option name="HTML_ENFORCE_QUOTES" value="true" />
     </HTMLCodeStyleSettings>
     <JSCodeStyleSettings version="0">
