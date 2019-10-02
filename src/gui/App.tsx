@@ -143,7 +143,8 @@ export class App extends React.Component<any, State> {
       this.setState({
         contentState: AppContent.GameLive,
         activeGameId: gameId,
-      }, () => document.getElementById('game-name').innerText = Api.getGameManager().getGameInfo(gameId).name))
+      })
+    )
   }
 
   private show(content: AppContent, callback?: () => void) {
@@ -168,15 +169,6 @@ export class App extends React.Component<any, State> {
           'Fehler: ' + info.error)
       }
     }).catch(retry))
-  }
-
-  changeGameName(e) {
-    if (e.keyCode == 13) {
-      e.preventDefault()
-      const newGameName = document.getElementById('game-name').innerText.trim()
-      console.log('changing Game name:', newGameName)
-      Api.getGameManager().renameGame(this.state.activeGameId, newGameName)
-    }
   }
 
   closeGame(id: number) {
@@ -294,9 +286,6 @@ export class App extends React.Component<any, State> {
             <Button icon='menu' onClick={() => this.toggleMenu()} active={!this.state.menuRetracted}/>
           </ButtonGroup>
           {this.state.contentState == AppContent.GameLive ?
-            <span id='game-name' contentEditable={/*!Api.getGameManager().isReplay(this.state.activeGame)*/ true}
-                  onKeyDown={this.changeGameName.bind(this)}/> : null}
-          {this.state.contentState == AppContent.GameLive ?
             <button title='Close Game' className='svg-button close-game'
                     onClick={() => this.closeGame(this.state.activeGameId)}>
               <img className='svg-icon' src={'resources/x-circled.svg'}/>
@@ -314,8 +303,7 @@ export class App extends React.Component<any, State> {
               {Api.getGameManager().getGameInfos().map(
                 t => (<NavItem key={t.id} onClick={() => this.showGame(t.id)}
                                active={this.state.contentState == AppContent.GameLive && this.state.activeGameId == t.id}>
-                    <UnicodeIcon icon='🎳'/><span className='navbarGameTurn' contentEditable={true}>Zug {t.currentTurn} - </span><span
-                    className='navbarGameName'>{t.name}</span> <span className='navbarGameId'>({t.id})</span>
+                    <UnicodeIcon icon='🎳'/>{t.name} ({t.id})
                     <span className='close-button-container'>
                       <button title='Close Game' className='svg-button close-game' onClick={e => {
                         this.closeGame(t.id)
