@@ -1,8 +1,7 @@
 /// <reference path="phaser.d.ts"/>
 
 import 'phaser'
-import { remote }                                                                                                                                                                                                                                                                                                      from 'electron'
-import { Board, Piece, Coordinates, FieldSelected, FIELDSIZE, SHIFT, PLAYERCOLOR, PIECETYPE, FIELDPIXELWIDTH, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectPiece, UndeployedPieceSelected, SelectDragTargetField, SelectSetTargetField, UiState, ScreenCoordinates, SelectMiss, MissSelected } from '../../api/rules/CurrentGame'
+import { Board, Coordinates, FieldSelected, GameRuleLogic, GameState, InteractionEvent, MissSelected, Move, Piece, PIECETYPE, PLAYERCOLOR, RenderState, ScreenCoordinates, SelectDragTargetField, SelectMiss, SelectPiece, SelectSetTargetField, SHIFT, UiState, UndeployedPieceSelected } from '../../api/rules/CurrentGame'
 
 interface FieldGraphics {
   background: Phaser.GameObjects.Sprite;
@@ -326,18 +325,18 @@ export class SimpleScene extends Phaser.Scene {
     let x = color == 'RED' ? UNDEPLOYED_RED_PIECES_MARGIN : UNDEPLOYED_BLUE_PIECES_MARGIN
     if (state.turn > 5 && (color == 'RED' ? state.undeployedRedPieces.some(e => e.kind == 'BEE') : state.undeployedBluePieces.some(e => e.kind == 'BEE'))) {
       this.markers.push(this.make.sprite({
-        key: 'marker',
-        x: x,
-        y: UNDEPLOYED_PIECES_TOP_MARGIN,
+        key:   'marker',
+        x:     x,
+        y:     UNDEPLOYED_PIECES_TOP_MARGIN,
         scale: 1,
         depth: 50,
       }))
     } else {
       this.undeployedPieceGraphics[color].forEach((_u: FieldGraphics, i: number) => {
         this.markers.push(this.make.sprite({
-          key: 'marker',
-          x: x,
-          y: UNDEPLOYED_PIECES_TOP_MARGIN + i * 64,
+          key:   'marker',
+          x:     x,
+          y:     UNDEPLOYED_PIECES_TOP_MARGIN + i * 64,
           scale: 1,
           depth: 50,
         }))
@@ -421,42 +420,42 @@ export class SimpleScene extends Phaser.Scene {
    */
   boardEqualsView(board: Board) {
     /*
-    let statesDoMatch = true
-    let keyToFieldType = {
-      'red': Board.Fieldtype.red,
-      'blue': Board.Fieldtype.blue,
-      'rock': Board.Fieldtype.obstructed,
-    }
-    this.graphics.forEach((col, x) => {
-      col.forEach((field, y) => {
-        let actual: FIELDTYPE
-        if(field.foreground == null) {
-          actual = Board.Fieldtype.empty
-        } else {
-          actual = field.foreground.getData('fieldType')
-        }
-        let expected = board.fields[x][y]
-        if(actual != expected) {
-          statesDoMatch = false
-          console.warn(`got field difference on (${x},${y})`, {actual: actual, expected: expected})
-        }
-        let expectedCoordinates: Coordinates = this.fieldCoordinates({x: x, y: y})
-        if(field.foreground != null) {
-          if(expectedCoordinates.x != field.foreground.x || expectedCoordinates.y != field.foreground.y) {
-            // NOTE that we are ignoring not matching coordinates (only logging
-            //them) because the sprite may be on its way to the final position.
-            //This enables adding animations on already animating sprites and
-            //resolves the problem where an animation is nearly not finished but
-            //the board has to be rendered for the next state, canceling all
-            //animations.
-            console.warn(`sprite was not on it's place on (${x},${y})`, field.foreground)
-          }
-        }
-      })
-    })
-    return statesDoMatch
-    TODO
-    */
+     let statesDoMatch = true
+     let keyToFieldType = {
+     'red': Board.Fieldtype.red,
+     'blue': Board.Fieldtype.blue,
+     'rock': Board.Fieldtype.obstructed,
+     }
+     this.graphics.forEach((col, x) => {
+     col.forEach((field, y) => {
+     let actual: FIELDTYPE
+     if(field.foreground == null) {
+     actual = Board.Fieldtype.empty
+     } else {
+     actual = field.foreground.getData('fieldType')
+     }
+     let expected = board.fields[x][y]
+     if(actual != expected) {
+     statesDoMatch = false
+     console.warn(`got field difference on (${x},${y})`, {actual: actual, expected: expected})
+     }
+     let expectedCoordinates: Coordinates = this.fieldCoordinates({x: x, y: y})
+     if(field.foreground != null) {
+     if(expectedCoordinates.x != field.foreground.x || expectedCoordinates.y != field.foreground.y) {
+     // NOTE that we are ignoring not matching coordinates (only logging
+     //them) because the sprite may be on its way to the final position.
+     //This enables adding animations on already animating sprites and
+     //resolves the problem where an animation is nearly not finished but
+     //the board has to be rendered for the next state, canceling all
+     //animations.
+     console.warn(`sprite was not on it's place on (${x},${y})`, field.foreground)
+     }
+     }
+     })
+     })
+     return statesDoMatch
+     TODO
+     */
     return false
   }
 }
@@ -478,19 +477,19 @@ export class HiveEngine {
   constructor(element: HTMLCanvasElement, parent: HTMLElement) {
     this.element = element
     let gameConfig = {
-      type: Phaser.CANVAS,
-      scale: {
-        width: 800,
-        height: 800,
-        mode: Phaser.Scale.ScaleModes.FIT,
+      type:        Phaser.CANVAS,
+      scale:       {
+        width:      800,
+        height:     800,
+        mode:       Phaser.Scale.ScaleModes.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
 //        zoom: Phaser.Scale.MAX_ZOOM,
       },
-      width: 800,
-      height: 800,
+      width:       800,
+      height:      800,
       transparent: true,
       canvas:      this.element,
-      parent: parent,
+      parent:      parent,
       fps:         {
         target: 10,
       },

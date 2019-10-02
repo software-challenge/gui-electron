@@ -1,19 +1,19 @@
-import * as React      from 'react'
+import * as React from 'react'
 
 export function Window(props) {
-  return <div className="window">{props.children}</div>
+  return <div className='window'>{props.children}</div>
 }
 
 export function Toolbar(props) {
-  return <header className="toolbar toolbar-header">{props.children}</header>
+  return <header className='toolbar toolbar-header'>{props.children}</header>
 }
 
 export function ToolbarActions(props) {
-  return <div className="toolbar-actions">{props.children}</div>
+  return <div className='toolbar-actions'>{props.children}</div>
 }
 
 export function ButtonGroup(props) {
-  return <div className="btn-group">{props.children}</div>
+  return <div className='btn-group'>{props.children}</div>
 }
 
 export class RetractableSidebar extends React.Component<{ retracted: boolean, id?: string, className?: string }, any> {
@@ -30,11 +30,11 @@ export class RetractableSidebar extends React.Component<{ retracted: boolean, id
 }
 
 export function PaneGroup(props) {
-  return <div className="pane-group">{props.children}</div>
+  return <div className='pane-group'>{props.children}</div>
 }
 
 export function Pane(props) {
-  return <div className="pane">{props.children}</div>
+  return <div className='pane'>{props.children}</div>
 }
 
 export function Icon(props: { i: string }) {
@@ -72,7 +72,7 @@ export interface SelectItem {
 
 export function SelectBox(props: { value: string, items: SelectItem[], onChange?: (e: any) => void }) {
   const options = props.items.map(i => <option key={i.value} value={i.value}>{i.label}</option>)
-  return <select className="form-control" value={props.value} onChange={props.onChange}>
+  return <select className='form-control' value={props.value} onChange={props.onChange}>
     {options}
   </select>
 }
@@ -87,9 +87,9 @@ export function Input(props: { value: string, onChange?: (e: any) => void, id?: 
 }
 
 export function CheckBox(props: { label: string, value: boolean, onChange?: (e: any) => void }) {
-  return <div className="checkbox">
+  return <div className='checkbox'>
     <label>
-      <input type="checkbox" checked={props.value} onChange={props.onChange}/>
+      <input type='checkbox' checked={props.value} onChange={props.onChange}/>
       {props.label}
     </label>
   </div>

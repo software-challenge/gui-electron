@@ -1,4 +1,4 @@
-import { ArrayCoordinates, Board, Coordinates, Field, GameState, Move, PIECETYPE, PLAYERCOLOR, SHIFT } from './Hive'
+import { Board, Coordinates, Field, GameState, Move, PIECETYPE, PLAYERCOLOR, SHIFT } from './Hive'
 
 export class GameRuleLogic {
   static getDirections(c: Coordinates): Coordinates[] {
@@ -245,7 +245,7 @@ export class GameRuleLogic {
     let clone = board.clone()
     clone.getField(from).stack.pop()
     if (!this.isSwarmConnected(clone)) {
-      console.log('Das Feld: ', from,' ist nicht als 1 Schwarm verbunden')
+      console.log('Das Feld: ', from, ' ist nicht als 1 Schwarm verbunden')
       return false
     }
 
@@ -348,7 +348,7 @@ export class GameRuleLogic {
     const clone = state.board.clone()
     clone.getField(field).stack.pop()
     if (!this.isSwarmConnected(clone)) {
-      console.warn('Durch einen Zug von', field,'wäre der Schwarm nicht mehr verbunden')
+      console.warn('Durch einen Zug von', field, 'wäre der Schwarm nicht mehr verbunden')
       return []
     }
 

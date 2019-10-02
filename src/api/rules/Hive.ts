@@ -463,11 +463,9 @@ export class Board {
       for (let field of this.fields[row].filter(e => e != null)) {
         if (field.obstructed) {
           text += 'OO'
-        }
-        else if (field.stack.length == 0) {
+        } else if (field.stack.length == 0) {
           text += '--'
-        }
-        else {
+        } else {
           let piece = field.stack[field.stack.length - 1]
           switch (piece.kind) {
             case 'ANT':
@@ -486,7 +484,7 @@ export class Board {
               text += (piece.color == 'RED' ? 'R' : 'B') + 'S'
               break
             default:
-              console.log("Unkown piece-type: ", piece.kind)
+              console.log('Unkown piece-type: ', piece.kind)
               break
           }
         }

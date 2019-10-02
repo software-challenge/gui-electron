@@ -1,5 +1,5 @@
 import { HiveEngine }                                                                                                                                                                                                      from './Engine/HiveEngine'
-import { Coordinates, FieldSelected, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectPiece, UndeployedPieceSelected, SelectSetTargetField, SelectDragTargetField, UiState, SelectMiss, MissSelected } from '../api/rules/CurrentGame'
+import { Coordinates, FieldSelected, GameRuleLogic, GameState, InteractionEvent, MissSelected, Move, RenderState, SelectDragTargetField, SelectMiss, SelectPiece, SelectSetTargetField, UiState, UndeployedPieceSelected } from '../api/rules/CurrentGame'
 
 export class Viewer {
   //DOM Elements

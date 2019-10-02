@@ -17,16 +17,16 @@ export class Administration extends React.Component<{ settings: AppSettings, set
 
   render() {
     return (
-      <div className="main-container">
-        <div className="content">
+      <div className='main-container'>
+        <div className='content'>
           <div>Version: {app.getVersion()}</div>
-          <CheckBox label="Spielzüge animieren" value={this.props.settings.animateMoves}
+          <CheckBox label='Spielzüge animieren' value={this.props.settings.animateMoves}
                     onChange={this.setValue('animateMoves')}/>
-          <CheckBox label="Wasser animieren" value={this.props.settings.animateWater}
+          <CheckBox label='Wasser animieren' value={this.props.settings.animateWater}
                     onChange={this.setValue('animateWater')}/>
           <label>Log-Verzeichnis (benötigt Neustart):
             <Input value={this.props.settings.logDir} onChange={this.setValue('logDir')}/></label><br/>
-          <Button text="Log leeren" onClick={() => Logger.getLogger().clearLog()}/>
+          <Button text='Log leeren' onClick={() => Logger.getLogger().clearLog()}/>
         </div>
       </div>
     )

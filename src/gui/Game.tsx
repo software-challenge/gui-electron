@@ -1,13 +1,13 @@
-import { remote }                                                    from 'electron'
-import { GameResult, GameState, Player, RenderState, GameRuleLogic } from '../api/rules/CurrentGame'
-import * as React                                                    from 'react'
-import { Viewer }                                                    from '../viewer/Viewer'
-import { Api }                                                       from '../api/Api'
-import { loadCSS }                                                   from '.'
-import { Logger }                                                    from '../api/Logger'
-import { MessageContent }                                            from '../api/rules/Message'
-import { AppSettings }                                               from './App'
-import * as ReactDOM                                                 from 'react-dom'
+import { remote }                                            from 'electron'
+import { GameResult, GameRuleLogic, GameState, RenderState } from '../api/rules/CurrentGame'
+import * as React                                            from 'react'
+import { Viewer }                                            from '../viewer/Viewer'
+import { Api }                                               from '../api/Api'
+import { loadCSS }                                           from '.'
+import { Logger }                                            from '../api/Logger'
+import { MessageContent }                                    from '../api/rules/Message'
+import { AppSettings }                                       from './App'
+import * as ReactDOM                                         from 'react-dom'
 
 const dialog = remote.dialog
 

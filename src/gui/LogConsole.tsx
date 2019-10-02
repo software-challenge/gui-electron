@@ -25,11 +25,11 @@ export class LogConsole extends React.Component<{ gameId: number }, { messages: 
 
   render() {
     return (
-      <div id="logMessages" className="logMessages">
+      <div id='logMessages' className='logMessages'>
         {this.state.messages.map(msg =>
           <div className={'logMessage ' + msg.type}>
-            <div className="sender">{msg.sender}</div>
-            <code className="text">{msg.text}</code>
+            <div className='sender'>{msg.sender}</div>
+            <code className='text'>{msg.text}</code>
           </div>,
         )}
       </div>
