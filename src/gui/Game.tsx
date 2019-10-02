@@ -237,46 +237,46 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
     const { turnActive, turnTotal, playbackSpeed, isGameOver, gameResult, hideStartButton } = this.state
     this.updateViewer()
 
-    return <div id='replay-viewer' ref={(elem) => { this.viewerElement = elem }}>
+    return <div id="replay-viewer" ref={(elem) => { this.viewerElement = elem }}>
       {!hideStartButton && !isGameOver &&
-      <GameButton className='overlay' id='start-button' title='Los' onClick={this.playPause.bind(this)} resource='play'/>}
+      <GameButton className="overlay" id="start-button" title="Los" onClick={this.playPause.bind(this)} resource="play"/>}
       {isGameOver &&
-      <div className='overlay' id='endscreen'>
+      <div className="overlay" id="endscreen">
         <h1>Spiel vorbei</h1>
         <h2>{gameResult.reason}</h2>
         <h3>{gameResult.winner ?
           `Gewinner: ${gameResult.winner.displayName} (${gameResult.winner.color == 'RED' ? 'Rot' : 'Blau'})` :
           'Unentschieden!'}</h3>
       </div>}
-      <div className='replay-controls'>
-        <div className='button-container'>
+      <div className="replay-controls">
+        <div className="button-container">
           <GameButton title={this.isPlaying() ? 'Pause' : 'Los'} resource={this.isPlaying() ? 'pause' : 'play'}
                       onClick={this.playPause.bind(this)}/>
-          <GameButton title='Zug zurück' resource='step-backward' disabled={turnActive < 1}
+          <GameButton title="Zug zurück" resource="step-backward" disabled={turnActive < 1}
                       onClick={e => this.previousTurn(e.shiftKey ? 5 : 1)}/>
-          <GameButton title='Zug vor' resource='step-forward'
+          <GameButton title="Zug vor" resource="step-forward"
                       onClick={e => this.nextTurn(e.shiftKey ? 5 : 1)}/>
 
-          <span className='current-turn'>Zug: {turnActive}</span>
-          <input title='Zug'
-                 type='range'
-                 min='0'
+          <span className="current-turn">Zug: {turnActive}</span>
+          <input title="Zug"
+                 type="range"
+                 min="0"
                  max={turnTotal}
                  value={turnActive}
-                 step='1'
+                 step="1"
                  onChange={e => this.updateTurn(Number(e.target.value))}/>
 
-          <img alt='speed-icon' className='svg-icon speed-icon' src='resources/tachometer.svg'/>
-          <input title='Abspielgeschwindigkeit'
-                 type='range'
-                 min='0'
+          <img alt="speed-icon" className="svg-icon speed-icon" src="resources/tachometer.svg"/>
+          <input title="Abspielgeschwindigkeit"
+                 type="range"
+                 min="0"
                  max={MAX_PAUSE}
                  value={MAX_PAUSE - playbackSpeed}
-                 step='100'
+                 step="100"
                  onChange={e => this.setSpeed(MAX_PAUSE - Number(e.target.value))}/>
 
-          <GameButton title='Replay speichern' resource='arrow-to-bottom' onClick={this.saveReplay.bind(this)}
-                      className='save'/>
+          <GameButton title="Replay speichern" resource="arrow-to-bottom" onClick={this.saveReplay.bind(this)}
+                      className="save"/>
         </div>
       </div>
     </div>
@@ -286,6 +286,6 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 const GameButton: React.FunctionComponent<React.ButtonHTMLAttributes<HTMLButtonElement> & { resource: string }> = props => {
   const { resource, ...otherProps } = props
   return <button {...otherProps}>
-    <img alt={props.title} className='svg-icon' src={`resources/${resource}.svg`}/>
+    <img alt={props.title} className="svg-icon" src={`resources/${resource}.svg`}/>
   </button>
 }

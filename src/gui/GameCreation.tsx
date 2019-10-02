@@ -205,7 +205,7 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
       case PlayerType.Computer:
         return (<div>
           Wähle ein Programm zum starten
-          <Button text='Computerspieler wählen'
+          <Button text="Computerspieler wählen"
                   onClick={() => this.clientFileSelectDialog((state, firstSelectedPath) => {
                     if (firstSelectedPath) {
                       player(state).path.value = firstSelectedPath
@@ -213,7 +213,7 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
                     }
                   })}/>
           <code className={this.hasErrors(playerForm.path) ? 'validation-errors' : ''}>{playerForm.path.value}</code>
-          <label className='validation-errors'>{playerForm.path.errors}</label>
+          <label className="validation-errors">{playerForm.path.errors}</label>
         </div>)
       case PlayerType.Manual:
         return <p>Das Programm muss nach Erstellung des Spiels gestartet werden. Es sollte sich dann auf localhost,
@@ -261,7 +261,7 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
                onChange={this.handleControlChange((state, value) => state.players[player].name.value = value)}
                invalid={this.hasErrors(this.state.players[player].name)}/>
         <label htmlFor={'input_playerName' + player}
-               className='validation-errors'>{this.state.players[player].name.errors}</label>
+               className="validation-errors">{this.state.players[player].name.errors}</label>
         <br/>
         <SelectBox value={this.state.players[player].type.value} items={playerTypes}
                    onChange={this.handleControlChange((state, value: PlayerType) => {
@@ -274,7 +274,7 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
 
     let startControl = this.validate(this.state) ?
       // current settings are valid, user may start the game	
-      <Button text='Start!' pullRight={true} onClick={() => {
+      <Button text="Start!" pullRight={true} onClick={() => {
         // game should be started, create a game configuration from the given settings	
         this.handleStartGame({
           kind:         GameType.Versus,
@@ -285,33 +285,33 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
         })
       }}/>
       :
-      <div className='validation-errors pull-right'>
+      <div className="validation-errors pull-right">
         <p>Bitte korrigieren Sie die rot markierten Probleme, um ein Spiel zu starten.</p>
         <ErrorList errors={this.state.generalErrors}/>
       </div>
 
     return (
-      <div className='game-creation main-container'>
-        <div className='content'>
-          <Input id='input_gameName' value={this.state.gameName.value}
+      <div className="game-creation main-container">
+        <div className="content">
+          <Input id="input_gameName" value={this.state.gameName.value}
                  onChange={this.handleControlChange((state, value) => state.gameName.value = value)}
                  invalid={this.hasErrors(this.state.gameName)}/>
-          <label htmlFor='input_gameName' className='validation-errors'>{this.state.gameName.errors}</label>
+          <label htmlFor="input_gameName" className="validation-errors">{this.state.gameName.errors}</label>
           <br/>
 
           {playerForm(0)}
-          <div id='vs'>gegen</div>
+          <div id="vs">gegen</div>
           {playerForm(1)}
 
-          <div id='waiting'>
+          <div id="waiting">
             Warte auf manuellen Spieler
             (sollte sich auf Port {this.props.serverPort} verbinden)
           </div>
-          <div id='start'>
+          <div id="start">
             {startControl}
           </div>
-          <div id='errors'/>
-          <div className='clearfix'/>
+          <div id="errors"/>
+          <div className="clearfix"/>
         </div>
       </div>
     )

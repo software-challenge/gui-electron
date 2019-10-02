@@ -179,7 +179,7 @@ export class App extends React.Component<any, State> {
 
   showHtml(url: string) {
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <button className='top-wide' onClick={() => shell.openExternal(url)}>Extern öffnen</button>
+      <button className="top-wide" onClick={() => shell.openExternal(url)}>Extern öffnen</button>
       <iframe style={{ flex: 1, border: 0 }} src={url}/>
     </div>
   }
@@ -212,7 +212,7 @@ export class App extends React.Component<any, State> {
         mainPaneContent = <div/>
         break
       case AppContent.Error:
-        mainPaneContent = <ErrorPage Title='Schlimmer Fehler' Message='Das Programm ist kaputt.'/>
+        mainPaneContent = <ErrorPage Title="Schlimmer Fehler" Message="Das Programm ist kaputt."/>
         break
       case AppContent.Rules:
         mainPaneContent = this.showHtml('https://cau-kiel-tech-inf.github.io/socha-enduser-docs/spiele/hive/')
@@ -229,7 +229,7 @@ export class App extends React.Component<any, State> {
       case AppContent.Log:
         const logger = Logger.getLogger()
         mainPaneContent = <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-          <button className='top-wide' onClick={() => {
+          <button className="top-wide" onClick={() => {
             logger.clearLog()
             this.refreshContent()
           }}>Log leeren
@@ -253,20 +253,20 @@ export class App extends React.Component<any, State> {
       case AppContent.GameWaiting:
         mainPaneContent = <div>
           <h1>Warte auf Spielstart</h1>
-          <div id='errors'/>
+          <div id="errors"/>
         </div>
         break
       default:
         mainPaneContent =
-          <div className='main-container'>
-            <div className='content'>
+          <div className="main-container">
+            <div className="content">
               <h1>Willkommen bei der Software-Challenge!</h1>
               <p>Klicken Sie links auf "Neues Spiel" um zu beginnen.</p>
               <p>Diese frühe Version hat noch einige Fehler. Bitte melden Sie Fehler, die Sie finden, im Forum oder im
                 Discord. Hinweise zur Ursache von Fehlern finden sich im Log, aufrufbar über "Programm-Log" auf der
                 linken Seite.</p>
-              <p><a href='https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che'
-                    target='_blank'>Bedienungsanleitung (aus der allgemeinen Dokumentation)</a></p>
+              <p><a href="https://cau-kiel-tech-inf.github.io/socha-enduser-docs/#die-programmoberfl%C3%A4che"
+                    target="_blank">Bedienungsanleitung (aus der allgemeinen Dokumentation)</a></p>
             </div>
           </div>
         break
@@ -283,48 +283,48 @@ export class App extends React.Component<any, State> {
       <Toolbar>
         <ToolbarActions>
           <ButtonGroup>
-            <Button icon='menu' onClick={() => this.toggleMenu()} active={!this.state.menuRetracted}/>
+            <Button icon="menu" onClick={() => this.toggleMenu()} active={!this.state.menuRetracted}/>
           </ButtonGroup>
           {this.state.contentState == AppContent.GameLive ?
-            <button title='Close Game' className='svg-button close-game'
+            <button title="Close Game" className="svg-button close-game"
                     onClick={() => this.closeGame(this.state.activeGameId)}>
-              <img className='svg-icon' src={'resources/x-circled.svg'}/>
+              <img className="svg-icon" src={'resources/x-circled.svg'}/>
             </button> : null}
-          <Button icon='doc-text' onClick={() => { this.toggleConsole() }} pullRight={true}/>
+          <Button icon="doc-text" onClick={() => { this.toggleConsole() }} pullRight={true}/>
         </ToolbarActions>
       </Toolbar>
       <Content>
         <PaneGroup>
           <RetractableSidebar retracted={this.state.menuRetracted}>
             <NavGroup>
-              <NavTitle title='Spiele'/>
-              <ContentNavItem key='new' content={AppContent.GameCreation} icon='+' text='Neues Spiel'/>
-              <NavItem key='replay' onClick={() => this.loadReplay()} icon='↥' text='Replay laden'/>
+              <NavTitle title="Spiele"/>
+              <ContentNavItem key="new" content={AppContent.GameCreation} icon="+" text="Neues Spiel"/>
+              <NavItem key="replay" onClick={() => this.loadReplay()} icon="↥" text="Replay laden"/>
               {Api.getGameManager().getGameInfos().map(
                 t => (<NavItem key={t.id} onClick={() => this.showGame(t.id)}
                                active={this.state.contentState == AppContent.GameLive && this.state.activeGameId == t.id}>
-                    <UnicodeIcon icon='🎳'/>{t.name} ({t.id})
-                    <span className='close-button-container'>
-                      <button title='Close Game' className='svg-button close-game' onClick={e => {
+                    <UnicodeIcon icon="🎳"/>{t.name} ({t.id})
+                    <span className="close-button-container">
+                      <button title="Close Game" className="svg-button close-game" onClick={e => {
                         this.closeGame(t.id)
                         e.stopPropagation()
                       }}>
-                        <img className='svg-icon' src={'resources/x-circled.svg'}/></button></span></NavItem>
+                        <img className="svg-icon" src={'resources/x-circled.svg'}/></button></span></NavItem>
                 ))}
 
-              <NavTitle title='Informationen'/>
-              <ContentNavItem key='settings' content={AppContent.Administration} icon='⚙' text='Einstellungen'/>
-              <ContentNavItem key='rules' content={AppContent.Rules} icon='❔' text='Spielregeln'/>
-              <ContentNavItem key='help' content={AppContent.Help} icon='❔' text='Hilfe'/>
-              <ContentNavItem key='quickstart' content={AppContent.Quickstart} icon='❔' text='Getting Started'/>
-              <ContentNavItem key='javadocs' content={AppContent.JavaDocs} icon='❔' text='JavaDocs'/>
-              <ContentNavItem key='log' content={AppContent.Log} icon='📜' text='Logs'/>
+              <NavTitle title="Informationen"/>
+              <ContentNavItem key="settings" content={AppContent.Administration} icon="⚙" text="Einstellungen"/>
+              <ContentNavItem key="rules" content={AppContent.Rules} icon="❔" text="Spielregeln"/>
+              <ContentNavItem key="help" content={AppContent.Help} icon="❔" text="Hilfe"/>
+              <ContentNavItem key="quickstart" content={AppContent.Quickstart} icon="❔" text="Getting Started"/>
+              <ContentNavItem key="javadocs" content={AppContent.JavaDocs} icon="❔" text="JavaDocs"/>
+              <ContentNavItem key="log" content={AppContent.Log} icon="📜" text="Logs"/>
             </NavGroup>
           </RetractableSidebar>
           <Pane>
             {mainPaneContent}
           </Pane>
-          <RetractableSidebar className='wide' retracted={this.state.consoleRetracted}>
+          <RetractableSidebar className="wide" retracted={this.state.consoleRetracted}>
             {this.state.activeGameId ? <LogConsole gameId={this.state.activeGameId}/> : <div/>}
           </RetractableSidebar>
         </PaneGroup>

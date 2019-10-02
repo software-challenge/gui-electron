@@ -40,13 +40,13 @@ export class HumanClient extends GenericPlayer implements GameClient {
       if (move.moveType == 'DRAG') {
         xml = xml +
           '<data class="dragmove">' +
-          '<start x="' + move.fromField.q + '" y="' + move.fromField.r + '" z="' + move.fromField.s + '"></start>' +
-          '<destination x="' + move.toField.q + '" y="' + move.toField.r + '" z="' + move.toField.s + '"></destination>'
+          '<start x="' + move.fromField.q + '" y="' + move.fromField.r + '" z="' + move.fromField.s + '"/>' +
+          '<destination x="' + move.toField.q + '" y="' + move.toField.r + '" z="' + move.toField.s + '"/>'
       } else if (move.moveType == 'SET') {
         xml = xml +
           '<data class="setmove">' +
           '<piece owner="' + this.state.currentPlayerColor + '" type="' + move.undeployedPiece + '" />' +
-          '<destination x="' + move.toField.q + '" y="' + move.toField.r + '" z="' + move.toField.s + '"></destination>'
+          '<destination x="' + move.toField.q + '" y="' + move.toField.r + '" z="' + move.toField.s + '"/>'
       } else if (move.moveType == 'MISS') {
         xml = xml + '<data class="missmove">'
       } else {

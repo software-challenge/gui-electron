@@ -19,10 +19,10 @@ export class ObserverClient extends GenericClient {
   prepareRoom(player1: PlayerClientOptions, player2: PlayerClientOptions): Promise<RoomReservation> {
     return new Promise<RoomReservation>((resolve, reject) => {
       this.writeData(`
-        <authenticate passphrase='${PASSPHRASE}' />
-        <prepare gameType='${GAME_IDENTIFIER}'>
-          <slot displayName='${player1.displayName}' canTimeout='${player1.canTimeout}' shouldBePaused='false'/>
-          <slot displayName='${player2.displayName}' canTimeout='${player2.canTimeout}' shouldBePaused='false'/>
+        <authenticate passphrase="${PASSPHRASE}" />
+        <prepare gameType="${GAME_IDENTIFIER}">
+          <slot displayName="${player1.displayName}" canTimeout="${player1.canTimeout}" shouldBePaused="false"/>
+          <slot displayName="${player2.displayName}" canTimeout="${player2.canTimeout}" shouldBePaused="false"/>
         </prepare>
       `, () => {
       })
@@ -47,7 +47,7 @@ export class ObserverClient extends GenericClient {
   }
 
   awaitJoinGameRoom(): Promise<string> {
-    this.writeData(`<authenticate passphrase='${PASSPHRASE}' />`, () => { })
+    this.writeData(`<authenticate passphrase="${PASSPHRASE}" />`, () => { })
     return new Promise((res, rej) => {
       let l = (m) => {
         m = m.toString()
@@ -67,7 +67,7 @@ export class ObserverClient extends GenericClient {
 
   observeRoom(roomId: string): Promise<void> {
     return new Promise<void>((res, rej) => {
-      this.writeData(`<observe roomId='${roomId}' passphrase='${PASSPHRASE}' />`)//Send request
+      this.writeData(`<observe roomId="${roomId}" passphrase="${PASSPHRASE}" />`)//Send request
       this.once('message', d => {//Wait for answer
         d = d.toString() //Stringify buffer
         Parser.getJSONFromXML(d).then(ans => {
@@ -107,25 +107,25 @@ export class ObserverClient extends GenericClient {
   requestStep(roomId: string, forced: boolean = true): Promise<void> {
     Logger.getLogger().log('ObserverClient', 'requestStep', 'Requesting next step for room with id ' + roomId + '(forced=' + forced + ')')
     return new Promise<void>((res, rej) => {
-      this.writeData(`<step roomId='${roomId}' forced='${forced}' />`)//Send request
+      this.writeData(`<step roomId="${roomId}" forced="${forced}" />`)//Send request
       this.once('state', () => res()) //Wait for state
     })
   }
 
   setPaused(roomId: string, pause: boolean) {
     Logger.getLogger().log('ObserverClient', 'setPaused', `Setting room ${roomId} to ${pause ? 'paused' : 'unpaused'}`)
-    this.writeData(`<pause roomId='${roomId}' pause='${pause}' />`)//Send request
+    this.writeData(`<pause roomId="${roomId}" pause="${pause}" />`)//Send request
   }
 
   setTimeoutEnabled(roomId: string, slot: 0 | 1, enabled: boolean) {
     Logger.getLogger()
       .log('ObserverClient', 'setTimeoutEnabled', `Setting timeout in ${roomId} and slot ${slot} to ${enabled ? 'enabled' : 'disabled'}`)
-    this.writeData(`<timeout activate='${enabled}' roomId='${roomId}' slot='${slot}' />`)
+    this.writeData(`<timeout activate="${enabled}" roomId="${roomId}" slot="${slot}" />`)
   }
 
   cancelGame(roomId: string) {
     Logger.getLogger().log('ObserverClient', 'cancelGame', `Canceling game with room id ${roomId}.`)
-    this.writeData(`<cancel roomId='${roomId}' />`)
+    this.writeData(`<cancel roomId="${roomId}" />`)
   }
 }
 
