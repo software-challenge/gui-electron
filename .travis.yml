@@ -22,6 +22,8 @@ install:
   - nvm use $NODE_VERSION
   - npm install -g yarn
   - yarn
+
+script:
   - yarn test
 
 before_deploy:
