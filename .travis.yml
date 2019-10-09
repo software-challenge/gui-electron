@@ -28,7 +28,7 @@ script:
 
 before_deploy:
   - yarn compile-server
-  - yarn release
+  - yarn dist-all
 
 deploy:
   provider: releases
