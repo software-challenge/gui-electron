@@ -42,6 +42,12 @@ function appUpdater() {
   })
 
   // init for updates
+  autoUpdater.setFeedURL({
+    provider: 'github',
+    repo: 'socha-gui',
+    owner: 'CAU-Kiel-Tech-Inf',
+    vPrefixedTagName: false
+  })
   autoUpdater.checkForUpdates()
 }
 
