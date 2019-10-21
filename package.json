@@ -7,6 +7,8 @@
   "scripts": {
     "pretest": "rimraf out && tsc -p tests",
     "test": "jasmine --config=jasmine.json --reporter=jasmine-ts-console-reporter",
+    "set-config": "yarn config set version-tag-prefix \"\" && yarn config set version-git-message \"release: %s\"",
+    "postversion": "git push --tags",
     "start": "yarn install && yarn compile && (test -d server || yarn update-server) && electron .",
     "start-dev": "yarn install && yarn compile && electron . --dev",
     "update-server": "git submodule update --remote && yarn compile-server",
