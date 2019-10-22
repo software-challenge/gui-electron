@@ -42,5 +42,3 @@ deploy:
   skip_cleanup: true
   on:
     tag: true
-    repo: CAU-Kiel-Tech-Inf/socha-gui
-    branch: master
