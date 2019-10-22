@@ -41,4 +41,4 @@ deploy:
     - dist/latest*.yml
   skip_cleanup: true
   on:
-    tag: true
+    tags: true
