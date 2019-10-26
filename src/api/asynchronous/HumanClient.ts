@@ -47,10 +47,10 @@ export class HumanClient extends GenericPlayer implements GameClient {
           '<data class="setmove">' +
           '<piece owner="' + this.state.currentPlayerColor + '" type="' + move.undeployedPiece + '" />' +
           '<destination x="' + move.toField.q + '" y="' + move.toField.r + '" z="' + move.toField.s + '"/>'
-      } else if (move.moveType == 'MISS') {
-        xml = xml + '<data class="missmove">'
+      } else if (move.moveType == 'SKIP') {
+        xml = xml + '<data class="skipmove">'
       } else {
-        throw 'Unerwarteter MoveType'
+        throw 'Unexpected MoveType'
       }
       xml = xml + '</data></room>'
       Logger.getLogger().log('HumanClient', 'handleMoveRequest', 'Sending move ' + xml)

@@ -19,7 +19,7 @@ export class ObserverClient extends GenericClient {
   prepareRoom(player1: PlayerClientOptions, player2: PlayerClientOptions): Promise<RoomReservation> {
     return new Promise<RoomReservation>((resolve, reject) => {
       this.writeData(`
-        <authenticate passphrase="${PASSPHRASE}" />
+        <authenticate password="${PASSPHRASE}" />
         <prepare gameType="${GAME_IDENTIFIER}">
           <slot displayName="${player1.displayName}" canTimeout="${player1.canTimeout}" shouldBePaused="false"/>
           <slot displayName="${player2.displayName}" canTimeout="${player2.canTimeout}" shouldBePaused="false"/>
@@ -47,7 +47,7 @@ export class ObserverClient extends GenericClient {
   }
 
   awaitJoinGameRoom(): Promise<string> {
-    this.writeData(`<authenticate passphrase="${PASSPHRASE}" />`, () => { })
+    this.writeData(`<authenticate password="${PASSPHRASE}" />`, () => { })
     return new Promise((res, rej) => {
       let l = (m) => {
         m = m.toString()
@@ -67,7 +67,7 @@ export class ObserverClient extends GenericClient {
 
   observeRoom(roomId: string): Promise<void> {
     return new Promise<void>((res, rej) => {
-      this.writeData(`<observe roomId="${roomId}" passphrase="${PASSPHRASE}" />`)//Send request
+      this.writeData(`<observe roomId="${roomId}" password="${PASSPHRASE}" />`)//Send request
       this.once('message', d => {//Wait for answer
         d = d.toString() //Stringify buffer
         Parser.getJSONFromXML(d).then(ans => {

@@ -546,7 +546,7 @@ export class Player {
   }
 }
 
-export type MOVETYPE = 'SET' | 'DRAG' | 'MISS'
+export type MOVETYPE = 'SET' | 'DRAG' | 'SKIP'
 
 export class Move {
   readonly fromField: Coordinates
@@ -559,7 +559,7 @@ export class Move {
       this.moveType = 'DRAG'
       this.fromField = fromFieldOrPiece
     } else if (typeof fromFieldOrPiece == 'undefined' || fromFieldOrPiece == null) {
-      this.moveType = 'MISS'
+      this.moveType = 'SKIP'
     } else {
       this.moveType = 'SET'
       this.undeployedPiece = fromFieldOrPiece
@@ -623,7 +623,7 @@ export class SelectPiece extends MoveInput {
 }
 
 // user should select
-export class SelectMiss extends MoveInput {
+export class SelectSkip extends MoveInput {
   readonly color: PLAYERCOLOR
 
   constructor(color: PLAYERCOLOR) {
@@ -686,7 +686,7 @@ export class RenderState {
 }
 
 // describes a interface action the user has performed, will be returned by the viewer if the user clicks on something interactive
-export type InteractionEvent = FieldSelected | UndeployedPieceSelected | MissSelected | Sent | Cancelled | Skipped;
+export type InteractionEvent = FieldSelected | UndeployedPieceSelected | SkipSelected | Sent | Cancelled | Skipped;
 
 export type Sent = 'sent';
 export type Cancelled = 'cancelled';
@@ -715,6 +715,6 @@ export class UndeployedPieceSelected {
   }
 }
 
-export class MissSelected {
+export class SkipSelected {
 
 }

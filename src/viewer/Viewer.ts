@@ -1,5 +1,5 @@
 import { HiveEngine }                                                                                                                                                                                                      from './Engine/HiveEngine'
-import { Coordinates, FieldSelected, GameRuleLogic, GameState, InteractionEvent, MissSelected, Move, RenderState, SelectDragTargetField, SelectMiss, SelectPiece, SelectSetTargetField, UiState, UndeployedPieceSelected } from '../api/rules/CurrentGame'
+import { Coordinates, FieldSelected, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectDragTargetField, SelectPiece, SelectSetTargetField, SelectSkip, SkipSelected, UiState, UndeployedPieceSelected } from '../api/rules/CurrentGame'
 
 export class Viewer {
   //DOM Elements
@@ -92,7 +92,7 @@ export class Viewer {
         let move = this.interactionsToMove(actions)
         move_callback(move)
       }
-    } else if (interaction instanceof MissSelected) {
+    } else if (interaction instanceof SkipSelected) {
       // create move and send it
       let move = this.interactionsToMove(actions)
       move_callback(move)
@@ -104,7 +104,7 @@ export class Viewer {
 
   interactionsToMove(interactions: InteractionEvent[]): Move {
     let fromFieldOrPiece = interactions[0]
-    if (fromFieldOrPiece instanceof MissSelected) {
+    if (fromFieldOrPiece instanceof SkipSelected) {
       return new Move(null, null)
     }
     let toField = interactions[1]
@@ -162,10 +162,10 @@ export class Viewer {
           return neighbours.some(other => other.owner() == state.currentPlayerColor) && neighbours.every(other => other.owner() != state.getOtherPlayer().color)
         })) {
         console.log('Es kann keine weitere Figur platziert werden, da kein Feld frei ist')
-        uiState = new SelectMiss(state.currentPlayerColor)
+        uiState = new SelectSkip(state.currentPlayerColor)
       } else if ((state.currentPlayerColor == 'RED' ? state.undeployedRedPieces.length == 0 : state.undeployedBluePieces.length == 0) && ownPieceFields.length == 0) {
         console.log('Es kann keine Figur mehr bewegt werden und alle Figuren sind bereits platziert')
-        uiState = new SelectMiss(state.currentPlayerColor)
+        uiState = new SelectSkip(state.currentPlayerColor)
       } else {
         uiState = new SelectPiece(ownPieceFields, state.currentPlayerColor)
       }
