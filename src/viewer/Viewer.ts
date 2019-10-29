@@ -155,16 +155,18 @@ export class Viewer {
           .filter(e => GameRuleLogic.possibleMoves(state, e).length > 0)
       }
 
-      // Kann neue Figur platziert werden?
       if (!beePlaced && GameRuleLogic.fieldsOwnedByPlayer(state.board, state.currentPlayerColor).length > 0 && !GameRuleLogic.getFieldsNextToSwarm(state.board, null)
         .some(e => {
           let neighbours = GameRuleLogic.getNeighbours(state.board, e.coordinates)
-          return neighbours.some(other => other.owner() == state.currentPlayerColor) && neighbours.every(other => other.owner() != state.getOtherPlayer().color)
+          return neighbours.some(other => other.owner() == state.currentPlayerColor) && !neighbours.some(other => other.owner() == state.getOtherPlayer().color)
         })) {
-        console.log('Es kann keine weitere Figur platziert werden, da kein Feld frei ist')
+        console.log('Es kann keine weitere Figur platziert werden, da kein benachbartes Feld frei ist')
         uiState = new SelectSkip(state.currentPlayerColor)
-      } else if ((state.currentPlayerColor == 'RED' ? state.undeployedRedPieces.length == 0 : state.undeployedBluePieces.length == 0) && ownPieceFields.length == 0) {
-        console.log('Es kann keine Figur mehr bewegt werden und alle Figuren sind bereits platziert')
+      } else if (beePlaced && ownPieceFields.length == 0) {
+        console.log('Es kann keine Figur mehr bewegt werden')
+        uiState = new SelectSkip(state.currentPlayerColor)
+      } else if (state.currentPlayerColor == 'RED' ? state.undeployedRedPieces.length == 0 : state.undeployedBluePieces.length == 0) {
+        console.log('Es kann keine weitere Figur mehr platziert werden')
         uiState = new SelectSkip(state.currentPlayerColor)
       } else {
         uiState = new SelectPiece(ownPieceFields, state.currentPlayerColor)
