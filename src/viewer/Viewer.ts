@@ -155,21 +155,41 @@ export class Viewer {
           .filter(e => GameRuleLogic.possibleMoves(state, e).length > 0)
       }
 
-      if (!beePlaced && GameRuleLogic.fieldsOwnedByPlayer(state.board, state.currentPlayerColor).length > 0 && !GameRuleLogic.getFieldsNextToSwarm(state.board, null)
+      let figuresPlaced = GameRuleLogic.fieldsOwnedByPlayer(state.board, state.currentPlayerColor).length
+      let possiblePlacesToPlace = GameRuleLogic.getFieldsNextToSwarm(state.board, null)
         .some(e => {
           let neighbours = GameRuleLogic.getNeighbours(state.board, e.coordinates)
           return neighbours.some(other => other.owner() == state.currentPlayerColor) && !neighbours.some(other => other.owner() == state.getOtherPlayer().color)
-        })) {
-        console.log('Es kann keine weitere Figur platziert werden, da kein benachbartes Feld frei ist')
-        uiState = new SelectSkip(state.currentPlayerColor)
-      } else if (beePlaced && ownPieceFields.length == 0) {
-        console.log('Es kann keine Figur mehr bewegt werden')
-        uiState = new SelectSkip(state.currentPlayerColor)
-      } else if (state.currentPlayerColor == 'RED' ? state.undeployedRedPieces.length == 0 : state.undeployedBluePieces.length == 0) {
-        console.log('Es kann keine weitere Figur mehr platziert werden')
-        uiState = new SelectSkip(state.currentPlayerColor)
+        })
+      let piecesToPlace = state.currentPlayerColor == 'RED' ? state.undeployedRedPieces.length : state.undeployedBluePieces.length
+      console.log('Kann neue Figur platziert werden?')
+      console.log('Biene platziert?: ' + beePlaced)
+      console.log('Figuren bereits platziert: ' + figuresPlaced)
+      console.log('Es existieren freie Nachbarn?: ' + possiblePlacesToPlace)
+      console.log('Alle Figuren wurden bereits platziert?: ' + piecesToPlace)
+      console.log('Anzahl an Figuren die rücken können: ' + ownPieceFields.length)
+
+      if (beePlaced) {
+        if (ownPieceFields.length == 0) {
+          if (possiblePlacesToPlace && piecesToPlace > 0) {
+            uiState = new SelectPiece(ownPieceFields, state.currentPlayerColor)
+          }
+          else {
+            console.log('Es kann keine Figur bewegt werden und alle Figuren sind bereits platziert oder nicht platzierbar')
+            uiState = new SelectSkip(state.currentPlayerColor)
+          }
+        }
+        else {
+          uiState = new SelectPiece(ownPieceFields, state.currentPlayerColor)
+        }
       } else {
-        uiState = new SelectPiece(ownPieceFields, state.currentPlayerColor)
+        if (figuresPlaced > 0 && !possiblePlacesToPlace) {
+          console.log('Es kann keine weitere Figur platziert werden, da kein benachbartes Feld frei ist')
+          uiState = new SelectSkip(state.currentPlayerColor)
+        }
+        else {
+          uiState = new SelectPiece(ownPieceFields, state.currentPlayerColor)
+        }
       }
     } else if (shouldSelectTarget) {
       let firstAction = actions[0]

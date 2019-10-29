@@ -296,7 +296,7 @@ export class SimpleScene extends Phaser.Scene {
       obj.destroy()
     })
     this.allObjects = []
-    this.skipMoveButton == null
+    this.skipMoveButton = null
   }
 
   unmarkFields() {
@@ -503,7 +503,7 @@ export class HiveEngine {
     if (this.scene) {
       this.scene.deselectFields()
       this.scene.unmarkFields()
-      this.scene.skipMoveButton == null
+      this.scene.skipMoveButton = null
     }
   }
 
