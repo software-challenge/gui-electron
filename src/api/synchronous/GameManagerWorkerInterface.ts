@@ -136,7 +136,8 @@ export class GameManagerWorkerInterface {
       response.text().then(value => {
         Logger.getLogger().log('GameManagerWorkerInterface', 'sendMove', 'Server response: ' + value)
         this.getGameServerStatus().then(serverStatus => {
-          if (serverStatus.status == ExecutableStatus.Status.ERROR) {
+          // Dieser Fall tritt anscheinend nie ein, da der Server keinen solchen Code sendet? if (serverStatus.status == ExecutableStatus.Status.ERROR) {
+          if (serverStatus.error) {
             const ipc = require('electron').ipcRenderer
             ipc.send('showErrorBox', 'Server Error', 'Nach senden des Moves: \n\n' + value + '\n\nkam es zu folgendem Fehler:\n\n' + serverStatus.error)
           }
