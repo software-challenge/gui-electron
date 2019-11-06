@@ -46,7 +46,7 @@ function appUpdater() {
     provider: 'github',
     repo: 'socha-gui',
     owner: 'CAU-Kiel-Tech-Inf',
-    vPrefixedTagName: false
+    vPrefixedTagName: false,
   })
   autoUpdater.checkForUpdates()
 }
@@ -148,6 +148,12 @@ app.on('activate', () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.B
 ipcMain.on('showErrorBox', (event, title, message) => {
+  const {dialog} = require('electron')
+  console.log(title, message)
+  dialog.showErrorBox(title, message)
+})
+ipcMain.on('showGameErrorBox', (event, title, gameId, message) => {
+  win.webContents.send('showGame', gameId)
   const {dialog} = require('electron')
   console.log(title, message)
   dialog.showErrorBox(title, message)

@@ -1,3 +1,4 @@
+const { ipcRenderer } = require('electron')
 import { Api }                                                                                       from '../api/Api'
 import * as React                                                                                    from 'react'
 import { remote }                                                                                    from 'electron'
@@ -75,6 +76,11 @@ export class App extends React.Component<any, State> {
       }),
     }
     // Hotfix.init(gco => this.startGameWithOptions(gco))
+
+    ipcRenderer.on('showGame', (event, gameId) => {
+      this.showGame(gameId)
+    })
+
   }
 
   private loadReplay() {
