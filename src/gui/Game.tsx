@@ -121,9 +121,12 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
     this.viewer.requestUserInteraction(state, [], (move) => {
       Logger.getLogger().log('Game', 'interact', `Sending move`)
       if (move.moveType == 'SKIP' || GameRuleLogic.validateMove(null, null, null, state, move)) {
-        Api.getGameManager().sendMove(this.props.gameId, status.moveRequest.id, move).then(() => {
-          // after sending the move, we want to render it as soon as the server gives out the new game state (because the user should have direct feedback on his move)
-          this.waitForNextStatus(status.numberOfStates, () => this.nextTurn())
+        Api.getGameManager().sendMove(this.props.gameId, status.moveRequest.id, move).then((result) => {
+          // there is only a next time when the server is still running
+          if (result != -1) {
+            // after sending the move, we want to render it as soon as the server gives out the new game state (because the user should have direct feedback on his move)
+            this.waitForNextStatus(status.numberOfStates, () => this.nextTurn())
+          }
         })
       } else {
         const ipc = require('electron').ipcRenderer

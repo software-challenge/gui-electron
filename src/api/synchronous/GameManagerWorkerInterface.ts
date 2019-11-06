@@ -137,9 +137,11 @@ export class GameManagerWorkerInterface {
         Logger.getLogger().log('GameManagerWorkerInterface', 'sendMove', 'Server response: ' + value)
         this.getGameServerStatus().then(serverStatus => {
           // Dieser Fall tritt anscheinend nie ein, da der Server keinen solchen Code sendet? if (serverStatus.status == ExecutableStatus.Status.ERROR) {
-          if (serverStatus.error) {
+          if (serverStatus.error.toLowerCase().indexOf('error') > 0) {
             const ipc = require('electron').ipcRenderer
-            ipc.send('showErrorBox', 'Server Error', 'Nach senden des Moves: \n\n' + value + '\n\nkam es zu folgendem Fehler:\n\n' + serverStatus.error)
+            ipc.send('showErrorBox', 'Server Error', 'Nach senden des Moves: \n' + JSON.stringify(move) + '\nkam es zu folgendem Fehler:\n\n' + serverStatus.error
+              + '\n\nSollte dieser Fehler noch nicht auf Github unter: https://github.com/CAU-Kiel-Tech-Inf/socha-gui/issues/ gemeldet sein, melde doch bitte diesen Fehler.\nInfolge dieses Fehlers kam es zur Beendigung des Servers und das Programm muss anschließend neu gestartet werden.')
+            return -1
           }
         })
       })
