@@ -44,10 +44,7 @@ export class GameManagerWorkerInterface {
   }
 
   private fetchBackend(query: string, init?: RequestInit) {
-    return this.backend.then(backend => {
-      console.log('Fetching for url: ', backend.urlFor('/' + query))
-      return fetch(backend.urlFor('/' + query), init)
-    })
+    return this.backend.then(backend => fetch(backend.urlFor('/' + query), init))
   }
 
   /** Requests a list of the names of the games currently loaded in the worker */
@@ -107,15 +104,7 @@ export class GameManagerWorkerInterface {
   /** Requests the gameState for the given turn and game. */
   getState(gameId: number, turn: number) {
     return this.fetchBackend(`state?id=${gameId}&turn=${turn}`)
-      .then(r => {
-        console.log('HDAOHDOSAIHDSAOI')
-        console.log('Promise r:', r)
-        return r.text().then(a => {
-          console.log('Promise.text():', a)
-          console.log('Promise.json():', JSON.parse(a))
-          return JSON.parse(a)
-        })
-      })
+      .then(r => r.json())
       .then(state => {
         let gs = GameState.lift(state)
         console.log('Got gamestate from backend:', gs)
