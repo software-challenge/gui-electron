@@ -118,7 +118,7 @@ export class GameManagerWorkerInterface {
       })
       .then(state => {
         let gs = GameState.lift(state)
-        console.log('Got gamestate from backend:', gs, 'Original:', state)
+        console.log('Got gamestate from backend:', gs)
         return gs
       })
   }
