@@ -40,7 +40,6 @@ export class GenericPlayer extends GenericClient {
             ipc.send('showErrorBox', 'Server antwortet nicht', 'Der Server hat eine ungültige Antwort gesendet, wahrscheinlich ist er gestorben...')
           }
           const gs = GameState.fromJSON(state)
-          console.log('handleMessage gameState:', gs)
           this.emit('state', gs)
           break
         case 'sc.framework.plugins.protocol.MoveRequest':
