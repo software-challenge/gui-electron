@@ -111,6 +111,7 @@ function createWindow() {
   if(isDev) {
     win.webContents.openDevTools()
   } else {
+    win.removeMenu()
     appUpdater()
   }
 
