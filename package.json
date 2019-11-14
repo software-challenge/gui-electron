@@ -29,13 +29,6 @@
   },
   "homepage": "https://www.software-challenge.de/",
   "build": {
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "CAU-Kiel-Tech-Inf",
-        "repo": "socha-gui"
-      }
-    ],
     "appId": "de.software-challenge.gui",
     "artifactName": "${productName}-${os}-${version}.${ext}",
     "files": [
