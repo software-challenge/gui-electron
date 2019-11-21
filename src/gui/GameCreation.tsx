@@ -52,10 +52,11 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
   constructor(props) {
     super(props)
 
+    let kioskMode = require('electron').remote.getGlobal('kioskMode')
     let defaults = {
       generalErrors: [],
       gameName:      this.unvalidatedField('Neue Begegnung'),
-      players:       [this.newPlayerForm(PlayerType.Computer), this.newPlayerForm(PlayerType.Human)],
+      players:       [this.newPlayerForm((kioskMode ? PlayerType.Human : PlayerType.Computer)), this.newPlayerForm(PlayerType.Human)],
     }
 
     const schema = {
@@ -222,6 +223,8 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
   }
 
   refreshPlayerName(player: PlayerFormState) {
+    return
+    // why is this needed?
     player.name.value = function() {
       let labelFor = (t: PlayerType): string => {
         switch (t) {
@@ -249,11 +252,15 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
 
   render() {
     console.log('GameCreation State:', JSON.stringify(this.state))
-    const playerTypes = [
+    let kioskMode = require('electron').remote.getGlobal('kioskMode')
+    const playerTypes = (kioskMode ? [
+      { label: 'Mensch', value: PlayerType.Human },
+      { label: 'Computer', value: PlayerType.Computer },
+    ] : [
       { label: 'Mensch', value: PlayerType.Human },
       { label: 'Computer', value: PlayerType.Computer },
       { label: 'Manuell gestarteter Client', value: PlayerType.Manual },
-    ]
+    ])
 
     let playerForm = (player: integer) => (
       <div>
@@ -289,6 +296,39 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
         <p>Bitte korrigieren Sie die rot markierten Probleme, um ein Spiel zu starten.</p>
         <ErrorList errors={this.state.generalErrors}/>
       </div>
+
+    if (kioskMode) {
+      this.state.players[0].type.value = PlayerType.Human
+      return (
+        <div className="game-creation main-container">
+          <div className="content">
+            <Input id="input_gameName" value={this.state.gameName.value}
+                   onChange={this.handleControlChange((state, value) => state.gameName.value = value)}
+                   invalid={this.hasErrors(this.state.gameName)}/>
+            <label htmlFor="input_gameName" className="validation-errors">{this.state.gameName.errors}</label>
+            <br/>
+
+            <div>
+              <Input id="input_playerName0" value={this.state.players[0].name.value}
+                     onChange={this.handleControlChange((state, value) => state.players[0].name.value = value)}
+                     invalid={this.hasErrors(this.state.players[0].name)}/>
+              <label htmlFor="input_playerName0"
+                     className="validation-errors">{this.state.players[0].name.errors}</label>
+              <br/>
+              {this.playerControl(this.state, s => s.players[0])}
+            </div>
+            <div id="vs">spielt gegen</div>
+            {playerForm(1)}
+
+            <div id="start">
+              {startControl}
+            </div>
+            <div id="errors"/>
+            <div className="clearfix"/>
+          </div>
+        </div>
+      )
+    }
 
     return (
       <div className="game-creation main-container">
