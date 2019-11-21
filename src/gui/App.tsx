@@ -172,7 +172,7 @@ export class App extends React.Component<any, State> {
       if (info.status == ExecutableStatus.Status.ERROR || info.status == ExecutableStatus.Status.EXITED) {
         Logger.getLogger().logError('App', 'server', 'Server status ' + info.status.toString() + ': ' + info.error, info.error)
         alert('Es gab einen Fehler beim Starten des Game-Servers, das Programm wird wahrscheinlich nicht funktionieren!\n' +
-          'Fehler: ' + info.error)
+          (info.error ? 'Fehler: ' + info.error : 'Ist Java installiert?'))
       }
     }).catch(retry))
   }
