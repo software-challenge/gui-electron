@@ -272,6 +272,10 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
                    value={turnActive}
                    step="1"
                    onChange={e => this.updateTurn(Number(e.target.value))}/>
+            <button className="red-button" onClick={e => {
+              const ipc = require('electron').ipcRenderer
+              ipc.send('kioskGameOver', this.props.gameId)
+            }}>Spiel beenden</button>
           </div>
         </div>
       </div>

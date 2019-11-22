@@ -7,9 +7,17 @@
 
 .green-button {
     padding: 1vw;
-    border: 0;
-    border-radius: 0.4vw;
-    background-color: #07bd0a;
+    border: 0 !important;
+    border-radius: 0.4vw !important;
+    background-color: #07bd0a !important;
+}
+
+.red-button {
+    border: 0 !important;
+    margin-left: 10vw;
+    font-size: 13pt;
+    border-radius: 0.4vw !important;
+    background-color: #f10009 !important;
 }
 
 #start-button {
