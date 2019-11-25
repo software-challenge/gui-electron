@@ -7,6 +7,8 @@ const path = require('path')
 const url = require('url')
 const fs = require('fs')
 
+// remove comment to build kiosk-mode dist
+// global.kioskMode = true
 autoUpdater.autoDownload = false
 
 function appUpdater() {
@@ -69,7 +71,9 @@ process.on('unhandledRejection', (reason, promise) => {
 function createWindow() {
   let args = process.argv.slice(2)
   let isDev = args.some(value => value === '--dev')
-  global.kioskMode = args.some(value => value === '--kiosk')
+  if (!global.kioskMode) {
+    global.kioskMode = args.some(value => value === '--kiosk')
+  }
 
   // Create the browser window.
   win = new BrowserWindow({
