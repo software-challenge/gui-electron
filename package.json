@@ -62,7 +62,7 @@
       "icon": "assets/build-resources/icon.icns",
       "category": "public.app-category.developer-tools",
       "target": [
-        "zip"
+        "dmg"
       ],
       "electronLanguages": [
         "de",
