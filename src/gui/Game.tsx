@@ -245,15 +245,20 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
       return <div id="replay-viewer" ref={(elem) => { this.viewerElement = elem }}>
         {isGameOver &&
         <div className="overlay" id="endscreen">
-          <h1>Spiel vorbei</h1>
-          <h2>{gameResult.reason}</h2>
-          <h3>{gameResult.winner ?
-            `Gewinner: ${gameResult.winner.displayName} (${gameResult.winner.color == 'RED' ? 'Rot' : 'Blau'})` :
-            'Unentschieden!'}</h3>
-          <h5><button className="green-button" onClick={e => {
-            const ipc = require('electron').ipcRenderer
-            ipc.send('kioskGameOver', this.props.gameId)
-          }}>Neues Spiel beginnen</button></h5>
+          <div className="result">
+            <h1>Spiel vorbei</h1>
+            <p>{gameResult.reason}</p>
+            <h2>{gameResult.winner ?
+              `Gewinner: ${gameResult.winner.displayName} (${gameResult.winner.color == 'RED' ? 'Rot' : 'Blau'})` :
+              'Unentschieden!'}</h2>
+            <h5>
+              <button className="green-button" onClick={e => {
+                const ipc = require('electron').ipcRenderer
+                ipc.send('kioskGameOver', this.props.gameId)
+              }}>Neues Spiel beginnen
+              </button>
+            </h5>
+          </div>
         </div>}
         <div className="replay-controls">
           <div className="button-container">
@@ -275,7 +280,8 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
             <button className="red-button" onClick={e => {
               const ipc = require('electron').ipcRenderer
               ipc.send('kioskGameOver', this.props.gameId)
-            }}>Spiel beenden</button>
+            }}>Spiel beenden
+            </button>
           </div>
         </div>
       </div>
@@ -286,11 +292,13 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
       <GameButton className="overlay" id="start-button" title="Los" onClick={this.playPause.bind(this)} resource="play"/>}
       {isGameOver &&
       <div className="overlay" id="endscreen">
-        <h1>Spiel vorbei</h1>
-        <h2>{gameResult.reason}</h2>
-        <h3>{gameResult.winner ?
-          `Gewinner: ${gameResult.winner.displayName} (${gameResult.winner.color == 'RED' ? 'Rot' : 'Blau'})` :
-          'Unentschieden!'}</h3>
+        <div className="result">
+          <h1>Spiel vorbei</h1>
+          <p>{gameResult.reason}</p>
+          <h2>{gameResult.winner ?
+            `Gewinner: ${gameResult.winner.displayName} (${gameResult.winner.color == 'RED' ? 'Rot' : 'Blau'})` :
+            'Unentschieden!'}</h2>
+        </div>
       </div>}
       <div className="replay-controls">
         <div className="button-container">

@@ -38,6 +38,13 @@
     color: white;
 }
 
+.result {
+    width: 100%;
+}
+.result > p {
+    font-size: 30px;
+}
+
 .viewer-container {
     width: 100%;
     height: 100%;
