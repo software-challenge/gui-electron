@@ -1,7 +1,7 @@
 {
   "name": "software-challenge-gui",
   "productName": "Software-Challenge-GUI",
-  "version": "20.2.2",
+  "version": "20.2.3",
   "description": "GUI für die Software-Challenge",
   "main": "main.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "start-dev": "yarn install && yarn compile && electron . --dev",
     "update-server": "git submodule update --remote && yarn compile-server",
     "compile-server": "cd socha && ./gradlew :server:deploy -q && cd .. && rimraf server && cp -r socha/server/build/runnable server && cp socha/player/build/libs/defaultplayer.jar .",
-    "dist": "yarn install && yarn compile && electron-builder",
+    "dist": "yarn install && yarn compile && electron-builder --publish never",
     "dist-all": "rimraf dist && yarn dist -mwl",
     "compile": "rimraf out && tsc",
     "clean": "rimraf out; rimraf dist; rimraf server; rimraf socha; rimraf defaultplayer.jar; rimraf *.log.html"
@@ -62,7 +62,7 @@
       "icon": "assets/build-resources/icon.icns",
       "category": "public.app-category.developer-tools",
       "target": [
-        "zip"
+        "dmg"
       ],
       "electronLanguages": [
         "de",
