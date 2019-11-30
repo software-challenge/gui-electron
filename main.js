@@ -114,7 +114,7 @@ function createWindow() {
   })
 
   // Open the DevTools.
-  if(isDev && kioskMode) {
+  if(isDev) {
     win.webContents.openDevTools()
   } else if (kioskMode) {
     win.removeMenu()
