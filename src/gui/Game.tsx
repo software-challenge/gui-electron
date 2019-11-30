@@ -240,6 +240,47 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
     const { turnActive, turnTotal, playbackSpeed, isGameOver, gameResult, hideStartButton } = this.state
     this.updateViewer()
 
+    if (require('electron').remote.getGlobal('kioskMode')) {
+
+      return <div id="replay-viewer" ref={(elem) => { this.viewerElement = elem }}>
+        {isGameOver &&
+        <div className="overlay" id="endscreen">
+          <h1>Spiel vorbei</h1>
+          <h2>{gameResult.reason}</h2>
+          <h3>{gameResult.winner ?
+            `Gewinner: ${gameResult.winner.displayName} (${gameResult.winner.color == 'RED' ? 'Rot' : 'Blau'})` :
+            'Unentschieden!'}</h3>
+          <h5><button className="green-button" onClick={e => {
+            const ipc = require('electron').ipcRenderer
+            ipc.send('kioskGameOver', this.props.gameId)
+          }}>Neues Spiel beginnen</button></h5>
+        </div>}
+        <div className="replay-controls">
+          <div className="button-container">
+            <GameButton title={this.isPlaying() ? 'Pause' : 'Los'} resource={this.isPlaying() ? 'pause' : 'play'}
+                        onClick={this.playPause.bind(this)}/>
+            <GameButton title="Zug zurück" resource="step-backward" disabled={turnActive < 1}
+                        onClick={e => this.previousTurn(e.shiftKey ? 5 : 1)}/>
+            <GameButton title="Zug vor" resource="step-forward"
+                        onClick={e => this.nextTurn(e.shiftKey ? 5 : 1)}/>
+
+            <span className="current-turn">Zug: {turnActive}</span>
+            <input title="Zug"
+                   type="range"
+                   min="0"
+                   max={turnTotal}
+                   value={turnActive}
+                   step="1"
+                   onChange={e => this.updateTurn(Number(e.target.value))}/>
+            <button className="red-button" onClick={e => {
+              const ipc = require('electron').ipcRenderer
+              ipc.send('kioskGameOver', this.props.gameId)
+            }}>Spiel beenden</button>
+          </div>
+        </div>
+      </div>
+    }
+
     return <div id="replay-viewer" ref={(elem) => { this.viewerElement = elem }}>
       {!hideStartButton && !isGameOver &&
       <GameButton className="overlay" id="start-button" title="Los" onClick={this.playPause.bind(this)} resource="play"/>}

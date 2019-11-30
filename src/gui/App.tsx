@@ -59,10 +59,11 @@ export class App extends React.Component<any, State> {
 
   constructor(props) {
     super(props)
+    var remote = require('electron').remote
     this.state = {
-      menuRetracted:    false,
+      menuRetracted:    remote.getGlobal('kioskMode'),
       consoleRetracted: true,
-      contentState:     Hotfix.isGameReload() ? AppContent.GameWaiting : AppContent.Empty,
+      contentState:     Hotfix.isGameReload() ? AppContent.GameWaiting : (remote.getGlobal('kioskMode') ? AppContent.GameCreation : AppContent.Empty),
       activeGameId:     null,
       serverPort:       null,
       settings:         loadFromStorage(appSettingsKey, {
@@ -79,6 +80,9 @@ export class App extends React.Component<any, State> {
 
     ipcRenderer.on('showGame', (event, gameId) => {
       this.showGame(gameId)
+    })
+    ipcRenderer.on('closeGame', (event, gameId) => {
+      this.closeGame(gameId)
     })
 
   }
@@ -149,7 +153,7 @@ export class App extends React.Component<any, State> {
       this.setState({
         contentState: AppContent.GameLive,
         activeGameId: gameId,
-      })
+      }),
     )
   }
 
@@ -180,7 +184,12 @@ export class App extends React.Component<any, State> {
   closeGame(id: number) {
     console.log('Closing game ' + id)
     Api.getGameManager().deleteGame(id)
-    this.show(AppContent.Empty)
+    if (require('electron').remote.getGlobal('kioskMode')) {
+      this.show(AppContent.GameCreation)
+    }
+    else {
+      this.show(AppContent.Empty)
+    }
   }
 
   showHtml(url: string) {
@@ -283,6 +292,18 @@ export class App extends React.Component<any, State> {
     function ContentNavItem(props: { icon: string, text: string, content: AppContent }) {
       return <NavItem icon={props.icon} text={props.text} onClick={() => app.show(props.content)}
                       active={app.state.contentState == props.content}/>
+    }
+
+    if (require('electron').remote.getGlobal('kioskMode')) {
+      return <Window>
+        <Content>
+          <PaneGroup>
+            <Pane>
+              {mainPaneContent}
+            </Pane>
+          </PaneGroup>
+        </Content>
+      </Window>
     }
 
     return <Window>
