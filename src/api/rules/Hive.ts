@@ -53,7 +53,7 @@ export class GameState {
       })
     }
     gs.undeployedBluePieces = []
-    if (json.undeployedBluePieces[0].piece != null && typeof json.undeployedRedPieces[0].piece != 'undefined') {
+    if (json.undeployedBluePieces[0].piece != null && typeof json.undeployedBluePieces[0].piece != 'undefined') {
       json.undeployedBluePieces[0].piece.forEach(p => {
         gs.undeployedBluePieces.push(Piece.fromJSON(p))
       })

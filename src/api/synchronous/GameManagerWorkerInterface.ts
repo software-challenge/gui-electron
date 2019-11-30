@@ -107,7 +107,7 @@ export class GameManagerWorkerInterface {
       .then(r => r.json())
       .then(state => {
         let gs = GameState.lift(state)
-        console.log('Got gamestate from backend:', gs, 'Original:', state)
+        console.log('Got gamestate from backend:', gs)
         return gs
       })
   }
@@ -136,9 +136,12 @@ export class GameManagerWorkerInterface {
       response.text().then(value => {
         Logger.getLogger().log('GameManagerWorkerInterface', 'sendMove', 'Server response: ' + value)
         this.getGameServerStatus().then(serverStatus => {
-          if (serverStatus.status == ExecutableStatus.Status.ERROR) {
+          // Dieser Fall tritt anscheinend nie ein, da der Server keinen solchen Code sendet? if (serverStatus.status == ExecutableStatus.Status.ERROR) {
+          if (serverStatus.error.toLowerCase().indexOf('error') > 0) {
             const ipc = require('electron').ipcRenderer
-            ipc.send('showErrorBox', 'Server Error', 'Nach senden des Moves: \n\n' + value + '\n\nkam es zu folgendem Fehler:\n\n' + serverStatus.error)
+            ipc.send('showGameErrorBox', 'Spiel wurde beendet', gameId, 'Nach senden des Moves: \n' + JSON.stringify(move) + '\nkam es zu folgendem Fehler:\n\n' + serverStatus.error
+              + '\n\nSollte dieser Fehler noch nicht auf Github unter: https://github.com/CAU-Kiel-Tech-Inf/socha-gui/issues/ gemeldet sein, melde doch bitte diesen Fehler.\nInfolge dieses Fehlers kam es zur Beendigung dieses Spiels.')
+            return -1
           }
         })
       })
