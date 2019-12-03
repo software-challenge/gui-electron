@@ -12,7 +12,7 @@
 
 ### Einstieg
 
-- repository klonen
+- repository klonen und `socha` submodul initialisieren (mit `git clone --recursive` beim clonen oder mit `git submodule update --init --recursive` nach dem clonen)
 - yarn und node installieren
 - `yarn update-server` ausführen, damit der server im Verzeichnis `server` verfügbar wird (dieser Schritt muss zum updaten des servers wiederholt werden)
 - GUI per `yarn start` starten
