@@ -12,12 +12,10 @@
     background-color: #07bd0a !important;
 }
 
-.red-button {
-    border: 0 !important;
-    margin-left: 10vw;
+#close-game {
+    color: white;
+    margin-left: 10vw !important;
     font-size: 13pt;
-    border-radius: 0.4vw !important;
-    background-color: #f10009 !important;
 }
 
 #start-button {
@@ -41,6 +39,7 @@
 .result {
     width: 100%;
 }
+
 .result > p {
     font-size: 30px;
 }
