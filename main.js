@@ -71,7 +71,7 @@ process.on('unhandledRejection', (reason, promise) => {
 function createWindow() {
   let args = process.argv.slice(2)
   let isDev = args.some(value => value === '--dev')
-  if (!global.kioskMode) {
+  if(!global.kioskMode) {
     global.kioskMode = args.some(value => value === '--kiosk')
   }
 
@@ -116,11 +116,10 @@ function createWindow() {
   // Open the DevTools.
   if(isDev) {
     win.webContents.openDevTools()
-  } else if (kioskMode) {
+  } else if(kioskMode) {
     win.removeMenu()
     win.setMenu(null)
-  }
-  else {
+  } else {
     win.removeMenu()
     win.setMenu(null)
     appUpdater()

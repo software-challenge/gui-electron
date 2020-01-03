@@ -32,10 +32,6 @@ export class Viewer {
     this.engine = new HiveEngine(this.canvas, this.element)
   }
 
-  getElement() {
-    return this.element
-  }
-
   dock(element: Element) {
     element.appendChild(this.element)
   }
