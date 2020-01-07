@@ -1,7 +1,7 @@
 {
   "name": "software-challenge-gui",
   "productName": "Software-Challenge-GUI",
-  "version": "20.2.3",
+  "version": "20.2.4",
   "description": "GUI für die Software-Challenge",
   "main": "main.js",
   "scripts": {
@@ -50,7 +50,10 @@
       "target": [
         {
           "target": "nsis",
-          "arch": "x64"
+          "arch": [
+            "x64",
+            "ia32"
+          ]
         }
       ]
     },
