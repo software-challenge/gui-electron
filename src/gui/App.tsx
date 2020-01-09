@@ -18,7 +18,7 @@ import { loadFromStorage, saveToStorage }                                       
 import { GameInfo }                                                                                  from '../api/synchronous/GameInfo'
 import { ExecutableStatus }                                                                          from '../api/rules/ExecutableStatus'
 import { NavGroup, NavItem, NavTitle }                                                               from './photon-fix/NavComponents'
-import promiseRetry = require('promise-retry')
+import promiseRetry from 'promise-retry'
 
 const dialog = remote.dialog
 const shell = remote.shell

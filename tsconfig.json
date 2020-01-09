@@ -13,7 +13,8 @@
     "target": "es2016",
     "watch": false,
     "skipLibCheck": true,
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "esModuleInterop": true
   },
   "include": [
     "src/api/**/*",

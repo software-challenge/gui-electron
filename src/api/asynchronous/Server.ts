@@ -3,7 +3,7 @@ import { getLogLine, log }  from '../../helpers/Utils'
 import { Logger }           from '../Logger'
 import { EventEmitter }     from 'events'
 import * as child_process   from 'child_process'
-import * as treekill        from 'tree-kill'
+import treekill        from 'tree-kill'
 import path = require('path')
 
 require('hazardous') // important to get the paths right in distributed app

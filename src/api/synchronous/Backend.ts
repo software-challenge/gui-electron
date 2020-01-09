@@ -1,5 +1,5 @@
-// TODO replace with fetch:
-import * as request from 'request'
+// TODO replace with fetch
+import request from 'request'
 
 // provides access to the nodeJS backend over HTTP
 // as defined in AsyncGameManager.ts
