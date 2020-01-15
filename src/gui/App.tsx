@@ -59,7 +59,7 @@ export class App extends React.Component<any, State> {
 
   constructor(props) {
     super(props)
-    var remote = require('electron').remote
+    let remote = require('electron').remote
     this.state = {
       menuRetracted:    remote.getGlobal('kioskMode'),
       consoleRetracted: true,
@@ -89,38 +89,37 @@ export class App extends React.Component<any, State> {
 
   private loadReplay() {
     dialog.showOpenDialog(
+      remote.require('browser-window'),
       {
         title:      'Wähle ein Replay',
         properties: ['openFile'],
-      },
-      (filenames) => {
-        // dialog returns undefined when user clicks cancel or an array of strings (paths) if user selected a file
-        if (filenames && filenames.length > 0 && filenames[0]) {
-          //window.localStorage[localStorageProgramPath] = filenames[0]
-          console.log('Attempting to load ' + filenames[0])
-          let liofs = filenames[0].lastIndexOf('/')
-          if (liofs == -1) {
-            liofs = filenames[0].lastIndexOf('\\')
-          }
-          let replayName = filenames[0]
-          if (liofs != -1) {
-            replayName = replayName.substring(liofs + 1)
-          }
-          const liofp = replayName.lastIndexOf('.')
-          if (liofp != -1) {
-            replayName = replayName.substring(0, liofp)
-          }
-          let gco: Replay = {
-            gameId:   Api.getGameManager().createGameId(replayName, true),
-            gameName: replayName,
-            kind:     GameType.Replay,
-            path:     filenames[0],
-          }
-          //new GameCreationOptions(null, null, filenames[0], StartType.Replay, null, null, null, null, replayName)
-          this.startGameWithOptions(gco)
+      }).then(result => {
+      // dialog returns undefined when user clicks cancel or an array of strings (paths) if user selected a file
+      if (!result.canceled && result.filePaths.length > 0 && result.filePaths[0]) {
+        //window.localStorage[localStorageProgramPath] = filenames[0]
+        console.log('Attempting to load ' + result.filePaths[0])
+        let liofs = result.filePaths[0].lastIndexOf('/')
+        if (liofs == -1) {
+          liofs = result.filePaths[0].lastIndexOf('\\')
         }
-      },
-    )
+        let replayName = result.filePaths[0]
+        if (liofs != -1) {
+          replayName = replayName.substring(liofs + 1)
+        }
+        const liofp = replayName.lastIndexOf('.')
+        if (liofp != -1) {
+          replayName = replayName.substring(0, liofp)
+        }
+        let gco: Replay = {
+          gameId:   Api.getGameManager().createGameId(replayName, true),
+          gameName: replayName,
+          kind:     GameType.Replay,
+          path:     result.filePaths[0],
+        }
+        //new GameCreationOptions(null, null, filenames[0], StartType.Replay, null, null, null, null, replayName)
+        this.startGameWithOptions(gco)
+      }
+    })
   }
 
   private startGameWithOptions(o: GameCreationOptions): Promise<GameInfo> {
@@ -186,8 +185,7 @@ export class App extends React.Component<any, State> {
     Api.getGameManager().deleteGame(id)
     if (require('electron').remote.getGlobal('kioskMode')) {
       this.show(AppContent.GameCreation)
-    }
-    else {
+    } else {
       this.show(AppContent.Empty)
     }
   }
@@ -315,7 +313,7 @@ export class App extends React.Component<any, State> {
           {this.state.contentState == AppContent.GameLive ?
             <button title="Close Game" className="svg-button close-game"
                     onClick={() => this.closeGame(this.state.activeGameId)}>
-              <img className="svg-icon" src={'resources/x-circled.svg'}/>
+              <img className="svg-icon" src={'resources/x-circled.svg'} alt="Close Game"/>
             </button> : null}
           <Button icon="doc-text" onClick={() => { this.toggleConsole() }} pullRight={true}/>
         </ToolbarActions>
@@ -336,7 +334,7 @@ export class App extends React.Component<any, State> {
                         this.closeGame(t.id)
                         e.stopPropagation()
                       }}>
-                        <img className="svg-icon" src={'resources/x-circled.svg'}/></button></span></NavItem>
+                        <img className="svg-icon" src={'resources/x-circled.svg'} alt={"Close Game"}/></button></span></NavItem>
                 ))}
 
               <NavTitle title="Informationen"/>

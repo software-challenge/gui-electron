@@ -32,10 +32,6 @@ export class Viewer {
     this.engine = new HiveEngine(this.canvas, this.element)
   }
 
-  getElement() {
-    return this.element
-  }
-
   dock(element: Element) {
     element.appendChild(this.element)
   }
@@ -219,7 +215,7 @@ export class Viewer {
             firstAction.color,
             firstAction.index,
             state.board.fields.map(
-              col => col.map(field => field.coordinates),
+              col => col.filter(field => !field.obstructed).map(field => field.coordinates),
             ).reduce((a, c) => a.concat(c)),
           )
         }

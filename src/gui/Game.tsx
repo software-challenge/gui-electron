@@ -8,6 +8,7 @@ import { Logger }                                            from '../api/Logger
 import { MessageContent }                                    from '../api/rules/Message'
 import { AppSettings }                                       from './App'
 import * as ReactDOM                                         from 'react-dom'
+const ipc = require('electron').ipcRenderer
 
 const dialog = remote.dialog
 
@@ -129,7 +130,6 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
           }
         })
       } else {
-        const ipc = require('electron').ipcRenderer
         ipc.send('showGameErrorBox', 'Ungültiger Zug', this.props.gameId, 'Der Zug von ' + move.fromField + ' nach ' + move.toField + ' ist ungültig!')
       }
     })
@@ -220,19 +220,17 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   saveReplay() {
     if (!this.props.isReplay) {
       dialog.showSaveDialog(
+        remote.require('browser-window'),
         {
           title:       'Wähle einen Ort zum Speichern des Replays',
           defaultPath: this.props.name + '.xml',
           filters:     [{ name: 'Replay-Dateien', extensions: ['xml'] }],
-        },
-        filename => {
-          // dialog returns undefined when user clicks cancel or an array of strings (paths) if user selected a file
-          if (filename) {
-            console.log('Attempting to save', filename)
-            Api.getGameManager().saveReplayOfGame(this.props.gameId, filename)
-          }
-        },
-      )
+        }).then(result => {
+        if (!result.canceled && result.filePath) {
+          console.log('Attempting to save', result.filePath)
+          Api.getGameManager().saveReplayOfGame(this.props.gameId, result.filePath)
+        }
+      })
     }
   }
 
@@ -252,8 +250,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
               `Gewinner: ${gameResult.winner.displayName} (${gameResult.winner.color == 'RED' ? 'Rot' : 'Blau'})` :
               'Unentschieden!'}</h2>
             <h5>
-              <button className="green-button" onClick={e => {
-                const ipc = require('electron').ipcRenderer
+              <button className="green-button" onClick={() => {
                 ipc.send('kioskGameOver', this.props.gameId)
               }}>Neues Spiel beginnen
               </button>
@@ -277,8 +274,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
                    value={turnActive}
                    step="1"
                    onChange={e => this.updateTurn(Number(e.target.value))}/>
-            <button id="close-game" onClick={e => {
-              const ipc = require('electron').ipcRenderer
+            <button id="close-game" onClick={() => {
               ipc.send('kioskGameOver', this.props.gameId)
             }}>Spiel beenden
             </button>
