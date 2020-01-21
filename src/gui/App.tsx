@@ -89,7 +89,7 @@ export class App extends React.Component<any, State> {
 
   private loadReplay() {
     dialog.showOpenDialog(
-      remote.require('browser-window'),
+      null,
       {
         title:      'Wähle ein Replay',
         properties: ['openFile'],

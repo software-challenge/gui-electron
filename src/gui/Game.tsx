@@ -220,7 +220,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   saveReplay() {
     if (!this.props.isReplay) {
       dialog.showSaveDialog(
-        remote.require('browser-window'),
+        null,
         {
           title:       'Wähle einen Ort zum Speichern des Replays',
           defaultPath: this.props.name + '.xml',
