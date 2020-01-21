@@ -233,7 +233,7 @@ export class GameRuleLogic {
 
     // Beetle darf drauf
     if (board.getTopPiece(from).kind == 'BEETLE') {
-      if (!this.getFieldsWithPiece(board).some(e => e.coordinates.equal(to)) && !this.isFieldNextToSwarm(board, to, from)) {
+      if (!this.getFieldsWithPiece(board).some(e => e.coordinates.equal(to)) && (board.getField(from).stack.length == 1 && !this.isFieldNextToSwarm(board, to, from) || board.getField(from).stack.length > 1 && !this.isFieldNextToSwarm(board, to, null))) {
         console.log('Das Ziel des Beetles ist weder auf einem anderen Insekt, noch neben dem Schwarm')
         return false
       }
