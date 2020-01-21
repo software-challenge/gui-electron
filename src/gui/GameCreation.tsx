@@ -106,7 +106,7 @@ export class GameCreation extends React.Component<{ serverPort: number, createGa
 
   // shows a file select dialog and calls the given setter with the selected file
   private clientFileSelectDialog(setter: (s: FormState, firstSelectedFilename: string) => void): void {
-    dialog.showOpenDialog(remote.require('browser-window'),
+    dialog.showOpenDialog(null,
       {
         title:      'Wähle einen Computerspieler',
         properties: ['openFile'],
