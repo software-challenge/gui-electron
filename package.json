@@ -1,7 +1,7 @@
 {
   "name": "software-challenge-gui",
   "productName": "Software-Challenge-GUI",
-  "version": "20.3.1",
+  "version": "20.3.2",
   "description": "GUI für die Software-Challenge",
   "main": "main.js",
   "scripts": {
