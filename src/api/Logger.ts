@@ -35,24 +35,17 @@ export class Logger {
 
   constructor(logToConsole: boolean, logToHTML: boolean = true, logFile?: string) {
     this.logToHTML = logToHTML
-    this.logFile = logFile
+    this.logFile = logFile + (logToHTML ? '.html' : '')
     this.logToConsole = logToConsole
-    if (logToHTML) {
-      this.logFile = this.logFile + '.html'
-    }
-    try {
-      if (!fs.existsSync(this.logFile)) {
+    if (!fs.existsSync(this.logFile)) {
+      try {
         this.createLogFile()
-      } else {
-        if (!fs.existsSync(this.logFile)) {
-          fs.writeFileSync(this.logFile, '')
-        }
+      } catch (err) {
+        console.log('Could not create log file, falling back to console logging.')
+        this.logToHTML = false
+        this.logFile = null
+        this.logToConsole = true
       }
-    } catch (err) {
-      console.log('Could not create log file, falling back to console logging.')
-      this.logToHTML = false
-      this.logFile = null
-      this.logToConsole = true
     }
   }
 

@@ -16,8 +16,6 @@ function appUpdater() {
     dialog.showErrorBox('Error: ', error == null ? 'unknown' : (error.stack || error).toString())
   })
 
-  autoUpdater.on('checking-for-update', () => console.log('checking-for-update'))
-
   autoUpdater.on('update-available', () => {
     dialog.showMessageBox({
       type: 'info',

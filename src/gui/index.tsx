@@ -18,10 +18,9 @@ export function loadCSS(filename: string) {
 
 
 export function main() {
-  console.log('window.location.search=', window.location.search)
   let location = decodeURIComponent(window.location.search.substring('?dirname='.length))
   let dir = window.localStorage['logDir']
-  process.env.SGC_LOG_PATH = !dir ? location : dir[0] == '.' ? path.join(location, dir) : dir
+  process.env.SGC_LOG_PATH = dir ? (dir[0] == '.' ? path.join(location, dir) : dir) : location
 
   //Preload viewer:
   Api.getViewer()
