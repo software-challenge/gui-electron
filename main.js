@@ -16,8 +16,6 @@ function appUpdater() {
     dialog.showErrorBox('Error: ', error == null ? 'unknown' : (error.stack || error).toString())
   })
 
-  autoUpdater.on('checking-for-update', () => console.log('checking-for-update'))
-
   autoUpdater.on('update-available', () => {
     dialog.showMessageBox({
       type: 'info',
@@ -86,13 +84,13 @@ function createWindow() {
     icon: path.join(__dirname, 'assets/build-resources/icon64.png'),
   })
 
-  let logDir = '.'
+  let logDir
   let appDir = app.getAppPath()
   // application path may be a directory (in dev mode) or a file (when distributed)
   // .asar files are identified as directories, but are not directories in the filesystem
-  if(fs.lstatSync(appDir).isDirectory() && !appDir.endsWith('.asar')) {
+  if(fs.lstatSync(appDir).isDirectory()) {
     console.log('Application directory', appDir)
-    logDir = appDir
+    logDir = appDir.endsWith('.asar') ? '/var/tmp' : appDir
   } else {
     console.log('Application file', appDir)
     logDir = path.dirname(appDir)
