@@ -1,51 +1,14 @@
 const {app, BrowserWindow, ipcMain, dialog} = require('electron')
 const {autoUpdater} = require('electron-updater')
-
-// AutoUpdater event-listener
-autoUpdater.autoDownload = false
+// Ignore warning about third-party AMD drivers on linux
+app.commandLine.appendSwitch('ignore-gpu-blacklist', 'true')
+const path = require('path')
+const url = require('url')
+const fs = require('fs')
 
 autoUpdater.on('error', (error) => {
   dialog.showErrorBox('Error: ', error == null ? 'unknown' : (error.stack || error).toString())
 })
-
-autoUpdater.on('update-available', () => {
-  dialog.showMessageBox(null,
-    {
-      type: 'info',
-      title: 'Update verfügbar',
-      message: 'Es wurde ein Update gefunden, welches neue Features oder Bugfixes enthalten kann.\nMehr Informationen sind unter https://github.com/CAU-Kiel-Tech-Inf/socha-gui/releases/latest verfügbar',
-      buttons: ['Jetzt herunterladen', 'Vielleicht wann anders'],
-    }).then(result => {
-    if(result.response === 0) {
-      autoUpdater.downloadUpdate()
-    }
-  })
-})
-
-autoUpdater.on('update-downloaded', () => {
-  dialog.showMessageBox(null, {
-    type: 'question',
-    buttons: ['Jetzt installieren und neustarten', 'Später'],
-    message: 'Das Update wurde erfolgreich geladen und kann jetzt installiert werden',
-  }).then(result => {
-    if(result.response === 0) {
-      setTimeout(() => autoUpdater.quitAndInstall(), 1)
-    }
-  })
-})
-
-// init for updates
-autoUpdater.setFeedURL({
-  provider: 'github',
-  repo: 'socha-gui',
-  owner: 'CAU-Kiel-Tech-Inf',
-  vPrefixedTagName: false,
-})
-
-
-// Ignore warning about third-party AMD drivers on linux
-app.commandLine.appendSwitch('ignore-gpu-blacklist', 'true')
-
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -75,7 +38,32 @@ function createWindow() {
     },
     show: false,
   })
-  win.loadFile(`src/index.html`)
+  let logDir
+  let appDir = app.getAppPath()
+  // application path may be a directory (in dev mode) or a file (when distributed)
+  // .asar files are identified as directories, but are not directories in the filesystem
+  if(fs.lstatSync(appDir).isDirectory()) {
+    console.log('Application directory', appDir)
+    logDir = appDir.endsWith('.asar') ? '/var/tmp' : appDir
+  } else {
+    console.log('Application file', appDir)
+    logDir = path.dirname(appDir)
+  }
+
+  // and load the index.html of the app.
+  win.loadURL(url.format({
+    pathname: path.join(app.getAppPath(), 'src/index.html'),
+    protocol: 'file:',
+    slashes: true,
+  }) + '?dirname=' + encodeURIComponent(logDir), {
+    //WebGL needs to be forced on with older radeon cards
+    webgl: true,
+    //Some extra features to speed up canvas/GL operations
+    experimentalFeatures: true,
+    experimentalCanvasFeatures: true,
+    //Enable offscreen rendering
+    offscreen: true,
+  })
 
   // Open the DevTools.
   if(app.commandLine.hasSwitch('dev')) {
@@ -88,8 +76,7 @@ function createWindow() {
     win.setMenu(null)
 
     // Dies ist auch eine einfachere Version des Auto-Updates und installiert sich bei einem Neustart automatisch
-    // autoUpdater.checkForUpdatesAndNotify()
-    autoUpdater.checkForUpdates()
+    autoUpdater.checkForUpdatesAndNotify()
   }
 
   win.once('ready-to-show', () => {
@@ -99,9 +86,7 @@ function createWindow() {
 
   // Emitted when the window is closed.
   win.on('closed', () => {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
+    win.destroy()
     win = null
   })
 }

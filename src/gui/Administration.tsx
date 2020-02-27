@@ -24,8 +24,8 @@ export class Administration extends React.Component<{ settings: AppSettings, set
                     onChange={this.setValue('animateMoves')}/>
           <CheckBox label="Wasser animieren" value={this.props.settings.animateWater}
                     onChange={this.setValue('animateWater')}/>
-          <label>Log-Verzeichnis (benötigt Neustart):
-            <Input value={this.props.settings.logDir} onChange={this.setValue('logDir')}/></label><br/>
+          <label>Log-Verzeichnis (benötigt Neustart):</label>
+          <Input value={this.props.settings.logDir} onChange={this.setValue('logDir')}/><br/>
           <Button text="Log leeren" onClick={() => Logger.getLogger().clearLog()}/>
         </div>
       </div>
