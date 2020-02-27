@@ -63,7 +63,11 @@ export class App extends React.Component<any, State> {
     this.state = {
       menuRetracted:    remote.getGlobal('kioskMode'),
       consoleRetracted: true,
-      contentState:     Hotfix.isGameReload() ? AppContent.GameWaiting : (remote.getGlobal('kioskMode') ? AppContent.GameCreation : AppContent.Empty),
+      contentState:     Hotfix.isGameReload() ? AppContent.GameWaiting : (require('electron')
+        .remote
+        .app
+        .commandLine
+        .hasSwitch('kiosk') ? AppContent.GameCreation : AppContent.Empty),
       activeGameId:     null,
       serverPort:       null,
       settings:         loadFromStorage(appSettingsKey, {
@@ -76,7 +80,6 @@ export class App extends React.Component<any, State> {
         logDir:       '.',
       }),
     }
-    // Hotfix.init(gco => this.startGameWithOptions(gco))
 
     ipcRenderer.on('showGame', (event, gameId) => {
       this.showGame(gameId)
@@ -183,7 +186,7 @@ export class App extends React.Component<any, State> {
   closeGame(id: number) {
     console.log('Closing game ' + id)
     Api.getGameManager().deleteGame(id)
-    if (require('electron').remote.getGlobal('kioskMode')) {
+    if (require('electron').remote.app.commandLine.hasSwitch('kioskMode')) {
       this.show(AppContent.GameCreation)
     } else {
       this.show(AppContent.Empty)
@@ -330,11 +333,11 @@ export class App extends React.Component<any, State> {
                                active={this.state.contentState == AppContent.GameLive && this.state.activeGameId == t.id}>
                     <UnicodeIcon icon="🎳"/>{t.name} ({t.id})
                     <span className="close-button-container">
-                      <button title="Close Game" className="svg-button close-game" onClick={e => {
-                        this.closeGame(t.id)
-                        e.stopPropagation()
-                      }}>
-                        <img className="svg-icon" src={'resources/x-circled.svg'} alt={"Close Game"}/></button></span></NavItem>
+     <button title="Close Game" className="svg-button close-game" onClick={e => {
+       this.closeGame(t.id)
+       e.stopPropagation()
+     }}>
+     <img className="svg-icon" src={'resources/x-circled.svg'} alt={'Close Game'}/></button></span></NavItem>
                 ))}
 
               <NavTitle title="Informationen"/>
