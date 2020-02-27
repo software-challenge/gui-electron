@@ -3,7 +3,6 @@ import { GameResult, GameRuleLogic, GameState, RenderState } from '../api/rules/
 import * as React                                            from 'react'
 import { Viewer }                                            from '../viewer/Viewer'
 import { Api }                                               from '../api/Api'
-import { loadCSS }                                           from '.'
 import { Logger }                                            from '../api/Logger'
 import { MessageContent }                                    from '../api/rules/Message'
 import { AppSettings }                                       from './App'
@@ -34,7 +33,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   constructor(props) {
     super(props)
     this.viewer = null
-    loadCSS('css/viewer.css')
+    //loadCSS('css/viewer.css')
     this.state = {
       turnActive:         0,
       turnTotal:          0,
