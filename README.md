@@ -39,7 +39,7 @@ Da die Anwendung in mehreren Prozessen laeuft (Render-Thread und mehrere Node.js
 Es wird auch immer ein Game Server mit in den Release gepackt. Dieser sollte vorher ebenfalls mit der version getaggt werden. Er wird aus dem `server`-Verzeichnis genommen und kann dahin durch `yarn update-server` initialisiert und aktualisiert werden.
 
 ### Kiosk-Modus
-`yarn start --kiosk` führt das Paket automatisch im Kiosk-Modus aus. Um eine Distribution zu erzeugen, bei dem der Kiosk-Modus dauerhaft aktiv ist, muss in [main.js](main.js) bei einer Zeile ein Kommentar entfernt werden um `global.kioskMode = true` zu setzen. Im Anschluss kann wie gehabt `yarn dist` aufgerufen werden, welche den Kiosk-Build erzeugt.
+`yarn start --kiosk` führt das Paket automatisch im Kiosk-Modus aus. Bei bereits verpackten Distributionen muss auch nur `--kiosk` Switch in einer CLI angehängt werden um in den Kiosk-Modus zu starten.
 
 ### Moegliche Probleme
 

@@ -6,6 +6,13 @@ const path = require('path')
 const url = require('url')
 const fs = require('fs')
 
+// init for updates
+autoUpdater.setFeedURL({
+  provider: 'github',
+  repo: 'socha-gui',
+  owner: 'CAU-Kiel-Tech-Inf',
+  vPrefixedTagName: false,
+})
 autoUpdater.on('error', (error) => {
   dialog.showErrorBox('Error: ', error == null ? 'unknown' : (error.stack || error).toString())
 })
@@ -22,14 +29,14 @@ function createWindow() {
     frame: false,
     alwaysOnTop: true,
   })
-  splashWin.loadFile('assets/build-resources/icon512x512.png')
+  splashWin.loadFile(path.join(app.getAppPath(), 'assets/build-resources/icon512x512.png'))
 
   // Create the browser window.
   win = new BrowserWindow({
     kiosk: app.commandLine.hasSwitch('kiosk'),
     icon: 'assets/build-resources/icon64x64.png',
-    width: 1000,
-    height: 600,
+    width: app.commandLine.hasSwitch('dev') ? 1500 : 1000,
+    height: 850,
     webPreferences: {
       nodeIntegration: true,
       webgl: true,
@@ -44,7 +51,7 @@ function createWindow() {
   // .asar files are identified as directories, but are not directories in the filesystem
   if(fs.lstatSync(appDir).isDirectory()) {
     console.log('Application directory', appDir)
-    logDir = appDir.endsWith('.asar') ? '/var/tmp' : appDir
+    logDir = appDir.endsWith('.asar') ? process.platform === 'win32'?  '.' : '/var/tmp' : appDir
   } else {
     console.log('Application file', appDir)
     logDir = path.dirname(appDir)

@@ -35,7 +35,8 @@
       "main.js",
       "src",
       "out",
-      "server"
+      "server",
+      "assets/build-resources/icon512x512.png"
     ],
     "asar": true,
     "asarUnpack": [
@@ -107,15 +108,15 @@
     "@types/react-dom": "^16.9.4",
     "@types/request": "^2.48.3",
     "@types/sax": "^1.2.0",
-    "electron": "^7.1.7",
-    "electron-builder": "^21.2.0",
+    "electron": "^8.0.2",
+    "electron-builder": "^22.3.2",
     "jasmine": "^3.5.0",
     "jasmine-console-reporter": "^3.1.0",
     "jasmine-ts-console-reporter": "^3.1.1",
-    "mocha": "^6.2.2",
+    "mocha": "^7.1.0",
     "rimraf": "^3.0.0",
     "ts-node": "^8.5.4",
-    "tslint": "^5.20.1",
+    "tslint": "^6.0.0",
     "typescript": "^3.7.2"
   }
 }
