@@ -6,7 +6,7 @@ git:
 
 env:
   global:
-    - NODE_VERSION=8
+    - NODE_VERSION=12
     - ELECTRON_CACHE=$HOME/caches/electron
     - ELECTRON_BUILDER_CACHE=$HOME/caches/electron-builder
 
