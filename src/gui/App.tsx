@@ -18,15 +18,14 @@ import { loadFromStorage, saveToStorage }                                       
 import { GameInfo }                                                                                  from '../api/synchronous/GameInfo'
 import { ExecutableStatus }                                                                          from '../api/rules/ExecutableStatus'
 import { NavGroup, NavItem, NavTitle }                                                               from './photon-fix/NavComponents'
-import promiseRetry                                                                                  from 'promise-retry'
-import Func = jasmine.Func
+import promiseRetry from 'promise-retry'
 
 const dialog = remote.dialog
 const shell = remote.shell
 
 const appSettingsKey = 'appSettings'
 
-export enum AppContent {
+enum AppContent {
   Empty,
   Blank,
   GameCreation,
@@ -60,8 +59,9 @@ export class App extends React.Component<any, State> {
 
   constructor(props) {
     super(props)
+    let remote = require('electron').remote
     this.state = {
-      menuRetracted:    require('electron').remote.app.commandLine.hasSwitch('kiosk'),
+      menuRetracted:    remote.getGlobal('kioskMode'),
       consoleRetracted: true,
       contentState:     Hotfix.isGameReload() ? AppContent.GameWaiting : (require('electron')
         .remote
@@ -119,12 +119,14 @@ export class App extends React.Component<any, State> {
           kind:     GameType.Replay,
           path:     result.filePaths[0],
         }
+        //new GameCreationOptions(null, null, filenames[0], StartType.Replay, null, null, null, null, replayName)
         this.startGameWithOptions(gco)
       }
     })
   }
 
   private startGameWithOptions(o: GameCreationOptions): Promise<GameInfo> {
+    //Hotfix.reloadIntoGame(o)
     Logger.getLogger().log('App', 'startGameWithOptions', 'starting game with options: ' + JSON.stringify(o))
     return Api.getGameManager().createGame(o).then(info => {
       this.showGame(info.id)
@@ -157,7 +159,7 @@ export class App extends React.Component<any, State> {
     )
   }
 
-  public show(content: AppContent, callback?: () => void) {
+  private show(content: AppContent, callback?: () => void) {
     this.setState({
       contentState: content,
     }, callback)
@@ -293,7 +295,7 @@ export class App extends React.Component<any, State> {
                       active={app.state.contentState == props.content}/>
     }
 
-    if (require('electron').remote.app.commandLine.hasSwitch('kiosk')) {
+    if (require('electron').remote.getGlobal('kioskMode')) {
       return <Window>
         <Content>
           <PaneGroup>
