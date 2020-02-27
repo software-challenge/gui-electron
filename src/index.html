@@ -4,16 +4,20 @@
     <title>Software-Challenge Germany GUI</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="css/main.css"/>
 </head>
 
 <body>
-    <div id="root" class="d-block"></div>
+<div id="root">
     <script>
-      const index = require('../out/gui/index.js')
+      require('hazardous')
+      remote = require('electron').remote
+
+      const path = require('path')
+      const index = require(path.join(remote.app.getAppPath(), 'out', 'gui', 'index.js'))
       window.react = require('react')
       index.main()
     </script>
+</div>
 </body>
 
 </html>

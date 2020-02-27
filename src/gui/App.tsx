@@ -1,5 +1,3 @@
-import { Menu }                                                                                      from './Menu'
-
 const { ipcRenderer } = require('electron')
 import { Api }                                                                                       from '../api/Api'
 import * as React                                                                                    from 'react'
@@ -20,15 +18,14 @@ import { loadFromStorage, saveToStorage }                                       
 import { GameInfo }                                                                                  from '../api/synchronous/GameInfo'
 import { ExecutableStatus }                                                                          from '../api/rules/ExecutableStatus'
 import { NavGroup, NavItem, NavTitle }                                                               from './photon-fix/NavComponents'
-import promiseRetry                                                                                  from 'promise-retry'
-import Func = jasmine.Func
+import promiseRetry from 'promise-retry'
 
 const dialog = remote.dialog
 const shell = remote.shell
 
 const appSettingsKey = 'appSettings'
 
-export enum AppContent {
+enum AppContent {
   Empty,
   Blank,
   GameCreation,
@@ -59,14 +56,14 @@ export interface AppSettings {
 }
 
 export class App extends React.Component<any, State> {
-  private readonly menu: React.RefObject<Menu>
 
   constructor(props) {
     super(props)
+    let remote = require('electron').remote
     this.state = {
-      menuRetracted:    require('electron').remote.app.commandLine.hasSwitch('kiosk'),
+      menuRetracted:    remote.getGlobal('kioskMode'),
       consoleRetracted: true,
-      contentState:     Hotfix.isGameReload() ? AppContent.GameWaiting : (require('electron').remote.app.commandLine.hasSwitch('kiosk') ? AppContent.GameCreation : AppContent.Empty),
+      contentState:     Hotfix.isGameReload() ? AppContent.GameWaiting : (remote.getGlobal('kioskMode') ? AppContent.GameCreation : AppContent.Empty),
       activeGameId:     null,
       serverPort:       null,
       settings:         loadFromStorage(appSettingsKey, {
@@ -79,8 +76,7 @@ export class App extends React.Component<any, State> {
         logDir:       '.',
       }),
     }
-
-    this.menu = React.createRef()
+    // Hotfix.init(gco => this.startGameWithOptions(gco))
 
     ipcRenderer.on('showGame', (event, gameId) => {
       this.showGame(gameId)
@@ -120,12 +116,14 @@ export class App extends React.Component<any, State> {
           kind:     GameType.Replay,
           path:     result.filePaths[0],
         }
+        //new GameCreationOptions(null, null, filenames[0], StartType.Replay, null, null, null, null, replayName)
         this.startGameWithOptions(gco)
       }
     })
   }
 
   private startGameWithOptions(o: GameCreationOptions): Promise<GameInfo> {
+    //Hotfix.reloadIntoGame(o)
     Logger.getLogger().log('App', 'startGameWithOptions', 'starting game with options: ' + JSON.stringify(o))
     return Api.getGameManager().createGame(o).then(info => {
       this.showGame(info.id)
@@ -158,7 +156,7 @@ export class App extends React.Component<any, State> {
     )
   }
 
-  public show(content: AppContent, callback?: () => void) {
+  private show(content: AppContent, callback?: () => void) {
     this.setState({
       contentState: content,
     }, callback)
@@ -185,7 +183,7 @@ export class App extends React.Component<any, State> {
   closeGame(id: number) {
     console.log('Closing game ' + id)
     Api.getGameManager().deleteGame(id)
-    if (require('electron').app.commandLine.hasSwitch('kioskMode')) {
+    if (require('electron').remote.getGlobal('kioskMode')) {
       this.show(AppContent.GameCreation)
     } else {
       this.show(AppContent.Empty)
@@ -294,7 +292,7 @@ export class App extends React.Component<any, State> {
                       active={app.state.contentState == props.content}/>
     }
 
-    if (require('electron').remote.app.commandLine.hasSwitch('kiosk')) {
+    if (require('electron').remote.getGlobal('kioskMode')) {
       return <Window>
         <Content>
           <PaneGroup>
@@ -306,59 +304,56 @@ export class App extends React.Component<any, State> {
       </Window>
     }
 
-    return <Menu app={this.show.bind(this)}/>
+    return <Window>
+      <Toolbar>
+        <ToolbarActions>
+          <ButtonGroup>
+            <Button icon="menu" onClick={() => this.toggleMenu()} active={!this.state.menuRetracted}/>
+          </ButtonGroup>
+          {this.state.contentState == AppContent.GameLive ?
+            <button title="Close Game" className="svg-button close-game"
+                    onClick={() => this.closeGame(this.state.activeGameId)}>
+              <img className="svg-icon" src={'resources/x-circled.svg'} alt="Close Game"/>
+            </button> : null}
+          <Button icon="doc-text" onClick={() => { this.toggleConsole() }} pullRight={true}/>
+        </ToolbarActions>
+      </Toolbar>
+      <Content>
+        <PaneGroup>
+          <RetractableSidebar retracted={this.state.menuRetracted}>
+            <NavGroup>
+              <NavTitle title="Spiele"/>
+              <ContentNavItem key="new" content={AppContent.GameCreation} icon="+" text="Neues Spiel"/>
+              <NavItem key="replay" onClick={() => this.loadReplay()} icon="↥" text="Replay laden"/>
+              {Api.getGameManager().getGameInfos().map(
+                t => (<NavItem key={t.id} onClick={() => this.showGame(t.id)}
+                               active={this.state.contentState == AppContent.GameLive && this.state.activeGameId == t.id}>
+                    <UnicodeIcon icon="🎳"/>{t.name} ({t.id})
+                    <span className="close-button-container">
+                      <button title="Close Game" className="svg-button close-game" onClick={e => {
+                        this.closeGame(t.id)
+                        e.stopPropagation()
+                      }}>
+                        <img className="svg-icon" src={'resources/x-circled.svg'} alt={"Close Game"}/></button></span></NavItem>
+                ))}
 
-
-    /*<Window>
-     <Toolbar>
-     <ToolbarActions>
-     <ButtonGroup>
-     <Button icon="menu" onClick={() => this.toggleMenu()} active={!this.state.menuRetracted}/>
-     </ButtonGroup>
-     {this.state.contentState == AppContent.GameLive ?
-     <button title="Close Game" className="svg-button close-game"
-     onClick={() => this.closeGame(this.state.activeGameId)}>
-     <img className="svg-icon" src={'resources/x-circled.svg'} alt="Close Game"/>
-     </button> : null}
-     <Button icon="doc-text" onClick={() => { this.toggleConsole() }} pullRight={true}/>
-     </ToolbarActions>
-     </Toolbar>
-     <Content>
-     <PaneGroup>
-     <RetractableSidebar retracted={this.state.menuRetracted}>
-     <NavGroup>
-     <NavTitle title="Spiele"/>
-     <ContentNavItem key="new" content={AppContent.GameCreation} icon="+" text="Neues Spiel"/>
-     <NavItem key="replay" onClick={() => this.loadReplay()} icon="↥" text="Replay laden"/>
-     {Api.getGameManager().getGameInfos().map(
-     t => (<NavItem key={t.id} onClick={() => this.showGame(t.id)}
-     active={this.state.contentState == AppContent.GameLive && this.state.activeGameId == t.id}>
-     <UnicodeIcon icon="🎳"/>{t.name} ({t.id})
-     <span className="close-button-container">
-     <button title="Close Game" className="svg-button close-game" onClick={e => {
-     this.closeGame(t.id)
-     e.stopPropagation()
-     }}>
-     <img className="svg-icon" src={'resources/x-circled.svg'} alt={'Close Game'}/></button></span></NavItem>
-     ))}
-
-     <NavTitle title="Informationen"/>
-     <ContentNavItem key="settings" content={AppContent.Administration} icon="⚙" text="Einstellungen"/>
-     <ContentNavItem key="rules" content={AppContent.Rules} icon="❔" text="Spielregeln"/>
-     <ContentNavItem key="help" content={AppContent.Help} icon="❔" text="Hilfe"/>
-     <ContentNavItem key="quickstart" content={AppContent.Quickstart} icon="❔" text="Getting Started"/>
-     <ContentNavItem key="javadocs" content={AppContent.JavaDocs} icon="❔" text="JavaDocs"/>
-     <ContentNavItem key="log" content={AppContent.Log} icon="📜" text="Logs"/>
-     </NavGroup>
-     </RetractableSidebar>
-     <Pane>
-     {mainPaneContent}
-     </Pane>
-     <RetractableSidebar className="wide" retracted={this.state.consoleRetracted}>
-     {this.state.activeGameId ? <LogConsole gameId={this.state.activeGameId}/> : <div/>}
-     </RetractableSidebar>
-     </PaneGroup>
-     </Content>
-     </Window>*/
+              <NavTitle title="Informationen"/>
+              <ContentNavItem key="settings" content={AppContent.Administration} icon="⚙" text="Einstellungen"/>
+              <ContentNavItem key="rules" content={AppContent.Rules} icon="❔" text="Spielregeln"/>
+              <ContentNavItem key="help" content={AppContent.Help} icon="❔" text="Hilfe"/>
+              <ContentNavItem key="quickstart" content={AppContent.Quickstart} icon="❔" text="Getting Started"/>
+              <ContentNavItem key="javadocs" content={AppContent.JavaDocs} icon="❔" text="JavaDocs"/>
+              <ContentNavItem key="log" content={AppContent.Log} icon="📜" text="Logs"/>
+            </NavGroup>
+          </RetractableSidebar>
+          <Pane>
+            {mainPaneContent}
+          </Pane>
+          <RetractableSidebar className="wide" retracted={this.state.consoleRetracted}>
+            {this.state.activeGameId ? <LogConsole gameId={this.state.activeGameId}/> : <div/>}
+          </RetractableSidebar>
+        </PaneGroup>
+      </Content>
+    </Window>
   }
 }
