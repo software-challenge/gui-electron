@@ -18,6 +18,7 @@ import { loadFromStorage, saveToStorage }                                       
 import { GameInfo }                                                                                  from '../api/synchronous/GameInfo'
 import { ExecutableStatus }                                                                          from '../api/rules/ExecutableStatus'
 import { NavGroup, NavItem, NavTitle }                                                               from './photon-fix/NavComponents'
+import rules from '@software-challenge/gamerules'
 import promiseRetry from 'promise-retry'
 
 const dialog = remote.dialog
@@ -85,6 +86,7 @@ export class App extends React.Component<any, State> {
       this.closeGame(gameId)
     })
 
+    console.log(rules.sample.Platform.name)
   }
 
   private loadReplay() {

@@ -99,7 +99,8 @@
     "tree-kill": "^1.2.1",
     "validate-typescript": "^4.0.2",
     "webpack": "^4.41.2",
-    "xml2js": "^0.4.22"
+    "xml2js": "^0.4.22",
+    "@software-challenge/gamerules": "latest"
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.1",

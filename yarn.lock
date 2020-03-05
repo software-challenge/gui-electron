@@ -68,6 +68,13 @@
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
   integrity sha512-9NET910DNaIPngYnLLPeg+Ogzqsi9uM4mSboU5y6p8S5DzMTVEsJZrawi+BoDNUVBa2DhJqQYUFvMDfgU062LQ==
 
+"@software-challenge/gamerules@latest":
+  version "20.0.1"
+  resolved "https://registry.yarnpkg.com/@software-challenge/gamerules/-/gamerules-20.0.1.tgz#86fe5cbabe268c55f3083c368e9bda0287b98faf"
+  integrity sha512-bQonryys06lbjrTqqwetVa2mDpmmHOP4sXPj+A2x8Y+7H2yBwxGDvMKmJikagZt9C6ckyBGQ4ArEwQzScNhmpg==
+  dependencies:
+    kotlin "1.3.70"
+
 "@szmarczak/http-timer@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@szmarczak/http-timer/-/http-timer-1.1.2.tgz#b1665e2c461a2cd92f4c1bbf50d5454de0d4b421"
@@ -2798,6 +2805,11 @@ kind-of@^6.0.0, kind-of@^6.0.2:
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.2.tgz#01146b36a6218e64e58f3a8d66de5d7fc6f6d051"
   integrity sha512-s5kLOcnH0XqDO+FvuaLX8DDjZ18CGFk7VygH40QoKPUQhW4e2rvM0rwUq0t8IQDOwYSeLK01U90OjzBTme2QqA==
+
+kotlin@1.3.70:
+  version "1.3.70"
+  resolved "https://registry.yarnpkg.com/kotlin/-/kotlin-1.3.70.tgz#c5aa9774268bcbb55b853bfabdc71f6ed1062202"
+  integrity sha512-fE2LHxupY6YajaHuFW/UVvzjBWvdyOYyC6jR/g87rtU8uOqeoHl4T7N4RzuM+ZBXI9lStUFY9i+xhR7lVfwslQ==
 
 latest-version@^5.0.0:
   version "5.1.0"
