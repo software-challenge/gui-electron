@@ -39,5 +39,6 @@ deploy:
     - dist/*.exe
     - dist/*.dmg
     - dist/latest*.yml
+  skip_cleanup: true
   on:
     tags: true
