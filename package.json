@@ -1,7 +1,7 @@
 {
   "name": "software-challenge-gui",
   "productName": "Software-Challenge-GUI",
-  "version": "20.3.4",
+  "version": "20.3.3",
   "description": "GUI für die Software-Challenge",
   "main": "main.js",
   "scripts": {
@@ -109,7 +109,7 @@
     "@types/request": "^2.48.3",
     "@types/sax": "^1.2.0",
     "electron": "^8.1.1",
-    "electron-builder": "^22.4.0",
+    "electron-builder": "^22.2.0",
     "jasmine": "^3.5.0",
     "jasmine-console-reporter": "^3.1.0",
     "jasmine-ts-console-reporter": "^3.1.1",
