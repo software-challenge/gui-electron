@@ -83,7 +83,7 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "deep-equal": "^2.0.1",
-    "electron-updater": "^4.2.0",
+    "electron-updater": "^4.2.5",
     "express": "^4.17.1",
     "hazardous": "^0.3.0",
     "phaser": "3.22.0",
@@ -102,21 +102,21 @@
   "devDependencies": {
     "@types/body-parser": "^1.17.1",
     "@types/express": "^4.17.3",
-    "@types/jasmine": "^3.5.0",
+    "@types/jasmine": "^3.5.9",
     "@types/promise-retry": "^1.1.3",
     "@types/react": "^16.9.13",
     "@types/react-dom": "^16.9.4",
     "@types/request": "^2.48.3",
     "@types/sax": "^1.2.0",
-    "electron": "^8.0.3",
-    "electron-builder": "^22.4.0",
+    "electron": "^8.1.1",
+    "electron-builder": "^22.4.1",
     "jasmine": "^3.5.0",
     "jasmine-console-reporter": "^3.1.0",
     "jasmine-ts-console-reporter": "^3.1.1",
     "mocha": "^7.1.0",
     "rimraf": "^3.0.0",
     "ts-node": "^8.5.4",
-    "tslint": "^6.0.0",
+    "tslint": "^6.1.0",
     "typescript": "^3.8.3"
   }
 }
