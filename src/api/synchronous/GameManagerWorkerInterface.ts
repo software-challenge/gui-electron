@@ -53,7 +53,15 @@ export class GameManagerWorkerInterface {
   }
 
   private fetchBackend(query: string, init?: RequestInit) {
-    return this.backend.then(backend => fetch(backend.urlFor('/' + query), init))
+    try {
+      return this.backend.then(backend => fetch(backend.urlFor('/' + query), init)).catch(e => {
+        Logger.getLogger().log('GameManagerWorkerInterface', 'fetchBackend', 'Failed to get query ' + query + ' from backend: ' + e)
+        return null
+      })
+    } catch (e) {
+      Logger.getLogger().log('GameManagerWorkerInterface', 'fetchBackend', 'Failed to get query ' + query + ' from backend: ' + e)
+      return null
+    }
   }
 
   /** Requests a list of the names of the games currently loaded in the worker */
