@@ -45,6 +45,14 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
       hideStartButton:    false,
       isGameOver:         false,
     }
+
+    /* when the game is activated, we get the turn which should be displayed
+     * from the game manager. This should be the only place where the displayed
+     * turn number is received from the game manager. While the component is
+     * active, the current turn is stored in the turnActive state. */
+    this.setState({ turnActive: Api.getGameManager().getCurrentDisplayStateOnGame(this.props.gameId) })
+    this.autoPlay()
+    setTimeout(() => this.autoPlay(), 100)
   }
 
   private startViewer(e) {
@@ -91,16 +99,6 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
       this.viewer.undock()
     }
     this.deactivatePlayback(this.state)
-  }
-
-  componentWillMount() {
-    /* when the game is activated, we get the turn which should be displayed
-     * from the game manager. This should be the only place where the displayed
-     * turn number is received from the game manager. While the component is
-     * active, the current turn is stored in the turnActive state. */
-    this.setState({ turnActive: Api.getGameManager().getCurrentDisplayStateOnGame(this.props.gameId) })
-    this.autoPlay()
-    setTimeout(() => this.autoPlay(), 100)
   }
 
   componentDidMount() {
