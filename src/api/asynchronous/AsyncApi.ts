@@ -12,15 +12,27 @@ export class AsyncApi {
 
   public static getServer(): Promise<Server> {
     if (AsyncApi.server == null) {
-      AsyncApi.server = portfinder.getPortPromise({ port: 13050 })
-        .then(port => new Server(port, true))
+      try {
+        AsyncApi.server = portfinder.getPortPromise({ port: 13050 })
+          .then(port => new Server(port, true))
+          .catch(e => {
+            console.log('Error while creating new AsyncApi-Server on port 13050: ' + e)
+            return null
+          })
+      } catch (e) {
+        console.log('Error while creating new AsyncApi-Server on port 13050: ' + e)
+      }
     }
     return AsyncApi.server
   }
 
   public static getAsyncGameManager(port: number): AsyncGameManager {
     if (!this.asyncGameManager) {
-      this.asyncGameManager = new AsyncGameManager(port)
+      try {
+        this.asyncGameManager = new AsyncGameManager(port)
+      } catch (e) {
+        console.log('Error while creating new AsyncGameManager on port ' + port + ': ' + e)
+      }
     }
     return this.asyncGameManager
   }
