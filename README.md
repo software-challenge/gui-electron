@@ -20,7 +20,7 @@
 #### Nützliche Befehle
 
 - `yarn update-server` pullt und kompiliert die aktuelle Server-Version vom [socha repo](https://github.com/CAU-Kiel-Tech-Inf/socha) in das server-Verzeichnis
-- `yarn start-dev` startet die GUI mit geöffneten Developer Tools
+- `yarn start --dev` startet die GUI mit geöffneten Developer Tools
 - `yarn start --kiosk` führt die GUI im Kiosk-Modus aus. Dies funktioniert auch beim gepackten Programm durch anhängen von `--kiosk` im Terminal.
 
 ### Allgemeine Struktur
