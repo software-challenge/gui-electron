@@ -205,7 +205,7 @@ export class SimpleScene extends Phaser.Scene {
   // creates needed graphic objects to display the given board and associates them with the board fields.
   createBoardGraphics(board: Board): FieldGraphics[][] {
     if (!this.labelsCreated) {
-      this.createFieldLabels(board)
+      //this.createFieldLabels(board)
       this.labelsCreated = true
     }
     // TODO: use map instead of Array.from
