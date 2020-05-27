@@ -33,6 +33,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
   private viewerElement: Element
   private ws: WebSocket
   private mediaRecorder: MediaRecorder
+  private recordedChunks: any
 
   constructor(props) {
     super(props)
@@ -204,6 +205,7 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
         captureStream(int): MediaStream;
       }
 
+      this.recordedChunks = []
       let mediaStream = (this.viewer.canvas as CanvasElement).captureStream(30); // 30 FPS
       this.mediaRecorder = new MediaRecorder(mediaStream, {
         // chrome encoding
@@ -214,10 +216,26 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
       });
 
       this.mediaRecorder.addEventListener('dataavailable', (e) => {
-        ws.send(e.data);
+        //ws.send(e.data);
+
+        if (e.data.size > 0) {
+          this.recordedChunks.push(e.data)
+        }
       });
 
-      //mediaRecorder.addEventListener('stop', ws.close.bind(ws));
+      this.mediaRecorder.addEventListener('stop', (e) => {
+        var blob = new Blob(this.recordedChunks, {
+          type: "video/webm"
+        });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        document.body.appendChild(a);
+        a.href = url;
+        a.download = this.props.name+".webm";
+        a.click();
+        window.URL.revokeObjectURL(url);
+        //ws.close.bind(ws)
+      });
 
       this.mediaRecorder.start(1000); // Start recording, and dump data every second
     });
