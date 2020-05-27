@@ -8,7 +8,6 @@ import { Logger }                                            from '../api/Logger
 import { MessageContent }                                    from '../api/rules/Message'
 import { AppSettings }                                       from './App'
 import * as ReactDOM                                         from 'react-dom'
-import ws from 'ws'
 const ipc = require('electron').ipcRenderer
 
 const dialog = remote.dialog
@@ -191,65 +190,50 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
 
   startCapture() {
     console.log("activated capture")
-    this.ws = new WebSocket(
-      'ws://localhost:8999/'
-      + encodeURIComponent(this.props.name)
-    );
-    let ws = this.ws;
 
-    ws.addEventListener('open', (e) => {
+    interface CanvasElement extends HTMLCanvasElement {
+      captureStream(int): MediaStream;
+    }
 
-      console.log('WebSocket Open', e);
+    this.recordedChunks = []
+    let mediaStream = (this.viewer.canvas as CanvasElement).captureStream(30); // 30 FPS
+    this.mediaRecorder = new MediaRecorder(mediaStream, {
+      // chrome encoding
+      mimeType: 'video/webm;codecs=h264',
+      // encoding by ffmpeg
+      //mimeType: 'video/webm;codecs=vp9',
+      videoBitsPerSecond : 3 * 1024 * 1024
+    });
 
-      interface CanvasElement extends HTMLCanvasElement {
-        captureStream(int): MediaStream;
+    this.mediaRecorder.addEventListener('dataavailable', (e) => {
+      //ws.send(e.data);
+
+      if (e.data.size > 0) {
+        this.recordedChunks.push(e.data)
       }
-
-      this.recordedChunks = []
-      let mediaStream = (this.viewer.canvas as CanvasElement).captureStream(30); // 30 FPS
-      this.mediaRecorder = new MediaRecorder(mediaStream, {
-        // chrome encoding
-        mimeType: 'video/webm;codecs=h264',
-        // encoding by ffmpeg
-        //mimeType: 'video/webm;codecs=vp9',
-        videoBitsPerSecond : 3 * 1024 * 1024
-      });
-
-      this.mediaRecorder.addEventListener('dataavailable', (e) => {
-        //ws.send(e.data);
-
-        if (e.data.size > 0) {
-          this.recordedChunks.push(e.data)
-        }
-      });
-
-      this.mediaRecorder.addEventListener('stop', (e) => {
-        var blob = new Blob(this.recordedChunks, {
-          type: "video/webm"
-        });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement("a");
-        document.body.appendChild(a);
-        a.href = url;
-        a.download = this.props.name+".webm";
-        a.click();
-        window.URL.revokeObjectURL(url);
-        //ws.close.bind(ws)
-      });
-
-      this.mediaRecorder.start(1000); // Start recording, and dump data every second
     });
 
-    ws.addEventListener('close', (e) => {
-      console.log('WebSocket Close', e);
-      this.mediaRecorder.stop();
+    this.mediaRecorder.addEventListener('stop', (e) => {
+      var blob = new Blob(this.recordedChunks, {
+        type: "video/webm"
+      });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      document.body.appendChild(a);
+      a.href = url;
+      a.download = this.props.name+".webm";
+      a.click();
+      window.URL.revokeObjectURL(url);
     });
+
+    this.mediaRecorder.start(1000); // Start recording, and dump data every second
   }
 
   stopCapture() {
     console.log("deactivated capture")
     this.mediaRecorder.stop()
   }
+
   /** Activates playback on this state
    * NOTE: has to be called inside a setState! */
   activatePlayback(state: State) {

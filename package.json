@@ -97,7 +97,6 @@
     "tree-kill": "^1.2.1",
     "validate-typescript": "^4.0.2",
     "webpack": "^4.42.0",
-    "ws": "^7.3.0",
     "xml2js": "^0.4.22"
   },
   "devDependencies": {
@@ -110,7 +109,6 @@
     "@types/react-dom": "^16.9.4",
     "@types/request": "^2.48.3",
     "@types/sax": "^1.2.0",
-    "@types/ws": "^7.2.4",
     "electron": "^8.1.1",
     "electron-builder": "21.2.0",
     "jasmine": "^3.5.0",
