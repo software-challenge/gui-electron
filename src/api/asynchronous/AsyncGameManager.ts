@@ -159,12 +159,10 @@ export class AsyncGameManager {
     wss.on('connection', (ws, req) => {
 
       // TODO extract filename
-      /*
-      let match = req.url.match(/^\/rtmp\/(.*)$/);
+      let match = req.url.match(/^\/(.*)$/);
 
-      const rtmpUrl = decodeURIComponent(match[1]);
-      console.log('Target RTMP URL:', rtmpUrl);
-      */
+      const filename = decodeURIComponent(match[1]);
+      console.log('Target filename:', filename);
 
       // Launch FFmpeg to handle all appropriate transcoding, muxing, and RTMP.
       // If 'ffmpeg' isn't in your path, specify the full path to the ffmpeg binary.
@@ -198,7 +196,7 @@ export class AsyncGameManager {
         // For debugging, you could set this to a filename like 'test.flv', and play
         // the resulting file with VLC.  Please also read the security considerations
         // later on in this tutorial.
-        'test.flv'
+        filename+'.flv'
       ]);
 
       // If FFmpeg stops for any reason, close the WebSocket connection.

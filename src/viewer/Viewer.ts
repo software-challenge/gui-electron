@@ -1,7 +1,6 @@
 import { HiveEngine }                                                                                                                                                                                                      from './Engine/HiveEngine'
 import { Coordinates, FieldSelected, GameRuleLogic, GameState, InteractionEvent, Move, RenderState, SelectDragTargetField, SelectPiece, SelectSetTargetField, SelectSkip, SkipSelected, UiState, UndeployedPieceSelected } from '../api/rules/CurrentGame'
 
-import ws from 'ws'
 
 export class Viewer {
   //DOM Elements
@@ -33,45 +32,6 @@ export class Viewer {
 
     this.engine = new HiveEngine(this.canvas, this.element)
 
-    window.setTimeout(() => {
-
-      const ws = new WebSocket(
-        'ws://localhost:8999/'
-        // + encodeURIComponent(createRes.stream_url)
-      );
-
-      let mediaStream;
-      let mediaRecorder;
-      ws.addEventListener('open', (e) => {
-
-        console.log('WebSocket Open', e);
-
-        interface CanvasElement extends HTMLCanvasElement {
-          captureStream(int): void;
-        }
-
-        mediaStream = (<CanvasElement>this.canvas).captureStream(30); // 30 FPS
-        mediaRecorder = new MediaRecorder(mediaStream, {
-          mimeType: 'video/webm;codecs=h264',
-          videoBitsPerSecond : 3 * 1024 * 1024
-        });
-
-        mediaRecorder.addEventListener('dataavailable', (e) => {
-          ws.send(e.data);
-        });
-
-        mediaRecorder.addEventListener('stop', ws.close.bind(ws));
-
-        mediaRecorder.start(1000); // Start recording, and dump data every second
-      });
-
-      ws.addEventListener('close', (e) => {
-        console.log('WebSocket Close', e);
-        mediaRecorder.stop();
-      });
-
-
-    }, 3000);
   }
 
   dock(element: Element) {

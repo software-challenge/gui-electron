@@ -8,6 +8,7 @@ import { Logger }                                            from '../api/Logger
 import { MessageContent }                                    from '../api/rules/Message'
 import { AppSettings }                                       from './App'
 import * as ReactDOM                                         from 'react-dom'
+import ws from 'ws'
 const ipc = require('electron').ipcRenderer
 
 const dialog = remote.dialog
@@ -30,6 +31,8 @@ const MAX_PAUSE = 3000
 export class Game extends React.Component<{ gameId: number, name: string, isReplay: boolean, settings: AppSettings }, State> {
   private viewer: Viewer
   private viewerElement: Element
+  private ws: WebSocket
+  private mediaRecorder: MediaRecorder
 
   constructor(props) {
     super(props)
@@ -185,6 +188,50 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
     })
   }
 
+  startCapture() {
+    console.log("activated capture")
+    this.ws = new WebSocket(
+      'ws://localhost:8999/'
+      + encodeURIComponent(this.props.name)
+    );
+    let ws = this.ws;
+
+    ws.addEventListener('open', (e) => {
+
+      console.log('WebSocket Open', e);
+
+      interface CanvasElement extends HTMLCanvasElement {
+        captureStream(int): MediaStream;
+      }
+
+      let mediaStream = (this.viewer.canvas as CanvasElement).captureStream(30); // 30 FPS
+      this.mediaRecorder = new MediaRecorder(mediaStream, {
+        // chrome encoding
+        mimeType: 'video/webm;codecs=h264',
+        // encoding by ffmpeg
+        //mimeType: 'video/webm;codecs=vp9',
+        videoBitsPerSecond : 3 * 1024 * 1024
+      });
+
+      this.mediaRecorder.addEventListener('dataavailable', (e) => {
+        ws.send(e.data);
+      });
+
+      //mediaRecorder.addEventListener('stop', ws.close.bind(ws));
+
+      this.mediaRecorder.start(1000); // Start recording, and dump data every second
+    });
+
+    ws.addEventListener('close', (e) => {
+      console.log('WebSocket Close', e);
+      this.mediaRecorder.stop();
+    });
+  }
+
+  stopCapture() {
+    console.log("deactivated capture")
+    this.mediaRecorder.stop()
+  }
   /** Activates playback on this state
    * NOTE: has to be called inside a setState! */
   activatePlayback(state: State) {
@@ -192,12 +239,14 @@ export class Game extends React.Component<{ gameId: number, name: string, isRepl
       clearInterval(state.playbackIntervalID)
     }
     state.playbackIntervalID = window.setInterval(() => this.nextTurn(), state.playbackSpeed)
+    this.startCapture()
   }
 
   deactivatePlayback(state: State) {
     if (state.playbackIntervalID != null) {
       clearInterval(state.playbackIntervalID)
       state.playbackIntervalID = null
+      this.stopCapture()
     }
   }
 
