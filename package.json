@@ -108,7 +108,7 @@
     "@types/react-dom": "^16.9.4",
     "@types/request": "^2.48.3",
     "@types/sax": "^1.2.0",
-    "electron": "^8.1.1",
+    "electron": "^8.2.4",
     "electron-builder": "21.2.0",
     "jasmine": "^3.5.0",
     "jasmine-console-reporter": "^3.1.0",
