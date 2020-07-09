@@ -24,27 +24,44 @@ export class GameManagerWorkerInterface {
     const fork: any = child_process.fork  //disable typechecking, one faulty line causes everything to fail
     console.log('SGC_LOG_PATH:' + process.env.SGC_LOG_PATH)
     //this.worker = child_process.spawn(process.execPath, [path.join(__dirname, '/../asynchronous/GameManagerWorker.js')], { env: { "SGC_LOG_PATH": process.env.SGC_LOG_PATH } })
-    this.backend = portfinder.getPortPromise({ port: 12000 })
-      .then((port) => {
-        return new Backend(port)
-      })
-
-    this.backend.then(backend => {
-      this.worker = fork(
-        path.join(__dirname, '/../asynchronous/GameManagerWorker.js'), {
-          execArgv: process.execArgv,
-          stdio:    ['inherit', 'inherit', 'inherit', 'ipc'],
-          env:      {
-            'SGC_LOG_PATH':             process.env.SGC_LOG_PATH,
-            'GAME_MANAGER_WORKER_PORT': backend.getPort(),
+    try {
+      this.backend = portfinder.getPortPromise({ port: 12000 })
+        .then((port) => {
+          return new Backend(port)
+        }).catch(e => {
+          Logger.getLogger().log('GameManagerWorkerInterface', 'constructor', 'Error while getting PortPromis to port ' + 12000 + ': ' + e)
+          return null
+        })
+      this.backend.then(backend => {
+        this.worker = fork(
+          path.join(__dirname, '/../asynchronous/GameManagerWorker.js'), {
+            execArgv: process.execArgv,
+            stdio:    ['inherit', 'inherit', 'inherit', 'ipc'],
+            env:      {
+              'SGC_LOG_PATH':             process.env.SGC_LOG_PATH,
+              'GAME_MANAGER_WORKER_PORT': backend.getPort(),
+            },
           },
-        },
-      )
-    })
+        )
+      }).catch(e => {
+        Logger.getLogger().log('GameManagerWorkerInterface', 'constructor', 'Error while trying to create worker: ' + e)
+      })
+    } catch (e) {
+      Logger.getLogger().log('GameManagerWorkerInterface', 'constructor', 'Error while in constructor: ' + e)
+      this.backend = null
+    }
   }
 
   private fetchBackend(query: string, init?: RequestInit) {
-    return this.backend.then(backend => fetch(backend.urlFor('/' + query), init))
+    try {
+      return this.backend.then(backend => fetch(backend.urlFor('/' + query), init)).catch(e => {
+        Logger.getLogger().log('GameManagerWorkerInterface', 'fetchBackend', 'Failed to get query ' + query + ' from backend: ' + e)
+        return null
+      })
+    } catch (e) {
+      Logger.getLogger().log('GameManagerWorkerInterface', 'fetchBackend', 'Failed to get query ' + query + ' from backend: ' + e)
+      return null
+    }
   }
 
   /** Requests a list of the names of the games currently loaded in the worker */
